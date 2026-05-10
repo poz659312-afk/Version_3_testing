@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "What is the primary purpose of data validation in data science?",
+    "options": [
+      "A) To increase the size of the dataset",
+      "B) To ensure data quality and reliability before analysis",
+      "C) To replace all numerical values with strings",
+      "D) To make the data collection process more expensive"
+    ],
+    "answer": "B) To ensure data quality and reliability before analysis",
+    "explanation": "Data validation ensures the quality and reliability of your data before analysis or modeling, preventing errors and maintaining data integrity.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "Which of the following is an example of a \"Consistency Check\"?",
+    "options": [
+      "A) Checking if a variable is Numeric or Categorical",
+      "B) Ensuring a birth date is not later than a hire date",
+      "C) Identifying duplicate ID numbers",
+      "D) Calculating the mean of a column"
+    ],
+    "answer": "B) Ensuring a birth date is not later than a hire date",
+    "explanation": "Consistency checks identify logical inconsistencies within or between datasets, e.g., a birth date should not be after a hire date.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "Which type of validation ensures that a variable like 'Age' falls within expected limits?",
+    "options": [
+      "A) Data type validation",
+      "B) Uniqueness validation",
+      "C) Range and constraint validation",
+      "D) Missing value imputation"
+    ],
+    "answer": "C) Range and constraint validation",
+    "explanation": "Range validation ensures numeric values are within expected limits, while constraints check categorical values against a set of valid options.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "In the context of data handling, what does 'Raw Data' refer to?",
+    "options": [
+      "A) Data that has been cleaned and visualized",
+      "B) Unstructured data collected directly from the source",
+      "C) The difference between the largest and smallest value",
+      "D) A table ready for machine learning"
+    ],
+    "answer": "B) Unstructured data collected directly from the source",
+    "explanation": "Raw data is collected directly from the source and may require cleaning or formatting before analysis.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "What is the first step in the systematic process of Data Handling?",
+    "options": [
+      "A) Collection of data",
+      "B) Analyzing the data",
+      "C) Purpose (defining the problem)",
+      "D) Graphical representation"
+    ],
+    "answer": "C) Purpose (defining the problem)",
+    "explanation": "Defining the problem clarifies the goal of the data handling process and guides the collection and analysis steps.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "Which data source is 'already collected in the past and made readily available'?",
+    "options": [
+      "A) Primary data",
+      "B) Raw data",
+      "C) Secondary data",
+      "D) Experimental data"
+    ],
+    "answer": "C) Secondary data",
+    "explanation": "Secondary data comes from previous collections like books, journals, or datasets, and can be used directly for research.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "'Height' and 'Weight' are examples of which type of data?",
+    "options": [
+      "A) Discrete Quantitative data",
+      "B) Continuous Quantitative data",
+      "C) Nominal Qualitative data",
+      "D) Ordinal Qualitative data"
+    ],
+    "answer": "B) Continuous Quantitative data",
+    "explanation": "Continuous data can take any value within a range, like height or weight, and can be measured precisely.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "What is the main difference between Nominal and Ordinal data?",
+    "options": [
+      "A) Nominal data is numeric, Ordinal is not",
+      "B) Ordinal data follows a specific order, Nominal does not",
+      "C) Nominal data has a meaningful zero point",
+      "D) Ordinal data is used for temperatures only"
+    ],
+    "answer": "B) Ordinal data follows a specific order, Nominal does not",
+    "explanation": "Ordinal data represents categories with a meaningful order, unlike Nominal data which only labels categories.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "Which numerical data type has a 'meaningful zero' and can be divided meaningfully?",
+    "options": [
+      "A) Nominal",
+      "B) Interval",
+      "C) Ratio",
+      "D) Ordinal"
+    ],
+    "answer": "C) Ratio",
+    "explanation": "Ratio data has a meaningful zero and allows arithmetic operations like multiplication and division.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "'Celsius Temperature' is an example of which data type?",
+    "options": [
+      "A) Ratio",
+      "B) Interval",
+      "C) Nominal",
+      "D) Discrete"
+    ],
+    "answer": "B) Interval",
+    "explanation": "Interval data has equal spacing between values but no true zero, e.g., Celsius or Fahrenheit temperatures.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "What are the two main phases of Data Preparation?",
+    "options": [
+      "A) Data Loading and Data Exporting",
+      "B) Data Pre-processing and Data Wrangling",
+      "C) Data Collection and Data Analysis",
+      "D) Data Mining and Data Visualization"
+    ],
+    "answer": "B) Data Pre-processing and Data Wrangling",
+    "explanation": "Pre-processing cleans and prepares raw data, while wrangling transforms it into usable formats for modeling.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "If a user forgets to fill in a value, this type of missing data is called:",
+    "options": [
+      "A) Missing at Random (MAR)",
+      "B) Missing Not at Random (MNAR)",
+      "C) Missing Completely at Random (MCAR)",
+      "D) Systematic Missing Data"
+    ],
+    "answer": "C) Missing Completely at Random (MCAR)",
+    "explanation": "MCAR occurs when missing values happen purely by chance, e.g., a forgotten form entry.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "Which data cleaning technique is used to handle 'Noisy Data'?",
+    "options": [
+      "A) Filling missing values",
+      "B) Smoothing",
+      "C) Uniqueness validation",
+      "D) Data integration"
+    ],
+    "answer": "B) Smoothing",
+    "explanation": "Smoothing reduces random variation or errors in data, helping to clean noisy datasets.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "What is a major disadvantage of 'Listwise Deletion'?",
+    "options": [
+      "A) It is very complex to implement",
+      "B) It can lead to a significant loss of valuable information",
+      "C) It creates unrealistic data like 'Age = 0'",
+      "D) It only works for categorical data"
+    ],
+    "answer": "B) It can lead to a significant loss of valuable information",
+    "explanation": "Listwise deletion removes entire rows with missing values, which can drastically reduce dataset size.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "When would you choose KNN imputation over simpler methods like mean or median?",
+    "options": [
+      "A) Small datasets only",
+      "B) When data relationships are nonlinear",
+      "C) When all data is categorical",
+      "D) When dataset is complete"
+    ],
+    "answer": "B) When data relationships are nonlinear",
+    "explanation": "KNN imputation considers neighbors to handle nonlinear relationships between variables more accurately.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Why is '0' often a poor choice for replacing missing Age?",
+    "options": [
+      "A) It is too difficult to calculate",
+      "B) It distorts the data (Age = 0 is unrealistic)",
+      "C) It makes the dataset too large",
+      "D) It can only be used for the Income column"
+    ],
+    "answer": "B) It distorts the data (Age = 0 is unrealistic)",
+    "explanation": "Replacing missing Age with 0 creates unrealistic data points and may bias the analysis.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "Which statistical measure is best for imputation when the data has outliers?",
+    "options": [
+      "A) Mean",
+      "B) Mode",
+      "C) Median",
+      "D) Range"
+    ],
+    "answer": "C) Median",
+    "explanation": "Median is robust to outliers and provides a better central value for imputation than mean.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "Mode imputation is most suitable for which type of variable?",
+    "options": [
+      "A) Continuous Numeric",
+      "B) Categorical",
+      "C) Ratio",
+      "D) Interval"
+    ],
+    "answer": "B) Categorical",
+    "explanation": "Mode is used to replace missing categorical data with the most frequent category.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "'Forward Fill' (filling with previous value) is particularly useful for:",
+    "options": [
+      "A) Cross-sectional data",
+      "B) Time series data",
+      "C) Nominal data only",
+      "D) Identifying outliers"
+    ],
+    "answer": "B) Time series data",
+    "explanation": "Forward fill maintains continuity in time series datasets by using previous values to fill gaps.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "In KNN Imputation, what does 'k' represent?",
+    "options": [
+      "A) The number of columns in the dataset",
+      "B) The number of most similar neighbors used for estimation",
+      "C) The distance between the first and last row",
+      "D) The number of missing values"
+    ],
+    "answer": "B) The number of most similar neighbors used for estimation",
+    "explanation": "'k' defines how many neighboring observations are used to estimate the missing value in KNN imputation.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "Which distance formula is commonly used for numerical data in KNN?",
+    "options": [
+      "A) Hamming distance",
+      "B) Manhattan distance",
+      "C) Euclidean distance",
+      "D) Range distance"
+    ],
+    "answer": "C) Euclidean distance",
+    "explanation": "Euclidean distance measures the straight-line distance between points in numerical space for KNN calculations.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "What happens if you choose a very large 'k' (e.g., k=100) in KNN?",
+    "options": [
+      "A) The model becomes very sensitive to noise",
+      "B) The model may over-smooth the data and ignore local patterns",
+      "C) The computation becomes much faster",
+      "D) The distance becomes zero"
+    ],
+    "answer": "B) The model may over-smooth the data and ignore local patterns",
+    "explanation": "A large 'k' averages many neighbors, which can smooth out important local variations in the data.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "What is the 'Rule of Thumb' for choosing the value of k?",
+    "options": [
+      "A) k = n^2",
+      "B) k = √n",
+      "C) k = n / 2",
+      "D) k = 10"
+    ],
+    "answer": "B) k = √n",
+    "explanation": "A common heuristic for KNN is k ≈ √n, where n is the number of observations.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "Which Python library provides powerful data manipulation and cleaning functions?",
+    "options": [
+      "A) NumPy",
+      "B) Matplotlib",
+      "C) pandas",
+      "D) Scikit-learn"
+    ],
+    "answer": "C) pandas",
+    "explanation": "The pandas library offers functions for cleaning, manipulating, and analyzing tabular data efficiently.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "What is the imputed Science score for Student C?",
+    "options": [
+      "A) 81.5",
+      "B) 85.0",
+      "C) 88.5",
+      "D) 92.0"
+    ],
+    "answer": "C) 88.5",
+    "explanation": "Pre-calculated Euclidean Distances from Student C:\nDistance (C to A) = 16.40\nDistance (C to B) = 30.48\nDistance (C to D) = 9.43\n\nSince k = 2, we select the two neighbors with the smallest distances to C. The two closest are Student D (dist = 9.43) and Student A (dist = 16.40). We take the mean of their Science scores:\n(92 + 85)/2 = 88.5",
+    "image": "https://drive.google.com/file/d/1TzlPsUGp0VPoMvVIJ_BGn9jt3eKXL85-/view?usp=sharing"
+  }
+]
