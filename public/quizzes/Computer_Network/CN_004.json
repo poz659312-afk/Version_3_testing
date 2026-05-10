@@ -1,0 +1,283 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "Ethernet is the most famous protocol used in:",
+    "options": [
+      "A) Wide Area Networks (WANs)",
+      "B) Local Area Networks (LANs)",
+      "C) Metropolitan Area Networks (MANs)",
+      "D) Virtual Private Networks (VPNs)"
+    ],
+    "answer": "B) Local Area Networks (LANs)",
+    "explanation": "Ethernet is primarily designed for and most widely used in Local Area Networks (LANs). It was developed to connect computers and devices within a limited geographical area such as homes, offices, or buildings. While Ethernet technology has evolved and can be used in other contexts, its primary application remains in LANs where it provides high-speed, reliable communication between devices on the same local network.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "According to the document, on which OSI model layers does Ethernet operate?",
+    "options": [
+      "A) Layer 1 and Layer 2",
+      "B) Layer 2 and Layer 3",
+      "C) Layer 1 and Layer 3",
+      "D) Layer 3 and Layer 4"
+    ],
+    "answer": "A) Layer 1 and Layer 2",
+    "explanation": "Ethernet operates at both Layer 1 (Physical Layer) and Layer 2 (Data Link Layer) of the OSI model. At the Physical Layer, it handles the actual transmission of signals over the physical medium (cables, connectors, voltage levels). At the Data Link Layer, it manages addressing (MAC addresses), framing, and preparing packets for transmission. This dual-layer operation makes Ethernet a complete link-layer technology.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "At the Data Link layer, Ethernet is responsible for all of the following EXCEPT:",
+    "options": [
+      "A) Addressing",
+      "B) Framing packets",
+      "C) Actual signal transmission",
+      "D) Preparing packets for transmission"
+    ],
+    "answer": "C) Actual signal transmission",
+    "explanation": "Actual signal transmission is the responsibility of the Physical Layer (Layer 1), not the Data Link Layer (Layer 2). The Data Link Layer handles logical functions such as MAC addressing, framing packets into proper Ethernet frames, and preparing packets for transmission. The Physical Layer then takes these prepared frames and handles the actual electrical, optical, or radio signal transmission over the physical medium.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "The addressing used by Ethernet at the Data Link layer is called a:",
+    "options": [
+      "A) IP Address",
+      "B) MAC Address",
+      "C) Port Address",
+      "D) Sequence Number"
+    ],
+    "answer": "B) MAC Address",
+    "explanation": "MAC (Media Access Control) Address is the addressing scheme used by Ethernet at the Data Link Layer. MAC addresses are hardware addresses that uniquely identify network interface cards. IP addresses operate at Layer 3 (Network Layer), port addresses are used at Layer 4 (Transport Layer), and sequence numbers are used for flow control. The MAC address is burned into the network interface hardware and is used for local network communication.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "How long is a MAC address?",
+    "options": [
+      "A) 32 bits (4 bytes)",
+      "B) 48 bits (6 bytes)",
+      "C) 64 bits (8 bytes)",
+      "D) 128 bits (16 bytes)"
+    ],
+    "answer": "B) 48 bits (6 bytes)",
+    "explanation": "A MAC address is 48 bits long, which equals 6 bytes. It is typically represented as 12 hexadecimal digits, often grouped in pairs separated by colons, hyphens, or periods (e.g., 50:22:AB:5B:63:A9 or 5022.ab5b.63a9). This length provides enough unique combinations to assign a unique address to every network device manufactured. For comparison, IPv4 addresses are 32 bits and IPv6 addresses are 128 bits.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "The first half of a MAC address represents the:",
+    "options": [
+      "A) Device Serial Number",
+      "B) Host Identifier",
+      "C) Organization Unique Identifier (OUI)",
+      "D) Network IP Address"
+    ],
+    "answer": "C) Organization Unique Identifier (OUI)",
+    "explanation": "The first 24 bits (3 bytes) of a MAC address represent the Organizationally Unique Identifier (OUI), which identifies the manufacturer or vendor of the network interface card. The IEEE assigns these OUI values to manufacturers. For example, all Cisco devices might share the same OUI prefix. This allows network administrators to identify the manufacturer of a device by examining its MAC address.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "Who assigns the second half of a MAC address?",
+    "options": [
+      "A) IEEE",
+      "B) The End User",
+      "C) The Network Administrator",
+      "D) The Manufacturer"
+    ],
+    "answer": "D) The Manufacturer",
+    "explanation": "The manufacturer assigns the second half (last 24 bits or 3 bytes) of a MAC address. While the IEEE assigns the first half (OUI) to identify the manufacturer, the manufacturer is responsible for ensuring that each device they produce has a unique second half, creating a globally unique MAC address for each network interface. The manufacturer maintains their own database to ensure no duplicates are created.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "What is the correct format for a MAC address?",
+    "options": [
+      "A) 192.168.1.1",
+      "B) 5022.ab5b.63a9",
+      "C) http://www.example.com",
+      "D) 5A:2B"
+    ],
+    "answer": "B) 5022.ab5b.63a9",
+    "explanation": "The correct format for a MAC address is 5022.ab5b.63a9, which shows 12 hexadecimal digits representing 6 bytes. MAC addresses can be written in various formats including colon-separated (50:22:AB:5B:63:A9), hyphen-separated (50-22-AB-5B-63-A9), or dot-separated in groups of 4 (5022.ab5b.63a9). Option A is an IP address format, option C is a URL, and option D doesn't have enough digits to be a complete MAC address.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "What is the value of a broadcast MAC address?",
+    "options": [
+      "A) 0000.0000.0000",
+      "B) 255.255.255.255",
+      "C) FFFF.FFFF.FFFF",
+      "D) 0100.5E00.0000"
+    ],
+    "answer": "C) FFFF.FFFF.FFFF",
+    "explanation": "The broadcast MAC address is FFFF.FFFF.FFFF (all bits set to 1). When a frame is sent to this destination address, it is delivered to all devices on the local network segment. This is different from 255.255.255.255, which is an IP broadcast address. The all-zeros address (0000.0000.0000) is invalid, and 0100.5E00.0000 is related to multicast addressing. Broadcast frames are used for network discovery and protocols like ARP.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "A multicast MAC address for IP multicast over Ethernet always begins with which value?",
+    "options": [
+      "A) FFFF.FF",
+      "B) 5022.AB",
+      "C) 0000.00",
+      "D) 0100.5E"
+    ],
+    "answer": "D) 0100.5E",
+    "explanation": "IP multicast MAC addresses over Ethernet always begin with the prefix 0100.5E (or 01:00:5E in colon notation). This is a reserved range defined by IANA for IPv4 multicast. The remaining bits map to the multicast IP address. Multicast allows efficient one-to-many communication, where a single transmission can reach multiple interested receivers without broadcasting to all devices on the network.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "How many wires are inside a standard Ethernet cable?",
+    "options": [
+      "A) 4",
+      "B) 6",
+      "C) 8",
+      "D) 10"
+    ],
+    "answer": "C) 8",
+    "explanation": "A standard Ethernet cable contains 8 wires arranged in 4 twisted pairs. These 8 wires are color-coded and organized into pairs: Orange/White-Orange, Green/White-Green, Blue/White-Blue, and Brown/White-Brown. While 10BASE-T and 100BASE-TX only use 4 of these wires (2 pairs), Gigabit Ethernet (1000BASE-T) and higher speeds utilize all 8 wires (4 pairs) for simultaneous bidirectional transmission.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "Why are the wires inside an Ethernet cable twisted?",
+    "options": [
+      "A) To make the cable more flexible",
+      "B) To increase the cable's length",
+      "C) To avoid internal electromagnetic interference",
+      "D) To make the cable cheaper to produce"
+    ],
+    "answer": "C) To avoid internal electromagnetic interference",
+    "explanation": "The wires in an Ethernet cable are twisted to reduce electromagnetic interference (EMI) and crosstalk between wire pairs. When electrical current flows through a wire, it generates an electromagnetic field. By twisting the wires in pairs, the electromagnetic fields from each wire in the pair tend to cancel each other out, reducing interference both within the cable (crosstalk) and from external sources. This twisting is crucial for maintaining signal integrity and data transmission quality.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "What is the name of the connector used for Ethernet cables?",
+    "options": [
+      "A) RJ11",
+      "B) USB-C",
+      "C) RJ45",
+      "D) BNC"
+    ],
+    "answer": "C) RJ45",
+    "explanation": "RJ45 (Registered Jack 45) is the standard connector used for Ethernet cables. It is an 8-position, 8-contact (8P8C) modular connector that accommodates the 8 wires in a standard Ethernet cable. RJ11 is used for telephone lines and has fewer contacts, USB-C is for USB connections, and BNC connectors were used in older coaxial Ethernet implementations. The RJ45 connector clicks into place when properly inserted into an Ethernet port.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "Which type of Ethernet cable is immune to external electromagnetic interference?",
+    "options": [
+      "A) UTP",
+      "B) STP",
+      "C) Coaxial",
+      "D) Fiber Optic"
+    ],
+    "answer": "B) STP",
+    "explanation": "Shielded Twisted Pair (STP) includes shielding around the pairs or the cable which greatly reduces susceptibility to external electromagnetic interference compared with unshielded cables. While fiber optic is inherently immune because it uses light instead of electrical signals, STP is commonly used when EMI is a concern for copper cabling.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "What is the main advantage of a UTP cable over an STP cable?",
+    "options": [
+      "A) It is more secure",
+      "B) It is faster",
+      "C) It is cheaper",
+      "D) It is immune to interference"
+    ],
+    "answer": "C) It is cheaper",
+    "explanation": "The main advantage of UTP (Unshielded Twisted Pair) cable over STP (Shielded Twisted Pair) cable is cost. UTP cables are cheaper to manufacture and install because they lack the additional shielding that STP cables have. While STP provides better protection against electromagnetic interference, UTP is sufficient for most standard office environments and is the most commonly deployed cable type. UTP is not more secure, faster, or more immune to interference than STP.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Which of the following is NOT a type of Ethernet cabling ?",
+    "options": [
+      "A) Straight-through cable",
+      "B) Crossover cable",
+      "C) Rolled cable",
+      "D) Fiber optic cable"
+    ],
+    "answer": "D) Fiber optic cable",
+    "explanation": "Among the options listed, fiber optic cable is NOT one of the specific cable types mentioned in the standard Ethernet cabling categories being discussed. The document focuses on copper cable configurations: straight-through cables (for connecting different device types), crossover cables (for connecting similar devices), and rolled cables (console cables for device management). While fiber optic is used in Ethernet networks, it represents a different physical medium rather than a wiring configuration type.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "A straight-through cable is typically used to connect a PC to a:",
+    "options": [
+      "A) Another PC",
+      "B) Router",
+      "C) Switch",
+      "D) Another Host"
+    ],
+    "answer": "C) Switch",
+    "explanation": "A straight-through cable is used to connect different types of devices, such as a PC (host/DTE device) to a switch or hub (networking device/DCE). In a straight-through cable, the wire on pin 1 at one end connects to pin 1 at the other end, pin 2 to pin 2, and so on. This works because the PC transmits on pins 1&2 and receives on pins 3&6, while the switch receives on pins 1&2 and transmits on pins 3&6, creating a proper communication path.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "According to the document, a crossover cable can be used to connect all of the following EXCEPT:",
+    "options": [
+      "A) Host to Host",
+      "B) Switch to Switch",
+      "C) PC to Switch",
+      "D) Router to Router"
+    ],
+    "answer": "C) PC to Switch",
+    "explanation": "A crossover cable is used to connect similar device types (Host to Host, Switch to Switch, Router to Router) where both devices would normally transmit and receive on the same pins. The crossover cable swaps the transmit and receive pairs, allowing proper communication. A PC to Switch connection requires a straight-through cable because they are different device types with opposite transmit/receive pin configurations. Modern devices with Auto-MDIX can work with either cable type.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "In a straight-through cable connection from a PC to a switch, which pins are primarily used for transmitting data (TX) from the PC?",
+    "options": [
+      "A) 1 & 2",
+      "B) 3 & 6",
+      "C) 4 & 5",
+      "D) 7 & 8"
+    ],
+    "answer": "A) 1 & 2",
+    "explanation": "In a standard Ethernet straight-through cable, a PC (DTE device) transmits data on pins 1 and 2 (TX+/TX-) and receives data on pins 3 and 6 (RX+/RX-). The switch or hub does the opposite: it receives on pins 1 and 2 and transmits on pins 3 and 6. This pin arrangement allows proper bidirectional communication between the PC and switch. Pins 4, 5, 7, and 8 are used for Gigabit Ethernet or Power over Ethernet in modern implementations.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "The primary purpose of the 'Rolled cable' is:",
+    "options": [
+      "A) Connecting a router to a host",
+      "B) Connecting a switch to a hub",
+      "C) Console management of network devices",
+      "D) Extending the length of a cable"
+    ],
+    "answer": "C) Console management of network devices",
+    "explanation": "A rolled cable (also called a rollover cable or console cable) is primarily used for console management and configuration of network devices like routers and switches. It connects a computer's serial or USB port to the console port of a network device, allowing direct access for initial configuration, troubleshooting, and management when network access is unavailable. The cable is called 'rolled' because the pin connections are completely reversed (pin 1 to pin 8, pin 2 to pin 7, etc.).",
+    "image": null
+  }
+]
+
