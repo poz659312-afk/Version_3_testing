@@ -1,6 +1,14 @@
 "use client"
 
+<<<<<<< HEAD
 import Iridescence from './Iridescence'
+=======
+import dynamic from "next/dynamic"
+
+const Iridescence = dynamic(() => import('./Iridescence'), { 
+  ssr: false 
+})
+>>>>>>> 16d5d685 (Performance optimizations)
 
 interface AnimatedBackgroundProps {
   color?: [number, number, number];

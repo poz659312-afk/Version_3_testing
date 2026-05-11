@@ -85,14 +85,45 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
   fillOpacity = 0.5,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+<<<<<<< HEAD
+=======
+  const rectRef = useRef<DOMRect | null>(null);
+>>>>>>> 16d5d685 (Performance optimizations)
   const [isHovered, setIsHovered] = useState(false);
   const [cursorAngle, setCursorAngle] = useState(45);
   const [edgeProximity, setEdgeProximity] = useState(0);
   const [sweepActive, setSweepActive] = useState(false);
 
+<<<<<<< HEAD
   const getCenterOfElement = useCallback((el: HTMLElement) => {
     const { width, height } = el.getBoundingClientRect();
     return [width / 2, height / 2];
+=======
+  useEffect(() => {
+    const updateRect = () => {
+      if (cardRef.current) {
+        rectRef.current = cardRef.current.getBoundingClientRect();
+      }
+    };
+    updateRect();
+    const ro = new ResizeObserver(updateRect);
+    if (cardRef.current) ro.observe(cardRef.current);
+    window.addEventListener('resize', updateRect);
+    window.addEventListener('scroll', updateRect, { passive: true });
+    
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', updateRect);
+      window.removeEventListener('scroll', updateRect);
+    };
+  }, []);
+
+  const getCenterOfElement = useCallback((el: HTMLElement) => {
+    if (!rectRef.current) {
+      rectRef.current = el.getBoundingClientRect();
+    }
+    return [rectRef.current.width / 2, rectRef.current.height / 2];
+>>>>>>> 16d5d685 (Performance optimizations)
   }, []);
 
   const getEdgeProximity = useCallback((el: HTMLElement, x: number, y: number) => {
@@ -120,11 +151,27 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     const card = cardRef.current;
     if (!card) return;
+<<<<<<< HEAD
     const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     setEdgeProximity(getEdgeProximity(card, x, y));
     setCursorAngle(getCursorAngle(card, x, y));
+=======
+    let rect = rectRef.current;
+    if (!rect) {
+      rect = card.getBoundingClientRect();
+      rectRef.current = rect;
+    }
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Use requestAnimationFrame to throttle state updates during mouse move
+    requestAnimationFrame(() => {
+      setEdgeProximity(getEdgeProximity(card, x, y));
+      setCursorAngle(getCursorAngle(card, x, y));
+    });
+>>>>>>> 16d5d685 (Performance optimizations)
   }, [getEdgeProximity, getCursorAngle]);
 
   useEffect(() => {
@@ -156,10 +203,18 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
     ? Math.max(0, (edgeProximity * 100 - edgeSensitivity) / (100 - edgeSensitivity))
     : 0;
 
+<<<<<<< HEAD
   const meshGradients = buildMeshGradients(colors);
   const borderBg = meshGradients.map(g => `${g} border-box`);
   const fillBg = meshGradients.map(g => `${g} padding-box`);
   const angleDeg = `${cursorAngle.toFixed(3)}deg`;
+=======
+  const meshGradients = useMemo(() => buildMeshGradients(colors), [colors]);
+  const borderBg = useMemo(() => meshGradients.map(g => `${g} border-box`), [meshGradients]);
+  const fillBg = useMemo(() => meshGradients.map(g => `${g} padding-box`), [meshGradients]);
+  const angleDeg = `${cursorAngle.toFixed(3)}deg`;
+  const boxShadow = useMemo(() => buildBoxShadow(glowColor, glowIntensity), [glowColor, glowIntensity]);
+>>>>>>> 16d5d685 (Performance optimizations)
 
   return (
     <div
@@ -240,7 +295,11 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
           className="absolute rounded-[inherit]"
           style={{
             inset: `${glowRadius}px`,
+<<<<<<< HEAD
             boxShadow: buildBoxShadow(glowColor, glowIntensity),
+=======
+            boxShadow: boxShadow,
+>>>>>>> 16d5d685 (Performance optimizations)
           }}
         />
       </span>

@@ -87,7 +87,11 @@
     "tailwindcss-animate": "^1.0.7",
     "thesvg": "^2.0.1",
     "vaul": "^0.9.9",
+<<<<<<< HEAD
+    "zod": "3.25.67"
+=======
     "zod": "^4.4.3"
+>>>>>>> 16d5d685 (Performance optimizations)
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.9",

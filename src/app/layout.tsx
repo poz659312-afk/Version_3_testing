@@ -93,15 +93,22 @@ export default function RootLayout({
         {ENABLE_ADS && (
           <Script
             async
+<<<<<<< HEAD
             strategy="afterInteractive"
+=======
+            strategy="lazyOnload"
+>>>>>>> 16d5d685 (Performance optimizations)
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5932974277970825"
             crossOrigin="anonymous"
           />
         )}
+<<<<<<< HEAD
         <Script 
           src="https://cdn.jsdelivr.net/npm/@dotlottie/player-component@2.7.12/dist/dotlottie-player.js" 
           strategy="afterInteractive"
         />
+=======
+>>>>>>> 16d5d685 (Performance optimizations)
       </head>
 
       <body

@@ -5,15 +5,44 @@
 const DISABLE_CACHE = false;
 
 const nextConfig = {
+<<<<<<< HEAD
   /* config options here */
   // Production optimizations for security
+=======
+  // Production optimizations for security and performance
+>>>>>>> 16d5d685 (Performance optimizations)
   productionBrowserSourceMaps: false, // Disable source maps in production
   
   experimental: {
     serverComponentsExternalPackages: ['pdf-parse'],
     serverActions: {
+<<<<<<< HEAD
       bodySizeLimit: '100mb',
     },
+=======
+      bodySizeLimit: '10mb', // Reduced from 100mb to prevent server OOM
+    },
+    optimizePackageImports: [
+      'lucide-react',
+      '@radix-ui/react-icons',
+      'framer-motion',
+      'gsap',
+    ],
+  },
+
+  async headers() {
+    return [
+      {
+        source: '/:all*(svg|jpg|jpeg|png|webp|avif|woff2|woff|ttf|css)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+>>>>>>> 16d5d685 (Performance optimizations)
   },
   
   // Production webpack configuration
@@ -50,6 +79,11 @@ const nextConfig = {
   },
   
   images: {
+<<<<<<< HEAD
+=======
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 31536000,
+>>>>>>> 16d5d685 (Performance optimizations)
     remotePatterns: [
       {
         protocol: 'https',

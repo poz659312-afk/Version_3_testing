@@ -3,7 +3,14 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { motion, useScroll, useTransform, useSpring } from "framer-motion"
+<<<<<<< HEAD
 import ScrollAnimatedSection from "@/components/scroll-animated-section"
+=======
+import dynamic from "next/dynamic"
+
+const ScrollAnimatedSection = dynamic(() => import("@/components/scroll-animated-section"), { ssr: true })
+const LottieAnimation = dynamic(() => import("@/components/lottie-animation"), { ssr: false, loading: () => <div className="w-full h-full bg-muted/20 animate-pulse rounded-full" /> })
+>>>>>>> 16d5d685 (Performance optimizations)
 import Script from "next/script"
 import {
   Check,
@@ -31,6 +38,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+<<<<<<< HEAD
 import MagicSearch from "@/components/magic-search"
 import CountUp from "@/components/CountUp"
 import { getStudentSession } from "@/lib/auth"
@@ -38,6 +46,12 @@ import { formatTAName } from "@/lib/ta-utils"
 import Image from "next/image"
 import AdBanner from "@/components/AdBanner"
 import LottieAnimation from "@/components/lottie-animation"
+=======
+const MagicSearch = dynamic(() => import("@/components/magic-search"), { ssr: false, loading: () => <div className="h-[52px] w-[300px] sm:w-[400px] bg-muted animate-pulse rounded-full border border-border" /> })
+import { getStudentSession } from "@/lib/auth"
+import { formatTAName } from "@/lib/ta-utils"
+import Image from "next/image"
+>>>>>>> 16d5d685 (Performance optimizations)
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { useTheme } from "next-themes"
 

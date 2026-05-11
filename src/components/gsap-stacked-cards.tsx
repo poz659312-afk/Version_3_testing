@@ -49,26 +49,51 @@ const cards: CardData[] = [
   // }
 ]
 
+<<<<<<< HEAD
+=======
+const duplicatedCards = [...cards, ...cards, ...cards]
+
+>>>>>>> 16d5d685 (Performance optimizations)
 export default function GsapStackedCards() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isPaused, setIsPaused] = useState(false)
   const animationRef = useRef<number | null>(null)
 
+<<<<<<< HEAD
   // Duplicate cards for infinite scrolling
   const duplicatedCards = [...cards, ...cards, ...cards]
 
+=======
+>>>>>>> 16d5d685 (Performance optimizations)
   // Auto-scroll effect
   useEffect(() => {
     const scrollContainer = scrollRef.current
     if (!scrollContainer) return
 
+<<<<<<< HEAD
     const scroll = () => {
       if (!isPaused && scrollContainer) {
         const currentScroll = scrollContainer.scrollLeft
         const maxScroll = scrollContainer.scrollWidth / 3
         
         // Reset position when reaching the end of first duplicate set
+=======
+    let maxScroll = scrollContainer.scrollWidth / 3
+    
+    // Cache the maxScroll width to prevent layout thrashing on every frame
+    const resizeObserver = new ResizeObserver(() => {
+      maxScroll = scrollContainer.scrollWidth / 3
+    })
+    resizeObserver.observe(scrollContainer)
+
+    const scroll = () => {
+      if (!isPaused && scrollContainer) {
+        const currentScroll = scrollContainer.scrollLeft
+        
+        // Reset position when reaching the end of first duplicate set
+        // Cache read prevents recalculating layout synchronously
+>>>>>>> 16d5d685 (Performance optimizations)
         if (currentScroll >= maxScroll) {
           scrollContainer.scrollLeft = 0
         } else {
@@ -84,6 +109,10 @@ export default function GsapStackedCards() {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
       }
+<<<<<<< HEAD
+=======
+      resizeObserver.disconnect()
+>>>>>>> 16d5d685 (Performance optimizations)
     }
   }, [isPaused])
 
@@ -163,7 +192,12 @@ export default function GsapStackedCards() {
         {/* Cards Slider */}
         <div 
           ref={scrollRef}
+<<<<<<< HEAD
           className="w-full overflow-x-auto scrollbar-hide pb-8"
+=======
+          className="w-full overflow-x-auto scrollbar-hide pb-8 will-change-scroll transform-gpu"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+>>>>>>> 16d5d685 (Performance optimizations)
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
