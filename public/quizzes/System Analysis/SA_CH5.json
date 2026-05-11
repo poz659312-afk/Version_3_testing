@@ -1,0 +1,282 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "Which of the following is the FIRST step in preparing for an interview?",
+    "options": [
+      "A) Deciding whom to interview",
+      "B) Establishing interview objectives",
+      "C) Reading background material about the interviewee and the organization",
+      "D) Preparing the question structure (pyramid, funnel, or diamond)"
+    ],
+    "answer": "C) Reading background material about the interviewee and the organization",
+    "explanation": "The five interview preparation steps are: (1) Reading background material, (2) Establishing objectives, (3) Deciding whom to interview, (4) Preparing the interviewee (booking appointments), and (5) Deciding on question types and structure. Reading background first ensures the analyst understands the context before setting objectives.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "Which of the following is an $\\text{advantage}$ of open-ended interview questions?",
+    "options": [
+      "A) They save time by requiring short, focused answers",
+      "B) They make it easy to compare responses across multiple interviews",
+      "C) They put the interviewee at ease and reveal rich, spontaneous detail",
+      "D) They produce highly precise, quantifiable data"
+    ],
+    "answer": "C) They put the interviewee at ease and reveal rich, spontaneous detail",
+    "explanation": "Open-ended questions let the interviewee respond freely at any length. Key advantages: they put the person at ease, reveal details the analyst might not have thought to ask about, show the analyst's interest in the respondent's vocabulary, and allow spontaneous, authentic responses.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "Which of the following is a $\\text{disadvantage}$ of open-ended questions in an interview?",
+    "options": [
+      "A) They make it easy to analyze responses quantitatively",
+      "B) They fail to reveal any details beyond predefined choices",
+      "C) They can result in irrelevant detail and loss of interviewer control",
+      "D) They prevent the interviewee from expressing their true opinions"
+    ],
+    "answer": "C) They can result in irrelevant detail and loss of interviewer control",
+    "explanation": "While open-ended questions yield rich data, they have significant drawbacks: the interviewee might talk excessively, provide off-topic information, and the analyst can lose control of the interview's direction and duration. They are also time-consuming to analyze.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "Closed questions in an interview are defined as questions that:",
+    "options": [
+      "A) Allow the interviewee to respond with any length of answer",
+      "B) Limit the number of possible responses to predefined options",
+      "C) Always require a narrative explanation from the respondent",
+      "D) Can only be asked at the end of the interview"
+    ],
+    "answer": "B) Limit the number of possible responses to predefined options",
+    "explanation": "Closed questions constrain responses to a predefined set — yes/no, multiple choice, rating scales. They produce structured, comparable data. While they sacrifice depth and rapport, they save time and make statistical analysis much easier across multiple interviews.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "A $\\text{Bipolar Question}$ is a specific type of closed question that:",
+    "options": [
+      "A) Contains two separate questions combined into one",
+      "B) Subtly suggests the preferred answer to the respondent",
+      "C) Requires a follow-up to dig deeper into the previous answer",
+      "D) Requires a simple binary choice such as Yes/No or Agree/Disagree"
+    ],
+    "answer": "D) Requires a simple binary choice such as Yes/No or Agree/Disagree",
+    "explanation": "Bipolar questions force a choice between exactly two opposing options. They are the simplest form of closed question. While easy to analyze, they oversimplify complex issues — a respondent might feel neutral or have a nuanced opinion that doesn't fit either option.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "A $\\text{Probe}$ question in an interview is used to:",
+    "options": [
+      "A) Introduce an entirely new topic unrelated to previous discussion",
+      "B) Force the respondent to choose between two options",
+      "C) Follow up on a previous answer to clarify, get more detail, or confirm information",
+      "D) Guide the respondent toward a particular predetermined answer"
+    ],
+    "answer": "C) Follow up on a previous answer to clarify, get more detail, or confirm information",
+    "explanation": "Probes are follow-up questions triggered by a previous answer. They work through three mechanisms: asking for more detail ('Can you elaborate on that?'), asking for the source of information ('How do you know that?'), or asking for confirmation ('So you're saying that..., correct?').",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "The $\\text{Pyramid}$ interview structure starts with $\\text{specific, closed questions}$ and gradually moves toward broader, open-ended questions. This structure is most useful when:",
+    "options": [
+      "A) Dealing with emotionally sensitive topics where the interviewee needs to ease in gradually",
+      "B) Warming up a hesitant interviewee with familiar, easy questions before exploring broader issues",
+      "C) The analyst needs comprehensive coverage quickly",
+      "D) The interviewee is very talkative and needs to be narrowed down"
+    ],
+    "answer": "B) Warming up a hesitant interviewee with familiar, easy questions before exploring broader issues",
+    "explanation": "The Pyramid structure starts narrow (specific facts, closed questions) and expands upward. This 'warm-up' approach is ideal for interviewees who seem hesitant or uncomfortable — easy questions first build confidence and rapport before moving to more open-ended exploration.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "The $\\text{Funnel}$ interview structure begins with broad, open-ended questions and narrows to specific, closed ones. It is most appropriate when:",
+    "options": [
+      "A) The interviewee is hesitant and needs to warm up with easy facts first",
+      "B) Covering an emotionally sensitive topic — allowing the interviewee to ease into specifics gradually",
+      "C) The analyst wants to maximize statistical comparability across interviews",
+      "D) Time is very limited and only factual data is needed"
+    ],
+    "answer": "B) Covering an emotionally sensitive topic — allowing the interviewee to ease into specifics gradually",
+    "explanation": "The Funnel starts broad and narrows. Beginning with general, non-threatening open-ended questions lets the interviewee establish their perspective before being asked for specifics. This is especially effective when the topic is sensitive or personal — it doesn't feel confrontational.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "The $\\text{Diamond-Shaped}$ interview structure is best described as:",
+    "options": [
+      "A) Starting broad, narrowing, then broadening again",
+      "B) Starting specific, opening up to general questions, then returning to specific questions",
+      "C) Alternating between open and closed questions randomly throughout",
+      "D) Starting with closed questions only and ending with open questions"
+    ],
+    "answer": "B) Starting specific, opening up to general questions, then returning to specific questions",
+    "explanation": "The Diamond structure: specific (closed) → general (open) → specific (closed). It combines the benefits of both Pyramid and Funnel structures. The main limitation is that it's more time-consuming than either approach alone because it must cover the full cycle.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "What is the main disadvantage of the $\\text{Diamond-Shaped}$ interview structure?",
+    "options": [
+      "A) It cannot generate qualitative data",
+      "B) It only works for one-on-one interviews, not group sessions",
+      "C) It is the most time-consuming structure to administer",
+      "D) It prevents the analyst from asking any open-ended questions"
+    ],
+    "answer": "C) It is the most time-consuming structure to administer",
+    "explanation": "The Diamond structure combines both Pyramid (narrow to broad) and Funnel (broad to narrow) approaches, which means covering the full range of question types twice. While comprehensive, this makes it significantly longer than using either structure alone.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "After completing an interview, when should the $\\text{Interview Report}$ be written?",
+    "options": [
+      "A) One week later after all interviews in the series are complete",
+      "B) Only after the interviewee requests a copy",
+      "C) As soon as possible while details are still fresh, then shared with the respondent for verification",
+      "D) At the end of the entire SDLC phase, summarizing all meetings"
+    ],
+    "answer": "C) As soon as possible while details are still fresh, then shared with the respondent for verification",
+    "explanation": "Interview reports should be written immediately after the session while memory is fresh. They should then be shared with the interviewee to verify accuracy — the respondent can correct misunderstandings or add clarifications. This also builds trust and confirms mutual understanding.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "When closing an interview, the analyst should ALWAYS:",
+    "options": [
+      "A) Immediately begin the next interview without any transition",
+      "B) Ask for anything additional the respondent wants to add, summarize impressions, identify the next contact, and thank them",
+      "C) Demand a written summary from the interviewee before they leave",
+      "D) Avoid any summarization to prevent introducing bias into future analysis"
+    ],
+    "answer": "B) Ask for anything additional the respondent wants to add, summarize impressions, identify the next contact, and thank them",
+    "explanation": "A proper interview closing involves: asking if there's anything else; summarizing your key impressions (gives respondent a chance to correct you); asking who else you should interview; and thanking them. This ensures completeness, accuracy, and maintains positive professional relationships.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "$\\text{Joint Application Design (JAD)}$ is an approach where:",
+    "options": [
+      "A) Analysts individually interview users one at a time over several weeks",
+      "B) Analysts and users work together in group sessions to define requirements and design interfaces",
+      "C) The system is designed entirely by a technical team without user involvement",
+      "D) Requirements are gathered exclusively from written documents"
+    ],
+    "answer": "B) Analysts and users work together in group sessions to define requirements and design interfaces",
+    "explanation": "JAD brings analysts and users together in structured group sessions facilitated by a session leader. Unlike traditional interviews (one person at a time), JAD creates collaborative environments where requirements and interface designs emerge from collective discussion and consensus.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "Which of the following is a $\\text{benefit}$ of using JAD over traditional individual interviews?",
+    "options": [
+      "A) JAD requires less preparation and no follow-up reports",
+      "B) It significantly saves time, improves user ownership of the system, and fosters creative idea generation",
+      "C) JAD eliminates the need for any documentation",
+      "D) Users are not required to commit significant time during JAD sessions"
+    ],
+    "answer": "B) It significantly saves time, improves user ownership of the system, and fosters creative idea generation",
+    "explanation": "JAD's key benefits: (1) Time savings — requirements gathered in days instead of weeks of individual interviews; (2) User ownership — users who participate in design are more committed to the system's success; (3) Creativity — group dynamics spark ideas that individuals alone might not generate.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "Which of the following is a $\\text{drawback}$ of using JAD?",
+    "options": [
+      "A) JAD produces lower quality requirements than individual interviews",
+      "B) Users have no voice in JAD sessions and cannot contribute",
+      "C) JAD requires significant time commitment from all participants and fails if preparation or follow-up reports are incomplete",
+      "D) JAD cannot be used with more than two people at a time"
+    ],
+    "answer": "C) JAD requires significant time commitment from all participants and fails if preparation or follow-up reports are incomplete",
+    "explanation": "JAD's main disadvantages: all participants (executives, managers, users, analysts) must commit large blocks of time — which is expensive. Sessions can fail if the pre-session preparation is inadequate, if the session leader is ineffective, or if the post-session documentation isn't completed properly.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Which JAD participant role is responsible for recording all conclusions during the session?",
+    "options": [
+      "A) Executive Sponsor",
+      "B) Session Leader",
+      "C) IS Analyst",
+      "D) Scribe"
+    ],
+    "answer": "D) Scribe",
+    "explanation": "The Scribe (or recorder) documents everything during the JAD session — decisions made, issues raised, requirements agreed upon. This role is critical because it produces the official record. Other key roles: Executive Sponsor (provides authority), Session Leader (facilitates discussion), and Users (provide domain knowledge).",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "JAD is most effective when which conditions are present?",
+    "options": [
+      "A) Users strongly resist change and prefer the current system",
+      "B) The organizational culture supports joint problem-solving and users are eager for a new system",
+      "C) The system project has a very short timeline with no room for group meetings",
+      "D) Requirements are already fully documented and need no user input"
+    ],
+    "answer": "B) The organizational culture supports joint problem-solving and users are eager for a new system",
+    "explanation": "JAD works best in collaborative cultures where users see value in working together. If the culture is adversarial, if management doesn't support it, or if users are resistant to change, JAD sessions become unproductive. User enthusiasm and a cooperative culture are prerequisites for success.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "The $\\text{Executive Sponsor}$ in a JAD session primarily provides:",
+    "options": [
+      "A) Technical programming expertise",
+      "B) Detailed documentation of session outcomes",
+      "C) High-level organizational backing and authority for the project",
+      "D) Facilitation of the group discussion process"
+    ],
+    "answer": "C) High-level organizational backing and authority for the project",
+    "explanation": "The Executive Sponsor legitimizes the JAD effort by providing organizational authority and resources. Their presence signals to all participants that the project is important and has top-management support. They typically open the session to set the strategic context rather than facilitating the day-to-day discussion.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "Which of the following is NOT one of the five interview preparation steps?",
+    "options": [
+      "A) Reading background material",
+      "B) Establishing interview objectives",
+      "C) Recording the interview without the interviewee's knowledge",
+      "D) Preparing the interviewee by making appointments"
+    ],
+    "answer": "C) Recording the interview without the interviewee's knowledge",
+    "explanation": "The five preparation steps are: (1) Read background material, (2) Establish objectives, (3) Decide whom to interview, (4) Prepare the interviewee (appointments, context), (5) Decide on question types and structure. Secret recording violates informed consent and professional ethics — it is never an acceptable interview preparation step.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "The three main interactive information gathering methods covered in Chapter 5 (Information Gathering: Interactive Methods) are:",
+    "options": [
+      "A) Prototyping, Benchmarking, and Observation",
+      "B) Interviewing, Joint Application Design (JAD), and Questionnaires",
+      "C) Document Analysis, Data Mining, and Simulation",
+      "D) Surveys, Experiments, and Case Studies"
+    ],
+    "answer": "B) Interviewing, Joint Application Design (JAD), and Questionnaires",
+    "explanation": "Chapter 5 focuses on interactive methods — those involving direct human interaction to gather requirements. The three covered are: Interviewing (one-on-one), JAD (group-based), and Questionnaires (structured forms). These contrast with unobtrusive methods like document review and observation.",
+    "image": null
+  }
+]

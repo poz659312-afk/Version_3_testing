@@ -1,0 +1,327 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "Which of the following is NOT a data preprocessing operation?",
+    "options": [
+      "A) Data cleaning",
+      "B) Data integration",
+      "C) Data encryption",
+      "D) Data discretization"
+    ],
+    "answer": "C) Data encryption",
+    "explanation": "Encryption is not part of preprocessing. Preprocessing focuses on cleaning, integrating, transforming, reducing, and discretizing data."
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "Why is data transformation necessary?",
+    "options": [
+      "A) To reduce memory usage",
+      "B) To convert data into a format easier to analyze",
+      "C) To delete irrelevant features",
+      "D) To store data on disk"
+    ],
+    "answer": "B) To convert data into a format easier to analyze",
+    "explanation": "Transformation adjusts scales and formats to make analysis meaningful."
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "If employee ages are 20-55 and salaries are 10,000–100,000, why should data transformation be applied?",
+    "options": [
+      "A) To reduce storage",
+      "B) To make features comparable",
+      "C) To merge data",
+      "D) To remove missing values"
+    ],
+    "answer": "B",
+    "explanation": "Different scales can bias analysis; transformation normalizes ranges."
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "What does normalizing data do?",
+    "options": [
+      "A) Converts text to numbers",
+      "B) Scales data so each observation has unit length",
+      "C) Aggregates data into cubes",
+      "D) Removes missing values"
+    ],
+    "answer": "B) Scales data so each observation has unit length",
+    "explanation": "Normalization ensures fair contribution of each row, especially for sparse data."
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "What is standardization (scaling)?",
+    "options": [
+      "A) Removing all outliers",
+      "B) Merging neighboring data points",
+      "C) Converting categorical to numeric",
+      "D) Converting data to a mean of 0 and standard deviation of 1"
+    ],
+    "answer": "D) Converting data to a mean of 0 and standard deviation of 1",
+    "explanation": "Standardization makes features comparable when they follow Gaussian distributions."
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "Label encoding assigns:",
+    "options": [
+      "A) Random numbers to features",
+      "B) Sequential numeric values to categories",
+      "C) Z-scores",
+      "D) Standard deviations"
+    ],
+    "answer": "B) Sequential numeric values to categories",
+    "explanation": "Converts textual labels to numbers 0 to (n-1)."
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "One-hot encoding is used to:",
+    "options": [
+      "A) Reduce feature count",
+      "B) Split a categorical column into multiple binary columns",
+      "C) Merge datasets",
+      "D) Normalize data"
+    ],
+    "answer": "B) Split a categorical column into multiple binary columns",
+    "explanation": "Each category becomes a separate column with 0 or 1."
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "Which transformation compresses a skewed data range?",
+    "options": [
+      "A) Log transformation",
+      "B) Label encoding",
+      "C) Normalization",
+      "D) Feature extraction"
+    ],
+    "answer": "A) Log transformation",
+    "explanation": "Useful for right-skewed data like income."
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "Which power transformation can handle negative values?",
+    "options": [
+      "A) Box-Cox",
+      "B) Yeo-Johnson",
+      "C) PCA",
+      "D) Standardization"
+    ],
+    "answer": "B) Yeo-Johnson",
+    "explanation": "Box-Cox requires positive values; Yeo-Johnson works with negatives too."
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "Aggregation includes:",
+    "options": [
+      "A) Grouping and rolling",
+      "B) Label encoding",
+      "C) Standardization",
+      "D) Binarization"
+    ],
+    "answer": "A) Grouping and rolling",
+    "explanation": "Combines data points for summary statistics."
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "Feature creation may include:",
+    "options": [
+      "A) Normalizing each row",
+      "B) Combining two features or adding polynomial terms",
+      "C) Removing redundant columns",
+      "D) Encoding text"
+    ],
+    "answer": "B) Combining two features or adding polynomial terms",
+    "explanation": "Helps capture non-linear relationships."
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "Dimensionality reduction reduces:",
+    "options": [
+      "A) Number of data points",
+      "B) Number of features",
+      "C) Data storage type",
+      "D) Number of categories"
+    ],
+    "answer": "B) Number of features",
+    "explanation": "Reduces feature space while retaining important information."
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "Feature selection aims to:",
+    "options": [
+      "A) Create new features",
+      "B) Choose a smaller subset of relevant features",
+      "C) Transform numerical to categorical",
+      "D) Merge datasets"
+    ],
+    "answer": "B) Choose a smaller subset of relevant features",
+    "explanation": "Filters out irrelevant or redundant features."
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "Which is NOT a feature selection method?",
+    "options": [
+      "A) Filter",
+      "B) Wrapper",
+      "C) Embedded",
+      "D) Clustering"
+    ],
+    "answer": "D) Clustering",
+    "explanation": "Clustering is used in reduction, not selection."
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "Recursive feature elimination works by:",
+    "options": [
+      "A) Removing the least relevant features iteratively",
+      "B) Encoding labels",
+      "C) Transforming data to 0-1 scale",
+      "D) Aggregating cubes"
+    ],
+    "answer": "A) Removing the least relevant features iteratively",
+    "explanation": "It greedily searches for the best subset."
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Stepwise forward selection:",
+    "options": [
+      "A) Starts with all features",
+      "B) Starts with an empty set and adds features",
+      "C) Removes features one by one",
+      "D) Applies PCA"
+    ],
+    "answer": "B) Starts with an empty set and adds features",
+    "explanation": "Stops when remaining features are not statistically significant."
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "Stepwise backward elimination:",
+    "options": [
+      "A) Starts empty and adds features",
+      "B) Starts with all features and removes irrelevant ones",
+      "C) Applies one-hot encoding",
+      "D) Uses rolling aggregation"
+    ],
+    "answer": "B) Starts with all features and removes irrelevant ones",
+    "explanation": "Opposite of forward selection."
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "Decision tree induction for feature selection:",
+    "options": [
+      "A) Encodes categorical features",
+      "B) Tests attributes and discards irrelevant ones",
+      "C) Aggregates data cubes",
+      "D) Normalizes numerical data"
+    ],
+    "answer": "B) Tests attributes and discards irrelevant ones",
+    "explanation": "Branches represent tests; irrelevant attributes are ignored."
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "PCA (Principal Component Analysis) is:",
+    "options": [
+      "A) Supervised",
+      "B) Unsupervised",
+      "C) A form of clustering",
+      "D) Label encoding"
+    ],
+    "answer": "B) Unsupervised",
+    "explanation": "Creates linear combinations of features, ranked by variance."
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "LDA (Linear Discriminant Analysis) is:",
+    "options": [
+      "A) Unsupervised",
+      "B) Supervised",
+      "C) Clustering",
+      "D) Normalization"
+    ],
+    "answer": "B) Supervised",
+    "explanation": "Works only with labeled data to create linear combinations."
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "Data cube aggregation stores:",
+    "options": [
+      "A) Raw text data",
+      "B) Multidimensional aggregated information",
+      "C) Encoded labels",
+      "D) Standardized features"
+    ],
+    "answer": "B) Multidimensional aggregated information",
+    "explanation": "Example: sales by brand, branch, and year."
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "Numerosity reduction:",
+    "options": [
+      "A) Converts data to smaller forms",
+      "B) Increases feature dimensions",
+      "C) Converts categories to numbers",
+      "D) Applies PCA"
+    ],
+    "answer": "A) Converts data to smaller forms",
+    "explanation": "Reduces volume; can be parametric or non-parametric."
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "Example of parametric numerosity reduction:",
+    "options": [
+      "A) Clustering",
+      "B) Regression",
+      "C) Histogram",
+      "D) Sampling"
+    ],
+    "answer": "B) Regression",
+    "explanation": "Stores parameters instead of all raw data."
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "Example of non-parametric numerosity reduction:",
+    "options": [
+      "A) Log-linear models",
+      "B) Regression",
+      "C) Sampling",
+      "D) Linear discriminant analysis"
+    ],
+    "answer": "C) Sampling",
+    "explanation": "Stores a reduced representation without parameters."
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "Top-down vs Bottom-up discretization:",
+    "options": [
+      "A) Top-down merges, Bottom-up splits",
+      "B) Top-down splits, Bottom-up merges",
+      "C) Both split data",
+      "D) Both merge data"
+    ],
+    "answer": "B) Top-down splits, Bottom-up merges",
+    "explanation": "Top-down divides large ranges; Bottom-up combines small ranges."
+  }
+]

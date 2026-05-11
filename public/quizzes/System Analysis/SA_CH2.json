@@ -1,0 +1,282 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "Organizations are best understood as systems composed of:",
+    "options": [
+      "A) Independent departments with no connection to each other",
+      "B) Interrelated and interdependent subsystems whose boundaries and environments affect IS analysis and design",
+      "C) A single unified process that cannot be divided into subparts",
+      "D) External stakeholders who supply and receive information"
+    ],
+    "answer": "B) Interrelated and interdependent subsystems whose boundaries and environments affect IS analysis and design",
+    "explanation": "Organizations are systems made of interrelated subsystems. Understanding these subsystems, their boundaries, and their environments (community, economic, political) is fundamental to successful systems analysis and design.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "An $\\text{Open System}$ is characterized by:",
+    "options": [
+      "A) Restricted access to information and operation on a need-to-know basis",
+      "B) Free-flowing information where the output from one subsystem often becomes the input to another",
+      "C) No interaction with the external environment",
+      "D) Unlimited security rules that prevent information sharing"
+    ],
+    "answer": "B) Free-flowing information where the output from one subsystem often becomes the input to another",
+    "explanation": "Open systems freely exchange information with their environments and between subsystems. A closed system, by contrast, restricts information access with many rules and operates on a need-to-know basis — very limited in what information flows in or out.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "Which of the following is an advantage of a $\\text{Virtual Organization}$?",
+    "options": [
+      "A) All employees work at the same physical location",
+      "B) Reduced costs for physical facilities and increased flexibility for employees",
+      "C) Elimination of all computer networks and communication technology",
+      "D) Mandatory face-to-face meetings for all decision-making"
+    ],
+    "answer": "B) Reduced costs for physical facilities and increased flexibility for employees",
+    "explanation": "Virtual organizations exist in different physical locations connected via networks. Benefits include: reduced costs for office space and facilities, rapid response to customer needs, and increased flexibility (e.g., employees can work from home to care for family members).",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "In a $\\text{Context-Level Data Flow Diagram}$, the entire system being modeled is represented by a single process given the number:",
+    "options": [
+      "A) 1",
+      "B) 10",
+      "C) 0",
+      "D) It has no number — it's labeled with the system name only"
+    ],
+    "answer": "C) 0",
+    "explanation": "In a Context-Level DFD, the entire system is depicted as a single process bubble labeled '0'. This shows the system's scope at the highest level of abstraction — what data comes in, what goes out, and which external entities interact with it.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "In a Context-Level DFD, an external entity (a person, group, or department that supplies or receives data) is represented by a:",
+    "options": [
+      "A) Arrow (data flow)",
+      "B) Rounded rectangle (process)",
+      "C) Square or double-bordered rectangle",
+      "D) Diamond shape"
+    ],
+    "answer": "C) Square or double-bordered rectangle",
+    "explanation": "External entities in a DFD are drawn as squares or double-bordered rectangles and labeled with a noun. They represent people, organizations, or systems that exist outside the system boundary and either provide input data or receive output data.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "In a Context-Level DFD, what does a labeled $\\text{arrow}$ represent?",
+    "options": [
+      "A) A relationship between two entities",
+      "B) A data flow showing information passing to or from a process",
+      "C) A database or data store",
+      "D) A decision point in the system"
+    ],
+    "answer": "B) A data flow showing information passing to or from a process",
+    "explanation": "An arrow (data flow) in a DFD shows the movement of data between entities and processes. Each arrow is labeled with a noun describing the information it carries (e.g., 'Student Application', 'Confirmation Letter').",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "In an $\\text{Entity-Relationship (E-R) Diagram}$, a fundamental entity (a person, place, or thing about which data is stored) is represented by a:",
+    "options": [
+      "A) Diamond",
+      "B) Circle",
+      "C) Rectangle",
+      "D) Arrow"
+    ],
+    "answer": "C) Rectangle",
+    "explanation": "In E-R diagrams, rectangles represent entities (people, places, or things). Diamonds represent relationships between entities. Circles/ellipses are used for attributes, and lines show connections.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "Which E-R relationship notation represents a 'One-to-Many' relationship?",
+    "options": [
+      "A) Two short vertical lines on both sides",
+      "B) A 'crow's foot' symbol on the 'many' side and a short vertical line on the 'one' side",
+      "C) Diamonds on both ends of the relationship line",
+      "D) A dashed line between two entities"
+    ],
+    "answer": "B) A 'crow's foot' symbol on the 'many' side and a short vertical line on the 'one' side",
+    "explanation": "In crow's foot E-R notation, 'One' is indicated by a short vertical line (|) and 'Many' is indicated by the crow's foot symbol (three lines like a bird's foot). A one-to-many relationship has | on one end and the crow's foot on the other.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "If many students can enroll in many courses, the relationship between Student and Course is:",
+    "options": [
+      "A) One-to-one (1:1)",
+      "B) One-to-many (1:M)",
+      "C) Many-to-many (M:N)",
+      "D) Zero-to-one (0:1)"
+    ],
+    "answer": "C) Many-to-many (M:N)",
+    "explanation": "A many-to-many (M:N) relationship exists when multiple instances of Entity A can relate to multiple instances of Entity B, and vice versa. Students enroll in multiple courses; each course has multiple students. This requires a junction/bridge table in database design.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "What is the $\\text{purpose}$ of a Context-Level DFD?",
+    "options": [
+      "A) To show the detailed internal logic of each system process",
+      "B) To show data used and produced by the system, defining its scope (what is included vs. what is external)",
+      "C) To model the relationships between database tables",
+      "D) To depict the organizational hierarchy"
+    ],
+    "answer": "B) To show data used and produced by the system, defining its scope (what is included vs. what is external)",
+    "explanation": "A Context-Level DFD (Level 0 DFD) shows the entire system as a black box, focusing on what data flows in, what data flows out, and which external entities interact with it. This defines the system boundary — inside the boundary is your system; outside are external entities.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "$\\text{Operational Management}$ is best characterized by which of the following?",
+    "options": [
+      "A) Using highly uncertain external information to define long-term organizational strategy",
+      "B) Using predetermined rules for predictable, structured outcomes with high dependency on internal information",
+      "C) Making short-term planning decisions that balance internal history and future predictions",
+      "D) Defining the organization as a whole based on external environmental scanning"
+    ],
+    "answer": "B) Using predetermined rules for predictable, structured outcomes with high dependency on internal information",
+    "explanation": "Operational management handles day-to-day, structured work with clear rules and predictable outcomes. They depend primarily on internal information (sales figures, inventory counts, production data) and have high certainty in their decision environment.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "$\\text{Strategic Management}$ depends primarily on which type of information?",
+    "options": [
+      "A) Internal historical transaction data",
+      "B) Real-time operational production data",
+      "C) External information about competitors, markets, and the broader environment",
+      "D) Fixed, predetermined rule-based data"
+    ],
+    "answer": "C) External information about competitors, markets, and the broader environment",
+    "explanation": "Strategic managers look outward and toward the future. They work in highly uncertain environments and need external information (market trends, competitor analysis, regulatory changes, economic forecasts) to define the organization's long-term direction.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "Which management level focuses on $\\text{short-term planning and control decisions}$ using both internal historical data and future-oriented predictions?",
+    "options": [
+      "A) Strategic management",
+      "B) Operational management",
+      "C) Middle management",
+      "D) Knowledge workers"
+    ],
+    "answer": "C) Middle management",
+    "explanation": "Middle management sits between strategic and operational levels. They focus on resources, objectives, and short-term planning (months rather than years). They use both internal historical data (what happened) and prediction-oriented data (what will happen), experiencing moderate uncertainty.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "In a University Registration System DFD, a student sends an application. The system checks course availability and sends back either a confirmation or rejection letter. The 'Student' in this DFD is classified as a(n):",
+    "options": [
+      "A) Process",
+      "B) Data Flow",
+      "C) External Entity",
+      "D) Data Store"
+    ],
+    "answer": "C) External Entity",
+    "explanation": "The Student is outside the boundary of the Registration System — they interact with it but are not part of it. External entities (represented as squares) supply data to or receive data from the system. The system (Process 0) processes the application and generates the response.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "The three environments that influence organizational systems are:",
+    "options": [
+      "A) Technical, Financial, and Human",
+      "B) Community, Economic, and Political",
+      "C) Internal, External, and Neutral",
+      "D) Strategic, Tactical, and Operational"
+    ],
+    "answer": "B) Community, Economic, and Political",
+    "explanation": "The three environmental factors affecting organizational systems are: Community (geographical and demographic factors like education levels and income), Economic (market forces and competition), and Political (state and local government laws and regulations).",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "An E-R diagram is primarily used by systems analysts to:",
+    "options": [
+      "A) Model the process flow of data within a system",
+      "B) Understand the organizational system and the data that needs to be stored",
+      "C) Define the sequence of screens in a user interface",
+      "D) Plan the network infrastructure of the organization"
+    ],
+    "answer": "B) Understand the organizational system and the data that needs to be stored",
+    "explanation": "E-R diagrams are a data modeling tool that helps analysts understand how entities in the real world (employees, departments, products) relate to each other and what data about them needs to be stored. They are the foundation for relational database design.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "In E-R diagram notation, the relationship symbol is a:",
+    "options": [
+      "A) Rectangle",
+      "B) Circle",
+      "C) Diamond",
+      "D) Triangle"
+    ],
+    "answer": "C) Diamond",
+    "explanation": "In traditional E-R diagram notation: rectangles = entities, diamonds = relationships, circles/ellipses = attributes. The diamond shape is placed between two entity rectangles and labeled with a verb describing the relationship (e.g., 'EMPLOYS', 'ENROLLS IN').",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "Which of the following is the FIRST step when creating an E-R diagram?",
+    "options": [
+      "A) Draw the relationship diamonds",
+      "B) Define the data flows between entities",
+      "C) List all the entities in the system",
+      "D) Identify the data stores"
+    ],
+    "answer": "C) List all the entities in the system",
+    "explanation": "The creation process for E-R diagrams follows these steps: (1) List all entities, (2) Choose the key entities to focus on, (3) Represent the relationships between those entities using appropriate symbols and cardinality notation.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "A $\\text{Closed System}$ operates on which principle?",
+    "options": [
+      "A) Free-flowing information with no restrictions",
+      "B) Open exchange of data with all external entities",
+      "C) Need-to-know basis with restricted information access and limited exchange with the environment",
+      "D) Continuous feedback loops from all organizational levels"
+    ],
+    "answer": "C) Need-to-know basis with restricted information access and limited exchange with the environment",
+    "explanation": "Closed systems restrict information flow with many rules and operate strictly on a need-to-know basis. They have very limited interaction with the external environment. Government intelligence agencies or highly regulated industries often operate closer to closed systems.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "In an Airline Reservation System DFD, which of the following would be classified as an $\\text{external entity}$?",
+    "options": [
+      "A) The flight booking process",
+      "B) The ticketing database",
+      "C) The data flow containing 'Travel Preferences'",
+      "D) The Travel Agent"
+    ],
+    "answer": "D) The Travel Agent",
+    "explanation": "The Travel Agent exists outside the airline reservation system — they interact with it but are not part of it. Processes (booking), data stores (databases), and data flows (information moving between components) are all internal components. External entities are the outside world actors.",
+    "image": null
+  }
+]

@@ -1,0 +1,282 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "Which of the following BEST describes how information is viewed in modern organizations?",
+    "options": [
+      "A) A free, unlimited asset that requires no management",
+      "B) An organizational resource that must be managed as carefully as people and money",
+      "C) A technical artifact owned exclusively by the IT department",
+      "D) A byproduct of transactions with no strategic value"
+    ],
+    "answer": "B) An organizational resource that must be managed as carefully as people and money",
+    "explanation": "Information is considered a valuable organizational resource with associated costs. Just like managing human resources or finances, organizations must manage their information to maximize its potential and minimize waste.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "A university's payroll system that processes employee salaries every month is an example of a:",
+    "options": [
+      "A) Decision Support System (DSS)",
+      "B) Knowledge Work System (KWS)",
+      "C) Transaction Processing System (TPS)",
+      "D) Executive Support System (ESS)"
+    ],
+    "answer": "C) Transaction Processing System (TPS)",
+    "explanation": "TPS systems handle routine, repetitive business transactions such as payroll processing, inventory updates, and order entries. They operate at the operational level and are characterized by high volume and structured, predictable processes.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "Which information system is specifically designed to support professional workers (such as scientists and engineers) in creating new knowledge?",
+    "options": [
+      "A) Office Automation System (OAS)",
+      "B) Knowledge Work System (KWS)",
+      "C) Management Information System (MIS)",
+      "D) Transaction Processing System (TPS)"
+    ],
+    "answer": "B) Knowledge Work System (KWS)",
+    "explanation": "KWS supports knowledge workers (professionals like scientists, engineers, doctors) who create and integrate new knowledge into the organization. OAS, by contrast, supports data workers (clerical staff) with tools like email and word processing.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "An $\\text{Executive Support System (ESS)}$ is primarily used by which level of management?",
+    "options": [
+      "A) Operational management to process daily transactions",
+      "B) Knowledge workers to create new organizational knowledge",
+      "C) Strategic-level executives to organize interactions with the external environment",
+      "D) Middle management to generate standardized reports"
+    ],
+    "answer": "C) Strategic-level executives to organize interactions with the external environment",
+    "explanation": "ESS serves top-level (strategic) executives who need to make unstructured, long-term decisions by monitoring the external environment (competitors, markets, regulations). It provides generalized computing and communication capabilities rather than specific application programs.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "Which of the following correctly maps information systems to organizational levels?",
+    "options": [
+      "A) TPS → Strategic level; ESS → Operational level",
+      "B) TPS → Operational level; ESS → Strategic level",
+      "C) MIS → Operational level; KWS → Strategic level",
+      "D) DSS → Operational level; OAS → Strategic level"
+    ],
+    "answer": "B) TPS → Operational level; ESS → Strategic level",
+    "explanation": "TPS handles structured, routine transactions at the operational level. ESS serves strategic-level executives dealing with unstructured decisions about the organization's future and external environment. This vertical alignment of systems to management levels is a core concept.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "The systems analyst is MOST often described as a $\\text{Change Agent}$ because:",
+    "options": [
+      "A) They change the programming language used by the organization",
+      "B) They initiate change and help people and organizations adapt whenever they perform SDLC activities",
+      "C) They change the organizational hierarchy by promoting employees",
+      "D) They replace old hardware with new equipment"
+    ],
+    "answer": "B) They initiate change and help people and organizations adapt whenever they perform SDLC activities",
+    "explanation": "The Change Agent role is the most critical role of the systems analyst. Whenever they perform SDLC activities — from identifying problems to implementing systems — they are catalyzing organizational change and must manage the human aspects of that transition.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "Which of the following is NOT one of the three roles of a systems analyst as described in the textbook?",
+    "options": [
+      "A) Outside Consultant",
+      "B) Supporting Expert",
+      "C) Change Agent",
+      "D) Database Administrator"
+    ],
+    "answer": "D) Database Administrator",
+    "explanation": "The three roles of a systems analyst are: (1) Outside Consultant — brought in to address organizational problems; (2) Supporting Expert — drawing on professional expertise to advise; and (3) Change Agent — the most critical role, guiding change throughout the SDLC. Database Administrator is a separate specialized role.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "How many phases does the $\\text{Systems Development Life Cycle (SDLC)}$ have according to Kendall & Kendall?",
+    "options": [
+      "A) 4",
+      "B) 5",
+      "C) 6",
+      "D) 7"
+    ],
+    "answer": "D) 7",
+    "explanation": "The Kendall & Kendall SDLC consists of 7 phases: (1) Identifying Problems, Opportunities & Objectives; (2) Determining Information Requirements; (3) Analyzing System Needs; (4) Designing the Recommended System; (5) Developing & Documenting Software; (6) Testing & Maintaining the System; (7) Implementing & Evaluating.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "During which SDLC phase are $\\text{Data Flow Diagrams (DFDs)}$ and $\\text{Data Dictionaries (DDs)}$ created?",
+    "options": [
+      "A) Phase 2: Determining Information Requirements",
+      "B) Phase 3: Analyzing System Needs",
+      "C) Phase 4: Designing the Recommended System",
+      "D) Phase 5: Developing and Documenting Software"
+    ],
+    "answer": "B) Phase 3: Analyzing System Needs",
+    "explanation": "Phase 3 (Analyzing System Needs) is where analysts create structured analysis tools including DFDs to model data flows, Data Dictionaries to document data elements, and produce the system proposal. This is the modeling/analysis phase before design begins.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "Which SDLC phase involves gathering data via interviews, questionnaires, document review, and observation?",
+    "options": [
+      "A) Phase 1: Identifying Problems, Opportunities, and Objectives",
+      "B) Phase 2: Determining Information Requirements",
+      "C) Phase 4: Designing the Recommended System",
+      "D) Phase 7: Implementing and Evaluating"
+    ],
+    "answer": "B) Phase 2: Determining Information Requirements",
+    "explanation": "Phase 2 focuses on information gathering from the people who will use the system. Analysts use interviews, questionnaires, observing decision makers, and reviewing documents/records to understand what information the system needs to handle.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "CASE tools that are used for $\\text{analysis and design}$ (storing results in a Project Repository) are called:",
+    "options": [
+      "A) Lower CASE tools",
+      "B) Back-end CASE tools",
+      "C) Upper CASE tools",
+      "D) Runtime CASE tools"
+    ],
+    "answer": "C) Upper CASE tools",
+    "explanation": "Upper CASE (front-end) tools support the early phases of the SDLC — systems planning, analysis, and design. They store their results in a project repository. Lower CASE (back-end) tools work at the implementation end, generating computer source code from design specifications.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "$\\text{Reverse Engineering}$ in the context of CASE tools means:",
+    "options": [
+      "A) Building a new system before decommissioning the old one",
+      "B) Generating a CASE design by analyzing existing computer program code",
+      "C) Testing a system by running it backward through its processes",
+      "D) Converting a structured design into an object-oriented one"
+    ],
+    "answer": "B) Generating a CASE design by analyzing existing computer program code",
+    "explanation": "Reverse engineering goes backward — it analyzes existing source code and produces a CASE design (such as DFDs or structure charts) from it. This is used when documentation is obsolete or no longer exists, and you need to understand a legacy system.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "Which of the following statements about SDLC error costs is correct?",
+    "options": [
+      "A) Errors are cheapest to fix during the implementation phase",
+      "B) Errors found in later phases are significantly more expensive to fix than those found early",
+      "C) Error fix costs remain constant regardless of when they are discovered",
+      "D) Design errors are always cheaper to fix than requirements errors"
+    ],
+    "answer": "B) Errors found in later phases are significantly more expensive to fix than those found early",
+    "explanation": "A fundamental principle of the SDLC is that the cost of fixing errors increases exponentially the later they are discovered. An error found in Phase 1 (requirements) might cost $1 to fix; the same error found in Phase 7 (implementation) could cost $100 or more to correct.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "Object-Oriented Analysis and Design differs from traditional structured analysis because it:",
+    "options": [
+      "A) Only considers the data structure of the system, ignoring its behavior",
+      "B) Combines both data AND instructions (methods) together, and uses UML for modeling",
+      "C) Eliminates the need for any diagramming or modeling tools",
+      "D) Is only applicable to web-based applications"
+    ],
+    "answer": "B) Combines both data AND instructions (methods) together, and uses UML for modeling",
+    "explanation": "O-O analysis encapsulates data and the methods (behaviors/instructions) that operate on that data into objects. It uses UML (Unified Modeling Language) as its standard graphical notation. Traditional structured analysis separates data from processes.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "A system that captures expert human knowledge and uses it to solve specific organizational problems is called a(n):",
+    "options": [
+      "A) Management Information System (MIS)",
+      "B) Office Automation System (OAS)",
+      "C) Expert System (ES)",
+      "D) Executive Support System (ESS)"
+    ],
+    "answer": "C) Expert System (ES)",
+    "explanation": "Expert Systems (also called knowledge-based systems) capture the knowledge and decision-making ability of human experts (doctors, engineers, financial advisors) in a specific domain and encode it so the system can solve similar problems — even when the human expert is unavailable.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Which SDLC phase involves $\\text{user training, system conversion, and final installation}$?",
+    "options": [
+      "A) Phase 4: Designing the Recommended System",
+      "B) Phase 5: Developing and Documenting Software",
+      "C) Phase 6: Testing and Maintaining",
+      "D) Phase 7: Implementing and Evaluating"
+    ],
+    "answer": "D) Phase 7: Implementing and Evaluating",
+    "explanation": "Phase 7 is the final SDLC phase where the system is actually installed, users are trained, and conversion from the old system to the new one takes place. It also includes initial evaluation of the system's performance against its original objectives.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "A $\\text{Decision Support System (DSS)}$ is different from a regular MIS because it:",
+    "options": [
+      "A) Only processes daily transactions without supporting decisions",
+      "B) Emphasizes support for ALL phases of decision-making, including unstructured problems",
+      "C) Is exclusively used by operational-level workers",
+      "D) Produces standardized, scheduled reports for middle management only"
+    ],
+    "answer": "B) Emphasizes support for ALL phases of decision-making, including unstructured problems",
+    "explanation": "DSS places special emphasis on supporting decision-making across all phases — intelligence, design, and choice — including handling semi-structured and unstructured problems. MIS primarily handles structured decisions with standardized reports from databases.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "Which statement about system maintenance costs over time is correct?",
+    "options": [
+      "A) Maintenance costs always stay below the cost of building a new system",
+      "B) Over time, maintaining an old system will eventually cost MORE than building a new one",
+      "C) Maintenance costs decrease as the system becomes older",
+      "D) New systems always cost more to maintain than legacy systems"
+    ],
+    "answer": "B) Over time, maintaining an old system will eventually cost MORE than building a new one",
+    "explanation": "As systems age, they become harder and more expensive to maintain — patches accumulate, the technology becomes obsolete, documentation degrades, and staff who understand the original system retire. Eventually, the accumulated maintenance cost surpasses the cost of developing a new system.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "An $\\text{Office Automation System (OAS)}$ supports which type of workers?",
+    "options": [
+      "A) Strategic executives making long-term decisions",
+      "B) Scientists and engineers creating new knowledge",
+      "C) Data workers such as secretaries and clerks using word processing and email",
+      "D) Operational managers running scheduled production reports"
+    ],
+    "answer": "C) Data workers such as secretaries and clerks using word processing and email",
+    "explanation": "OAS supports data workers — people who process documents and information (e.g., secretaries, clerks, administrative staff) — with tools like word processing, spreadsheets, email, and scheduling. KWS, by contrast, supports professional knowledge workers.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "The SDLC is described as $\\text{cyclic}$ rather than strictly linear because:",
+    "options": [
+      "A) All phases must be completed in exactly 7 days",
+      "B) Analysts frequently revisit earlier phases as new information, errors, or changing requirements are discovered",
+      "C) Each phase is repeated exactly three times before moving forward",
+      "D) The system is rebuilt from scratch after every implementation"
+    ],
+    "answer": "B) Analysts frequently revisit earlier phases as new information, errors, or changing requirements are discovered",
+    "explanation": "Structured analysis is cyclic — it's not a pure one-way waterfall. When problems or new requirements emerge at any phase, analysts may need to cycle back to earlier phases to revise requirements, redesign components, or reanalyze needs before proceeding.",
+    "image": null
+  }
+]

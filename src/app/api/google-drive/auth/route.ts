@@ -1,0 +1,120 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { getAuthUrl } from '@/lib/google-oauth'
+import crypto from 'crypto'
+
+export async function GET(request: NextRequest) {
+  try {
+    /* ------------------------------------------------------------------
+     * 1) Create Supabase server client (cookie-based auth)
+     * ------------------------------------------------------------------ */
+    const cookieStore = cookies()
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+        },
+      }
+    )
+
+    /* ------------------------------------------------------------------
+     * 2) Ensure user is authenticated
+     * ------------------------------------------------------------------ */
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    /* ------------------------------------------------------------------
+     * 3) Validate query param
+     * ------------------------------------------------------------------ */
+    const { searchParams } = new URL(request.url)
+    const authIdParam = searchParams.get('authId')
+
+    if (!authIdParam) {
+      return NextResponse.json(
+        { error: 'Invalid authId' },
+        { status: 400 }
+      )
+    }
+
+    const authId = authIdParam
+
+    /* ------------------------------------------------------------------
+     * 4) Fetch user record using ADMIN client (server only)
+     * ------------------------------------------------------------------ */
+    const admin = createAdminClient()
+
+    const { data: userData, error: userError } = await admin
+      .from('chameleons')
+      .select('auth_id, is_admin')
+      .eq('auth_id', authId)
+      .single()
+
+    if (userError || !userData) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      )
+    }
+
+    // Explicit type assertion for TypeScript
+    const verifiedUser = userData as { auth_id: string; is_admin: boolean }
+
+    /* ------------------------------------------------------------------
+     * 5) Ownership check (CRITICAL)
+     * ------------------------------------------------------------------ */
+    if (verifiedUser.auth_id !== user.id) {
+      return NextResponse.json(
+        { error: 'Forbidden' },
+        { status: 403 }
+      )
+    }
+
+    /* ------------------------------------------------------------------
+     * 6) Generate a SAFE state (signed, non-forgeable)
+     * ------------------------------------------------------------------ */
+    const payload = {
+      authId: verifiedUser.auth_id,
+      ts: Date.now(),
+    }
+
+    const payloadBase64 = Buffer
+      .from(JSON.stringify(payload))
+      .toString('base64url')
+
+    const signature = crypto
+      .createHmac('sha256', process.env.OAUTH_STATE_SECRET!)
+      .update(payloadBase64)
+      .digest('base64url')
+
+    const state = `${payloadBase64}.${signature}`
+
+    /* ------------------------------------------------------------------
+     * 7) Generate Google OAuth URL
+     * ------------------------------------------------------------------ */
+    const authUrl = getAuthUrl(state, verifiedUser.is_admin, true)
+
+    return NextResponse.redirect(authUrl)
+
+  } catch (error) {
+    console.error('OAuth init error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+export const dynamic = 'force-dynamic';

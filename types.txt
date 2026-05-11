@@ -1,0 +1,29 @@
+Phone Number (Optional) -> Type: 0
+Gender -> Type: 2
+What's Your Age? -> Type: 2
+What is your current educational status? -> Type: 2
+What is your field of study? -> Type: 2
+Do you like the writing style of Artificial Intelligence (AI)?   -> Type: 2
+Which writing style gives you more trust?   -> Type: 2
+What are the main advantages of using AI in writing?   -> Type: 4
+Do you think AI can be relied upon in writing?   -> Type: 2
+Do you feel that AI writing is sometimes repetitive or similar?   -> Type: 2
+Do you think AI can convey emotions in writing?   -> Type: 2
+Rate AI writing when dealing with complex topics.   -> Type: 5
+How would you rate the creativity of AI-generated writing?  -> Type: 5
+Does AI writing need editing?   -> Type: 2
+What most distinguishes human writing?   -> Type: 4
+TEXT A
+Reading is important because it influences the human mind and provides different ideas and information. Even if a person overlooks it, reading can enrich knowledge. Sometimes books contain many details, and those who do not read may feel lost in conversations and may not easily understand certain things. -> Type: 6
+How would you rate the clarity and writing style of this   -> Type: 2
+In your opinion, who wrote this text?   -> Type: 2
+TEXT B
+Reading is an effective way to acquire knowledge and develop critical thinking. It broadens an individual's perspective and increases their knowledge. It also improves practical and personal performance and enhances a person's ability to solve problems. -> Type: 6
+How would you rate the clarity and writing style of this   -> Type: 2
+In your opinion, who wrote this text?   -> Type: 2
+Which AI tools do you use for writing?   -> Type: 4
+Which writing style gives you more trust?   -> Type: 2
+What qualities does human writing have that AI lacks?   -> Type: 1
+Do you think AI writing has disadvantages? If yes, mention them   -> Type: 1
+What are the main advantages of AI writing?   -> Type: 1
+Any additional comments? (Optional)   -> Type: 1
