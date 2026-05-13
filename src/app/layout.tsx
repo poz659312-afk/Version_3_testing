@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, Roboto_Mono, Rubik, Outfit, Rock_Salt, Cairo, Noto_Sans_Arabic } from "next/font/google";
+import {
+  Inter,
+  Roboto_Mono,
+  Rubik,
+  Outfit,
+  Rock_Salt,
+  Cairo,
+  Noto_Sans_Arabic,
+} from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { ToastProvider } from "@/components/ToastProvider";
@@ -27,7 +35,7 @@ const rubik = Rubik({
   subsets: ["latin", "arabic"],
   variable: "--font-rubik",
   weight: "variable",
-  display: "swap"
+  display: "swap",
 });
 
 // Outfit for headers
@@ -49,10 +57,10 @@ const notoSansArabic = Noto_Sans_Arabic({
   display: "swap",
 });
 
-const rockSalt = Rock_Salt({ 
+const rockSalt = Rock_Salt({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-rock-salt" 
+  variable: "--font-rock-salt",
 });
 
 export const metadata: Metadata = {
@@ -68,10 +76,10 @@ export const metadata: Metadata = {
   },
 };
 
-// Ads toggle: Set to false to disable all ads across the site
+// Ads toggle
 export const ENABLE_ADS = false;
 
-// Cache toggle: Set to true to force a refresh for all users by disabling browser caching
+// Cache toggle
 export const DISABLE_CACHE = false;
 
 export default function RootLayout({
@@ -83,32 +91,31 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="preconnect" href="https://lottie.host" />
+
         {DISABLE_CACHE && (
           <>
-            <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+            <meta
+              httpEquiv="Cache-Control"
+              content="no-cache, no-store, must-revalidate"
+            />
             <meta httpEquiv="Pragma" content="no-cache" />
             <meta httpEquiv="Expires" content="0" />
           </>
         )}
+
         {ENABLE_ADS && (
           <Script
             async
-<<<<<<< HEAD
-            strategy="afterInteractive"
-=======
             strategy="lazyOnload"
->>>>>>> 16d5d685 (Performance optimizations)
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5932974277970825"
             crossOrigin="anonymous"
           />
         )}
-<<<<<<< HEAD
-        <Script 
-          src="https://cdn.jsdelivr.net/npm/@dotlottie/player-component@2.7.12/dist/dotlottie-player.js" 
+
+        <Script
+          src="https://cdn.jsdelivr.net/npm/@dotlottie/player-component@2.7.12/dist/dotlottie-player.js"
           strategy="afterInteractive"
         />
-=======
->>>>>>> 16d5d685 (Performance optimizations)
       </head>
 
       <body
@@ -116,11 +123,17 @@ export default function RootLayout({
           !ENABLE_ADS ? "hide-all-ads" : ""
         }`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <ColorThemeProvider defaultTheme="default">
             <NotificationProvider>
               <ToastProvider>
                 {/* <DevToolsProtection /> */}
+
                 <SmoothScrollProvider>
                   <Navigation />
                   {children}
