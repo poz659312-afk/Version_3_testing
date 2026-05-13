@@ -146,6 +146,19 @@ export default function Navigation() {
     }
   }, [isSpecializationsOpen])
 
+  // Disable background scrolling when the mobile menu is open
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const original = document.body.style.overflow
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = original
+      }
+    }
+    return
+  }, [isOpen])
+
   const handleLogout = async () => {
     try {
       const supabase = createBrowserClient()
@@ -495,7 +508,8 @@ export default function Navigation() {
                                 animate={{ opacity: 1, height: "auto" }}
                                 exit={{ opacity: 0, height: 0 }}
                                 transition={{ duration: 0.3 }}
-                                className="ml-8 mt-2 space-y-2"
+                                className="ml-8 mt-2 space-y-2 max-h-[50vh] overflow-auto mobile-specializations-scroll"
+                                // limit height and allow internal scrolling on mobile
                               >
                                 {specializations.map((spec, specIndex) => (
                                   <motion.div
