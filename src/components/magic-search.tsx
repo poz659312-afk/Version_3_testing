@@ -74,33 +74,17 @@ function buildSearchIndex(): SearchResult[] {
   return results
 }
 
-<<<<<<< HEAD
-const allContent: SearchResult[] = buildSearchIndex()
-
-// Debug: Log the number of subjects loaded
-console.log(`Magic Search: Loaded ${allContent.length} subjects for search`)
-if (allContent.length > 0) {
-  console.log('Sample subjects:', allContent.slice(0, 5).map(s => s.title))
-}
-
-=======
->>>>>>> 16d5d685 (Performance optimizations)
 export default function MagicSearch() {
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [recentSearches, setRecentSearches] = useState<string[]>([])
   const [isSearching, setIsSearching] = useState(false)
-<<<<<<< HEAD
-=======
   const [allContent, setAllContent] = useState<SearchResult[]>([])
->>>>>>> 16d5d685 (Performance optimizations)
   const inputRef = useRef<HTMLInputElement>(null)
   const searchRef = useRef<HTMLDivElement>(null)
   const lenis = useLenis()
 
-<<<<<<< HEAD
-=======
   // Build index lazily when search is opened
   useEffect(() => {
     if (isOpen && allContent.length === 0) {
@@ -108,7 +92,6 @@ export default function MagicSearch() {
     }
   }, [isOpen, allContent.length])
 
->>>>>>> 16d5d685 (Performance optimizations)
   // Load recent searches from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('recentSearches')
@@ -122,16 +105,10 @@ export default function MagicSearch() {
     if (searchQuery.length > 0) {
       setIsSearching(true)
       const timeoutId = setTimeout(() => {
-<<<<<<< HEAD
-        const filtered = allContent.filter(
-          (item) =>
-            item.title.toLowerCase().includes(searchQuery.toLowerCase())
-=======
         const query = searchQuery.toLowerCase()
         const filtered = allContent.filter(
           (item) =>
             item.title.toLowerCase().includes(query)
->>>>>>> 16d5d685 (Performance optimizations)
         )
         setResults(filtered)
         setIsSearching(false)
@@ -141,11 +118,7 @@ export default function MagicSearch() {
       setResults([])
       setIsSearching(false)
     }
-<<<<<<< HEAD
-  }, [searchQuery])
-=======
   }, [searchQuery, allContent])
->>>>>>> 16d5d685 (Performance optimizations)
 
   // Focus input when opening
   useEffect(() => {
