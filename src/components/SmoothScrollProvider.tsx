@@ -1,11 +1,7 @@
 "use client"
 
 import { ReactLenis } from "lenis/react"
-<<<<<<< HEAD
-import { ReactNode } from "react"
-=======
 import { ReactNode, useEffect, useState } from "react"
->>>>>>> 16d5d685 (Performance optimizations)
 
 /**
  * SmoothScrollProvider component that wraps the application with Lenis smooth scrolling.
@@ -13,8 +9,6 @@ import { ReactNode, useEffect, useState } from "react"
  * Native touch scrolling is preserved on mobile by default for better performance.
  */
 export default function SmoothScrollProvider({ children }: { children: ReactNode }) {
-<<<<<<< HEAD
-=======
   const [isLowEnd, setIsLowEnd] = useState(true)
 
   useEffect(() => {
@@ -33,7 +27,6 @@ export default function SmoothScrollProvider({ children }: { children: ReactNode
     return <>{children}</>
   }
 
->>>>>>> 16d5d685 (Performance optimizations)
   return (
     <ReactLenis 
       root 
