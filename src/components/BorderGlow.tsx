@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState, useEffect, type ReactNode } from 'react';
+import { useRef, useCallback, useState, useEffect, useMemo, type ReactNode } from 'react';
 
 interface BorderGlowProps {
   children?: ReactNode;
@@ -84,113 +84,40 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
   colors = ['#c084fc', '#f472b6', '#38bdf8'],
   fillOpacity = 0.5,
 }) => {
+  // If animations are disabled, render a lightweight static wrapper and skip heavy listeners/observers
+  if (!animated) {
+    return (
+      <div
+        className={`relative grid isolate border border-white/15 ${className}`}
+        style={{
+          background: backgroundColor,
+          borderRadius: `${borderRadius}px`,
+          transform: 'translate3d(0, 0, 0.01px)',
+          boxShadow: 'rgba(0,0,0,0.1) 0 1px 2px, rgba(0,0,0,0.1) 0 2px 4px, rgba(0,0,0,0.1) 0 4px 8px',
+        }}
+      >
+        <div
+          className="absolute inset-0 rounded-[inherit] -z-[1]"
+          style={{
+            border: '1px solid transparent',
+            background: `linear-gradient(${backgroundColor} 0 100%) padding-box, linear-gradient(rgb(255 255 255 / 0%) 0% 100%) border-box, ${colors[0]}`,
+            opacity: 1,
+          }}
+        />
+
+        <div className="flex flex-col relative overflow-auto z-[1]">
+          {children}
+        </div>
+      </div>
+    );
+  }
+
   const cardRef = useRef<HTMLDivElement>(null);
   const rectRef = useRef<DOMRect | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [cursorAngle, setCursorAngle] = useState(45);
   const [edgeProximity, setEdgeProximity] = useState(0);
   const [sweepActive, setSweepActive] = useState(false);
-
-  useEffect(() => {
-    const updateRect = () => {
-      if (cardRef.current) {
-        rectRef.current = cardRef.current.getBoundingClientRect();
-      }
-    };
-    updateRect();
-    const ro = new ResizeObserver(updateRect);
-    if (cardRef.current) ro.observe(cardRef.current);
-    window.addEventListener('resize', updateRect);
-    window.addEventListener('scroll', updateRect, { passive: true });
-    
-    return () => {
-      ro.disconnect();
-      window.removeEventListener('resize', updateRect);
-      window.removeEventListener('scroll', updateRect);
-    };
-  }, []);
-
-  const getCenterOfElement = useCallback((el: HTMLElement) => {
-    if (!rectRef.current) {
-      rectRef.current = el.getBoundingClientRect();
-    }
-    return [rectRef.current.width / 2, rectRef.current.height / 2];
-  }, []);
-
-  const getEdgeProximity = useCallback((el: HTMLElement, x: number, y: number) => {
-    const [cx, cy] = getCenterOfElement(el);
-    const dx = x - cx;
-    const dy = y - cy;
-    let kx = Infinity;
-    let ky = Infinity;
-    if (dx !== 0) kx = cx / Math.abs(dx);
-    if (dy !== 0) ky = cy / Math.abs(dy);
-    return Math.min(Math.max(1 / Math.min(kx, ky), 0), 1);
-  }, [getCenterOfElement]);
-
-  const getCursorAngle = useCallback((el: HTMLElement, x: number, y: number) => {
-    const [cx, cy] = getCenterOfElement(el);
-    const dx = x - cx;
-    const dy = y - cy;
-    if (dx === 0 && dy === 0) return 0;
-    const radians = Math.atan2(dy, dx);
-    let degrees = radians * (180 / Math.PI) + 90;
-    if (degrees < 0) degrees += 360;
-    return degrees;
-  }, [getCenterOfElement]);
-
-  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    const card = cardRef.current;
-    if (!card) return;
-    let rect = rectRef.current;
-    if (!rect) {
-      rect = card.getBoundingClientRect();
-      rectRef.current = rect;
-    }
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    // Use requestAnimationFrame to throttle state updates during mouse move
-    requestAnimationFrame(() => {
-      setEdgeProximity(getEdgeProximity(card, x, y));
-      setCursorAngle(getCursorAngle(card, x, y));
-    });
-  }, [getEdgeProximity, getCursorAngle]);
-
-  useEffect(() => {
-    if (!animated) return;
-    const angleStart = 110;
-    const angleEnd = 465;
-    setSweepActive(true);
-    setCursorAngle(angleStart);
-
-    animateValue({ duration: 500, onUpdate: v => setEdgeProximity(v / 100) });
-    animateValue({ ease: easeInCubic, duration: 1500, end: 50, onUpdate: v => {
-      setCursorAngle((angleEnd - angleStart) * (v / 100) + angleStart);
-    }});
-    animateValue({ ease: easeOutCubic, delay: 1500, duration: 2250, start: 50, end: 100, onUpdate: v => {
-      setCursorAngle((angleEnd - angleStart) * (v / 100) + angleStart);
-    }});
-    animateValue({ ease: easeInCubic, delay: 2500, duration: 1500, start: 100, end: 0,
-      onUpdate: v => setEdgeProximity(v / 100),
-      onEnd: () => setSweepActive(false),
-    });
-  }, [animated]);
-
-  const colorSensitivity = edgeSensitivity + 20;
-  const isVisible = isHovered || sweepActive;
-  const borderOpacity = isVisible
-    ? Math.max(0, (edgeProximity * 100 - colorSensitivity) / (100 - colorSensitivity))
-    : 0;
-  const glowOpacity = isVisible
-    ? Math.max(0, (edgeProximity * 100 - edgeSensitivity) / (100 - edgeSensitivity))
-    : 0;
-
-  const meshGradients = useMemo(() => buildMeshGradients(colors), [colors]);
-  const borderBg = useMemo(() => meshGradients.map(g => `${g} border-box`), [meshGradients]);
-  const fillBg = useMemo(() => meshGradients.map(g => `${g} padding-box`), [meshGradients]);
-  const angleDeg = `${cursorAngle.toFixed(3)}deg`;
-  const boxShadow = useMemo(() => buildBoxShadow(glowColor, glowIntensity), [glowColor, glowIntensity]);
 
   return (
     <div
