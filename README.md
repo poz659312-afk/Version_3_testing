@@ -728,4 +728,4 @@ This project is proprietary software. All rights reserved © 2025 Chameleon FCDS
 
 **Built with ❤️ for FCDS students**
 
-*Last Updated: May 12, 2026* 
+*Last Updated: May 12, 2026*
