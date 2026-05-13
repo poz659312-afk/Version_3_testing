@@ -6,7 +6,7 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion"
 import dynamic from "next/dynamic"
 
 const ScrollAnimatedSection = dynamic(() => import("@/components/scroll-animated-section"), { ssr: true })
-const LottieAnimation = dynamic(() => import("@/components/lottie-animation"), { ssr: false, loading: () => <div className="w-full h-full bg-muted/20 animate-pulse rounded-full" /> })
+// Lottie animation removed from homepage for performance; use static fallback instead
 import Script from "next/script"
 import {
   Check,
@@ -329,11 +329,12 @@ export default function HomePage() {
                       </div>
                       
                       <div className="w-full h-full flex items-center justify-center overflow-visible">
-                         <LottieAnimation 
-                           src="/images/XBJe1gGgJo.lottie"
-                           className="w-full h-full scale-110 md:scale-125 drop-shadow-[0_0_50px_rgba(var(--primary),0.2)]"
-                           width="450px"
-                           height="450px"
+                         <Image
+                           src="/images/chameleon.png"
+                           alt="Chameleon"
+                           width={350}
+                           height={350}
+                           className="object-contain"
                          />
                       </div>
                    </div>
