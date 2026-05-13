@@ -11,10 +11,7 @@ const pacifico = Pacifico({
   subsets: ["latin"],
   weight: ["400"],
   variable: "--font-pacifico",
-<<<<<<< HEAD
-=======
   display: "swap",
->>>>>>> 16d5d685 (Performance optimizations)
 })
 
 export default function HeroGeometric({
@@ -41,13 +38,9 @@ export default function HeroGeometric({
     },
   }), []);
 
-<<<<<<< HEAD
-  const animationSettings = (!isMounted || prefersReducedMotion) ? { animate: "visible" } : { initial: "hidden", animate: "visible" };
-=======
   const animationSettings = useMemo(() => {
     return (!isMounted || prefersReducedMotion) ? { animate: "visible" } : { initial: "hidden", animate: "visible" };
   }, [isMounted, prefersReducedMotion]);
->>>>>>> 16d5d685 (Performance optimizations)
 
   return (
     <div
