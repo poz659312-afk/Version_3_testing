@@ -6,7 +6,6 @@ import { useLenis } from 'lenis/react'
 import { Search, X, Sparkles, TrendingUp, Clock, ArrowRight, BookOpen } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
-import { departmentData } from '@/lib/department-data'
 
 interface SearchResult {
   id: string
@@ -35,45 +34,6 @@ const popularCategories = [
   { name: 'Healthcare', color: 'from-primary/80 to-secondary/80' },
 ]
 
-// Build search index from department data
-function buildSearchIndex(): SearchResult[] {
-  const results: SearchResult[] = []
-  
-  Object.entries(departmentData).forEach(([deptId, department]) => {
-    Object.entries(department.levels).forEach(([levelNum, level]) => {
-      // Process term1 subjects
-      level.subjects.term1?.forEach((subject) => {
-        results.push({
-          id: subject.id,
-          title: subject.name,
-          description: subject.description,
-          category: department.name,
-          link: `/specialization/${deptId}/${levelNum}/${subject.id}`,
-          code: subject.code,
-          creditHours: subject.creditHours,
-          specialization: deptId,
-        })
-      })
-      
-      // Process term2 subjects
-      level.subjects.term2?.forEach((subject) => {
-        results.push({
-          id: subject.id,
-          title: subject.name,
-          description: subject.description,
-          category: department.name,
-          link: `/specialization/${deptId}/${levelNum}/${subject.id}`,
-          code: subject.code,
-          creditHours: subject.creditHours,
-          specialization: deptId,
-        })
-      })
-    })
-  })
-  
-  return results
-}
-
 export default function MagicSearch() {
   const [isOpen, setIsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -85,10 +45,14 @@ export default function MagicSearch() {
   const searchRef = useRef<HTMLDivElement>(null)
   const lenis = useLenis()
 
-  // Build index lazily when search is opened
+  // Build index lazily when search is opened — uses dynamic import
   useEffect(() => {
     if (isOpen && allContent.length === 0) {
-      setAllContent(buildSearchIndex())
+      import('@/lib/department-data-accessor').then((mod) => {
+        mod.buildSearchIndex().then((index) => {
+          setAllContent(index)
+        })
+      })
     }
   }, [isOpen, allContent.length])
 
