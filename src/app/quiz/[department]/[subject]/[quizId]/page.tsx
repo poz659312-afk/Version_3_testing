@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { departmentData } from "@/lib/department-data"
+import { findQuiz } from "@/lib/department-data-accessor"
 import QuizInterface from "@/components/quiz-system/quiz-interface"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -19,45 +19,21 @@ export default function QuizPage() {
   useEffect(() => {
     const { department, subject, quizId } = params
 
-    try {
-      const dept = departmentData[department as string]
-      if (!dept) {
-        throw new Error("Department not found")
-      }
-
-      // Find the subject across all levels and terms
-      let foundSubject = null
-      let foundQuiz = null
-      let foundLevel = null
-
-      for (const [levelKey, level] of Object.entries(dept.levels)) {
-        const allSubjects = [...(level as any).subjects.term1, ...(level as any).subjects.term2]  
-        foundSubject = allSubjects.find(s => s.id === subject)
-
-        if (foundSubject && foundSubject.materials.quizzes) {
-          foundQuiz = foundSubject.materials.quizzes.find((q: any) => q.id === quizId)
-          if (foundQuiz) {
-            foundLevel = levelKey;
-            break
-          }
+    findQuiz(department as string, subject as string, quizId as string)
+      .then((result) => {
+        if (!result) {
+          setError("Quiz not found")
+          return
         }
-      }
-
-      if (!foundSubject || !foundQuiz || !foundLevel) {
-        throw new Error("Quiz not found")
-      }
-
-      setLevelNum(foundLevel)
-      setQuizData({
-        ...foundQuiz,
-        subjectName: foundSubject.name,
-        departmentName: dept.name
+        setLevelNum(result.levelKey)
+        setQuizData(result.quiz)
       })
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred")        
-    } finally {
-      setLoading(false)
-    }
+      .catch((err) => {
+        setError(err instanceof Error ? err.message : "An error occurred")
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }, [params])
 
   const handleExit = () => {
