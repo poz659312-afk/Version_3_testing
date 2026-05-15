@@ -10,6 +10,7 @@ import { ColorThemeProvider } from "@/components/color-theme-provider";
 import Navigation from "@/components/navigation";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 
+
 // Inter as Geist Sans replacement
 const geistSans = Inter({
   subsets: ["latin"],
@@ -111,8 +112,8 @@ export default function RootLayout({
               <ToastProvider>
                 {/* <DevToolsProtection /> */}
                 <SmoothScrollProvider>
-                  <Navigation />
-                  {children}
+                    <Navigation />
+                    {children}
                 </SmoothScrollProvider>
               </ToastProvider>
             </NotificationProvider>
