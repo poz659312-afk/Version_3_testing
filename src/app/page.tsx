@@ -1,13 +1,12 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { motion, useScroll, useTransform, useSpring } from "framer-motion"
+import { motion } from "framer-motion"
 import dynamic from "next/dynamic"
 
 const ScrollAnimatedSection = dynamic(() => import("@/components/scroll-animated-section"), { ssr: true })
 // Lottie animation removed from homepage for performance; use static fallback instead
-import Script from "next/script"
 import {
   Check,
   ArrowRight,
@@ -33,47 +32,17 @@ import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-const MagicSearch = dynamic(() => import("@/components/magic-search"), { ssr: false, loading: () => <div className="h-[52px] w-[300px] sm:w-[400px] bg-muted animate-pulse rounded-full border border-border" /> })
+// MagicSearch removed — replaced by a themed chameleon image below
 import { getStudentSession } from "@/lib/auth"
 import { formatTAName } from "@/lib/ta-utils"
 import Image from "next/image"
-import { ThemeSwitcher } from "@/components/theme-switcher"
-import { useTheme } from "next-themes"
-
 import HeroGeometric from "@/components/hero-geometric"
 
-interface LevelStat {
-  level: number
-  count: number
-}
-
-interface UserStats {
-  totalUsers: number
-  levels: LevelStat[]
-  timestamp: string
-}
-
 export default function HomePage() {
-  const [mounted, setMounted] = useState(false)
   const [username, setUsername] = useState<string>("")
   const [userLevel, setUserLevel] = useState<number>(1)
-  const [userStats, setUserStats] = useState<UserStats | null>(null)
-  const [isLoadingStats, setIsLoadingStats] = useState(true)
-  const [isRefreshing, setIsRefreshing] = useState(false)
-  const [key, setKey] = useState(0)
-  const [quizCount, setQuizCount] = useState<number | null>(null)
-  const [solvedQuizzes, setSolvedQuizzes] = useState<number | null>(null)
-  const { setTheme, theme } = useTheme()
-
-  const { scrollY } = useScroll()
-  const y1 = useTransform(scrollY, [0, 500], [0, 200])
-  const y2 = useTransform(scrollY, [0, 500], [0, -150])
-  const opacity = useTransform(scrollY, [0, 400], [1, 0])
-  const scale = useTransform(scrollY, [0, 400], [1, 0.9])
 
   useEffect(() => {
-    setMounted(true)
     const loadSession = async () => {
       const session = await getStudentSession()
       if (session) {
@@ -83,60 +52,6 @@ export default function HomePage() {
     }
     loadSession()
   }, [])
-
-  const fetchUserStats = async () => {
-    try {
-      const response = await fetch('/api/stats/users')
-      if (response.ok) {
-        const data = await response.json()
-        setUserStats(data)
-        setKey(prev => prev + 1)
-      }
-    } catch (error) {
-      console.error('Failed to fetch user stats:', error)
-    } finally {
-      setIsLoadingStats(false)
-      setIsRefreshing(false)
-    }
-  }
-
-  const handleRefresh = async () => {
-    setIsRefreshing(true)
-    await fetchUserStats()
-  }
-
-  useEffect(() => {
-    fetchUserStats()
-    const fetchQuizStats = async () => {
-      try {
-        const response = await fetch('/api/stats/quizzes')
-        if (response.ok) {
-          const data = await response.json()
-          setQuizCount(data.totalQuizzes)
-          setSolvedQuizzes(data.solvedQuizzes + 30000)
-        }
-      } catch (error) {
-        setQuizCount(140)
-        setSolvedQuizzes(30000)
-      }
-    }
-    fetchQuizStats()
-  }, [])
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  }
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 },
-  }
 
   const specializations = [
     {
@@ -199,7 +114,7 @@ export default function HomePage() {
       color: "bg-pink-500/10 text-pink-400 border-pink-500/20",
       glowColor: "rgba(236, 72, 153, 0.6)",
     },
-  ]
+  ];
 
   return (
     <div className="flex min-h-[100dvh] flex-col overflow-hidden w-full relative">
@@ -237,31 +152,14 @@ export default function HomePage() {
                 </div>
               </div> */}
               
-              <div className="rounded-xl shadow-2xl border border-border/40 bg-gradient-to-b from-background to-muted/40 backdrop-blur-xl md:backdrop-blur-3xl min-h-[400px] flex flex-col items-center justify-center relative mt-16 p-8">
-                 {/* Internal element to stand in for image */}
-                 <div className="absolute inset-0 rounded-xl overflow-hidden bg-gradient-to-tr from-transparent via-primary/5 to-transparent pointer-events-none"></div>
-                 
-                 <div className="z-10 flex flex-col items-center w-full max-w-2xl space-y-8 relative">
-                    <div className="text-center space-y-4">
-                        <Badge variant="outline" className="rounded-full px-4 py-1.5 border-primary/20 bg-primary/5 text-primary text-xs font-semibold uppercase tracking-widest mb-2">
-                           Global Search
-                        </Badge>
-                        <h3 className="text-4xl md:text-5xl font-black italic tracking-tighter">
-                           Find anything in seconds
-                        </h3>
-                        <p className="text-muted-foreground md:text-lg">
-                           Instantly navigate through massive knowledge domains, student records, and complex routing paths.
-                        </p>
-                    </div>
-                    <div className="w-full flex justify-center">
-                        <MagicSearch />
-                    </div>
-                 </div>
+              <div className="rounded-xl shadow-2xl border border-border/40 backdrop-blur-xl md:backdrop-blur-3xl flex items-center justify-center relative mt-16 p-0 w-fit mx-auto">
+                {/* Box background uses theme primary color; size is driven by image intrinsic size */}
+                <div className="inline-block rounded-xl overflow-hidden bg-primary">
+                  <Image src="/images/new_chameleom.png" alt="Chameleon" width={900} height={540} className="block w-full h-auto" />
+                </div>
 
-                 <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-black/10 dark:ring-white/10 pointer-events-none"></div>
+                <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-black/10 dark:ring-white/10 pointer-events-none"></div>
               </div>
-              <div className="absolute -bottom-10 -right-10 z-[999] pointer-events-none h-[300px] w-[300px] rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 blur-2xl md:blur-3xl opacity-70"></div>
-              <div className="absolute -top-10 -left-10 z-[999] pointer-events-none h-[300px] w-[300px] rounded-full bg-gradient-to-br from-secondary/30 to-primary/30 blur-2xl md:blur-3xl opacity-70"></div>
             </motion.div>
           </div>
         </section>
@@ -309,7 +207,7 @@ export default function HomePage() {
                             ))}
                          </div>
                          <div className="text-sm font-medium text-muted-foreground">
-                            Joined by <span className="text-black dark:text-white font-bold">+20k</span> students
+                            Joined by <span className="text-black dark:text-white font-bold">+4k</span> students
                          </div>
                       </div>
                    </div>
@@ -319,19 +217,12 @@ export default function HomePage() {
                    {/* Cinematic Lottie Portal */}
                    <div className="relative w-full max-w-[450px] aspect-square flex items-center justify-center group">
                       <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full -z-10 animate-pulse group-hover:bg-primary/30 transition-all duration-700"></div>
-                      
-                      {/* Floating HUD elements */}
-                      <div className="absolute top-0 right-0 p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl animate-float z-20 hidden md:block">
-                         <div className="flex items-center gap-3">
-                            <div className="size-3 rounded-full bg-green-500 animate-pulse"></div>
-                            <span className="text-xs font-black tracking-widest uppercase opacity-70">Core Protocol Active</span>
-                         </div>
-                      </div>
+                                            
                       
                       <div className="w-full h-full flex items-center justify-center overflow-visible">
                          <Image
-                           src="/images/chameleon.png"
-                           alt="Chameleon"
+                           src="/images/elearning.png"
+                           alt="E-Learning"
                            width={350}
                            height={350}
                            className="object-contain"
