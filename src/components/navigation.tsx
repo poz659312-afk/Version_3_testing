@@ -428,7 +428,7 @@ export default function Navigation() {
                         {/* Mobile Specializations Menu */}
                         {isSpecializationsOpen && (
                           <div
-                            className="ml-8 mt-2 space-y-2 animate-accordion-enter"
+                            className="ml-8 mt-2 space-y-2 animate-accordion-enter specializations-menu"
                           >
                             {specializations.map((spec) => (
                               <div key={spec.name}>

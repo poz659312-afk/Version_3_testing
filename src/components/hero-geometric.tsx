@@ -46,15 +46,17 @@ export default function HeroGeometric({
               mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <Image 
-              src="/images/1212-removebg-preview.png" 
-              alt="Kokonut UI" 
-              width={20} 
-              height={20}
-              priority
-              loading="eager"
-              unoptimized={true}
-            />
+            <div className="rounded-full bg-primary flex items-center justify-center">
+              <Image 
+                src="/images/chameleon.png" 
+                alt="Chameleon Logo" 
+                width={20} 
+                height={20}
+                priority
+                loading="eager"
+                className="object-cover rounded-full"
+              />
+            </div>
             <span className="text-sm text-muted-foreground tracking-wide">{badge}</span>
           </div>
 
