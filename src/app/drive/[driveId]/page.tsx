@@ -2,8 +2,8 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useMemo, useRef, useCallback, useDeferredValue } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -220,7 +220,6 @@ export default function DriveRootPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredFiles, setFilteredFiles] = useState<DriveFile[]>([]);
   const [sortOption, setSortOption] = useState<SortOption>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [driveInfo, setDriveInfo] = useState<FolderInfo | null>(null);
@@ -230,13 +229,7 @@ export default function DriveRootPage() {
   const [selectedAIFile, setSelectedAIFile] = useState<any>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [userSession, setUserSession] = useState<any>(null);
-  const [fetchingPromises, setFetchingPromises] = useState<
-    Map<string, Promise<any>>
-  >(new Map());
   const [basicLoaded, setBasicLoaded] = useState(false);
-  const [usernameCache, setUsernameCache] = useState<Map<string, string>>(
-    new Map()
-  );
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   // Hash resolution states
@@ -247,13 +240,16 @@ export default function DriveRootPage() {
   // Dynamic metadata
   useDynamicMetadata(dynamicPageMetadata.driveRoot(driveInfo?.name));
 
-  // Supabase client and username fetching function
-  const supabase = createBrowserClient();
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+  const fetchingPromisesRef = useRef<Map<string, Promise<DriveFile[]>>>(new Map());
+  const usernameCacheRef = useRef<Map<string, string>>(new Map());
+  const supabase = useMemo(() => createBrowserClient(), []);
 
-  const getUsername = async (email: string): Promise<string> => {
+  const getUsername = useCallback(async (email: string): Promise<string> => {
     // Check cache first
-    if (usernameCache.has(email)) {
-      return usernameCache.get(email)!;
+    const cachedUsername = usernameCacheRef.current.get(email);
+    if (cachedUsername) {
+      return cachedUsername;
     }
 
     try {
@@ -266,23 +262,23 @@ export default function DriveRootPage() {
       if (error || !userData) {
         console.log(`No user found for email: ${email}`);
         const fallback = "Unknown User";
-        setUsernameCache((prev) => new Map(prev).set(email, fallback));
+        usernameCacheRef.current.set(email, fallback);
         return fallback;
       }
 
       const username = userData.username || "Unknown User";
 
       // Cache the result
-      setUsernameCache((prev) => new Map(prev).set(email, username));
+      usernameCacheRef.current.set(email, username);
 
       return username;
     } catch (error) {
       console.error("Error fetching username:", error);
       const fallback = "Unknown User";
-      setUsernameCache((prev) => new Map(prev).set(email, fallback));
+      usernameCacheRef.current.set(email, fallback);
       return fallback;
     }
-  };
+  }, [supabase]);
 
   // Check if current user owns the file
   const isCurrentUserOwner = (file: DriveFile): boolean => {
@@ -435,13 +431,12 @@ export default function DriveRootPage() {
       const cached = filesCache.get(cacheKey);
       if (cached) {
         setFiles(cached);
-        setFilteredFiles(cached);
         return;
       }
 
       // Prevent duplicate requests
-      if (fetchingPromises.has(cacheKey)) {
-        const result = await fetchingPromises.get(cacheKey);
+      if (fetchingPromisesRef.current.has(cacheKey)) {
+        const result = await fetchingPromisesRef.current.get(cacheKey);
         return result;
       }
 
@@ -484,7 +479,6 @@ export default function DriveRootPage() {
         const files = data.files || [];
 
         setFiles(files);
-        setFilteredFiles(files);
 
         // Cache the result
         filesCache.set(cacheKey, files);
@@ -492,17 +486,13 @@ export default function DriveRootPage() {
       })();
 
       // Store promise to prevent duplicates
-      setFetchingPromises((prev) => new Map(prev).set(cacheKey, fetchPromise));
+      fetchingPromisesRef.current.set(cacheKey, fetchPromise);
 
       try {
         await fetchPromise;
       } finally {
         // Clean up promise
-        setFetchingPromises((prev) => {
-          const newMap = new Map(prev);
-          newMap.delete(cacheKey);
-          return newMap;
-        });
+        fetchingPromisesRef.current.delete(cacheKey);
       }
     } catch (err) {
       const errorMessage =
@@ -526,37 +516,48 @@ export default function DriveRootPage() {
     }
   }, [actualDriveId, userSession, isAdmin]); // Add isAdmin as dependency
 
-  // Sort files based on current sort option and direction
-  useEffect(() => {
-    const sorted = [...files].sort((a, b) => {
-      let comparison = 0;
+  const filteredFiles = useMemo(() => {
+    const query = deferredSearchQuery.trim().toLowerCase();
+    return [...files]
+      .sort((a, b) => {
+        let comparison = 0;
 
-      switch (sortOption) {
-        case "name":
-          comparison = a.name.localeCompare(b.name);
-          break;
-        case "modified":
-          comparison =
-            new Date(a.modifiedTime).getTime() -
-            new Date(b.modifiedTime).getTime();
-          break;
-        case "size":
-          comparison = (Number(a.size) || 0) - (Number(b.size) || 0);
-          break;
-        case "type":
-          comparison = a.mimeType.localeCompare(b.mimeType);
-          break;
-      }
+        switch (sortOption) {
+          case "name":
+            comparison = a.name.localeCompare(b.name);
+            break;
+          case "modified":
+            comparison =
+              new Date(a.modifiedTime).getTime() -
+              new Date(b.modifiedTime).getTime();
+            break;
+          case "size":
+            comparison = (Number(a.size) || 0) - (Number(b.size) || 0);
+            break;
+          case "type":
+            comparison = a.mimeType.localeCompare(b.mimeType);
+            break;
+        }
 
-      return sortDirection === "asc" ? comparison : -comparison;
-    });
+        return sortDirection === "asc" ? comparison : -comparison;
+      })
+      .filter((file) => !query || file.name.toLowerCase().includes(query));
+  }, [files, sortOption, sortDirection, deferredSearchQuery]);
 
-    // Apply search filter to sorted results
-    const filtered = sorted.filter((file) =>
-      file.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredFiles(filtered);
-  }, [files, sortOption, sortDirection, searchQuery]);
+  const fileStats = useMemo(() => {
+    let folders = 0;
+    let images = 0;
+    for (const file of filteredFiles) {
+      if (file.mimeType.includes("folder")) folders += 1;
+      else if (file.mimeType.includes("image")) images += 1;
+    }
+    return {
+      total: filteredFiles.length,
+      folders,
+      images,
+      others: filteredFiles.length - folders - images,
+    };
+  }, [filteredFiles]);
 
   const handleFolderClick = (folder: DriveFile) => {
     if (folder.mimeType.includes("folder")) {
@@ -630,8 +631,8 @@ export default function DriveRootPage() {
         <UploadProgressBar />
 
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/20 blur-[120px] rounded-full animate-pulse" />
-          <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-secondary/10 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+          <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/15 blur-3xl rounded-full" />
+          <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-secondary/10 blur-3xl rounded-full" />
           <div className="absolute inset-0 bg-[radial-gradient(#00000010_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff05_1px,transparent_1px)] [background-size:32px_32px] opacity-40" />
         </div>
 
@@ -639,10 +640,8 @@ export default function DriveRootPage() {
       {notFound && (
         <ScrollAnimatedSection className="pt-32 pb-16 relative z-10">
           <div className="container mx-auto px-3 sm:px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center py-20"
+            <div
+              className="text-center py-20 animate-in fade-in slide-in-from-bottom-2 duration-300"
             >
               <Card className="bg-red-500/10 border-red-500/20 max-w-md mx-auto">
                 <CardContent className="p-8">
@@ -670,7 +669,7 @@ export default function DriveRootPage() {
                   </Button>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           </div>
         </ScrollAnimatedSection>
       )}
@@ -757,23 +756,17 @@ export default function DriveRootPage() {
               </div>
 
               <div className="text-center mb-8 sm:mb-12">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border mb-4 sm:mb-6"
+                <div
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border mb-4 sm:mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300"
                 >
                   <Folder className="w-4 h-4 text-blue-400" />
                   <span className="text-sm text-muted-foreground tracking-wide">
                     Drive Root
                   </span>
-                </motion.div>
+                </div>
 
-                <motion.h1
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.1 }}
-                  className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black italic tracking-tighter leading-[0.8] uppercase mb-4 sm:mb-8 px-2"
+                <h1
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black italic tracking-tighter leading-[0.8] uppercase mb-4 sm:mb-8 px-2 animate-in fade-in slide-in-from-bottom-2 duration-300"
                 >
                   {driveInfo ? (
                     <span style={{ WebkitTextStroke: '1.5px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 dark:border-white/10 border-black/10">
@@ -787,25 +780,19 @@ export default function DriveRootPage() {
                       </span>
                     </>
                   )}
-                </motion.h1>
+                </h1>
 
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.15 }}
+                <p
                   className="text-sm sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-6 sm:mb-8 px-2"
                 >
                   Explore and manage your files with our beautiful and
                   Intelligent interface
-                </motion.p>
+                </p>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.2 }}
+                <div
                   className="max-w-2xl mx-auto relative px-2 group"
                 >
-                  <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-2xl blur opacity-25 group-focus-within:opacity-100 transition-opacity duration-500 animate-pulse" />
+                  <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-2xl blur opacity-20 group-focus-within:opacity-80 transition-opacity duration-300" />
                   <div className="relative">
                     <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                     <Input
@@ -813,15 +800,12 @@ export default function DriveRootPage() {
                       placeholder="Search files and resources..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-12 h-14 text-lg bg-background/50 backdrop-blur-xl border-border/50 placeholder:text-muted-foreground/50 rounded-2xl focus:border-primary/50 focus:ring-primary/20 w-full transition-all"
+                      className="pl-12 h-14 text-lg bg-background/50 backdrop-blur-sm border-border/50 placeholder:text-muted-foreground/50 rounded-2xl focus:border-primary/50 focus:ring-primary/20 w-full transition-all"
                     />
                   </div>
-                </motion.div>
+                </div>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.25 }}
+                <div
                   className="flex items-center justify-center gap-3 mt-8 px-2"
                 >
                   <Button
@@ -868,7 +852,7 @@ export default function DriveRootPage() {
                       <List className="size-4" />
                     </Button>
                   </div>
-                </motion.div>
+                </div>
               </div>
             </div>
           </ScrollAnimatedSection>
@@ -885,19 +869,19 @@ export default function DriveRootPage() {
                     <div className="inline-flex items-center gap-1 p-1.5 bg-background/40 backdrop-blur-2xl border border-border/50 rounded-full shadow-[0_0_50px_rgba(0,0,0,0.3)]">
                       <div className="flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 border border-primary/20">
                          <FileText className="size-4 text-primary" />
-                         <span className="text-sm font-black italic">{filteredFiles.length}</span>
+                         <span className="text-sm font-black italic">{fileStats.total}</span>
                       </div>
                       <div className="hidden sm:flex items-center gap-2 px-4 py-2 text-muted-foreground">
                          <Folder className="size-4" />
-                         <span className="text-sm font-medium">{filteredFiles.filter((f) => f.mimeType.includes("folder")).length}</span>
+                         <span className="text-sm font-medium">{fileStats.folders}</span>
                       </div>
                       <div className="hidden sm:flex items-center gap-2 px-4 py-2 text-muted-foreground border-l border-border/20">
                          <ImageIcon className="size-4" />
-                         <span className="text-sm font-medium">{filteredFiles.filter((f) => f.mimeType.includes("image")).length}</span>
+                         <span className="text-sm font-medium">{fileStats.images}</span>
                       </div>
                       <div className="flex items-center gap-2 px-5 py-2 text-muted-foreground border-l border-border/20">
                          <Shield className="size-4" />
-                         <span className="text-sm font-medium">{filteredFiles.filter((f) => !f.mimeType.includes("folder") && !f.mimeType.includes("image")).length}</span>
+                         <span className="text-sm font-medium">{fileStats.others}</span>
                       </div>
                     </div>
                   </div>
@@ -905,29 +889,21 @@ export default function DriveRootPage() {
               </div>
             
 
-              <AnimatePresence>
+
                 {loading && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                  <div
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6"
                   >
                     {Array.from({ length: 6 }).map((_, index) => (
                       <FileCardSkeleton key={index} isLoggedIn={!!userSession} />
                     ))}
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
 
-              <AnimatePresence>
+
+
                 {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="text-center py-20"
-                  >
+                  <div className="text-center py-20">
                     <Card className="bg-red-500/10 border-red-500/20 max-w-md mx-auto">
                       <CardContent className="p-6">
                         <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
@@ -945,42 +921,11 @@ export default function DriveRootPage() {
                         </Button>
                       </CardContent>
                     </Card>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
 
-              <AnimatePresence>
-                {!loading && error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="text-center py-20"
-                  >
-                    <Card className="bg-red-500/10 border-red-500/20 max-w-md mx-auto">
-                      <CardContent className="p-6">
-                        <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold  mb-2">
-                          Error Loading Files
-                        </h3>
-                        <p className="text-muted-foreground mb-4">{error}</p>
-                        <Button
-                          onClick={fetchDriveFiles}
-                          className="bg-red-500 hover:bg-red-600 "
-                          disabled={loading}
-                        >
-                          <RefreshCw className="w-4 h-4 mr-2" />
-                          Try Again
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <AnimatePresence>
                 {!loading && !error && (
-                    <motion.div
+                    <div
                       className={
                         viewMode === "grid"
                           ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6"
@@ -994,11 +939,8 @@ export default function DriveRootPage() {
 
                         if (viewMode === "list") {
                           return (
-                            <motion.div
+                            <div
                               key={file.id}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.01 }}
                               className="group relative flex items-center gap-4 p-3 bg-white/[0.03] border border-border/50 rounded-xl hover:bg-white/[0.06] hover:border-primary/30 transition-all cursor-pointer"
                               onClick={() => handleView(file)}
                             >
@@ -1074,16 +1016,13 @@ export default function DriveRootPage() {
                                     </DropdownMenuContent>
                                   </DropdownMenu>
                                 </div>
-                            </motion.div>
+                            </div>
                           );
                         }
 
                         return (
-                          <motion.div
+                          <div
                             key={file.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.02, duration: 0.2 }}
                             className="relative w-full h-full"
                           >
                           <Card
@@ -1263,17 +1202,15 @@ export default function DriveRootPage() {
                               </div>
                             </CardContent>
                           </Card>
-                        </motion.div>
+                        </div>
                       );
                     })}
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+
 
               {!loading && !error && filteredFiles.length === 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                <div
                   className="text-center py-32"
                 >
                   <div className="size-24 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-8 animate-pulse">
@@ -1287,7 +1224,7 @@ export default function DriveRootPage() {
                       ? "The knowledge you seek hasn't materialized yet."
                       : "This digital archive is currently awaiting content."}
                   </p>
-                </motion.div>
+                </div>
               )}
             </div>
           </ScrollAnimatedSection>
@@ -1295,11 +1232,13 @@ export default function DriveRootPage() {
       )}
       </div>
       <AdBanner dataAdSlot="8021269551" />
-      <AIModal 
-        isOpen={aiModalOpen} 
-        onClose={() => setAiModalOpen(false)} 
-        file={selectedAIFile} 
-      />
+      {aiModalOpen && (
+        <AIModal
+          isOpen={aiModalOpen}
+          onClose={() => setAiModalOpen(false)}
+          file={selectedAIFile}
+        />
+      )}
     </UploadProvider>
   );
 }
