@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { getStudentSession } from "@/lib/auth"
 import { createBrowserClient } from "@/lib/supabase/client"
+import { motion, AnimatePresence } from "framer-motion"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,13 +17,14 @@ import { useToast } from "@/components/ToastProvider"
 import Image from "next/image"
 import { useAddNotification } from "@/components/notification"
 import { DeleteAccountDialog } from "@/components/delete-account-dialog"
-import { departmentData, departmentKeyMap, type Subject } from '@/lib/department-data'
-import AdBanner from "@/components/AdBanner"
+
+import dynamic from 'next/dynamic'
+const AdBanner = dynamic(() => import("@/components/AdBanner"), { ssr: false })
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { useTheme } from "next-themes"
 import { useColorTheme } from "@/components/color-theme-provider"
-import { motion, AnimatePresence } from "framer-motion"
+
 
 
 interface QuizQuestion {
@@ -152,34 +154,6 @@ function ProgressDotPlot({ quizData }: { quizData: any[] }) {
       </CardContent>
     </Card>
   );
-}
-
-// Helper function to get user's registered subjects based on level and department
-function getUserSubjects(level: number, specialization: string, currentTerm: 'term1' | 'term2' = 'term1'): Subject[] {
-  console.log('🔍 getUserSubjects called with:', { level, specialization, currentTerm })
-  
-  const departmentKey = departmentKeyMap[specialization] || departmentKeyMap[specialization?.toLowerCase()]
-  console.log('✅ Mapped department key:', departmentKey, 'from specialization:', specialization)
-  
-  if (!departmentKey) {
-    console.error('❌ No department key found for specialization:', specialization)
-    return []
-  }
-  
-  if (!departmentData[departmentKey]) {
-    console.error('❌ Department not found in departmentData:', departmentKey)
-    return []
-  }
-  
-  const department = departmentData[departmentKey]
-  
-  if (!department.levels[level]) {
-    console.error('❌ Level not found:', level)
-    return []
-  }
-  
-  const subjects = department.levels[level].subjects[currentTerm] || []
-  return subjects
 }
 
 // Helper function to extract Google Drive folder ID from URL and create internal drive link
@@ -316,6 +290,9 @@ function ThemeModeSelector() {
 }
 
 export default function ProfilePage() {
+  const [userSubjects, setUserSubjects] = useState<any[]>([])
+  const [userDepartmentKey, setUserDepartmentKey] = useState<string>('computing-data-sciences')
+  const [subjectsLoading, setSubjectsLoading] = useState(true)
   const [userData, setUserData] = useState<any>(null)
   const [quizData, setQuizData] = useState<any[]>([])
   const [paginatedData, setPaginatedData] = useState<any[]>([])
@@ -455,6 +432,26 @@ export default function ProfilePage() {
         ...prev,
         deletion_scheduled_at: freshUserData.deletion_scheduled_at
       }))
+
+      // Lazy load user subjects using department-data-accessor
+      try {
+        const accessor = await import('@/lib/department-data-accessor')
+        const term = getCurrentTerm()
+        const key = await accessor.resolveDepartmentKey(session.specialization || '') || 'computing-data-sciences'
+        setUserDepartmentKey(key)
+        
+        const dept = await accessor.getDepartment(key)
+        if (dept && dept.levels[session.current_level]) {
+          setUserSubjects(dept.levels[session.current_level].subjects[term] || [])
+        } else {
+          setUserSubjects([])
+        }
+      } catch (err) {
+        console.error("Error loading subjects:", err)
+        setUserSubjects([])
+      } finally {
+        setSubjectsLoading(false)
+      }
 
       // Get ALL quiz attempts for stats computation
       const { count: totalQuizCount } = await supabase
@@ -1001,23 +998,16 @@ export default function ProfilePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {(() => {
-                    const currentTerm = getCurrentTerm()
-                    const subjects = getUserSubjects(userData.current_level, userData.specialization, currentTerm)
-                    const departmentKey = departmentKeyMap[userData.specialization] || departmentKeyMap[userData.specialization?.toLowerCase()] || 'computing-data-sciences'
-                    
-                    if (subjects.length === 0) {
-                      return (
-                        <div className="text-center py-12 text-muted-foreground font-outfit bg-muted/30 rounded-lg">
-                          <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
-                          <p className="text-lg font-bold mb-4">No subjects found for your level and department</p>
-                        </div>
-                      )
-                    }
-                    
-                    return (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {subjects.map((subject, index) => (
+                  {subjectsLoading ? (
+                    <div className="flex justify-center py-12"><LoadingSpinner /></div>
+                  ) : userSubjects.length === 0 ? (
+                    <div className="text-center py-12 text-muted-foreground font-outfit bg-muted/30 rounded-lg">
+                      <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
+                      <p className="text-lg font-bold mb-4">No subjects found for your level and department</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {userSubjects.map((subject: any, index: number) => (
                           <motion.div 
                             key={subject.id}
                             initial={{ opacity: 0, y: 20 }}
@@ -1061,15 +1051,14 @@ export default function ProfilePage() {
                               )}
                               {subject.materials.quizzes && subject.materials.quizzes.length > 0 && (
                                 <Button asChild size="sm" variant="outline" className="h-9 rounded-md border text-primary font-outfit font-bold text-[11px] transition-all hover:bg-primary/10">
-                                  <Link href={`/specialization/${departmentKey}/${userData.current_level}/${subject.id}?tab=quizzes`}><Trophy className="w-3 h-3 mr-1" /> QUIZZES</Link>
+                                  <Link href={`/specialization/${userDepartmentKey}/${userData.current_level}/${subject.id}?tab=quizzes`}><Trophy className="w-3 h-3 mr-1" /> QUIZZES</Link>
                                 </Button>
                               )}
                             </div>
                           </motion.div>
                         ))}
                       </div>
-                    )
-                  })()}
+                  )}
                 </CardContent>
               </Card>
 

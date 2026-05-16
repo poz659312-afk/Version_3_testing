@@ -262,18 +262,11 @@ export default function YouTubePlaylistPage() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden font-rubik">
+    <div className="flex flex-col min-h-screen overflow-x-hidden font-outfit bg-background">
       {/* Navigation is rendered in layout.tsx */}
 
       {/* Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.05] via-transparent to-rose-500/[0.05] blur-xl md:blur-3xl" />
-        {/* Static background image */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
-          style={{ backgroundImage: "url(/images/Background.png)" }}
-        />
-      </div>
+      <div className="fixed inset-0 overflow-hidden pointer-events-none bg-background z-[-1]" />
 
       {/* Header Section */}
       <ScrollAnimatedSection className="pt-24 md:pt-32 pb-6 md:pb-8 relative z-10">
@@ -285,7 +278,7 @@ export default function YouTubePlaylistPage() {
                 onClick={goBack}
                 variant="outline"
                 size="sm"
-                className="w-full md:w-auto bg-muted border-border  hover:bg-muted hover:text-foreground/80 font-rubik"
+                className="w-full md:w-auto bg-muted border-border  hover:bg-muted hover:text-foreground/80 font-outfit"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Materials
@@ -295,7 +288,7 @@ export default function YouTubePlaylistPage() {
                   onClick={copyCurrentUrl}
                   variant="outline"
                   size="sm"
-                  className="w-1/2 md:w-auto bg-muted border-border  hover:bg-muted hover:text-foreground/80 font-rubik"
+                  className="w-1/2 md:w-auto bg-muted border-border  hover:bg-muted hover:text-foreground/80 font-outfit"
                 >
                   {urlCopied ? (
                     <>
@@ -313,7 +306,7 @@ export default function YouTubePlaylistPage() {
                   <Button
                     onClick={() => window.open(`https://www.youtube.com/playlist?list=${playlistId}`, "_blank")}
                     size="sm"
-                    className="w-1/2 md:w-auto bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600  font-rubik"
+                    className="w-1/2 md:w-auto bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600  font-outfit"
                   >
                     <ExternalLink className="w-4 h-4 mr-2" />
                     <span className="truncate">Open in YouTube</span>
@@ -331,14 +324,14 @@ export default function YouTubePlaylistPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border mb-4 md:mb-6"
             >
               <Youtube className="w-4 h-4 text-red-400" />
-              <span className="text-sm text-muted-foreground tracking-wide font-rubik">YouTube Playlist</span>
+              <span className="text-sm text-muted-foreground tracking-wide font-outfit">YouTube Playlist</span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
-              className="text-3xl md:text-5xl font-bold  mb-4 font-rubik"
+              className="text-3xl md:text-5xl font-bold  mb-4 font-outfit"
             >
               <span className="bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">
                 {playlistInfo?.title || "Loading Playlist..."}
@@ -350,17 +343,17 @@ export default function YouTubePlaylistPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
-                className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-muted-foreground mb-4 md:mb-6 text-sm md:text-base font-rubik"
+                className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-muted-foreground mb-4 md:mb-6 text-sm md:text-base font-outfit"
               >
-                <span className="flex items-center gap-1 font-rubik">
+                <span className="flex items-center gap-1 font-outfit">
                   <List className="w-4 h-4" />
                   {playlistInfo.itemCount} videos
                 </span>
-                <span className="flex items-center gap-1 font-rubik">
+                <span className="flex items-center gap-1 font-outfit">
                   <Calendar className="w-4 h-4" />
                   {formatDate(playlistInfo.publishedAt)}
                 </span>
-                <span className="truncate max-w-xs font-rubik">{playlistInfo.channelTitle}</span>
+                <span className="truncate max-w-xs font-outfit">{playlistInfo.channelTitle}</span>
               </motion.div>
             )}
 
@@ -377,7 +370,7 @@ export default function YouTubePlaylistPage() {
                 placeholder="Search videos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-muted border-border  placeholder:text-muted-foreground focus:border-red-500/50 focus:ring-red-500/20 font-rubik"
+                className="pl-10 bg-muted border-border  placeholder:text-muted-foreground focus:border-red-500/50 focus:ring-red-500/20 font-outfit"
               />
             </motion.div>
           </div>
@@ -401,7 +394,7 @@ export default function YouTubePlaylistPage() {
                   transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
                   className="w-12 h-12 border-4 border-border border-t-red-500 rounded-full mb-4"
                 />
-                <p className="text-muted-foreground font-rubik">Loading playlist videos...</p>
+                <p className="text-muted-foreground font-outfit">Loading playlist videos...</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -418,11 +411,11 @@ export default function YouTubePlaylistPage() {
                 <Card className="bg-red-500/10 border-red-500/20 max-w-md mx-auto">
                   <CardContent className="p-6">
                     <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold  mb-2 font-rubik">Error Loading Playlist</h3>
-                    <p className="text-muted-foreground mb-4 font-rubik">{error}</p>
+                    <h3 className="text-lg font-semibold  mb-2 font-outfit">Error Loading Playlist</h3>
+                    <p className="text-muted-foreground mb-4 font-outfit">{error}</p>
                     <Button
                       onClick={fetchPlaylistVideos}
-                      className="bg-red-500 hover:bg-red-600  font-rubik"
+                      className="bg-red-500 hover:bg-red-600  font-outfit"
                       disabled={loading}
                     >
                       <RefreshCw className="w-4 h-4 mr-2" />
@@ -444,22 +437,22 @@ export default function YouTubePlaylistPage() {
             >
               {/* Video List - Left Side */}
               <div className="lg:col-span-1 order-2 lg:order-1">
-                <Card className="bg-white/[0.02] border-border h-fit max-h-[600px] lg:max-h-[800px] overflow-hidden">
+                <Card className="bg-card shadow-xl border-border h-fit max-h-[600px] lg:max-h-[800px] overflow-hidden">
                   <CardHeader className="pb-4">
-                    <CardTitle className=" flex items-center gap-2 font-rubik">
+                    <CardTitle className=" flex items-center gap-2 font-outfit">
                       <List className="w-5 h-5" />
                       Videos ({filteredVideos.length})
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-0">
-                    <div className="overflow-y-auto max-h-[550px] lg:max-h-[700px] custom-youtube-scrollbar">
+                    <div className="overflow-y-auto max-h-[550px] lg:max-h-[700px] custom-scrollbar">
                       {/* Removed per-item motion.div — staggering 100+ items was causing 2s+ delay */}
                       {filteredVideos.map((video, index) => (
                         <div
                           key={video.id}
                           onClick={() => setCurrentVideo(video)}
                           className={`p-3 sm:p-4 border-b border-border cursor-pointer transition-colors duration-200 hover:bg-muted ${
-                            currentVideo?.id === video.id ? "bg-red-500/10 border-l-4 border-l-red-500" : ""
+                            currentVideo?.id === video.id ? "bg-primary/10 border-l-4 border-l-primary" : ""
                           }`}
                         >
                           <div className="flex gap-3">
@@ -470,20 +463,20 @@ export default function YouTubePlaylistPage() {
                                 loading="lazy"
                                 className="w-16 h-12 sm:w-20 sm:h-14 object-cover rounded-lg"
                               />
-                              <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 rounded font-rubik">
+                              <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs px-1 rounded font-outfit">
                                 {formatDuration(video.duration)}
                               </div>
                             </div>
                             <div className="flex-1 min-w-0">
                               <h3
-                                className={`font-medium text-sm leading-tight mb-1 sm:mb-2 truncate font-rubik ${
-                                  currentVideo?.id === video.id ? "text-red-400" : ""
+                                className={`font-medium text-sm leading-tight mb-1 sm:mb-2 truncate font-outfit ${
+                                  currentVideo?.id === video.id ? "text-primary" : ""
                                 }`}
                                 title={video.title}
                               >
                                 {video.title}
                               </h3>
-                              <div className="flex items-center gap-2 sm:gap-3 text-xs text-muted-foreground font-rubik">
+                              <div className="flex items-center gap-2 sm:gap-3 text-xs text-muted-foreground font-outfit">
                                 <span className="flex items-center gap-1">
                                   <Eye className="w-3 h-3" />
                                   {formatNumber(video.viewCount)}
@@ -509,7 +502,7 @@ export default function YouTubePlaylistPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 }}
                 >
-                  <Card className="bg-white/[0.02] border-border">
+                  <Card className="bg-card shadow-xl border-border">
                     <CardContent className="p-4 md:p-6">
                       {currentVideo ? (
                         <div>
@@ -526,9 +519,9 @@ export default function YouTubePlaylistPage() {
 
                           {/* Video Info */}
                           <div>
-                            <h2 className="text-lg md:text-xl font-bold  mb-3 md:mb-4 font-rubik">{currentVideo.title}</h2>
+                            <h2 className="text-lg md:text-xl font-bold  mb-3 md:mb-4 font-outfit">{currentVideo.title}</h2>
 
-                            <div className="flex flex-wrap items-center gap-3 md:gap-6 mb-3 md:mb-4 text-muted-foreground text-sm md:text-base font-rubik">
+                            <div className="flex flex-wrap items-center gap-3 md:gap-6 mb-3 md:mb-4 text-muted-foreground text-sm md:text-base font-outfit">
                               <span className="flex items-center gap-2">
                                 <Eye className="w-3 h-3 md:w-4 md:h-4" />
                                 {formatNumber(currentVideo.viewCount)} views
@@ -548,7 +541,7 @@ export default function YouTubePlaylistPage() {
                             </div>
 
                             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-3 md:mb-4">
-                              <Badge variant="outline" className="bg-red-500/20 border-red-500/30 text-red-400 font-rubik">
+                              <Badge variant="outline" className="bg-red-500/20 border-red-500/30 text-red-400 font-outfit">
                                 {currentVideo.channelTitle}
                               </Badge>
                               <Button
@@ -557,7 +550,7 @@ export default function YouTubePlaylistPage() {
                                 }
                                 variant="outline"
                                 size="sm"
-                                className="w-full md:w-auto bg-muted border-border  hover:bg-muted font-rubik"
+                                className="w-full md:w-auto bg-muted border-border  hover:bg-muted font-outfit"
                               >
                                 <ExternalLink className="w-4 h-4 mr-2" />
                                 Watch on YouTube
@@ -566,8 +559,8 @@ export default function YouTubePlaylistPage() {
 
                             {currentVideo.description && (
                               <div className="bg-muted rounded-lg p-3 md:p-4">
-                                <h3 className=" font-medium mb-1 md:mb-2 font-rubik">Description</h3>
-                                <p className="text-foreground/70 text-sm leading-relaxed truncate font-rubik">
+                                <h3 className=" font-medium mb-1 md:mb-2 font-outfit">Description</h3>
+                                <p className="text-foreground/70 text-sm leading-relaxed truncate font-outfit">
                                   {currentVideo.description}
                                 </p>
                               </div>
@@ -578,7 +571,7 @@ export default function YouTubePlaylistPage() {
                         <div className="aspect-video flex items-center justify-center bg-muted rounded-lg">
                           <div className="text-center">
                             <Play className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground mx-auto mb-3 md:mb-4" />
-                            <p className="text-muted-foreground font-rubik">Select a video to start watching</p>
+                            <p className="text-muted-foreground font-outfit">Select a video to start watching</p>
                           </div>
                         </div>
                       )}
@@ -593,8 +586,8 @@ export default function YouTubePlaylistPage() {
           {!loading && !error && filteredVideos.length === 0 && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center py-20">
               <Youtube className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground mx-auto mb-3 md:mb-4" />
-              <h3 className="text-lg md:text-xl font-semibold  mb-1 md:mb-2 font-rubik">No Videos Found</h3>
-              <p className="text-muted-foreground font-rubik">
+              <h3 className="text-lg md:text-xl font-semibold  mb-1 md:mb-2 font-outfit">No Videos Found</h3>
+              <p className="text-muted-foreground font-outfit">
                 {searchQuery ? "No videos match your search criteria." : "This playlist appears to be empty."}
               </p>
             </motion.div>
@@ -602,26 +595,7 @@ export default function YouTubePlaylistPage() {
         </div>
       </ScrollAnimatedSection>
 
-      <style jsx>{`
-        .custom-youtube-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-youtube-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 4px;
-        }
-        .custom-youtube-scrollbar::-webkit-scrollbar-thumb {
-          background: linear-gradient(180deg, #ef4444, #ec4899);
-          border-radius: 4px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .custom-youtube-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(180deg, #dc2626, #db2777);
-        }
-        .custom-youtube-scrollbar::-webkit-scrollbar-corner {
-          background: transparent;
-        }
-      `}</style>
+        {/* Custom scrollbars are now handled globally */}
     </div>
   )
 }
