@@ -817,26 +817,26 @@ export default function ProfilePage() {
           </motion.div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 lg:w-auto lg:inline-grid bg-muted border border-border">
-              <TabsTrigger value="profile" className="flex items-center gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                <User className="size-4" />
-                <span className="hidden sm:inline">Profile</span>
+            <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid bg-muted border border-border h-auto p-1 gap-1">
+              <TabsTrigger value="profile" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm py-2 md:py-1.5">
+                <User className="size-5 md:size-4" />
+                <span className="hidden md:inline">Profile</span>
               </TabsTrigger>
-              <TabsTrigger value="academic" className="flex items-center gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                <BookOpen className="size-4" />
-                <span className="hidden sm:inline">Academic Tracking</span>
+              <TabsTrigger value="academic" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm py-2 md:py-1.5">
+                <BookOpen className="size-5 md:size-4" />
+                <span className="hidden md:inline">Academic Tracking</span>
               </TabsTrigger>
-              <TabsTrigger value="appearance" className="flex items-center gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                <Palette className="size-4" />
-                <span className="hidden sm:inline">Appearance</span>
+              <TabsTrigger value="appearance" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm py-2 md:py-1.5">
+                <Palette className="size-5 md:size-4" />
+                <span className="hidden md:inline">Appearance</span>
               </TabsTrigger>
-              <TabsTrigger value="visuals" className="flex items-center gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                <Zap className="size-4" />
-                <span className="hidden sm:inline">Visual Effects</span>
+              <TabsTrigger value="visuals" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm py-2 md:py-1.5">
+                <Zap className="size-5 md:size-4" />
+                <span className="hidden md:inline">Visual Effects</span>
               </TabsTrigger>
-              <TabsTrigger value="professional" className="flex items-center gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm text-red-500 data-[state=active]:text-red-500">
-                <Shield className="size-4" />
-                <span className="hidden sm:inline">Security</span>
+              <TabsTrigger value="professional" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm text-red-500 data-[state=active]:text-red-500 py-2 md:py-1.5">
+                <Shield className="size-5 md:size-4" />
+                <span className="hidden md:inline">Security</span>
               </TabsTrigger>
             </TabsList>
 
