@@ -289,6 +289,126 @@ function ThemeModeSelector() {
   )
 }
 
+function VisualEffectsSettings() {
+  const [backgroundEnabled, setBackgroundEnabled] = useState(true)
+  const [smoothScrollEnabled, setSmoothScrollEnabled] = useState(true)
+  const [glassmorphismEnabled, setGlassmorphismEnabled] = useState(true)
+  const [performanceMode, setPerformanceMode] = useState<'performance' | 'power-save'>('performance')
+
+  useEffect(() => {
+    setBackgroundEnabled(localStorage.getItem('chameleon_bg_animation') !== 'false')
+    setSmoothScrollEnabled(localStorage.getItem('chameleon_smooth_scroll') !== 'false')
+    setGlassmorphismEnabled(localStorage.getItem('chameleon_glassmorphism') !== 'false')
+    setPerformanceMode((localStorage.getItem('chameleon_perf_mode') as 'performance' | 'power-save') || 'performance')
+  }, [])
+
+  const handleBgToggle = () => {
+    const newVal = !backgroundEnabled;
+    setBackgroundEnabled(newVal)
+    localStorage.setItem('chameleon_bg_animation', String(newVal))
+    window.dispatchEvent(new Event('chameleon_visual_settings_changed'))
+  }
+
+  const handleSmoothScrollToggle = () => {
+    const newVal = !smoothScrollEnabled;
+    setSmoothScrollEnabled(newVal)
+    localStorage.setItem('chameleon_smooth_scroll', String(newVal))
+    window.dispatchEvent(new Event('chameleon_visual_settings_changed'))
+  }
+
+  const handleGlassmorphismToggle = () => {
+    const newVal = !glassmorphismEnabled;
+    setGlassmorphismEnabled(newVal)
+    localStorage.setItem('chameleon_glassmorphism', String(newVal))
+    window.dispatchEvent(new Event('chameleon_visual_settings_changed'))
+  }
+
+  const handlePerfModeChange = (mode: 'performance' | 'power-save') => {
+    setPerformanceMode(mode)
+    localStorage.setItem('chameleon_perf_mode', mode)
+    if (mode === 'power-save') {
+      setBackgroundEnabled(false)
+      setSmoothScrollEnabled(false)
+      setGlassmorphismEnabled(false)
+      localStorage.setItem('chameleon_bg_animation', 'false')
+      localStorage.setItem('chameleon_smooth_scroll', 'false')
+      localStorage.setItem('chameleon_glassmorphism', 'false')
+    }
+    window.dispatchEvent(new Event('chameleon_visual_settings_changed'))
+  }
+
+  return (
+    <Card className="bg-card border-border shadow-xl">
+      <CardHeader>
+        <CardTitle className="font-outfit font-bold italic flex items-center gap-2">
+          <Zap className="size-5 text-primary"/> Visual Effects & Performance
+        </CardTitle>
+        <CardDescription className="font-outfit text-muted-foreground">Customize animations and rendering performance across the app</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
+          <div>
+            <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-green-500"></div>Animated Background</h4>
+            <p className="text-sm text-muted-foreground font-outfit">Enable the interactive WebGL background in the hero section.</p>
+          </div>
+          <button 
+             onClick={handleBgToggle}
+             className={`w-14 h-7 rounded-full transition-colors relative ${backgroundEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+          >
+             <div className={`size-6 rounded-full bg-white absolute top-0.5 transition-all ${backgroundEnabled ? 'left-7' : 'left-0.5'}`}></div>
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
+          <div>
+            <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-blue-500"></div>Smooth Animations</h4>
+            <p className="text-sm text-muted-foreground font-outfit">Enable buttery smooth scrolling (disable if experiencing lag).</p>
+          </div>
+          <button 
+             onClick={handleSmoothScrollToggle}
+             className={`w-14 h-7 rounded-full transition-colors relative ${smoothScrollEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+          >
+             <div className={`size-6 rounded-full bg-white absolute top-0.5 transition-all ${smoothScrollEnabled ? 'left-7' : 'left-0.5'}`}></div>
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
+          <div>
+            <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-purple-500"></div>Glassmorphism Effects</h4>
+            <p className="text-sm text-muted-foreground font-outfit">Enable high-quality blur filters (disable on weak mobile devices).</p>
+          </div>
+          <button 
+             onClick={handleGlassmorphismToggle}
+             className={`w-14 h-7 rounded-full transition-colors relative ${glassmorphismEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+          >
+             <div className={`size-6 rounded-full bg-white absolute top-0.5 transition-all ${glassmorphismEnabled ? 'left-7' : 'left-0.5'}`}></div>
+          </button>
+        </div>
+
+        <div className="p-4 border border-border/50 rounded-lg bg-muted/20 mt-4">
+          <h4 className="font-bold mb-4 font-outfit text-foreground">System Performance Mode</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <button onClick={() => handlePerfModeChange('performance')} className={`p-4 border-2 rounded-lg flex flex-col items-center gap-2 transition-all ${performanceMode === 'performance' ? 'border-primary bg-primary/10 text-primary' : 'border-border/50 hover:border-primary/50 text-muted-foreground'}`}>
+               <Zap className="size-6" />
+               <span className="font-bold font-outfit">Performance Mode</span>
+               <span className="text-xs text-center opacity-80 font-outfit">Best visuals, higher battery usage</span>
+             </button>
+             <button onClick={() => handlePerfModeChange('power-save')} className={`p-4 border-2 rounded-lg flex flex-col items-center gap-2 transition-all ${performanceMode === 'power-save' ? 'border-amber-500 bg-amber-500/10 text-amber-500' : 'border-border/50 hover:border-amber-500/50 text-muted-foreground'}`}>
+               <Laptop className="size-6" />
+               <span className="font-bold font-outfit">Power Save Mode</span>
+               <span className="text-xs text-center opacity-80 font-outfit">Disables heavy animations, saves battery</span>
+             </button>
+          </div>
+        </div>
+        
+        <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-2 mt-4 font-outfit">
+          <Check className="size-3"/> Settings are applied instantly and saved locally
+        </p>
+      </CardContent>
+    </Card>
+  )
+}
+
 export default function ProfilePage() {
   const [userSubjects, setUserSubjects] = useState<any[]>([])
   const [userDepartmentKey, setUserDepartmentKey] = useState<string>('computing-data-sciences')
@@ -697,7 +817,7 @@ export default function ProfilePage() {
           </motion.div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid bg-muted border border-border">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-5 lg:w-auto lg:inline-grid bg-muted border border-border">
               <TabsTrigger value="profile" className="flex items-center gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm">
                 <User className="size-4" />
                 <span className="hidden sm:inline">Profile</span>
@@ -709,6 +829,10 @@ export default function ProfilePage() {
               <TabsTrigger value="appearance" className="flex items-center gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm">
                 <Palette className="size-4" />
                 <span className="hidden sm:inline">Appearance</span>
+              </TabsTrigger>
+              <TabsTrigger value="visuals" className="flex items-center gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                <Zap className="size-4" />
+                <span className="hidden sm:inline">Visual Effects</span>
               </TabsTrigger>
               <TabsTrigger value="professional" className="flex items-center gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm text-red-500 data-[state=active]:text-red-500">
                 <Shield className="size-4" />
@@ -1213,7 +1337,18 @@ export default function ProfilePage() {
             </TabsContent>
 
 
-            {/* TAB 4: Security (Danger Zone) */}
+            {/* TAB 4: Visual Effects */}
+            <TabsContent value="visuals" className="space-y-6 outline-none">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <VisualEffectsSettings />
+              </motion.div>
+            </TabsContent>
+
+            {/* TAB 5: Security (Danger Zone) */}
             <TabsContent value="professional" className="space-y-6 outline-none">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
