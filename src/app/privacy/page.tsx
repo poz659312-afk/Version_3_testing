@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -44,23 +44,12 @@ interface PolicySection {
 
 const FloatingIcon = ({ icon: Icon, className, delay = 0 }: { icon: any, className?: string, delay?: number }) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ 
-        opacity: [0.3, 0.8, 0.3],
-        y: [0, -10, 0],
-        rotate: [0, 5, -5, 0]
-      }}
-      transition={{
-        duration: 4,
-        repeat: Infinity,
-        delay: delay,
-        ease: "easeInOut"
-      }}
-      className={`absolute ${className}`}
+    <div
+      className={`absolute animate-float ${className}`}
+      style={{ animationDelay: `${delay}s` }}
     >
       <Icon className="w-6 h-6 text-blue-400/30" />
-    </motion.div>
+    </div>
   );
 };
 
@@ -431,43 +420,23 @@ export default function PrivacyPolicyPage() {
         <div className="container mx-auto px-4">
           {/* Header */}
           <div className="text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border mb-6"
-            >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border mb-6 scroll-anim-slide-up scroll-anim-visible">
               <Shield className="w-4 h-4 text-blue-400" />
               <span className="text-sm text-muted-foreground tracking-wide">Privacy & Security</span>
-            </motion.div>
+            </div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-4xl md:text-6xl font-bold  mb-6"
-            >
+            <h1 className="text-4xl md:text-6xl font-bold  mb-6 scroll-anim-slide-up scroll-anim-visible" style={{ transitionDelay: '0.2s' }}>
               Privacy{" "}
               <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 Policy
               </span>
-            </motion.h1>
+            </h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8"
-            >
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8 scroll-anim-slide-up scroll-anim-visible" style={{ transitionDelay: '0.4s' }}>
               Your privacy matters to us. Learn how we collect, use, and protect your information when you use Drive Manager.
-            </motion.p>
+            </p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
-              className="flex flex-wrap items-center justify-center gap-4"
-            >
+            <div className="flex flex-wrap items-center justify-center gap-4 scroll-anim-slide-up scroll-anim-visible" style={{ transitionDelay: '0.6s' }}>
               <Badge className="bg-green-500/20 text-green-400 border-green-500/30 px-4 py-2">
                 <CheckCircle className="w-4 h-4 mr-2" />
                 GDPR Compliant
@@ -480,7 +449,7 @@ export default function PrivacyPolicyPage() {
                 <Shield className="w-4 h-4 mr-2" />
                 Zero Data Selling
               </Badge>
-            </motion.div>
+            </div>
           </div>
 
           {/* Table of Contents */}
@@ -497,11 +466,8 @@ export default function PrivacyPolicyPage() {
                   {sections.map((section, index) => {
                     const IconComponent = section.icon;
                     return (
-                      <motion.button
+                      <button
                         key={section.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
                         onClick={() => {
                           setActiveSection(section.id);
                           document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth' });
@@ -519,7 +485,7 @@ export default function PrivacyPolicyPage() {
                           <span className=" font-medium">{section.title}</span>
                         </div>
                         <ArrowRight className="w-4 h-4 text-muted-foreground" />
-                      </motion.button>
+                      </button>
                     );
                   })}
                 </div>
@@ -539,21 +505,17 @@ export default function PrivacyPolicyPage() {
                     id={section.id}
                     className="bg-white/[0.02] border-border overflow-hidden"
                   >
-                    <motion.div
-                      className="p-6 cursor-pointer border-b border-border"
+                    <div
+                      className="p-6 cursor-pointer border-b border-border hover:bg-white/[0.05] transition-colors duration-200"
                       onClick={() => toggleSection(section.id)}
-                      whileHover={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
-                      transition={{ duration: 0.2 }}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <motion.div 
-                            className={`p-3 rounded-xl bg-gradient-to-r ${section.color}`}
-                            whileHover={{ scale: 1.1 }}
-                            transition={{ duration: 0.2 }}
+                          <div 
+                            className={`p-3 rounded-xl bg-gradient-to-r ${section.color} hover:scale-110 transition-transform duration-200`}
                           >
                             <IconComponent className="w-6 h-6 " />
-                          </motion.div>
+                          </div>
                           <div>
                             <h2 className="text-xl font-semibold ">
                               {section.title}
@@ -563,29 +525,17 @@ export default function PrivacyPolicyPage() {
                             </p>
                           </div>
                         </div>
-                        <motion.div
-                          animate={{ rotate: isExpanded ? 180 : 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
+                        <div className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}>
                           <ChevronDown className="w-5 h-5 text-muted-foreground" />
-                        </motion.div>
+                        </div>
                       </div>
-                    </motion.div>
+                    </div>
 
-                    <AnimatePresence>
-                      {isExpanded && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3, ease: 'easeInOut' }}
-                        >
-                          <CardContent className="p-6">
-                            {section.content}
-                          </CardContent>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                      <CardContent className="p-6">
+                        {section.content}
+                      </CardContent>
+                    </div>
                   </Card>
                 </ScrollAnimatedSection>
               );
@@ -596,11 +546,7 @@ export default function PrivacyPolicyPage() {
           <ScrollAnimatedSection className="mt-16 text-center">
             <Card className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20">
               <CardContent className="p-8">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8 }}
-                >
+                <div>
                   <h3 className="text-2xl font-bold  mb-4">
                     Questions About Our Privacy Policy?
                   </h3>
@@ -617,7 +563,7 @@ export default function PrivacyPolicyPage() {
                       Download PDF
                     </Button>
                   </div>
-                </motion.div>
+                </div>
               </CardContent>
             </Card>
           </ScrollAnimatedSection>
