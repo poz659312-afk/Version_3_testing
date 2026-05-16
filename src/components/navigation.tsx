@@ -555,7 +555,7 @@ export default function Navigation() {
       </header>
 
       {/* Spacer to prevent content from hiding behind fixed nav */}
-      <div className="h-16 md:h-20" />
+      {pathname !== '/' && <div className="h-16 md:h-20" />}
     </>
   )
 }

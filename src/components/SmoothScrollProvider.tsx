@@ -12,15 +12,43 @@ export default function SmoothScrollProvider({ children }: { children: ReactNode
   const [isLowEnd, setIsLowEnd] = useState(true)
 
   useEffect(() => {
-    // Disable smooth scrolling on low-end devices or mobile devices to prevent stuttering
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    const hardwareConcurrency = navigator.hardwareConcurrency || 4;
-    const isLowPower = hardwareConcurrency < 4;
-    
-    // Check if the user prefers reduced motion
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Check local preferences first
+    const checkSettings = () => {
+      const isEnabled = localStorage.getItem('chameleon_smooth_scroll') !== 'false'
+      const isPowerSave = localStorage.getItem('chameleon_perf_mode') === 'power-save'
+      const isGlassmorphismOff = localStorage.getItem('chameleon_glassmorphism') === 'false'
+      
+      const root = document.documentElement;
+      if (isPowerSave) {
+        root.classList.add('power-save-mode');
+      } else {
+        root.classList.remove('power-save-mode');
+      }
+      
+      if (isGlassmorphismOff || isPowerSave) {
+        root.classList.add('no-glassmorphism');
+      } else {
+        root.classList.remove('no-glassmorphism');
+      }
 
-    setIsLowEnd(isMobile || isLowPower || prefersReducedMotion);
+      // Hardware heuristics
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      const hardwareConcurrency = navigator.hardwareConcurrency || 4;
+      const isLowPower = hardwareConcurrency < 4;
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // Disable if the user explicitly turned it off, is in power-save mode, or if hardware constraints apply
+      setIsLowEnd(!isEnabled || isPowerSave || isMobile || isLowPower || prefersReducedMotion);
+    }
+    
+    checkSettings()
+    window.addEventListener('chameleon_visual_settings_changed', checkSettings)
+    window.addEventListener('storage', checkSettings)
+    
+    return () => {
+      window.removeEventListener('chameleon_visual_settings_changed', checkSettings)
+      window.removeEventListener('storage', checkSettings)
+    }
   }, []);
 
   if (isLowEnd) {
