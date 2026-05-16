@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useRef, useEffect, useCallback } from "react"
-import { motion } from "framer-motion"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -454,12 +454,9 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
             size="sm"
             className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600  border-0 shadow-lg hover:shadow-xl transition-all duration-300"
           >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
+            <div className="hover:scale-105 transition-transform">
               <Shield className="w-4 h-4" />
-            </motion.div>
+            </div>
           </Button>
         </DialogTrigger>
         <DialogContent className="/90 backdrop-blur-xl border-border  max-w-md">
@@ -528,12 +525,9 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
 
             className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600  border-0 shadow-lg hover:shadow-xl transition-all duration-300"
           >
-            <motion.div
-              whileHover={{ rotate: 45 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
+            <div className="hover:rotate-45 transition-transform">
               <Plus className="w-4 h-4" />
-            </motion.div>
+            </div>
           </Button>
         </DialogTrigger>
         <DialogContent className="/90 backdrop-blur-xl border-border  max-w-sm">
@@ -583,41 +577,18 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
 
       {/* Animated upload indicator */}
       {hasActiveUploads && (
-        <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0, opacity: 0 }}
-          className="relative"
+        <div
+          className="relative animate-in fade-in zoom-in duration-200"
           title={`${uploads.filter(u => u.status === 'pending' || u.status === 'uploading').length} file(s) uploading`}
         >
           <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
-            <motion.div
-              animate={{ 
-                rotate: 360,
-                scale: [1, 1.2, 1]
-              }}
-              transition={{ 
-                rotate: { duration: 2, repeat: Infinity, ease: "linear" },
-                scale: { duration: 1, repeat: Infinity, ease: "easeInOut" }
-              }}
-            >
-              <CloudUpload className="w-3 h-3 " />
-            </motion.div>
+            <CloudUpload className="w-3 h-3 animate-spin" />
           </div>
           {/* Pulsing ring */}
-          <motion.div
-            className="absolute inset-0 w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"
-            animate={{ 
-              scale: [1, 1.5, 1],
-              opacity: [0.7, 0, 0.7]
-            }}
-            transition={{ 
-              duration: 2, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }}
+          <div
+            className="absolute inset-0 w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full animate-ping opacity-20"
           />
-        </motion.div>
+        </div>
       )}
       </div>
 
@@ -671,25 +642,21 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
                 }
               `}
             >
-              <motion.div
-                animate={isDragActive ? { scale: 1.05 } : { scale: 1 }}
-                transition={{ duration: 0.2 }}
-                className="space-y-4"
+              <div
+                className={`space-y-4 ${isDragActive ? 'scale-105' : 'scale-100'} transition-transform duration-200`}
               >
                 <div className="flex justify-center">
-                  <motion.div
-                    animate={isDragActive ? { y: -5 } : { y: 0 }}
-                    transition={{ duration: 0.2 }}
+                  <div
                     className={`
-                      w-16 h-16 rounded-full flex items-center justify-center
+                      w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200
                       ${isDragActive 
-                        ? 'bg-purple-500/20 text-purple-400' 
+                        ? 'bg-purple-500/20 text-purple-400 -translate-y-1' 
                         : 'bg-muted text-muted-foreground'
                       }
                     `}
                   >
                     <CloudUpload className="w-8 h-8" />
-                  </motion.div>
+                  </div>
                 </div>
                 
                 <div>
@@ -716,7 +683,7 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
                   <Upload className="w-4 h-4 mr-2" />
                   Choose Files
                 </Button>
-              </motion.div>
+              </div>
             </div>
 
             {/* Selected Files List */}
@@ -739,12 +706,9 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
                     const isFileFailed = progress === -1
                     
                     return (
-                      <motion.div
+                      <div
                         key={fileKey}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        className="relative"
+                        className="relative animate-in fade-in slide-in-from-left-2 duration-200"
                       >
                         <div className="flex items-center justify-between p-3 bg-muted rounded border border-border relative overflow-hidden">
                           {/* Progress background */}
@@ -814,7 +778,7 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
                             </Button>
                           )}
                         </div>
-                      </motion.div>
+                      </div>
                     )
                   })}
                 </div>
@@ -900,19 +864,12 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
             </div>
             
             {isAutoClosing && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3"
+              <div
+                className="flex items-center gap-2 text-sm text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 animate-in fade-in slide-in-from-bottom-1 duration-200"
               >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                >
-                  <Loader2 className="w-4 h-4" />
-                </motion.div>
+                <Loader2 className="w-4 h-4 animate-spin" />
                 <span>The page will be refreshed for loading the new content...</span>
-              </motion.div>
+              </div>
             )}
           </div>
 

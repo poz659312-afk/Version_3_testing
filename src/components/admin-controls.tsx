@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -188,39 +188,22 @@ export function FileActions({ fileId, fileName, onDeleted, onRenamed }: FileActi
               />
             </div>
 
-            <AnimatePresence>
-              {(isRenaming || renameSuccess) && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="flex items-center gap-2 text-sm"
-                >
-                  {isRenaming && (
-                    <>
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                      >
-                        <Loader2 className="w-4 h-4 text-amber-500" />
-                      </motion.div>
-                      <span className="text-amber-400">Renaming in progress...</span>
-                    </>
-                  )}
-                  {renameSuccess && (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                      className="flex items-center gap-2"
-                    >
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span className="text-green-400">Renamed successfully!</span>
-                    </motion.div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {(isRenaming || renameSuccess) && (
+              <div className="flex items-center gap-2 text-sm animate-in fade-in slide-in-from-bottom-1 duration-200">
+                {isRenaming && (
+                  <>
+                    <Loader2 className="w-4 h-4 text-amber-500 animate-spin" />
+                    <span className="text-amber-400">Renaming in progress...</span>
+                  </>
+                )}
+                {renameSuccess && (
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span className="text-green-400">Renamed successfully!</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <DialogFooter className="gap-2">
@@ -275,34 +258,15 @@ export function FileActions({ fileId, fileName, onDeleted, onRenamed }: FileActi
             </AlertDialogDescription>
           </AlertDialogHeader>
 
-          <AnimatePresence>
-            {isDeleting && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-lg"
-              >
-                <motion.div
-                  animate={{ 
-                    rotate: [0, -10, 10, -10, 0],
-                    scale: [1, 1.1, 1, 1.1, 1]
-                  }}
-                  transition={{ 
-                    duration: 0.5, 
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700" />
-                </motion.div>
-                <div>
-                  <p className="text-red-400 font-medium">Deleting in progress...</p>
-                  <p className="text-red-300/60 text-sm">Please wait while we remove the file</p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {isDeleting && (
+            <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-lg animate-in fade-in slide-in-from-bottom-1 duration-200">
+              <Trash2 className="w-5 h-5 text-red-500 animate-pulse" />
+              <div>
+                <p className="text-red-400 font-medium">Deleting in progress...</p>
+                <p className="text-red-300/60 text-sm">Please wait while we remove the file</p>
+              </div>
+            </div>
+          )}
 
           <AlertDialogFooter className="gap-2">
             <AlertDialogCancel 
@@ -318,13 +282,7 @@ export function FileActions({ fileId, fileName, onDeleted, onRenamed }: FileActi
             >
               {isDeleting ? (
                 <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                    className="mr-2"
-                  >
-                    <Trash2 className="w-4 h-4 hover:text-red-600" />
-                  </motion.div>
+                  <Trash2 className="w-4 h-4 mr-2 animate-spin" />
                   Deleting...
                 </>
               ) : (
@@ -516,34 +474,22 @@ export function FolderActions({ folderId, folderName, onDeleted, onRenamed }: Fo
               />
             </div>
 
-            <AnimatePresence>
-              {(isRenaming || renameSuccess) && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="flex items-center gap-2 text-sm"
-                >
-                  {isRenaming && (
-                    <>
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                      >
-                        <Loader2 className="w-4 h-4 text-blue-500" />
-                      </motion.div>
-                      <span className="text-blue-400">Renaming folder...</span>
-                    </>
-                  )}
-                  {renameSuccess && (
-                    <>
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span className="text-green-400">Folder renamed successfully!</span>
-                    </>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {(isRenaming || renameSuccess) && (
+              <div className="flex items-center gap-2 text-sm animate-in fade-in slide-in-from-bottom-1 duration-200">
+                {isRenaming && (
+                  <>
+                    <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
+                    <span className="text-blue-400">Renaming folder...</span>
+                  </>
+                )}
+                {renameSuccess && (
+                  <>
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <span className="text-green-400">Folder renamed successfully!</span>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           <DialogFooter className="gap-2">
@@ -610,13 +556,7 @@ export function FolderActions({ folderId, folderName, onDeleted, onRenamed }: Fo
             >
               {isDeleting ? (
                 <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                    className="mr-2"
-                  >
-                    <Trash2 className="w-4 h-4 hover:text-red-600" />
-                  </motion.div>
+                  <Trash2 className="w-4 h-4 mr-2 animate-spin" />
                   Deleting...
                 </>
               ) : (
