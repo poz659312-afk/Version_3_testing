@@ -1,8 +1,8 @@
-// [PERF] Optimized: changed viewport once:false → once:true — prevents re-animating elements on every scroll back
+// [PERF] Optimized: replaced framer-motion with IntersectionObserver + CSS animations
+// Saves ~45kB of JS per chunk that imported this component
 "use client"
 
-import { motion } from "framer-motion"
-import type { ReactNode } from "react"
+import { useEffect, useRef, useState, type ReactNode } from "react"
 
 interface ScrollAnimatedSectionProps {
   children: ReactNode
@@ -22,39 +22,15 @@ interface ScrollAnimatedSectionProps {
   duration?: number
 }
 
-const animationVariants = {
-  fadeIn: {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-  },
-  slideUp: {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0 },
-  },
-  slideDown: {
-    hidden: { opacity: 0, y: -50 },
-    visible: { opacity: 1, y: 0 },
-  },
-  slideInFromLeft: {
-    hidden: { opacity: 0, x: -100 },
-    visible: { opacity: 1, x: 0 },
-  },
-  slideInFromRight: {
-    hidden: { opacity: 0, x: 100 },
-    visible: { opacity: 1, x: 0 },
-  },
-  slideInFromBottom: {
-    hidden: { opacity: 0, y: 100 },
-    visible: { opacity: 1, y: 0 },
-  },
-  scaleIn: {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1 },
-  },
-  rotateIn: {
-    hidden: { opacity: 0, rotate: -180, scale: 0.5 },
-    visible: { opacity: 1, rotate: 0, scale: 1 },
-  },
+const animationClassMap: Record<string, string> = {
+  fadeIn: "scroll-anim-fade-in",
+  slideUp: "scroll-anim-slide-up",
+  slideDown: "scroll-anim-slide-down",
+  slideInFromLeft: "scroll-anim-slide-left",
+  slideInFromRight: "scroll-anim-slide-right",
+  slideInFromBottom: "scroll-anim-slide-bottom",
+  scaleIn: "scroll-anim-scale-in",
+  rotateIn: "scroll-anim-rotate-in",
 }
 
 export default function ScrollAnimatedSection({
@@ -66,27 +42,41 @@ export default function ScrollAnimatedSection({
   delay = 0,
   duration = 0.8,
 }: ScrollAnimatedSectionProps) {
-  const variants = animationVariants[animation]
+  const ref = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          observer.unobserve(el) // once: true equivalent
+        }
+      },
+      { rootMargin: "-100px" }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  const animClass = animationClassMap[animation] || "scroll-anim-fade-in"
 
   return (
-    <motion.div
-      className={className}
+    <div
+      ref={ref}
+      className={`${animClass} ${isVisible ? "scroll-anim-visible" : ""} ${className}`}
       id={id}
-      style={style}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{
-        once: true, // Play animation only once — prevents re-running on scroll back
-        margin: "-100px", // Trigger animation when element is 100px from viewport
-      }}
-      variants={variants}
-      transition={{
-        duration,
-        delay,
-        ease: [0.25, 0.4, 0.25, 1], // Custom easing for smooth animations
+      style={{
+        ...style,
+        transitionDelay: `${delay}s`,
+        transitionDuration: `${duration}s`,
       }}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }

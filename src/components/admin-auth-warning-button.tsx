@@ -1,8 +1,8 @@
+// [PERF] Optimized: removed framer-motion — replaced with CSS animation
 "use client";
 
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Shield } from "lucide-react";
-import { motion } from "framer-motion";
 
 interface AdminAuthWarningButtonProps {
   onAuthorize: () => void;
@@ -10,11 +10,7 @@ interface AdminAuthWarningButtonProps {
 
 export function AdminAuthWarningButton({ onAuthorize }: AdminAuthWarningButtonProps) {
   return (
-    <motion.div
-      initial={{ scale: 0.9, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
+    <div className="animate-notif-modal-enter">
       <Button
         onClick={onAuthorize}
         className="relative bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700  font-semibold shadow-lg transition-all duration-300 hover:scale-105"
@@ -31,6 +27,6 @@ export function AdminAuthWarningButton({ onAuthorize }: AdminAuthWarningButtonPr
           <Shield className="w-4 h-4" />
         </span>
       </Button>
-    </motion.div>
+    </div>
   );
 }

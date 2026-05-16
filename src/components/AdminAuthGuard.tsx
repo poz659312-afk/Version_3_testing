@@ -15,7 +15,7 @@ import {
   Key,
   RefreshCw
 } from "lucide-react"
-import { motion } from "framer-motion"
+
 
 interface AdminAuthGuardProps {
   userSession: any
@@ -114,13 +114,10 @@ export function AdminAuthGuard({ userSession, onAuthStatusChange, children }: Ad
   if (authStatus === 'needs-auth') {
     return (
       <div className="min-h-[60vh] flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md"
+        <div
+          className="w-full max-w-md animate-notif-modal-enter"
         >
-          <Card className="bg-white/[0.02] border-border backdrop-blur-xl">
+          <Card className="bg-white/[0.02] border-border bg-background/90">
             <CardHeader className="text-center pb-4">
               <div className="flex items-center justify-center gap-2 mb-4">
                 <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
@@ -129,14 +126,12 @@ export function AdminAuthGuard({ userSession, onAuthStatusChange, children }: Ad
                 </Badge>
               </div>
               
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
-                className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center"
+              <div
+                className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center animate-notif-modal-enter"
+                style={{ animationDelay: '0.2s' }}
               >
                 <Key className="w-8 h-8 " />
-              </motion.div>
+              </div>
 
               <CardTitle className="text-xl font-semibold  mb-2">
                 Connect Your Google Drive
@@ -243,7 +238,7 @@ export function AdminAuthGuard({ userSession, onAuthStatusChange, children }: Ad
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       </div>
     )
   }
