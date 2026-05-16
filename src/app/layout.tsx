@@ -3,13 +3,22 @@ import { Inter, Roboto_Mono, Rubik, Outfit, Rock_Salt, Cairo, Noto_Sans_Arabic }
 import Script from "next/script";
 import "./globals.css";
 import { ToastProvider } from "@/components/ToastProvider";
-import { NotificationProvider } from "@/hooks/use-notifications";
-import DevToolsProtection from "@/components/DevToolsProtection";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ColorThemeProvider } from "@/components/color-theme-provider";
 import Navigation from "@/components/navigation";
-import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+// [PERF] SmoothScrollProvider and NotificationProvider are now lazy-loaded
+// to prevent Lenis (~20kB) and Supabase (~25kB) from polluting the shared chunk
+import dynamic from "next/dynamic";
 
+const SmoothScrollProvider = dynamic(
+  () => import("@/components/SmoothScrollProvider"),
+  { ssr: false }
+);
+
+const LazyNotificationProvider = dynamic(
+  () => import("@/components/LazyNotificationProvider"),
+  { ssr: false }
+);
 
 // Inter as Geist Sans replacement
 const geistSans = Inter({
@@ -108,7 +117,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <ColorThemeProvider defaultTheme="default">
-            <NotificationProvider>
+            <LazyNotificationProvider>
               <ToastProvider>
                 {/* <DevToolsProtection /> */}
                 <SmoothScrollProvider>
@@ -116,7 +125,7 @@ export default function RootLayout({
                     {children}
                 </SmoothScrollProvider>
               </ToastProvider>
-            </NotificationProvider>
+            </LazyNotificationProvider>
           </ColorThemeProvider>
         </ThemeProvider>
       </body>
