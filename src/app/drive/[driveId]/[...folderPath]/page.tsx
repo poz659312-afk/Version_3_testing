@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect, useCallback, useMemo, useRef, useDeferredValue } from "react"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -243,7 +243,6 @@ export default function DrivePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
-  const [filteredFiles, setFilteredFiles] = useState<DriveFile[]>([])
   const [currentFolder, setCurrentFolder] = useState<FolderInfo | null>(null)
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([])
   const [urlCopied, setUrlCopied] = useState(false)
@@ -254,7 +253,6 @@ export default function DrivePage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [isAuthorized, setIsAuthorized] = useState(false)
   const [userSession, setUserSession] = useState<any>(null)
-  const [usernameCache, setUsernameCache] = useState<Map<string, string>>(new Map())
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [selectedAIFile, setSelectedAIFile] = useState<any>(null);
@@ -270,6 +268,10 @@ export default function DrivePage() {
   // Dynamic metadata
   useDynamicMetadata(dynamicPageMetadata.driveFolder(currentFolder?.name, 
     breadcrumbs.length > 0 ? breadcrumbs[0]?.name : undefined))
+
+  const deferredSearchQuery = useDeferredValue(searchQuery)
+  const usernameCacheRef = useRef<Map<string, string>>(new Map())
+  const supabase = useMemo(() => createBrowserClient(), [])
 
   // Resolve URL parameter to actual drive ID
   useEffect(() => {
@@ -398,7 +400,6 @@ export default function DrivePage() {
 
       if (cached && Date.now() - cached.timestamp < CACHE_EXPIRATION) {
         setFiles(cached.data)
-        setFilteredFiles(cached.data)
         return
       }
 
@@ -444,10 +445,8 @@ export default function DrivePage() {
 
       if (pageToken) {
         setFiles((prev) => [...prev, ...(data.files || [])])
-        setFilteredFiles((prev) => [...prev, ...(data.files || [])])
       } else {
         setFiles(data.files || [])
-        setFilteredFiles(data.files || [])
       }
 
       setNextPageToken(data.nextPageToken)
@@ -609,39 +608,46 @@ export default function DrivePage() {
     fetchFolderContents(currentFolderId)
   }
 
-  // Sort files based on current sort option and direction
-  useEffect(() => {
-    const sorted = [...filteredFiles].sort((a, b) => {
-      let comparison = 0
+  const filteredFiles = useMemo(() => {
+    const query = deferredSearchQuery.trim().toLowerCase()
+    return [...files]
+      .sort((a, b) => {
+        let comparison = 0
 
-      switch (sortOption) {
-        case "name":
-          comparison = a.name.localeCompare(b.name)
-          break
-        case "modified":
-          comparison = new Date(a.modifiedTime).getTime() - new Date(b.modifiedTime).getTime()
-          break
-        case "size":
-          comparison = (Number(a.size) || 0) - (Number(b.size) || 0)
-          break
-        case "type":
-          comparison = a.mimeType.localeCompare(b.mimeType)
-          break
-      }
+        switch (sortOption) {
+          case "name":
+            comparison = a.name.localeCompare(b.name)
+            break
+          case "modified":
+            comparison = new Date(a.modifiedTime).getTime() - new Date(b.modifiedTime).getTime()
+            break
+          case "size":
+            comparison = (Number(a.size) || 0) - (Number(b.size) || 0)
+            break
+          case "type":
+            comparison = a.mimeType.localeCompare(b.mimeType)
+            break
+        }
 
-      return sortDirection === "asc" ? comparison : -comparison
-    })
+        return sortDirection === "asc" ? comparison : -comparison
+      })
+      .filter((file) => !query || file.name.toLowerCase().includes(query))
+  }, [files, sortOption, sortDirection, deferredSearchQuery])
 
-    setFilteredFiles(sorted)
-  }, [sortOption, sortDirection, files])
-
-  // Filter files based on search
-  useEffect(() => {
-    const filtered = files.filter((file) => file.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    setFilteredFiles(filtered)
-  }, [searchQuery, files])
-
-  const supabase = createBrowserClient()
+  const fileStats = useMemo(() => {
+    let folders = 0
+    let images = 0
+    for (const file of filteredFiles) {
+      if (file.mimeType.includes("folder")) folders += 1
+      else if (file.mimeType.includes("image")) images += 1
+    }
+    return {
+      total: filteredFiles.length,
+      folders,
+      images,
+      others: filteredFiles.length - folders - images,
+    }
+  }, [filteredFiles])
 
   // Check if current user owns the file
   const isCurrentUserOwner = (file: DriveFile): boolean => {
@@ -652,10 +658,11 @@ export default function DrivePage() {
     )
   }
 
-  const getUsername = async (email: string): Promise<string> => {
+  const getUsername = useCallback(async (email: string): Promise<string> => {
     // Check cache first
-    if (usernameCache.has(email)) {
-      return usernameCache.get(email)!
+    const cachedUsername = usernameCacheRef.current.get(email)
+    if (cachedUsername) {
+      return cachedUsername
     }
 
     try {
@@ -668,23 +675,23 @@ export default function DrivePage() {
       if (error || !userData) {
         console.log(`No user found for email: ${email}`)
         const fallback = "Unknown User"
-        setUsernameCache(prev => new Map(prev).set(email, fallback))
+        usernameCacheRef.current.set(email, fallback)
         return fallback
       }
 
       const username = userData.username || "Unknown User"
       
       // Cache the result
-      setUsernameCache(prev => new Map(prev).set(email, username))
+      usernameCacheRef.current.set(email, username)
       
       return username
     } catch (error) {
       console.error('Error fetching username:', error)
       const fallback = "Unknown User"
-      setUsernameCache(prev => new Map(prev).set(email, fallback))
+      usernameCacheRef.current.set(email, fallback)
       return fallback
     }
-  }
+  }, [supabase])
   // Load folder contents and info when path changes
   useEffect(() => {
     if (actualDriveId && userSession && !notFound) {
@@ -732,8 +739,8 @@ export default function DrivePage() {
         <>
           {/* Background Elements */}
           <div className="fixed inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full animate-pulse" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '3s' }} />
+            <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-3xl rounded-full" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/5 blur-3xl rounded-full" />
             <div className="absolute inset-0 bg-[radial-gradient(#00000010_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff05_1px,transparent_1px)] [background-size:32px_32px] opacity-40" />
           </div>
 
@@ -876,7 +883,7 @@ export default function DrivePage() {
             {/* Search and Sort Controls */}
             <div className="max-w-3xl mx-auto flex flex-col gap-3 px-2">
               <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-2xl blur opacity-25 group-focus-within:opacity-100 transition-opacity duration-500 animate-pulse" />
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 rounded-2xl blur opacity-20 group-focus-within:opacity-80 transition-opacity duration-300" />
                 <div className="relative">
                   <Search
                     className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors"
@@ -887,7 +894,7 @@ export default function DrivePage() {
                     placeholder="Filter current folder..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-12 h-12 bg-background/50 backdrop-blur-xl border-border/50 placeholder:text-muted-foreground/50 rounded-2xl focus:border-primary/50 focus:ring-primary/20 w-full transition-all"
+                    className="pl-12 h-12 bg-background/50 backdrop-blur-sm border-border/50 placeholder:text-muted-foreground/50 rounded-2xl focus:border-primary/50 focus:ring-primary/20 w-full transition-all"
                     aria-label="Search files"
                   />
                 </div>
@@ -941,44 +948,41 @@ export default function DrivePage() {
             {loading ? (
               <div className="h-10 w-full max-w-xl bg-white/[0.02] border border-border rounded-full animate-pulse" />
             ) : (
-              <div className="inline-flex items-center gap-1 p-1 bg-background/40 backdrop-blur-xl border border-border/50 rounded-full shadow-2xl">
+              <div className="inline-flex items-center gap-1 p-1 bg-background/40 backdrop-blur-sm border border-border/50 rounded-full shadow-2xl">
                 <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20">
                    <FileText className="size-3.5 text-primary" />
-                   <span className="text-xs font-black italic">{filteredFiles.length}</span>
+                   <span className="text-xs font-black italic">{fileStats.total}</span>
                 </div>
                 <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-muted-foreground">
                    <Folder className="size-3.5" />
-                   <span className="text-xs font-medium">{filteredFiles.filter((f) => f.mimeType.includes("folder")).length}</span>
+                   <span className="text-xs font-medium">{fileStats.folders}</span>
                 </div>
                 <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-muted-foreground border-l border-border/20">
                    <FileImage className="size-3.5" />
-                   <span className="text-xs font-medium">{filteredFiles.filter((f) => f.mimeType.includes("image")).length}</span>
+                   <span className="text-xs font-medium">{fileStats.images}</span>
                 </div>
                 <div className="flex items-center gap-2 px-4 py-1.5 text-muted-foreground border-l border-border/20">
                    <Shield className="size-3.5" />
-                   <span className="text-xs font-medium">{filteredFiles.filter((f) => !f.mimeType.includes("folder") && !f.mimeType.includes("image")).length}</span>
+                   <span className="text-xs font-medium">{fileStats.others}</span>
                 </div>
               </div>
             )}
           </div>
           {/* Loading State */}
-          <AnimatePresence>
+
             {loading && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+              <div
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
               >
                 {Array.from({ length: 6 }).map((_, index) => (
                   <FileCardSkeleton key={index} isLoggedIn={!!userSession} />
                 ))}
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
+
 
           {/* Error State */}
-          <AnimatePresence>
+
             {error && (
               <div className="text-center py-20">
                 <Card className="bg-red-500/10 border-red-500/20 max-w-md mx-auto">
@@ -998,13 +1002,13 @@ export default function DrivePage() {
                 </Card>
               </div>
             )}
-          </AnimatePresence>
+
 
           {/* Files Grid */}
-          <AnimatePresence>
+
             {!loading && !error && (
               <>
-                <motion.div
+                <div
                   className={
                     viewMode === "grid"
                       ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
@@ -1019,11 +1023,8 @@ export default function DrivePage() {
 
                     if (viewMode === "list") {
                       return (
-                        <motion.div
+                        <div
                           key={file.id}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.01 }}
                           className="group relative flex items-center gap-4 p-3 bg-white/[0.03] border border-border/50 rounded-xl hover:bg-white/[0.06] hover:border-primary/30 transition-all cursor-pointer"
                           onClick={() => isFolder ? handleFolderClick(file) : handleView(file)}
                         >
@@ -1096,7 +1097,7 @@ export default function DrivePage() {
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>
-                        </motion.div>
+                        </div>
                       )
                     }
 
@@ -1251,7 +1252,7 @@ export default function DrivePage() {
                       </Card>
                     )
                   })}
-                </motion.div>
+                </div>
 
                 {/* Load More Button */}
                 {nextPageToken && (
@@ -1275,13 +1276,11 @@ export default function DrivePage() {
                 )}
               </>
             )}
-          </AnimatePresence>
+
 
           {/* Empty State */}
           {!loading && !error && filteredFiles.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+            <div
               className="text-center py-32"
             >
               <div className="size-20 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-8 animate-pulse">
@@ -1291,7 +1290,7 @@ export default function DrivePage() {
               <p className="text-muted-foreground font-light italic">
                 {searchQuery ? "No matches found in this sector." : "This digital vault is currently empty."}
               </p>
-            </motion.div>
+            </div>
           )}
         </div>
       </div>
@@ -1299,11 +1298,13 @@ export default function DrivePage() {
       )}
       </div>
       <AdBanner dataAdSlot="8021269551" />
-      <AIModal 
-        isOpen={aiModalOpen} 
-        onClose={() => setAiModalOpen(false)} 
-        file={selectedAIFile} 
-      />
+      {aiModalOpen && (
+        <AIModal
+          isOpen={aiModalOpen}
+          onClose={() => setAiModalOpen(false)}
+          file={selectedAIFile}
+        />
+      )}
     </UploadProvider>
   )
 }
