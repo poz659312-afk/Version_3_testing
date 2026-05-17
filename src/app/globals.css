@@ -11,6 +11,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Permanently Hide Mermaid Syntax Errors & Bomb SVGs Globally */
+#mermaid-error-svg, 
+[id*="mermaid-error"], 
+[id*="error-svg"],
+.mermaid-err,
+.error-icon, 
+.error-text,
+.error-icon * {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  pointer-events: none !important;
+}
+
 .fade-out {
   opacity: 0;
   transition: opacity 1s ease-out;
