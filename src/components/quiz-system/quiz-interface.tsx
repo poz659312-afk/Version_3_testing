@@ -957,12 +957,20 @@ export default function QuizInterface({
                   <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
                     {quizData.name}
                   </h1>
-                  <Badge
+                   <Badge
                     variant="outline"
                     className="text-lg px-6 py-3 border-primary/20 text-foreground/90 backdrop-blur-sm bg-primary/10"
                   >
                     Code: {quizData.code}
                   </Badge>
+                  {quizData.id === "ai-generated" && (
+                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 max-w-xl mx-auto mt-6 text-center text-xs md:text-[13px] text-amber-400/90 font-medium leading-relaxed shadow-sm">
+                      <span className="font-bold text-amber-300 block mb-1 text-sm">⚠️ Important Notice for AI-Generated Quizzes</span>
+                      This quiz is for practice and study purposes only; grades are unofficial and will not be recorded in your academic history.
+                      <br />
+                      Please note that going back or refreshing the page will permanently lose your active quiz questions and session.
+                    </div>
+                  )}
                 </motion.div>
               </CardHeader>
 
