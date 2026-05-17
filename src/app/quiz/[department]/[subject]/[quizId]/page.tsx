@@ -19,6 +19,24 @@ export default function QuizPage() {
   useEffect(() => {
     const { department, subject, quizId } = params
 
+    if (department === "ai" && subject === "generated" && quizId === "ai-quiz") {
+      try {
+        const stored = localStorage.getItem("ai-quiz-data")
+        if (!stored) {
+          setError("AI Quiz data not found or expired. Please generate a new quiz.")
+          setLoading(false)
+          return
+        }
+        const parsed = JSON.parse(stored)
+        setQuizData(parsed)
+      } catch (err) {
+        setError("Failed to load AI Quiz data from local storage.")
+      } finally {
+        setLoading(false)
+      }
+      return
+    }
+
     findQuiz(department as string, subject as string, quizId as string)
       .then((result) => {
         if (!result) {
@@ -37,7 +55,10 @@ export default function QuizPage() {
   }, [params])
 
   const handleExit = () => {
-    if (levelNum) {
+    if (params.department === "ai") {
+      const backLink = localStorage.getItem("ai-quiz-back-link") || "/drive"
+      router.push(backLink)
+    } else if (levelNum) {
       router.push(`/specialization/${params.department}/${levelNum}/${params.subject}`)
     } else {
       router.push(`/specialization`)
@@ -78,5 +99,5 @@ export default function QuizPage() {
     )
   }
 
-  return <QuizInterface quizData={quizData} onExit={handleExit} />
+  return <QuizInterface quizData={quizData} onExit={handleExit} initialQuestions={quizData.questions} />
 }
