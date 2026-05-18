@@ -32,6 +32,7 @@ import { useLenis } from "lenis/react";
 import { useColorTheme } from "@/components/color-theme-provider";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
+import { getStudentSession } from "@/lib/auth";
 
 interface Message {
   role: "user" | "assistant";
@@ -248,20 +249,243 @@ function MermaidElement({ chart }: { chart: string }) {
   );
 }
 
+const preprocessMathContent = (content: string) => {
+  if (!content) return "";
+  
+  // Replace simple slash divisions and asterisks in LaTeX blocks with proper vertical fractions and clean dots
+  let processed = content;
+  
+  // Match mathematical equations between $ and $ or $$ and $$
+  processed = processed.replace(/(\$\$?)([\s\S]*?)(\$\$?)/g, (match, d1, math, d2) => {
+    let cleanedMath = math;
+    
+    // 1. Convert simple asterisks * to \cdot
+    cleanedMath = cleanedMath.replace(/\*/g, " \\cdot ");
+    
+    // 2. Convert simple division slashes (/) inside math blocks to proper \frac blocks
+    // Pattern A: (numerator) / (denominator) -> \frac{numerator}{denominator}
+    cleanedMath = cleanedMath.replace(/\(([^)]+)\)\s*\/\s*\(([^)]+)\)/g, "\\frac{$1}{$2}");
+    
+    // Pattern B: (numerator) / variable_or_number
+    cleanedMath = cleanedMath.replace(/\(([^)]+)\)\s*\/\s*([a-zA-Z0-9_^{}]+)/g, "\\frac{$1}{$2}");
+    
+    // Pattern C: variable_or_number / (denominator)
+    cleanedMath = cleanedMath.replace(/([a-zA-Z0-9_^{}]+)\s*\/\s*\(([^)]+)\)/g, "\\frac{$1}{$2}");
+    
+    // Pattern D: simple variable / simple variable (e.g. A/B or z^2/E^2)
+    cleanedMath = cleanedMath.replace(/([a-zA-Z0-9_^{}]+)\s*\/\s*([a-zA-Z0-9_^{}]+)/g, "\\frac{$1}{$2}");
+    
+    // 3. Force full display style (\displaystyle) for large mathematical font sizes and beautiful vertical fraction heights
+    if (!cleanedMath.includes("\\displaystyle")) {
+      cleanedMath = " \\displaystyle " + cleanedMath;
+    }
+    
+    return `${d1}${cleanedMath}${d2}`;
+  });
+  
+  return processed;
+};
+
 export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
   const { colorTheme } = useColorTheme();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+  
+  const themeClasses: Record<string, { 
+    text: string; bg: string; border: string; bullet: string; heading: string; codeBg: string; inlineCodeText: string; accent: string;
+    primary: string; primary600: string; primary700: string; primary800: string; ring: string; focusBorder: string; textHoverBg: string; 
+    gradientBg: string; userBorder: string; userShadow: string; sendShadow: string; cardHover: string; cardTextHover: string;
+  }> = {
+    default: {
+      text: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", bullet: "bg-indigo-400/60", heading: "text-indigo-400", codeBg: "bg-indigo-500/15", inlineCodeText: "text-indigo-300", accent: "#4f46e5",
+      primary: "bg-indigo-500", primary600: "bg-indigo-600", primary700: "bg-indigo-700", primary800: "bg-indigo-800",
+      ring: "focus:ring-indigo-500/20", focusBorder: "focus:border-indigo-500/50",
+      textHoverBg: "hover:text-indigo-400 hover:bg-indigo-500/10",
+      gradientBg: "bg-gradient-to-br from-indigo-600 to-indigo-700 dark:from-indigo-600/90 dark:to-indigo-800/90",
+      userBorder: "border-indigo-500/30", userShadow: "shadow-indigo-600/10",
+      sendShadow: "shadow-indigo-500/20", cardHover: "hover:bg-indigo-500/10 hover:border-indigo-500/30", cardTextHover: "group-hover:text-indigo-400"
+    },
+    volcano: {
+      text: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/20", bullet: "bg-orange-500/60", heading: "text-orange-400", codeBg: "bg-orange-500/15", inlineCodeText: "text-orange-300", accent: "#f97316",
+      primary: "bg-orange-500", primary600: "bg-orange-600", primary700: "bg-orange-700", primary800: "bg-orange-800",
+      ring: "focus:ring-orange-500/20", focusBorder: "focus:border-orange-500/50",
+      textHoverBg: "hover:text-orange-400 hover:bg-orange-500/10",
+      gradientBg: "bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-500/90 dark:to-orange-600/90",
+      userBorder: "border-orange-500/30", userShadow: "shadow-orange-500/10",
+      sendShadow: "shadow-orange-500/20", cardHover: "hover:bg-orange-500/10 hover:border-orange-500/30", cardTextHover: "group-hover:text-orange-400"
+    },
+    nightowl: {
+      text: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20", bullet: "bg-sky-400/60", heading: "text-sky-400", codeBg: "bg-sky-500/15", inlineCodeText: "text-sky-300", accent: "#0ea5e9",
+      primary: "bg-sky-500", primary600: "bg-sky-600", primary700: "bg-sky-700", primary800: "bg-sky-800",
+      ring: "focus:ring-sky-500/20", focusBorder: "focus:border-sky-500/50",
+      textHoverBg: "hover:text-sky-400 hover:bg-sky-500/10",
+      gradientBg: "bg-gradient-to-br from-sky-600 to-sky-700 dark:from-sky-600/90 dark:to-sky-800/90",
+      userBorder: "border-sky-500/30", userShadow: "shadow-sky-600/10",
+      sendShadow: "shadow-sky-500/20", cardHover: "hover:bg-sky-500/10 hover:border-sky-500/30", cardTextHover: "group-hover:text-sky-400"
+    },
+    skyblue: {
+      text: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20", bullet: "bg-sky-400/60", heading: "text-sky-400", codeBg: "bg-sky-500/15", inlineCodeText: "text-sky-300", accent: "#38bdf8",
+      primary: "bg-sky-500", primary600: "bg-sky-600", primary700: "bg-sky-700", primary800: "bg-sky-800",
+      ring: "focus:ring-sky-500/20", focusBorder: "focus:border-sky-500/50",
+      textHoverBg: "hover:text-sky-400 hover:bg-sky-500/10",
+      gradientBg: "bg-gradient-to-br from-sky-600 to-sky-700 dark:from-sky-600/90 dark:to-sky-800/90",
+      userBorder: "border-sky-500/30", userShadow: "shadow-sky-600/10",
+      sendShadow: "shadow-sky-500/20", cardHover: "hover:bg-sky-500/10 hover:border-sky-500/30", cardTextHover: "group-hover:text-sky-400"
+    },
+    sunset: {
+      text: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", bullet: "bg-rose-400/60", heading: "text-rose-400", codeBg: "bg-rose-500/15", inlineCodeText: "text-rose-300", accent: "#f43f5e",
+      primary: "bg-rose-500", primary600: "bg-rose-600", primary700: "bg-rose-700", primary800: "bg-rose-800",
+      ring: "focus:ring-rose-500/20", focusBorder: "focus:border-rose-500/50",
+      textHoverBg: "hover:text-rose-400 hover:bg-rose-500/10",
+      gradientBg: "bg-gradient-to-br from-rose-600 to-rose-700 dark:from-rose-600/90 dark:to-rose-800/90",
+      userBorder: "border-rose-500/30", userShadow: "shadow-rose-600/10",
+      sendShadow: "shadow-rose-500/20", cardHover: "hover:bg-rose-500/10 hover:border-rose-500/30", cardTextHover: "group-hover:text-rose-400"
+    },
+    forest: {
+      text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", bullet: "bg-emerald-400/60", heading: "text-emerald-400", codeBg: "bg-emerald-500/15", inlineCodeText: "text-emerald-300", accent: "#16a34a",
+      primary: "bg-emerald-500", primary600: "bg-emerald-600", primary700: "bg-emerald-700", primary800: "bg-emerald-800",
+      ring: "focus:ring-emerald-500/20", focusBorder: "focus:border-emerald-500/50",
+      textHoverBg: "hover:text-emerald-400 hover:bg-emerald-500/10",
+      gradientBg: "bg-gradient-to-br from-emerald-600 to-emerald-700 dark:from-emerald-600/90 dark:to-emerald-800/90",
+      userBorder: "border-emerald-500/30", userShadow: "shadow-emerald-600/10",
+      sendShadow: "shadow-emerald-500/20", cardHover: "hover:bg-emerald-500/10 hover:border-emerald-500/30", cardTextHover: "group-hover:text-emerald-400"
+    },
+    ocean: {
+      text: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", bullet: "bg-blue-400/60", heading: "text-blue-400", codeBg: "bg-blue-500/15", inlineCodeText: "text-blue-300", accent: "#2563eb",
+      primary: "bg-blue-500", primary600: "bg-blue-600", primary700: "bg-blue-700", primary800: "bg-blue-800",
+      ring: "focus:ring-blue-500/20", focusBorder: "focus:border-blue-500/50",
+      textHoverBg: "hover:text-blue-400 hover:bg-blue-500/10",
+      gradientBg: "bg-gradient-to-br from-blue-600 to-blue-700 dark:from-blue-600/90 dark:to-blue-800/90",
+      userBorder: "border-blue-500/30", userShadow: "shadow-blue-600/10",
+      sendShadow: "shadow-blue-500/20", cardHover: "hover:bg-blue-500/10 hover:border-blue-500/30", cardTextHover: "group-hover:text-indigo-400"
+    },
+    lavender: {
+      text: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", bullet: "bg-purple-400/60", heading: "text-purple-400", codeBg: "bg-purple-500/15", inlineCodeText: "text-purple-300", accent: "#a78bfa",
+      primary: "bg-purple-500", primary600: "bg-purple-600", primary700: "bg-purple-700", primary800: "bg-purple-800",
+      ring: "focus:ring-purple-500/20", focusBorder: "focus:border-purple-500/50",
+      textHoverBg: "hover:text-purple-400 hover:bg-purple-500/10",
+      gradientBg: "bg-gradient-to-br from-purple-600 to-purple-700 dark:from-purple-600/90 dark:to-purple-800/90",
+      userBorder: "border-purple-500/30", userShadow: "shadow-purple-600/10",
+      sendShadow: "shadow-purple-500/20", cardHover: "hover:bg-purple-500/10 hover:border-purple-500/30", cardTextHover: "group-hover:text-purple-400"
+    },
+    rose: {
+      text: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", bullet: "bg-rose-400/60", heading: "text-rose-400", codeBg: "bg-rose-500/15", inlineCodeText: "text-rose-300", accent: "#ec4899",
+      primary: "bg-rose-500", primary600: "bg-rose-600", primary700: "bg-rose-700", primary800: "bg-rose-800",
+      ring: "focus:ring-rose-500/20", focusBorder: "focus:border-rose-500/50",
+      textHoverBg: "hover:text-rose-400 hover:bg-rose-500/10",
+      gradientBg: "bg-gradient-to-br from-rose-600 to-rose-700 dark:from-rose-600/90 dark:to-rose-800/90",
+      userBorder: "border-rose-500/30", userShadow: "shadow-rose-600/10",
+      sendShadow: "shadow-rose-500/20", cardHover: "hover:bg-rose-500/10 hover:border-rose-500/30", cardTextHover: "group-hover:text-rose-400"
+    },
+    amber: {
+      text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", bullet: "bg-amber-400/60", heading: "text-amber-400", codeBg: "bg-amber-500/15", inlineCodeText: "text-amber-300", accent: "#d97706",
+      primary: "bg-amber-500", primary600: "bg-amber-600", primary700: "bg-amber-700", primary800: "bg-amber-800",
+      ring: "focus:ring-amber-500/20", focusBorder: "focus:border-amber-500/50",
+      textHoverBg: "hover:text-amber-400 hover:bg-amber-500/10",
+      gradientBg: "bg-gradient-to-br from-amber-600 to-amber-700 dark:from-amber-600/90 dark:to-amber-800/90",
+      userBorder: "border-amber-500/30", userShadow: "shadow-amber-600/10",
+      sendShadow: "shadow-amber-500/20", cardHover: "hover:bg-amber-500/10 hover:border-amber-500/30", cardTextHover: "group-hover:text-amber-400"
+    },
+    mint: {
+      text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", bullet: "bg-emerald-400/60", heading: "text-emerald-400", codeBg: "bg-emerald-500/15", inlineCodeText: "text-emerald-300", accent: "#10b981",
+      primary: "bg-emerald-500", primary600: "bg-emerald-600", primary700: "bg-emerald-700", primary800: "bg-emerald-800",
+      ring: "focus:ring-emerald-500/20", focusBorder: "focus:border-emerald-500/50",
+      textHoverBg: "hover:text-emerald-400 hover:bg-emerald-500/10",
+      gradientBg: "bg-gradient-to-br from-emerald-600 to-emerald-700 dark:from-emerald-600/90 dark:to-emerald-800/90",
+      userBorder: "border-emerald-500/30", userShadow: "shadow-emerald-600/10",
+      sendShadow: "shadow-emerald-500/20", cardHover: "hover:bg-emerald-500/10 hover:border-emerald-500/30", cardTextHover: "group-hover:text-emerald-400"
+    },
+    crimson: {
+      text: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", bullet: "bg-red-400/60", heading: "text-red-400", codeBg: "bg-red-500/15", inlineCodeText: "text-red-300", accent: "#dc143c",
+      primary: "bg-red-500", primary600: "bg-red-600", primary700: "bg-red-700", primary800: "bg-red-800",
+      ring: "focus:ring-red-500/20", focusBorder: "focus:border-red-500/50",
+      textHoverBg: "hover:text-red-400 hover:bg-red-500/10",
+      gradientBg: "bg-gradient-to-br from-red-600 to-red-700 dark:from-red-600/90 dark:to-red-800/90",
+      userBorder: "border-red-500/30", userShadow: "shadow-red-600/10",
+      sendShadow: "shadow-red-500/20", cardHover: "hover:bg-red-500/10 hover:border-red-500/30", cardTextHover: "group-hover:text-red-400"
+    },
+    indigo: {
+      text: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", bullet: "bg-indigo-400/60", heading: "text-indigo-400", codeBg: "bg-indigo-500/15", inlineCodeText: "text-indigo-300", accent: "#6366f1",
+      primary: "bg-indigo-500", primary600: "bg-indigo-600", primary700: "bg-indigo-700", primary800: "bg-indigo-800",
+      ring: "focus:ring-indigo-500/20", focusBorder: "focus:border-indigo-500/50",
+      textHoverBg: "hover:text-indigo-400 hover:bg-indigo-500/10",
+      gradientBg: "bg-gradient-to-br from-indigo-600 to-indigo-700 dark:from-indigo-600/90 dark:to-indigo-800/90",
+      userBorder: "border-indigo-500/30", userShadow: "shadow-indigo-600/10",
+      sendShadow: "shadow-indigo-500/20", cardHover: "hover:bg-indigo-500/10 hover:border-indigo-500/30", cardTextHover: "group-hover:text-indigo-400"
+    },
+    emerald: {
+      text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", bullet: "bg-emerald-400/60", heading: "text-emerald-400", codeBg: "bg-emerald-500/15", inlineCodeText: "text-emerald-300", accent: "#10b981",
+      primary: "bg-emerald-500", primary600: "bg-emerald-600", primary700: "bg-emerald-700", primary800: "bg-emerald-800",
+      ring: "focus:ring-emerald-500/20", focusBorder: "focus:border-emerald-500/50",
+      textHoverBg: "hover:text-emerald-400 hover:bg-emerald-500/10",
+      gradientBg: "bg-gradient-to-br from-emerald-600 to-emerald-700 dark:from-emerald-600/90 dark:to-emerald-800/90",
+      userBorder: "border-emerald-500/30", userShadow: "shadow-emerald-600/10",
+      sendShadow: "shadow-emerald-500/20", cardHover: "hover:bg-emerald-500/10 hover:border-emerald-500/30", cardTextHover: "group-hover:text-emerald-400"
+    },
+    coral: {
+      text: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", bullet: "bg-orange-400/60", heading: "text-orange-400", codeBg: "bg-orange-500/15", inlineCodeText: "text-orange-300", accent: "#ff7f50",
+      primary: "bg-orange-500", primary600: "bg-orange-600", primary700: "bg-orange-700", primary800: "bg-orange-800",
+      ring: "focus:ring-orange-500/20", focusBorder: "focus:border-orange-500/50",
+      textHoverBg: "hover:text-orange-400 hover:bg-orange-500/10",
+      gradientBg: "bg-gradient-to-br from-orange-600 to-orange-700 dark:from-orange-600/90 dark:to-orange-800/90",
+      userBorder: "border-orange-500/30", userShadow: "shadow-orange-600/10",
+      sendShadow: "shadow-orange-500/20", cardHover: "hover:bg-orange-500/10 hover:border-orange-500/30", cardTextHover: "group-hover:text-orange-400"
+    }
+  };
+
+  const activeClasses = themeClasses[colorTheme] || themeClasses.default;
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const [language, setLanguage] = useState("English");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTask, setActiveTask] = useState<string | null>(null);
   const [quizQuestions, setQuizQuestions] = useState<any[] | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
+  const [sessionUser, setSessionUser] = useState<any | null>(null);
+  
+  const loadingMessages = [
+    "Our AI is deeply analyzing your academic file...",
+    "Extracting critical core formulas and equations...",
+    "Synthesizing high-density glassmorphic structures...",
+    "Injecting interactive university-level exam distractors...",
+    "Assembling your premium educational study guide..."
+  ];
+  const [loadingStep, setLoadingStep] = useState(0);
   
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const session = await getStudentSession();
+        if (session) {
+          setSessionUser(session);
+        }
+      } catch (err) {
+        console.error("Failed to load student session in AIModal:", err);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    let interval: any;
+    if (loading) {
+      setLoadingStep(0);
+      interval = setInterval(() => {
+        setLoadingStep((prev) => (prev + 1) % loadingMessages.length);
+      }, 2500);
+    } else {
+      setLoadingStep(0);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [loading]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -509,6 +733,36 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           (el as HTMLElement).style.color = '';
           (el as HTMLElement).style.backgroundColor = '';
         });
+
+        // Flawlessly inject absolute SVG overrides directly inside each Mermaid SVG to force clean white backgrounds and black text for print
+        clone.querySelectorAll('svg').forEach(svgEl => {
+          const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+          style.innerHTML = `
+            rect, polygon, circle, path.node, [class*="label"] rect, .edgeLabel rect, .label rect, rect.label-container, rect.edgeLabel {
+              fill: #ffffff !important;
+              background-color: #ffffff !important;
+              background: #ffffff !important;
+              stroke: #94a3b8 !important;
+              stroke-width: 1.5px !important;
+            }
+            foreignObject, foreignObject div, foreignObject span, foreignObject *, .edgeLabel span, .label div, div.label {
+              background: #ffffff !important;
+              background-color: #ffffff !important;
+              color: #000000 !important;
+            }
+            text, tspan, span, div, *, [class*="label"] *, .edgeLabel * {
+              color: #000000 !important;
+              fill: #000000 !important;
+              font-weight: 800 !important;
+            }
+            path.edgePath, .edgePath .path, .edgePath path, marker path, .arrowheadPath {
+              stroke: #475569 !important;
+              fill: #475569 !important;
+              stroke-width: 1.5px !important;
+            }
+          `;
+          svgEl.appendChild(style);
+        });
         
         bodyHtml = clone.innerHTML;
       } else {
@@ -532,7 +786,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         <!DOCTYPE html>
         <html>
         <head>
-          <title>${fileName}_chameleon_summary</title>
+          <title>${fileName}_neuri_summary</title>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
             
@@ -567,13 +821,15 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             .content h2 { 
-              font-size: 22px !important; 
-              font-weight: 800 !important; 
+              font-size: 24px !important; 
+              font-weight: 900 !important; 
               color: ${activeThemeColor} !important; 
-              margin: 36px 0 18px !important; 
-              padding-left: 14px !important; 
-              border-left: 5px solid ${activeThemeColor} !important; /* Premium left theme accent bar! */
-              padding-bottom: 2px !important;
+              margin: 48px 0 20px !important; 
+              padding-left: 16px !important; 
+              border-left: 6px solid ${activeThemeColor} !important; 
+              padding-bottom: 4px !important;
+              border-top: 2px dashed #cbd5e1 !important;
+              padding-top: 24px !important;
             }
             .content h2 * {
               color: ${activeThemeColor} !important;
@@ -784,7 +1040,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               .mermaid-dark, .mermaid-light,
               .mermaid-dark > div, .mermaid-light > div {
                 background: #ffffff !important;
-                border: 1px solid #e2e8f0 !important;
+                border: 1px solid #cbd5e1 !important;
                 color: #000000 !important;
                 box-shadow: none !important;
                 break-inside: avoid !important;
@@ -802,9 +1058,25 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               .mermaid-dark [class*="node"] polygon, .mermaid-light [class*="node"] polygon,
               .mermaid-dark [class*="node"] circle, .mermaid-light [class*="node"] circle,
               .mermaid-dark path.node, .mermaid-light path.node {
-                fill: #f1f5f9 !important;
-                stroke: #cbd5e1 !important;
+                fill: #ffffff !important;
+                stroke: #94a3b8 !important;
                 stroke-width: 1.5px !important;
+              }
+              /* RESET ALL MERMAID DIAGRAM LABELS AND SHAPES TO PREVENT DARK/BLACK BOXES DURING PRINT */
+              svg .edgeLabel rect, svg .label rect, svg rect.label-container, svg rect.edgeLabel,
+              svg .edgeLabel span, svg foreignObject div, svg foreignObject span, svg .label div,
+              svg [class*="label"] rect, svg [class*="label"] div, svg [class*="label"] span,
+              .mermaid-dark .edgeLabel rect, .mermaid-light .edgeLabel rect,
+              .mermaid-dark .label rect, .mermaid-light .label rect,
+              .mermaid-dark .edgeLabel span, .mermaid-light .edgeLabel span,
+              .mermaid-dark foreignObject div, .mermaid-light foreignObject div,
+              .mermaid-dark foreignObject span, .mermaid-light foreignObject span {
+                fill: #ffffff !important;
+                background-color: #ffffff !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                stroke: #cbd5e1 !important;
+                border-color: #cbd5e1 !important;
               }
               /* Color all printed connector lines and arrows to be dark slate gray */
               .mermaid-dark path.edgePath, .mermaid-light path.edgePath,
@@ -821,10 +1093,20 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               .mermaid-dark tspan, .mermaid-light tspan,
               .mermaid-dark span, .mermaid-light span,
               .mermaid-dark div, .mermaid-light div,
-              .mermaid-dark [class*="label"] *, .mermaid-light [class*="label"] * {
+              .mermaid-dark [class*="label"] *, .mermaid-light [class*="label"] *,
+              svg .edgeLabel text, svg .edgeLabel tspan, svg .label text, svg .label tspan,
+              .mermaid-dark .edgeLabel *, .mermaid-light .edgeLabel * {
                 color: #000000 !important;
                 fill: #000000 !important;
                 font-weight: 700 !important;
+              }
+              /* Dash dividers for sections in printout */
+              .content hr {
+                border: none !important;
+                border-top: 2px dashed #94a3b8 !important;
+                margin: 36px 0 !important;
+                height: 0 !important;
+                display: block !important;
               }
             }
           </style>
@@ -832,9 +1114,9 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         <body>
           <div class="header">
             <div class="header-flex">
-              <img src="${window.location.origin}/images/chameleon.png" class="header-img" onerror="this.style.display='none'" />
+              <img src="${window.location.origin}/images/Neuri/ai main.png" class="header-img" onerror="this.style.display='none'" />
               <div>
-                <h1 class="title">Chameleon AI Summary</h1>
+                <h1 class="title">Neuri AI Summary</h1>
                 <div class="subtitle">AI-Powered Academic Assistant</div>
               </div>
             </div>
@@ -852,7 +1134,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           <div class="footer">
             <div class="footer-flex">
               <img src="${window.location.origin}/images/chameleon.png" class="footer-img" onerror="this.style.display='none'" />
-              <span class="footer-text">Generated with Chameleon AI</span>
+              <span class="footer-text">Generated with Chameleon Native AI (Neuri)</span>
             </div>
             <span class="footer-link">chameleon-nu.vercel.app</span>
           </div>
@@ -998,23 +1280,47 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         height: 0 !important;
         pointer-events: none !important;
       }
+
+      /* Hide default absolute DialogClose button to prevent overlap */
+      button.absolute.right-4.top-4,
+      [data-state="open"] button.absolute.right-4.top-4 {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+      }
     `}} />
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
         onPointerDownOutside={(e) => e.preventDefault()} 
-        className="w-[96vw] sm:w-full max-w-4xl h-[90vh] sm:h-[85vh] flex flex-col p-0 overflow-hidden bg-[#0A0A0B]/95 backdrop-blur-2xl border-white/10 shadow-[0_0_50px_-12px_rgba(79,70,229,0.3)] rounded-2xl sm:rounded-3xl pointer-events-auto z-[999999]"
+        className={cn(
+          "w-[96vw] sm:w-full max-w-4xl h-[90vh] sm:h-[85vh] flex flex-col p-0 overflow-hidden backdrop-blur-2xl border rounded-2xl sm:rounded-3xl pointer-events-auto z-[999999] transition-all duration-500",
+          isDark ? "bg-[#070708]/96 border-white/5" : "bg-white/96 border-black/10"
+        )}
+        style={{ 
+          borderColor: `${activeClasses.accent}25`,
+          boxShadow: `0 0 60px -10px ${activeClasses.accent}25`
+        }}
       >
-        <DialogHeader className="p-3 sm:p-5 border-b border-white/5 bg-white/[0.02] shrink-0">
+        {/* Soft dynamic ambient glow centered in the background of the window */}
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-[0.06] blur-[150px] transition-all duration-700" 
+          style={{ 
+            background: `radial-gradient(circle at 50% 50%, ${activeClasses.accent}, transparent 70%)` 
+          }} 
+        />
+        
+        <DialogHeader className={cn("p-3 sm:p-5 border-b shrink-0 relative z-10", isDark ? "border-white/5 bg-white/[0.01]" : "border-black/5 bg-black/[0.01]")}>
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 sm:gap-4 min-w-0">
               <div className="relative shrink-0">
-                <div className="absolute -inset-1 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-xl blur opacity-30 animate-pulse" />
-                <div className="relative p-2 sm:p-2.5 bg-background border border-white/10 rounded-xl">
-                  <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-400" />
+                <div className="absolute -inset-1 rounded-xl blur opacity-35 animate-pulse" style={{ backgroundColor: activeClasses.accent }} />
+                <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center border rounded-xl overflow-hidden shadow-md" style={{ backgroundColor: activeClasses.accent, borderColor: `${activeClasses.accent}40` }}>
+                  <img src="/images/Neuri/ai main.png" alt="Neuri Logo" className="w-full h-full object-cover" />
                 </div>
               </div>
               <div className="min-w-0">
-                <DialogTitle className="text-sm sm:text-lg font-bold tracking-tight text-white/90 truncate">Chameleon AI</DialogTitle>
+                <DialogTitle className={cn("text-sm sm:text-lg font-bold tracking-tight truncate", isDark ? "text-white/90" : "text-slate-900")}>Neuri AI</DialogTitle>
                 <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5">
                    <Badge variant="outline" className="text-[8px] h-3.5 px-1 bg-green-500/10 border-green-500/20 text-green-400 font-bold uppercase tracking-wider shrink-0">Online</Badge>
                    <span className="text-[9px] sm:text-[10px] text-muted-foreground/80 truncate max-w-[100px] sm:max-w-[200px] font-medium">{file.name}</span>
@@ -1025,7 +1331,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-7 sm:h-8 text-[9px] sm:text-[10px] gap-1 sm:gap-2 border-white/10 bg-white/5 hover:bg-white/10 transition-all rounded-full px-2.5 sm:px-3">
+                  <Button variant="outline" size="sm" className={cn("h-7 sm:h-8 text-[9px] sm:text-[10px] gap-1 sm:gap-2 transition-all rounded-full px-2.5 sm:px-3", isDark ? "border-white/10 bg-white/5 hover:bg-white/10" : "border-black/10 bg-black/5 hover:bg-black/10")}>
                     <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     <span className="hidden xs:inline">Preview</span>
                   </Button>
@@ -1037,7 +1343,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               </Popover>
 
               <Select value={language} onValueChange={setLanguage}>
-                <SelectTrigger className="w-[85px] sm:w-[100px] h-7 sm:h-8 text-[9px] sm:text-[10px] bg-white/5 border-white/10 rounded-full focus:ring-indigo-500/20 px-2 sm:px-3">
+                <SelectTrigger className={cn("w-[85px] sm:w-[100px] h-7 sm:h-8 text-[9px] sm:text-[10px] rounded-full px-2 sm:px-3 focus:ring-offset-0 focus:ring-0 focus:ring-transparent", isDark ? "bg-white/5 border-white/10 focus:border-white/20" : "bg-black/5 border-black/10 focus:border-black/20", activeClasses.ring)}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-background/95 backdrop-blur-xl border-border">
@@ -1047,11 +1353,22 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                 </SelectContent>
               </Select>
 
-              <div className="h-7 sm:h-8 w-[1px] bg-white/10 mx-0.5 sm:mx-1" />
+              <div className={cn("h-7 sm:h-8 w-[1px] mx-0.5 sm:mx-1", isDark ? "bg-white/10" : "bg-black/10")} />
               
-              <Badge variant="outline" className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-indigo-500/20 text-indigo-400 px-2 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold rounded-full">
+              <Badge variant="outline" className={cn("px-2 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold rounded-full border shadow-sm", isDark ? "bg-white/[0.02]" : "bg-black/[0.02]", activeClasses.border, activeClasses.text)}>
                 PRO
               </Badge>
+
+              <div className={cn("h-7 sm:h-8 w-[1px] mx-0.5 sm:mx-1", isDark ? "bg-white/10" : "bg-black/10")} />
+
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className={cn("h-7 w-7 sm:h-8 sm:w-8 rounded-full transition-all flex items-center justify-center shrink-0", isDark ? "hover:bg-white/5 text-muted-foreground hover:text-white" : "hover:bg-black/5 text-muted-foreground hover:text-black")}
+                onClick={onClose}
+              >
+                <X className="w-3.5 h-3.5 sm:w-4 h-4" />
+              </Button>
             </div>
           </div>
         </DialogHeader>
@@ -1065,40 +1382,52 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             <div className="flex-1 px-4 py-6 sm:px-8">
               <div className="max-w-3xl mx-auto space-y-8">
                 {messages.length === 0 && !loading && (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="relative mb-8">
-                      <div className="absolute -inset-4 bg-indigo-500/20 rounded-full blur-2xl animate-pulse" />
-                      <div className="relative w-20 h-20 bg-indigo-500/10 border border-indigo-500/20 rounded-3xl flex items-center justify-center shadow-inner">
-                        <Bot className="w-10 h-10 text-indigo-400" />
-                      </div>
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-14 py-8 md:py-12 max-w-4xl mx-auto w-full">
+                    {/* Left Column: Mascot standing beautifully */}
+                    <div className="relative shrink-0 flex items-center justify-center animate-fade-in">
+                      <img 
+                        src="/images/Neuri/ai (4).png" 
+                        alt="AI Tutor Mascot" 
+                        className="w-36 h-36 sm:w-44 sm:h-44 md:w-60 md:h-60 object-contain transition-transform duration-500 hover:scale-105" 
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "/images/Neuri/ai (4).png";
+                          (e.target as HTMLImageElement).className = "w-16 h-16 object-contain opacity-50";
+                        }}
+                      />
                     </div>
-                    <h4 className="text-2xl font-black mb-3 text-white/90 tracking-tight">How can I help with this file?</h4>
-                    <p className="text-sm text-muted-foreground max-w-sm mb-10 leading-relaxed font-medium">
-                      I've analyzed <span className="text-indigo-400 font-bold">{file.name}</span>. 
-                      Try one of these powerful actions to get started:
-                    </p>
                     
-                    <div className="grid grid-cols-2 gap-3 w-full max-w-md">
-                      <Button 
-                        variant="outline" 
-                        className="flex-col gap-3 h-auto py-5 bg-white/5 border-white/5 hover:bg-indigo-500/10 hover:border-indigo-500/30 transition-all rounded-2xl group shadow-lg"
-                        onClick={() => sendMessage("", "summarize")}
-                      >
-                        <div className="p-3 bg-indigo-500/10 rounded-xl group-hover:bg-indigo-500/20 transition-colors">
-                          <Sparkles className="w-6 h-6 text-indigo-400" />
-                        </div>
-                        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground group-hover:text-indigo-400">Summarize</span>
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="flex-col gap-3 h-auto py-5 bg-muted/30 dark:bg-white/5 border-border dark:border-white/5 hover:bg-amber-500/5 dark:hover:bg-amber-500/10 hover:border-amber-500/30 text-foreground transition-all rounded-2xl group shadow-lg"
-                        onClick={() => sendMessage("", "quiz")}
-                      >
-                        <div className="p-3 bg-amber-500/10 rounded-xl group-hover:bg-amber-500/20 transition-colors">
-                          <Brain className="w-6 h-6 text-amber-600 dark:text-amber-400" />
-                        </div>
-                        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400">Generate Quiz</span>
-                      </Button>
+                    {/* Right Column: Welcoming text and action cards */}
+                    <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left min-w-0">
+                      <h4 className={cn("text-xl sm:text-2xl font-black mb-2 sm:mb-3 tracking-tight", isDark ? "text-white/90" : "text-slate-900")}>
+                        How can I help with this file?
+                      </h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mb-6 leading-relaxed font-medium">
+                        I've analyzed <span className="font-bold" style={{ color: activeClasses.accent }}>{file.name}</span>. 
+                        Try one of these powerful actions to get started:
+                      </p>
+                      
+                      <div className="grid grid-cols-2 gap-3 w-full max-w-md">
+                        <Button 
+                          variant="outline" 
+                          className={cn("flex-col gap-2.5 sm:gap-3 h-auto py-3.5 sm:py-5 transition-all rounded-2xl group shadow-lg", isDark ? "bg-white/5 border-white/5" : "bg-black/5 border-black/5", activeClasses.cardHover)}
+                          onClick={() => sendMessage("", "summarize")}
+                        >
+                          <div className={cn("p-2 sm:p-3 rounded-xl transition-colors", activeClasses.bg)}>
+                            <Sparkles className={cn("w-5 h-5 sm:w-6 sm:h-6", activeClasses.text)} />
+                          </div>
+                          <span className={cn("text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors", activeClasses.cardTextHover)}>Summarize</span>
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          className={cn("flex-col gap-2.5 sm:gap-3 h-auto py-3.5 sm:py-5 transition-all rounded-2xl group shadow-lg", isDark ? "bg-white/5 border-white/5" : "bg-black/5 border-black/5", activeClasses.cardHover)}
+                          onClick={() => sendMessage("", "quiz")}
+                        >
+                          <div className={cn("p-2 sm:p-3 rounded-xl transition-colors", activeClasses.bg)}>
+                            <Brain className={cn("w-5 h-5 sm:w-6 sm:h-6", activeClasses.text)} />
+                          </div>
+                          <span className={cn("text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors", activeClasses.cardTextHover)}>Generate Quiz</span>
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1112,21 +1441,38 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                     )}
                   >
                     <div className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-border shadow-sm",
-                      msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
-                    )}>
-                      {msg.role === "user" ? <UserIcon className="w-4 h-4" /> : <Bot className="w-4 h-4 text-indigo-400" />}
+                      "w-8 h-8 rounded-full flex items-center justify-center shrink-0 border shadow-sm overflow-hidden",
+                      msg.role === "user" ? "bg-primary text-primary-foreground border-border" : ""
+                    )} style={msg.role === "assistant" ? { backgroundColor: activeClasses.accent, borderColor: `${activeClasses.accent}40` } : undefined}>
+                      {msg.role === "user" ? (
+                        sessionUser?.profile_image ? (
+                          <img src={sessionUser.profile_image} alt={sessionUser.username || "User"} className="w-full h-full object-cover" />
+                        ) : (
+                          <UserIcon className="w-4 h-4" />
+                        )
+                      ) : (
+                        <img src="/images/Neuri/ai main.png" alt="Neuri AI" className="w-5 h-5 object-contain" />
+                      )}
                     </div>
                     <div className={cn(
-                      "flex flex-col gap-1 max-w-[85%]",
+                      "flex flex-col gap-1 max-w-[90%] md:max-w-[85%]",
                       msg.role === "user" ? "items-end" : "items-start"
                     )}>
-                      <div className={cn(
-                        "p-5 rounded-2xl text-sm shadow-sm border border-border group relative overflow-hidden",
-                        msg.role === "user" 
-                          ? "bg-indigo-600 text-white rounded-tr-none border-indigo-500/50" 
-                          : "bg-muted/50 rounded-tl-none max-w-none"
-                      )}>
+                      <div 
+                        className={cn(
+                          "p-6 rounded-2xl text-sm shadow-md border group relative overflow-hidden transition-all duration-300",
+                          msg.role === "user" 
+                            ? cn("text-white rounded-tr-none border", activeClasses.gradientBg, activeClasses.userBorder, activeClasses.userShadow) 
+                            : "bg-muted/30 dark:bg-white/[0.01] backdrop-blur-md rounded-tl-none max-w-none border-border dark:border-white/5 shadow-black/5"
+                        )}
+                        style={msg.role === 'assistant' ? { borderLeft: `4px solid ${activeClasses.accent}` } : undefined}
+                      >
+                        {msg.role === 'assistant' && (
+                          <div 
+                            className="absolute -right-16 -top-16 w-36 h-36 rounded-full blur-3xl opacity-[0.06] pointer-events-none transition-all duration-500" 
+                            style={{ backgroundColor: activeClasses.accent }}
+                          />
+                        )}
                         {activeTask === 'quiz' && idx === messages.length - 1 && msg.role === 'assistant' ? (
                           <div className="flex flex-col items-center gap-4 py-4">
                             <div className="p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20">
@@ -1202,66 +1548,147 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                           </div>
                         ) : (
                           <>
-                            <div id={`msg-content-${idx}`} data-msg-content="true" className="ai-markdown-content">
-                                <ReactMarkdown 
+                            <div id={`msg-content-${idx}`} data-msg-content="true" className="ai-markdown-content relative animate-fade-in">
+                              {/* Inject dynamic KaTeX styling overrides based on theme */}
+                              <style>{`
+                                #msg-content-${idx} .katex-display,
+                                #msg-content-${idx} p > .katex:only-child,
+                                #msg-content-${idx} p > .katex:first-child:last-child {
+                                  display: block !important;
+                                  clear: both !important;
+                                  width: 100% !important;
+                                  text-align: center !important;
+                                  font-size: 1.32em !important;
+                                  margin: 2.2rem 0 !important;
+                                  padding: 28px 18px 20px 18px !important;
+                                  background: rgba(255, 255, 255, 0.015) !important;
+                                  border-radius: 16px !important;
+                                  border: 1px solid ${activeClasses.accent}20 !important;
+                                  border-left: 4px solid ${activeClasses.accent} !important;
+                                  overflow-x: auto !important;
+                                  overflow-y: hidden !important;
+                                  box-shadow: 0 6px 24px -4px rgba(0, 0, 0, 0.4), inset 0 1px 1px 0 rgba(255, 255, 255, 0.05) !important;
+                                  backdrop-filter: blur(8px) !important;
+                                  position: relative !important;
+                                }
+                                #msg-content-${idx} .katex-display::before,
+                                #msg-content-${idx} p > .katex:only-child::before,
+                                #msg-content-${idx} p > .katex:first-child:last-child::before {
+                                  content: 'FORMULA';
+                                  position: absolute;
+                                  top: 8px;
+                                  left: 14px;
+                                  font-size: 7.5px;
+                                  font-weight: 800;
+                                  letter-spacing: 0.15em;
+                                  opacity: 0.45;
+                                  color: ${activeClasses.accent};
+                                }
+                                #msg-content-${idx} .katex {
+                                  display: inline-block !important;
+                                  white-space: nowrap !important;
+                                  font-size: 1.2em !important;
+                                  color: #ffffff !important;
+                                  padding: 2px 6px !important;
+                                  background: ${activeClasses.accent}0d !important;
+                                  border-radius: 6px !important;
+                                  margin: 2px 0 !important;
+                                }
+                                #msg-content-${idx} .katex .mathnormal {
+                                  color: ${activeClasses.accent} !important;
+                                  font-weight: 700 !important;
+                                }
+                              `}</style>
+                              <ReactMarkdown 
                                 remarkPlugins={[remarkGfm, remarkMath]} 
                                 rehypePlugins={[[rehypeKatex, { strict: false }]]}
                                 components={{
                                   h2: ({ children }) => (
-                                    <h2 className="text-base font-extrabold text-indigo-400 mt-6 mb-2 pb-2 border-b border-indigo-500/20 flex items-center gap-2">{children}</h2>
+                                    <div className="w-full">
+                                      {/* Gorgeous, glowing, custom separator line automatically rendered BEFORE any main heading h2! */}
+                                      <div className="relative my-12 flex items-center justify-center">
+                                        <div className="absolute inset-0 flex items-center">
+                                          <div className="w-full h-px" style={{ backgroundImage: `linear-gradient(to right, transparent, ${activeClasses.accent}40, ${activeClasses.accent}40, transparent)` }} />
+                                        </div>
+                                        <div className={cn("relative w-2.5 h-2.5 rounded-full border shadow-md shadow-black/30 shrink-0 animate-pulse", activeClasses.bullet)} style={{ borderColor: `${activeClasses.accent}60` }} />
+                                      </div>
+                                      
+                                      <h2 className={cn("text-2xl md:text-3xl font-black mt-6 mb-4 pb-3 flex items-center gap-3 tracking-tight transition-all duration-300", activeClasses.heading)}>
+                                        {children}
+                                      </h2>
+                                    </div>
                                   ),
                                   h3: ({ children }) => (
-                                    <h3 className="text-sm font-bold text-indigo-300/90 mt-4 mb-1.5">{children}</h3>
+                                    <h3 className={cn("text-xs font-extrabold mt-6 mb-3 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 shadow-sm border uppercase tracking-wider transition-all duration-300 hover:scale-[1.02]", activeClasses.bg, activeClasses.text, activeClasses.border)}>
+                                      <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", activeClasses.bullet)} />
+                                      {children}
+                                    </h3>
                                   ),
                                   h4: ({ children }) => (
-                                    <h4 className="text-sm font-semibold text-white/80 mt-3 mb-1">{children}</h4>
+                                    <h4 className={cn("text-xs font-bold uppercase tracking-widest mt-5 mb-2 flex items-center gap-2", isDark ? "text-white/90" : "text-slate-800")}>
+                                      <span className={cn("w-1.5 h-px", isDark ? "bg-white/30" : "bg-slate-300")} />
+                                      {children}
+                                    </h4>
                                   ),
                                   p: ({ children }) => (
-                                    <p className="text-[13px] text-white/80 leading-relaxed my-1.5">{children}</p>
+                                    <p className={cn("text-[13.5px] leading-relaxed my-2", isDark ? "text-white/80" : "text-slate-800")}>{children}</p>
                                   ),
                                   strong: ({ children }) => (
-                                    <strong className="font-bold text-white">{children}</strong>
+                                    <strong className={cn(
+                                      "font-extrabold px-2 py-0.5 rounded-lg border text-[13px] inline-flex items-center gap-1 my-0.5 transition-all shadow-sm duration-300 hover:scale-[1.03]",
+                                      activeClasses.text, activeClasses.border
+                                    )} style={{ backgroundColor: `${activeClasses.accent}0d` }}>{children}</strong>
                                   ),
                                   em: ({ children }) => (
-                                    <em className="italic text-indigo-300/80">{children}</em>
+                                    <em className={cn("italic font-medium", isDark ? "text-white/90" : "text-slate-900")}>{children}</em>
                                   ),
                                   ul: ({ children }) => (
-                                    <ul className="space-y-1 my-2 ml-1">{children}</ul>
+                                    <ul className="space-y-2.5 my-4 ml-1 list-none">{children}</ul>
                                   ),
                                   ol: ({ children }) => (
-                                    <ol className="space-y-1 my-2 ml-1 list-decimal list-inside">{children}</ol>
+                                    <ol className={cn("space-y-2.5 my-4 ml-4 list-decimal list-outside", isDark ? "text-white/70" : "text-slate-700")}>{children}</ol>
                                   ),
-                                  li: ({ children }) => (
-                                    <li className="text-[13px] text-white/75 flex items-start gap-2">
-                                      <span className="text-indigo-400 mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-indigo-400/60" />
-                                      <span className="flex-1">{children}</span>
-                                    </li>
-                                  ),
+                                  li: ({ children }) => {
+                                    return (
+                                      <li className={cn("text-[13.5px] flex items-start gap-3 my-2 leading-relaxed transition-all duration-300 group/li transform hover:translate-x-1", isDark ? "text-white/80 hover:text-white" : "text-slate-800 hover:text-slate-950")}>
+                                        <span className={cn("mt-2.5 shrink-0 w-1.5 h-1.5 rounded-full shadow-sm shadow-black/20 transition-all duration-300 group-hover/li:scale-150 group-hover/li:shadow-lg", activeClasses.bullet)} style={{ boxShadow: `0 0 8px ${activeClasses.accent}` }} />
+                                        <span className="flex-1 transition-all duration-300">{children}</span>
+                                      </li>
+                                    );
+                                  },
                                   hr: () => (
-                                    <hr className="border-none h-px bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent my-5" />
+                                    <div className="relative my-10 flex items-center justify-center">
+                                      <div className="absolute inset-0 flex items-center">
+                                        <div className="w-full h-px" style={{ backgroundImage: `linear-gradient(to right, transparent, ${activeClasses.accent}40, ${activeClasses.accent}40, transparent)` }} />
+                                      </div>
+                                      <div className={cn("relative w-2.5 h-2.5 rounded-full border shadow-md shadow-black/30 shrink-0 animate-pulse", activeClasses.bullet)} style={{ borderColor: `${activeClasses.accent}60` }} />
+                                    </div>
                                   ),
                                   a: ({ href, children }) => (
-                                    <a href={href} target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 font-medium">{children}</a>
+                                    <a href={href} target="_blank" rel="noopener noreferrer" className={cn("hover:opacity-80 underline underline-offset-4 font-semibold transition-all", activeClasses.text)}>{children}</a>
                                   ),
                                   table: ({ children }) => (
-                                    <div className="overflow-x-auto my-4 rounded-xl border border-indigo-500/20 shadow-lg shadow-indigo-500/5">
-                                      <table className="w-full text-xs border-collapse">{children}</table>
+                                    <div className={cn("overflow-x-auto my-8 rounded-2xl border shadow-xl transition-all duration-300 backdrop-blur-sm", activeClasses.border, isDark ? "shadow-black/20 hover:shadow-black/30" : "shadow-black/5 hover:shadow-black/10")} style={{ backgroundColor: `${activeClasses.accent}03` }}>
+                                      <table className="w-full text-[13px] border-collapse">{children}</table>
                                     </div>
                                   ),
                                   thead: ({ children }) => (
-                                    <thead className="bg-indigo-500/15">{children}</thead>
+                                    <thead style={{ backgroundColor: `${activeClasses.accent}14` }}>{children}</thead>
                                   ),
                                   th: ({ children }) => (
-                                    <th className="text-indigo-300 px-4 py-2.5 text-left font-bold border-b border-indigo-500/20 text-xs uppercase tracking-wider">{children}</th>
+                                    <th className={cn("px-5 py-3.5 text-left font-black border-b text-[11px] uppercase tracking-widest", activeClasses.text, activeClasses.border)}>{children}</th>
                                   ),
                                   td: ({ children }) => (
-                                    <td className="px-4 py-2.5 border-b border-border/30 text-xs text-white/70">{children}</td>
+                                    <td className={cn("px-5 py-3 border-b text-[12.5px] leading-relaxed font-semibold", isDark ? "border-white/[0.04] text-white/70" : "border-black/[0.04] text-slate-750")}>{children}</td>
                                   ),
                                   tr: ({ children }) => (
-                                    <tr className="hover:bg-white/[0.02] transition-colors">{children}</tr>
+                                    <tr className={cn("transition-colors duration-200", isDark ? "hover:bg-white/[0.03]" : "hover:bg-black/[0.02]")}>{children}</tr>
                                   ),
                                   blockquote: ({ children }) => (
-                                    <blockquote className="border-l-[3px] border-indigo-500 bg-indigo-500/[0.07] rounded-r-xl px-4 py-3 my-3 text-indigo-200 font-medium text-[13px] italic">{children}</blockquote>
+                                    <blockquote className={cn("relative border-l-4 rounded-r-2xl px-6 py-4.5 my-6 font-semibold text-[13.5px] italic shadow-md shadow-black/10 leading-relaxed backdrop-blur-md overflow-hidden", isDark ? "text-white/90 border-white/5" : "text-slate-900 border-black/5")} style={{ borderLeftColor: activeClasses.accent, backgroundImage: `linear-gradient(to right, ${activeClasses.accent}0c, transparent)` }}>
+                                      <div className="absolute -top-1 -right-1 text-4xl opacity-5 select-none pointer-events-none font-serif">“</div>
+                                      {children}
+                                    </blockquote>
                                   ),
                                   pre: ({ children }) => {
                                     const isMermaid = React.Children.toArray(children).some(
@@ -1273,7 +1700,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                       return <>{children}</>;
                                     }
                                     return (
-                                      <pre className="bg-black/40 rounded-xl p-4 my-3 overflow-x-auto border border-white/5 shadow-inner">{children}</pre>
+                                      <pre className={cn("rounded-xl p-4 my-3 overflow-x-auto border shadow-inner", isDark ? "bg-black/40 border-white/5" : "bg-black/[0.03] border-black/5 text-slate-800")}>{children}</pre>
                                     );
                                   },
                                   code: ({ className, children, ...props }) => {
@@ -1288,14 +1715,14 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                     }
 
                                     return isInline ? (
-                                      <code className="bg-indigo-500/15 text-indigo-300 px-1.5 py-0.5 rounded-md text-xs font-mono border border-indigo-500/10" {...props}>{children}</code>
+                                      <code className={cn("px-1.5 py-0.5 rounded-md text-xs font-mono border", activeClasses.codeBg, activeClasses.inlineCodeText, activeClasses.border)} {...props}>{children}</code>
                                     ) : (
-                                      <code className={cn("block text-xs font-mono text-green-300/90", className)} {...props}>{children}</code>
+                                      <code className={cn("block text-xs font-mono", isDark ? "text-green-300/90" : "text-emerald-700", className)} {...props}>{children}</code>
                                     );
                                   },
                                 }}
                               >
-                                {msg.content}
+                                {preprocessMathContent(msg.content)}
                               </ReactMarkdown>
                             </div>
                             {msg.role === 'assistant' && (
@@ -1303,7 +1730,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                 <Button 
                                   size="sm" 
                                   variant="ghost" 
-                                  className="h-7 text-[10px] gap-1.5 text-muted-foreground hover:text-indigo-400 hover:bg-indigo-500/10 transition-all rounded-lg"
+                                  className={cn("h-7 text-[10px] gap-1.5 text-muted-foreground transition-all rounded-lg", activeClasses.textHoverBg)}
                                   onClick={() => {
                                     const bubble = document.getElementById(`msg-content-${idx}`);
                                     downloadAsPDF(msg.content, bubble);
@@ -1325,14 +1752,71 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                 ))}
 
                 {loading && (
-                  <div className="flex gap-4 animate-pulse">
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                      <Bot className="w-4 h-4 text-indigo-400" />
+                  <div className={cn(
+                    "w-full flex flex-col items-center justify-center p-8 my-6 border rounded-3xl shadow-2xl backdrop-blur-md animate-fade-in relative overflow-hidden",
+                    isDark ? "bg-white/[0.02] border-white/5" : "bg-black/[0.02] border-black/5"
+                  )}>
+                    <style>{`
+                      @keyframes scan {
+                        0% { top: 0%; opacity: 0.2; }
+                        50% { top: 96%; opacity: 1; filter: drop-shadow(0 0 10px ${activeClasses.accent}); }
+                        100% { top: 0%; opacity: 0.2; }
+                      }
+                    `}</style>
+                    
+                    {/* Glowing pulse ring around the premium Document container */}
+                    <div className="relative w-42 h-44 mb-6 rounded-2xl overflow-hidden shadow-2xl border border-white/10 group bg-muted/20 flex flex-col items-center justify-center p-6">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10 pointer-events-none" />
+                      
+                      {/* Breathtaking Glassmorphic Document Mockup */}
+                      <div className={cn(
+                        "relative w-22 h-30 rounded-xl border-2 flex flex-col p-3 transition-transform duration-500 group-hover:scale-105 shadow-xl z-20",
+                        isDark ? "bg-white/[0.03] border-white/10" : "bg-black/[0.02] border-black/10"
+                      )}>
+                        {/* Document Title bar lines */}
+                        <div className="w-8 h-2 rounded-full mb-3" style={{ backgroundColor: `${activeClasses.accent}30` }} />
+                        {/* Text lines mockup */}
+                        <div className="space-y-2">
+                          <div className={cn("w-full h-1.5 rounded-full", isDark ? "bg-white/10" : "bg-black/10")} />
+                          <div className={cn("w-11/12 h-1.5 rounded-full", isDark ? "bg-white/10" : "bg-black/10")} />
+                          <div className={cn("w-4/5 h-1.5 rounded-full", isDark ? "bg-white/10" : "bg-black/10")} />
+                          <div className={cn("w-10/12 h-1.5 rounded-full", isDark ? "bg-white/10" : "bg-black/10")} />
+                        </div>
+                        {/* Premium dynamic document/file icon in the middle */}
+                        <div className="mt-auto flex items-center justify-between">
+                          <FileText className={cn("w-5 h-5", activeClasses.text)} />
+                          <span className={cn("text-[8px] font-black uppercase tracking-widest", activeClasses.text)}>
+                            {file?.name?.split('.').pop() || "PDF"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Scanning neon laser line effect! */}
+                      <div className="absolute inset-x-0 h-1 top-0 z-30 pointer-events-none" style={{ animation: "scan 2.5s ease-in-out infinite", backgroundImage: `linear-gradient(to right, transparent, ${activeClasses.accent}, transparent)` }} />
                     </div>
-                    <div className="flex flex-col gap-2 w-full max-w-sm">
-                      <div className="h-4 bg-muted rounded-full w-3/4" />
-                      <div className="h-4 bg-muted rounded-full w-full" />
-                      <div className="h-4 bg-muted rounded-full w-2/3" />
+
+                    <div className="flex flex-col items-center gap-3.5 text-center max-w-md">
+                      <div className="flex items-center gap-2">
+                        <Loader2 className={cn("w-4.5 h-4.5 animate-spin", activeClasses.text)} />
+                        <span className={cn("text-xs font-bold uppercase tracking-widest", isDark ? "text-white/40" : "text-slate-500")}>Processing Document</span>
+                      </div>
+                      
+                      {/* Dynamic Cycling Loading Message */}
+                      <p className={cn("text-[14.5px] font-semibold transition-all duration-500 animate-fade-in px-4 min-h-[44px] flex items-center justify-center", isDark ? "text-white/95" : "text-slate-900")}>
+                        {loadingMessages[loadingStep]}
+                      </p>
+
+                      <div className="flex gap-1.5 justify-center mt-1">
+                        {loadingMessages.map((_, i) => (
+                          <div 
+                            key={i} 
+                            className={cn(
+                              "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                              i === loadingStep ? cn("w-5", activeClasses.bullet) : (isDark ? "bg-white/10" : "bg-slate-300")
+                            )} 
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1358,17 +1842,26 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                   autoFocus
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onFocus={() => setIsInputFocused(true)}
+                  onBlur={() => setIsInputFocused(false)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
                       sendMessage(input);
                     }
                   }}
-                  placeholder="Ask Chameleon AI anything about this file..."
-                  className="h-14 pl-12 pr-16 bg-muted/40 border-border focus:ring-indigo-500/20 focus:border-indigo-500/50 rounded-2xl transition-all shadow-inner"
+                  placeholder="Ask Neuri anything about this file..."
+                  className={cn(
+                    "h-14 pl-12 pr-16 bg-muted/40 border-border rounded-2xl transition-all shadow-inner", 
+                    activeClasses.ring, 
+                    activeClasses.focusBorder
+                  )}
                   disabled={loading}
                 />
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-indigo-400 transition-colors">
+                <div 
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors"
+                  style={{ color: isInputFocused ? activeClasses.accent : undefined }}
+                >
                   <Bot className="w-5 h-5" />
                 </div>
                 {loading ? (
@@ -1385,7 +1878,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                     onClick={() => sendMessage(input)}
                     className={cn(
                       "absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl transition-all",
-                      input.trim() ? "bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/20" : "bg-muted text-muted-foreground"
+                      input.trim() ? cn("text-white shadow-lg", activeClasses.primary600, activeClasses.primary700, activeClasses.sendShadow) : "bg-muted text-muted-foreground"
                     )}
                     disabled={!input.trim()}
                   >
