@@ -10,7 +10,7 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || process.env.GROQ_AP
 
 // Production scale lightweight inference models
 const PRIMARY_AI_MODEL = "google/gemini-2.5-flash-lite";
-const FAST_CHAT_MODEL = "google/gemini-2.5-flash-lite"; // Optimized for fast, short-form responses like chunk summarization
+const FAST_CHAT_MODEL = "google/gemini-2.0-flash-lite-001"; // Optimized for fast, short-form responses like chunk summarization
 
 // Helper function to handle fetch retries with exponential backoff for high concurrency
 async function fetchWithRetry(url: string, options: any, retries = 3, delay = 1000) {
