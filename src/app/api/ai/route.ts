@@ -38,6 +38,8 @@ async function fetchWithRetry(url: string, options: any, retries = 3, delay = 10
 // Lightweight parallel chunk summarizer
 async function summarizeChunk(chunk: string, index: number, total: number, apiKey: string): Promise<string> {
   try {
+    const keyPreview = apiKey ? `${apiKey.slice(0, 6)}...${apiKey.slice(-4)}` : 'undefined';
+    console.log(`[AI summarizeChunk] Calling chunk ${index + 1}/${total} with key: ${keyPreview}, Length: ${apiKey?.length}`);
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -64,6 +66,11 @@ async function summarizeChunk(chunk: string, index: number, total: number, apiKe
 
 export async function POST(req: NextRequest) {
   try {
+    const keyPreview = OPENROUTER_API_KEY 
+      ? `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-4)}` 
+      : 'undefined';
+    console.log(`[AI POST] Initializing request. Key Preview: ${keyPreview}, Length: ${OPENROUTER_API_KEY?.length}`);
+
     if (!OPENROUTER_API_KEY) {
       console.error("Missing OPENROUTER_API_KEY environment variable");
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
@@ -208,6 +215,7 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      console.log(`[AI POST - Quiz] Fetching Groq completions. Key Preview: ${OPENROUTER_API_KEY ? `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-4)}` : 'undefined'}`);
       const response = await fetchWithRetry("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -245,6 +253,7 @@ CRITICAL RULES:
 
       if (!response.ok) {
         const errorText = await response.text();
+        console.error(`[AI POST - Quiz Error] HTTP status: ${response.status}. Body: ${errorText}`);
         return NextResponse.json({ error: `AI service failed: ${errorText}` }, { status: 502 });
       }
 
@@ -306,6 +315,7 @@ CRITICAL REQUIREMENT: You MUST strictly write "---" on its own separate empty li
     // Adaptive output token budgeting
     const dynamicMaxTokens = fileContent.length <= 6000 ? 1200 : 1800;
 
+    console.log(`[AI POST - Summarize] Fetching Groq completions. Key Preview: ${OPENROUTER_API_KEY ? `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-4)}` : 'undefined'}`);
     const response = await fetchWithRetry("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -323,6 +333,7 @@ CRITICAL REQUIREMENT: You MUST strictly write "---" on its own separate empty li
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.error(`[AI POST - Summarize Error] HTTP status: ${response.status}. Body: ${errorText}`);
       return NextResponse.json({ error: `AI service failed: ${errorText}` }, { status: 502 });
     }
 
