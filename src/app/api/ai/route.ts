@@ -6,7 +6,7 @@ import pdf from 'pdf-parse';
 import { getCachedAIResult, setCachedAIResult } from '@/lib/persistent-ai-cache';
 
 const pdfParse = pdf;
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const OPENROUTER_API_KEY = process.env.GROQ_API_KEY;
 
 // Production scale lightweight inference models
 const PRIMARY_AI_MODEL = "llama-3.1-8b-instant";
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     console.log(`[AI POST] Initializing request. Key Preview: ${keyPreview}, Length: ${OPENROUTER_API_KEY?.length}`);
 
     if (!OPENROUTER_API_KEY) {
-      console.error("Missing OPENROUTER_API_KEY environment variable");
+      console.error("Missing GROQ_API_KEY environment variable");
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
