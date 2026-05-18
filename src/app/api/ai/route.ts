@@ -3,76 +3,21 @@ import { getServerStudentSession } from '@/lib/auth-server';
 import { checkRateLimit, RateLimitTier } from '@/lib/rate-limit';
 import { google } from 'googleapis';
 import pdf from 'pdf-parse';
-import { getCachedAIResult, setCachedAIResult } from '@/lib/persistent-ai-cache';
 
 const pdfParse = pdf;
-const OPENROUTER_API_KEY = process.env.GROQ_API_KEY;
 
-// Production scale lightweight inference models
-const PRIMARY_AI_MODEL = "llama-3.1-8b-instant";
-const FAST_CHAT_MODEL = "llama-3.1-8b-instant";
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-// Helper function to handle fetch retries with exponential backoff for high concurrency
-async function fetchWithRetry(url: string, options: any, retries = 3, delay = 1000) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const response = await fetch(url, options);
-      if (response.ok) return response;
-      
-      if (response.status === 429 || response.status >= 500) {
-        console.warn(`[AI Route Retry] Request failed with status ${response.status}. Retrying in ${delay}ms...`);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        delay *= 2;
-        continue;
-      }
-      return response;
-    } catch (err) {
-      if (i === retries - 1) throw err;
-      await new Promise(resolve => setTimeout(resolve, delay));
-      delay *= 2;
-    }
-  }
-  throw new Error("Failed after maximum retries");
-}
+// Google Gemini 2.5 Flash: الأفضل في سرعة المعالجة، تلافي الهلوسة والتكرار اللانهائي، ودعم كامل وذكي جداً للغة العربية والـ Mermaid والـ LaTeX.
+const PRIMARY_AI_MODEL = "google/gemini-2.5-flash";
 
-// Lightweight parallel chunk summarizer
-async function summarizeChunk(chunk: string, index: number, total: number, apiKey: string): Promise<string> {
-  try {
-    const keyPreview = apiKey ? `${apiKey.slice(0, 6)}...${apiKey.slice(-4)}` : 'undefined';
-    console.log(`[AI summarizeChunk] Calling chunk ${index + 1}/${total} with key: ${keyPreview}, Length: ${apiKey?.length}`);
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: FAST_CHAT_MODEL,
-        messages: [
-          { role: "system", content: "Summarize academic content concisely. Capture key formulas, definitions, and equations in brief bullets. Output strictly in the document language." },
-          { role: "user", content: `Part ${index + 1} of ${total}:\n${chunk.slice(0, 12000)}` }
-        ],
-        max_tokens: 350,
-        temperature: 0.1
-      })
-    });
-    if (!response.ok) return chunk.slice(0, 800);
-    const data = await response.json();
-    return data.choices?.[0]?.message?.content || chunk.slice(0, 800);
-  } catch (e) {
-    return chunk.slice(0, 800);
-  }
-}
+// موديل سريع وخفيف للمحادثات العادية
+const FAST_CHAT_MODEL = "google/gemini-2.5-flash";
 
 export async function POST(req: NextRequest) {
   try {
-    const keyPreview = OPENROUTER_API_KEY 
-      ? `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-4)}` 
-      : 'undefined';
-    console.log(`[AI POST] Initializing request. Key Preview: ${keyPreview}, Length: ${OPENROUTER_API_KEY?.length}`);
-
     if (!OPENROUTER_API_KEY) {
-      console.error("Missing GROQ_API_KEY environment variable");
+      console.error("Missing OPENROUTER_API_KEY environment variable");
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
@@ -140,239 +85,150 @@ export async function POST(req: NextRequest) {
         }
       } catch (extractError) {
         console.error("Error extracting file content:", extractError);
-        return NextResponse.json({ error: 'Failed to extract text from the document.' }, { status: 422 });
+        return NextResponse.json({ error: 'Failed to extract text from the document. The file might be corrupted, protected, or empty.' }, { status: 422 });
       }
     }
 
-    // 1. PERSISTENT CACHE LOOKUP (Only for core tasks to avoid chat collisions)
-    const isCoreTask = task === 'summarize' || task === 'quiz' || task === 'translate';
-    const shouldCache = isCoreTask && messages.length === 0 && fileContent.trim().length > 0;
-
-    if (shouldCache) {
-      const cachedResult = await getCachedAIResult(fileContent, task, language);
-      if (cachedResult) {
-        console.log(`[AI Cache Hit] Instantly returning cached result for ${task} in ${language}.`);
-        if (task === 'quiz') {
-          return NextResponse.json({ result: cachedResult });
-        } else {
-          const encoder = new TextEncoder();
-          const stream = new ReadableStream({
-            start(controller) {
-              const chunk = `data: ${JSON.stringify({
-                choices: [{ delta: { content: cachedResult } }]
-              })}\n\n`;
-              controller.enqueue(encoder.encode(chunk));
-              controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-              controller.close();
-            }
-          });
-          return new Response(stream, {
-            headers: {
-              'Content-Type': 'text/event-stream',
-              'Cache-Control': 'no-cache, no-transform',
-              'Connection': 'keep-alive',
-            },
-          });
-        }
-      }
+    // تحديد الموديل الافتراضي للمحادثات العادية
+    let currentModel = FAST_CHAT_MODEL;
+    
+    const rawLimit = Math.min(Math.max(fileContent.length, 15000), 150000);
+    let dynamicContextLimit = rawLimit;
+    if (fileContent.length > rawLimit) {
+        const lastSpaceIndex = fileContent.lastIndexOf(' ', rawLimit);
+        dynamicContextLimit = lastSpaceIndex > -1 ? lastSpaceIndex : rawLimit;
     }
+    const contextualText = fileContent.substring(0, dynamicContextLimit);
+    
+    let systemPrompt = `You are Chameleon AI, an elite academic assistant built for university students.
+🚨 STRICTOR NAME TRANSLITERATION RULE:
+1. Your name in English is "Chameleon AI".
+2. In Arabic, your name is ALWAYS "كامليون AI" (Kamelyon AI). You are STRICTLY FORBIDDEN from translating or transliterating your name as "تشاميليون" or "تشيملون" or "شاميليون". Under no circumstances are you allowed to use "تشاميليون" or "تشيملون" or "شاميليون". Always refer to yourself as "كامليون AI".
+You are assisting with a file named "${metadata.name}".
+Language: ${language}.
 
-    const currentModel = PRIMARY_AI_MODEL;
+${isImage ? "This is an image file. Analyze its visual content thoroughly when asked." : `File Content Context:\n---\n${contextualText}\n---`}
 
-    // 2. HIERARCHICAL COMPRESSION & SEMANTIC CHUNKING
-    let contextualText = '';
-    if (fileContent.trim().length > 0) {
-      if (fileContent.length <= 6000) {
-        contextualText = fileContent;
-      } else {
-        console.log(`[AI Pipeline] Activating Hierarchical Summarization for large document (${fileContent.length} chars).`);
-        const chunkSize = 12000;
-        const chunks: string[] = [];
-        for (let i = 0; i < fileContent.length; i += chunkSize) {
-          chunks.push(fileContent.substring(i, i + chunkSize));
-        }
-        
-        // Summarize only up to the first 6 chunks in parallel to remain fully safe
-        const chunkSummaries = await Promise.all(
-          chunks.slice(0, 6).map((chunk, idx) => 
-            summarizeChunk(chunk, idx, Math.min(chunks.length, 6), OPENROUTER_API_KEY || '')
-          )
-        );
-        contextualText = chunkSummaries.join("\n\n");
-      }
-    }
+🚨 ZERO-HALLUCINATION PROTOCOL (CRITICAL RULES) 🚨:
+1. **STRICT CONTEXT CONFINEMENT:** You are strictly FORBIDDEN from introducing any external topics, concepts, theorems, or formulas that are NOT explicitly mentioned in the provided text. 
+2. **CLARIFICATION vs. FABRICATION:** You may use your general knowledge ONLY to explain and clarify the concepts already present in the text in extreme detail. Do NOT add extra types, features, or context unless it is in the text.
+3. **NO FILLER:** Do not invent information just to make the summary longer. 
 
-    // 3. QUIZ GENERATION SEPARATED FROM FULL PDF CONTEXT
-    if (task === 'quiz') {
-      let quizContext = fileContent;
-      if (fileContent.length > 6000) {
-        const cachedSummary = await getCachedAIResult(fileContent, 'summarize', language);
-        if (cachedSummary) {
-          quizContext = cachedSummary;
-          console.log(`[AI Quiz Context] Reusing compressed cached summary to generate quiz. Token efficiency: 100%.`);
-        } else {
-          quizContext = contextualText;
-        }
-      }
+FORMATTING & VISUAL RULES:
+- Use rich Markdown: headers, bold, italic, bullet lists, tables.
+- **EXHAUSTIVE EXPLANATION:** Extract maximum detail from the provided text. Explain concepts deeply and step-by-step.
+- **STRICT EQUATION ISOLATION:** EVERY mathematical formula, equation, ratio, or calculation (even simple verbal/concept formulas like "Load Balancing = Traffic / Number of Servers") MUST be written in Display LaTeX block ($$...$$) on its own separate, empty line. Absolutely NO text, punctuation, or words are allowed on the same line as the equation. You are STRICTLY FORBIDDEN from writing any formula or equation inline inside paragraphs or bullet points. Always isolate them on separate lines.
+- **DIAGRAMS & DRAWINGS:** Whenever a concept involves a process, flow, architecture, or relationships, you MUST draw it using a valid Mermaid.js code block (\`\`\`mermaid ... \`\`\`).
+  🚨 STRICT MERMAID SYNTAX RULES:
+  1. NEVER write extra angle brackets after link labels. Use "-->|label| B" instead of "-->|label|> B".
+  2. Any node label containing special characters (like parentheses, colons, brackets, or commas) MUST be wrapped in double quotes, e.g. A["Label (Extra Info)"] instead of A[Label (Extra Info)].
+- Respond ONLY in ${language}.`;
 
-      console.log(`[AI POST - Quiz] Fetching Groq completions. Key Preview: ${OPENROUTER_API_KEY ? `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-4)}` : 'undefined'}`);
-      const response = await fetchWithRetry("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: currentModel,
-          messages: [
-            { 
-              role: "system", 
-              content: `You are Neuri, an elite university academic exam generator. 
-Output strictly a valid JSON array of 5 to 10 multiple-choice questions.
-Respond strictly in ${language}.
-Each question object MUST strictly follow this JSON schema:
-{
-  "numb": number,
-  "type": "Multiple Choice",
-  "question": "string",
-  "options": ["string", "string", "string", "string"],
-  "answer": "string",
-  "explanation": "string"
-}
-CRITICAL RULES:
-1. The "answer" property MUST be a string that matches EXACTLY and LITERALLY one of the 4 strings inside the "options" array.
-2. The "options" array MUST contain exactly 4 unique choices.
-3. The distractors (wrong choices) must be highly professional, realistic, and smart. Do not use repetitive words or lazy structures.
-4. Output ONLY the raw JSON array. Do not include markdown wraps, conversational filler, or code blocks in your response.` 
-            },
-            { role: "user", content: `Context:\n${quizContext.slice(0, 10000)}\n\nGenerate structured multiple-choice quiz questions based strictly on the academic context above.` }
-          ],
-          temperature: 0.1
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`[AI POST - Quiz Error] HTTP status: ${response.status}. Body: ${errorText}`);
-        return NextResponse.json({ error: `AI service failed: ${errorText}` }, { status: 502 });
-      }
-
-      const aiData = await response.json();
-      let result = aiData.choices?.[0]?.message?.content;
-      try {
-        const cleaned = result.replace(/```json|```/g, '').trim();
-        const parsed = JSON.parse(cleaned);
-        const finalQuestions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
-        
-        if (shouldCache && finalQuestions.length > 0) {
-          await setCachedAIResult(fileContent, task, language, finalQuestions);
-        }
-        return NextResponse.json({ result: finalQuestions });
-      } catch (e) {
-        console.error("Failed to parse quiz JSON:", e);
-        return NextResponse.json({ error: "Failed to generate structured quiz." }, { status: 502 });
-      }
-    }
-
-    // 4. SUMMARIZE & TRANSLATE TASKS
-    // Permanent prompt compressed from ~900 tokens to under 120 tokens
-    const systemPrompt = `You are Neuri, an elite university academic assistant. Transliteration: Name is "نيوري" or "نيوري AI" in Arabic. Never use other forms.
-Respond strictly in ${language}. Ground answers strictly in the context. Format mathematical equations strictly in Display LaTeX blocks ($$...$$) on empty, separate lines. Do not use inline math. Write fractions professionally using vertical block LaTeX (\\frac{num}{den}) instead of slashes (/), and multiplication using (\\cdot) instead of asterisks (*). Separate all main sections with horizontal divider lines (---) on a separate line.${contextualText ? `\n\nContext:\n${contextualText}` : ''}`;
-
-    const apiMessages = [
-      { role: "system", content: systemPrompt }
+    let apiMessages = [
+      { role: "system", content: systemPrompt },
+      ...messages
     ];
 
-    if (messages.length > 0) {
-      apiMessages.push(...messages);
-    } else {
+    let isQuizTask = false;
+
+    if (task && messages.length === 0) {
       if (task === 'summarize') {
-        apiMessages.push({
-          role: "user",
-          content: `You are an elite academic study-guide generator. Transform the academic context into a premium university-level study guide that outperforms typical AI summaries by balancing academic depth, clarity, compression efficiency, readability, and exam usefulness.
+        currentModel = PRIMARY_AI_MODEL; // استخدام الموديل القوي هنا
+        apiMessages.push({ role: "user", content: `You are an elite academic professor generating a highly organized, deeply elaborated masterclass study guide based ONLY on the provided document.
 
-Structure & Constraints:
-1. Introduction: Objective of the document.
----
-2. Core Topics & Hierarchical Guide: Preserve ALL important concepts (definitions, core theories, assumptions, exceptions, advantages/disadvantages, comparisons, use cases, important examples, exam-critical details). Use an aggressive compression without losing meaning. Organize like premium lecture notes with a clear educational hierarchy (# Main Topic, ## Subtopic, ### Key Concept).
----
-3. Formula Handling & High-Quality Comparisons: For every important mathematical formula/equation present, you MUST explain its variables, intuitive meaning, and when it is used. Write equations strictly on a separate empty line in Display LaTeX ($$...$$). If any concepts are related or comparable, generate concise and highly insightful comparison tables (e.g. | Method | Advantages | Disadvantages | Best Use Case |).
----
-4. Exam-Oriented Enhancement & Visuals: For key topics, include why it matters, common confusion points, and typical exam traps/confusion points. Draw a visual Mermaid.js diagram/flowchart ONLY if the text describes a process, flow, or system architecture where a diagram genuinely improves conceptual understanding. Otherwise, do not draw one.
----
-5. Key Takeaways: Vital insights.
+🚨 CRITICAL STRUCTURE RULE 🚨: 
+DYNAMICALLY ADAPT the structure and headings to perfectly match the content. Do not use hardcoded templates like "Chapter 1".
 
-CRITICAL REQUIREMENT: You MUST strictly write "---" on its own separate empty line to separate each of the sections above. Do not skip the "---" separator lines under any circumstance.`
-        });
+Guidelines for Dynamic Structuring & Deep Elaboration:
+1. **Introduction:** Start with a comprehensive overview of the document's main objective.
+2. **Main Content (Exhaustive Detail):** Analyze the document's hierarchy. For every topic, provide a deep, granular, and fully elaborated explanation. Do not just summarize; TEACH the concept based on the text. 
+3. **Visual Diagrams (Mermaid):** If the text describes an architecture (e.g., layers, nodes, inputs/outputs), a flowchart, or a cycle, explicitly draw it using a \`\`\`mermaid\`\`\` code block with shapes and lines.
+4. **Formulas & Math (Isolated):** IF the document contains math, write governing equations in block LaTeX ($$...$$). Ensure the equation is alone on its line, with variable definitions written BELOW it, not next to it.
+5. **Comparisons:** Synthesize comparisons into dense Markdown tables.
+6. **Key Takeaways:** End with critical insights from the text.
+
+**CRITICAL ENFORCEMENT:**
+1. **Math Verification:** Correct obvious typos in extracted equations to their standard forms (e.g., Sigmoid $\\sigma(x) = \\frac{1}{1 + e^{-x}}$).
+2. **Scale of Detail:** Extract every ounce of detail from the source text. 
+3. **Respond in ${language}.` });
+      } else if (task === 'quiz') {
+        isQuizTask = true; 
+        currentModel = PRIMARY_AI_MODEL; // استخدام الموديل القوي هنا
+        apiMessages.push({ role: "user", content: `Generate a structured JSON array of 5-10 quiz questions strictly about the provided file. Format: [{"numb":1, "question":"...", "type":"Multiple Choice", "answer":"...", "options":["..."], "explanation":"..."}]. Output ONLY the JSON.` });
       } else if (task === 'translate') {
-        apiMessages.push({
-          role: "user",
-          content: `Translate and restructure the key points of the context into ${language}. Use structured bullet points, separate key sections using horizontal lines (---) on separate lines, and only include equations in isolated block LaTeX ($$...$$) or diagrams in Mermaid.js if they are explicitly present in the source context.`
-        });
+        currentModel = PRIMARY_AI_MODEL; // استخدام الموديل القوي هنا
+        apiMessages.push({ role: "user", content: `Translate and restructure the key points of this file into ${language}. Use proper markdown formatting with headers, bullet points, tables, Mermaid diagrams for visual concepts, and isolated LaTeX on empty lines for math.` });
       }
     }
 
-    // Adaptive output token budgeting
-    const dynamicMaxTokens = fileContent.length <= 6000 ? 1200 : 1800;
+    let dynamicMaxTokens = 2000; 
+    if (task === 'summarize') {
+      if (fileContent.length > 80000) {
+        dynamicMaxTokens = 5500; 
+      } else if (fileContent.length > 30000) {
+        dynamicMaxTokens = 3500; 
+      } else {
+        dynamicMaxTokens = 2000;
+      }
+    }
 
-    console.log(`[AI POST - Summarize] Fetching Groq completions. Key Preview: ${OPENROUTER_API_KEY ? `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-4)}` : 'undefined'}`);
-    const response = await fetchWithRetry("https://api.groq.com/openai/v1/chat/completions", {
+    const shouldStream = !isQuizTask;
+
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://chameleon-nu.tech",
+        "X-Title": "Chameleon AI"
       },
       body: JSON.stringify({
-        model: currentModel,
+        model: currentModel, // تم تمرير المتغير هنا
         messages: apiMessages,
         max_tokens: dynamicMaxTokens,
-        temperature: 0.1,
-        stream: true
+        temperature: 0.1, 
+        stream: shouldStream 
       })
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`[AI POST - Summarize Error] HTTP status: ${response.status}. Body: ${errorText}`);
-      return NextResponse.json({ error: `AI service failed: ${errorText}` }, { status: 502 });
+       const errorText = await response.text();
+       console.error("OpenRouter Fetch Error:", errorText);
+       
+       let parsedError = errorText;
+       try {
+         const parsed = JSON.parse(errorText);
+         parsedError = parsed.error?.message || parsed.error || errorText;
+       } catch (e) {}
+       
+       return NextResponse.json({ error: `AI service connection failed: ${parsedError}` }, { status: 502 });
     }
 
-    // Clone the standard response body to process and cache background text asynchronously without blocking
-    if (shouldCache) {
-      const clonedResponse = response.clone();
-      clonedResponse.text().then(streamBuffer => {
-        try {
-          let fullResponseText = '';
-          const lines = streamBuffer.split('\n');
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const jsonStr = line.slice(6).trim();
-              if (jsonStr === '[DONE]') continue;
-              try {
-                const parsed = JSON.parse(jsonStr);
-                const content = parsed.choices?.[0]?.delta?.content || '';
-                fullResponseText += content;
-              } catch (e) {}
-            }
-          }
-          if (fullResponseText.trim().length > 100) {
-            setCachedAIResult(fileContent, task, language, fullResponseText);
-          }
-        } catch (cacheErr) {
-          console.error('[AI Cache Stream Save Error]:', cacheErr);
-        }
-      }).catch(err => {
-        console.error('[AI Cache Background Save Error]:', err);
-      });
-    }
+    if (shouldStream) {
+       return new Response(response.body, {
+         headers: {
+           'Content-Type': 'text/event-stream',
+           'Cache-Control': 'no-cache, no-transform',
+           'Connection': 'keep-alive',
+         },
+       });
+    } else {
+       const aiData = await response.json();
+       if (aiData.error) {
+         console.error("OpenRouter Error:", aiData.error);
+         return NextResponse.json({ error: aiData.error.message || 'AI service error' }, { status: 502 });
+       }
 
-    return new Response(response.body, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache, no-transform',
-        'Connection': 'keep-alive',
-      },
-    });
+       let result = aiData.choices?.[0]?.message?.content;
+       try {
+         const cleaned = result.replace(/```json|```/g, '').trim();
+         result = JSON.parse(cleaned);
+         if (!Array.isArray(result) && result.questions) result = result.questions;
+       } catch (e) {
+         console.error("Failed to parse quiz JSON:", e);
+       }
+       return NextResponse.json({ result });
+    }
 
   } catch (error) {
     console.error('AI processing error:', error);
