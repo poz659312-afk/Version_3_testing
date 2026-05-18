@@ -587,10 +587,19 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
 
       if (!response.ok) {
         let errorMsg = "Failed to process AI request";
+        console.error(`[AI CLIENT ERROR] Response failed with status: ${response.status}`);
         try {
-          const errData = await response.json();
-          errorMsg = errData.error || errorMsg;
-        } catch (_) {}
+          const rawText = await response.text();
+          console.error(`[AI CLIENT ERROR] Raw response body: ${rawText}`);
+          try {
+            const errData = JSON.parse(rawText);
+            errorMsg = errData.error || errorMsg;
+          } catch (_) {
+            errorMsg = rawText || errorMsg;
+          }
+        } catch (readErr) {
+          console.error("[AI CLIENT ERROR] Failed to read error response body:", readErr);
+        }
         throw new Error(errorMsg);
       }
 
