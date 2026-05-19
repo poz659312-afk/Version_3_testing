@@ -109,8 +109,8 @@ function LevelContentClient({ department, level }: { department: string; level: 
           transition={{ duration: 0.2 }}  // Added explicit shorter duration
           className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50"
         >
-            <div className="bg-white/[0.1] border border-white/[0.2] backdrop-blur-md rounded-lg px-4 py-3 flex items-center gap-2">
-            <CheckCircle className="w-5 h-5 text-green-400" />
+            <div className="bg-primary/10 border border-primary/20 backdrop-blur-md rounded-lg px-4 py-3 flex items-center gap-2">
+            <CheckCircle className="w-5 h-5 text-primary" />
             <span className=" text-sm md:text-base font-small">{indicatorTerm} is Active</span>
             </div>
         </motion.div>
@@ -128,7 +128,7 @@ function LevelContentClient({ department, level }: { department: string; level: 
             <Link href={`/specialization/${department}`}>
               <Button
                 variant="ghost"
-                className="text-muted-foreground hover: hover:bg-white/[0.05] border border-white/[0.08] backdrop-blur-sm"
+                className="text-muted-foreground hover:text-primary hover:bg-primary/10 border border-white/[0.08] backdrop-blur-sm transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to {dept.name}
@@ -145,7 +145,7 @@ function LevelContentClient({ department, level }: { department: string; level: 
               animate="visible"
               className="text-4xl md:text-6xl font-bold  mb-6 tracking-tight"
             >
-              <span style={{ WebkitTextStroke: '1.2px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 dark:border-white/10 border-black/10">{dept.name}</span>
+              <span style={{ WebkitTextStroke: '1.2px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 text-primary">{dept.name}</span>
               <br />
               <span className={cn("text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-secondary drop-shadow-[0_0_30px_rgba(var(--primary),0.3)]")}>
                 {levelNum}
@@ -173,7 +173,7 @@ function LevelContentClient({ department, level }: { department: string; level: 
               <TabsList className="grid w-full grid-cols-2 mb-8 bg-white/[0.03] border border-white/[0.08] backdrop-blur-sm">
                 <TabsTrigger
                   value="term1"
-                  className="flex items-center gap-2 data-[state=active]:bg-white/[0.1] data-[state=active]: text-muted-foreground"
+                  className="flex items-center gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary text-muted-foreground transition-all"
                   onClick={() => {
                     // Use router.push instead of Link
                     window.history.pushState({}, '', `?mode=term1`);
@@ -185,7 +185,7 @@ function LevelContentClient({ department, level }: { department: string; level: 
                 </TabsTrigger>
                 <TabsTrigger
                   value="term2"
-                  className="flex items-center gap-2 data-[state=active]:bg-white/[0.1] data-[state=active]: text-muted-foreground"
+                  className="flex items-center gap-2 data-[state=active]:bg-secondary/10 data-[state=active]:text-secondary text-muted-foreground transition-all"
                   onClick={() => {
                     // Use router.push instead of Link
                     window.history.pushState({}, '', `?mode=term2`);
@@ -208,21 +208,21 @@ function LevelContentClient({ department, level }: { department: string; level: 
                       animate="visible"
                     >
                       <Link href={`/specialization/${department}/${level}/${subject.id}`}>
-                        <Card className="h-full bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04] hover:border-white/[0.15] transition-all duration-500 group cursor-pointer backdrop-blur-sm">
+                        <Card className="h-full bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04] hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group cursor-pointer backdrop-blur-sm">
                           <CardHeader>
                             <div className="flex items-center gap-3 mb-2">
                               <motion.div
                                 whileHover={{ scale: 1.1, rotate: 5 }}
                                 transition={{ duration: 0.3 }}
-                                className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500/[0.15] to-transparent border border-white/[0.15] flex items-center justify-center backdrop-blur-sm"
+                                className="w-10 h-10 rounded-lg bg-gradient-to-r from-primary/[0.15] to-transparent border border-white/[0.15] flex items-center justify-center backdrop-blur-sm"
                               >
-                                <BookOpen className="w-5 h-5 text-blue-400" />
+                                <BookOpen className="w-5 h-5 text-primary" />
                               </motion.div>
-                              <Badge variant="outline" className="bg-white/[0.03] border-white/[0.1] text-muted-foreground">
+                              <Badge variant="outline" className="bg-white/[0.03] border-primary/20 text-primary group-hover:bg-primary/10 transition-colors">
                                 Term 1
                               </Badge>
                             </div>
-                            <CardTitle className="text-lg font-semibold  group-hover:text-foreground/90 transition-colors">
+                            <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors">
                               {subject.name}
                             </CardTitle>
                           </CardHeader>
@@ -233,13 +233,13 @@ function LevelContentClient({ department, level }: { department: string; level: 
                             <div className="flex flex-wrap gap-2">
                               <Badge
                                 variant="outline"
-                                className="text-xs bg-white/[0.03] border-white/[0.1] text-muted-foreground"
+                                className="text-xs bg-white/[0.03] border-white/[0.1] text-muted-foreground group-hover:border-primary/20 group-hover:text-primary transition-colors"
                               >
                                 {subject.creditHours} Credits
                               </Badge>
                               <Badge
                                 variant="outline"
-                                className="text-xs bg-white/[0.03] border-white/[0.1] text-muted-foreground"
+                                className="text-xs bg-white/[0.03] border-white/[0.1] text-muted-foreground group-hover:border-primary/20 group-hover:text-primary transition-colors"
                               >
                                 5 Sections
                               </Badge>
@@ -263,21 +263,21 @@ function LevelContentClient({ department, level }: { department: string; level: 
                       animate="visible"
                     >
                       <Link href={`/specialization/${department}/${level}/${subject.id}`}>
-                        <Card className="h-full bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04] hover:border-white/[0.15] transition-all duration-500 group cursor-pointer backdrop-blur-sm">
+                        <Card className="h-full bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04] hover:border-secondary/30 hover:shadow-lg hover:shadow-secondary/5 transition-all duration-300 group cursor-pointer backdrop-blur-sm">
                           <CardHeader>
                             <div className="flex items-center gap-3 mb-2">
                               <motion.div
                                 whileHover={{ scale: 1.1, rotate: 5 }}
                                 transition={{ duration: 0.3 }}
-                                className="w-10 h-10 rounded-lg bg-gradient-to-r from-green-500/[0.15] to-transparent border border-white/[0.15] flex items-center justify-center backdrop-blur-sm"
+                                className="w-10 h-10 rounded-lg bg-gradient-to-r from-secondary/[0.15] to-transparent border border-white/[0.15] flex items-center justify-center backdrop-blur-sm"
                               >
-                                <BookOpen className="w-5 h-5 text-green-400" />
+                                <BookOpen className="w-5 h-5 text-secondary" />
                               </motion.div>
-                              <Badge variant="outline" className="bg-white/[0.03] border-white/[0.1] text-muted-foreground">
+                              <Badge variant="outline" className="bg-white/[0.03] border-secondary/20 text-secondary group-hover:bg-secondary/10 transition-colors">
                                 Term 2
                               </Badge>
                             </div>
-                            <CardTitle className="text-lg font-semibold  group-hover:text-foreground/90 transition-colors">
+                            <CardTitle className="text-lg font-semibold group-hover:text-secondary transition-colors">
                               {subject.name}
                             </CardTitle>
                           </CardHeader>
@@ -288,13 +288,13 @@ function LevelContentClient({ department, level }: { department: string; level: 
                             <div className="flex flex-wrap gap-2">
                               <Badge
                                 variant="outline"
-                                className="text-xs bg-white/[0.03] border-white/[0.1] text-muted-foreground"
+                                className="text-xs bg-white/[0.03] border-white/[0.1] text-muted-foreground group-hover:border-secondary/20 group-hover:text-secondary transition-colors"
                               >
                                 {subject.creditHours} Credits
                               </Badge>
                               <Badge
                                 variant="outline"
-                                className="text-xs bg-white/[0.03] border-white/[0.1] text-muted-foreground"
+                                className="text-xs bg-white/[0.03] border-white/[0.1] text-muted-foreground group-hover:border-secondary/20 group-hover:text-secondary transition-colors"
                               >
                                 5 Sections
                               </Badge>

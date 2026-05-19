@@ -51,7 +51,7 @@ const FloatingIcon = ({ icon: Icon, className, delay = 0 }: { icon: LucideIcon, 
       className={`absolute animate-float ${className}`}
       style={{ animationDelay: `${delay}s` }}
     >
-      <Icon className="w-6 h-6 text-blue-400/30" />
+      <Icon className="w-6 h-6 text-primary/30" />
     </div>
   );
 };
@@ -78,11 +78,11 @@ export default function AboutPage() {
       id: 'introduction',
       title: 'What is Chameleon FCDS?',
       icon: Sparkles,
-      color: 'from-blue-400 to-cyan-400',
+      color: 'from-primary to-secondary',
       content: (
         <div className="space-y-6 font-rubik">
           <div className="text-center">
-              <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-r from-blue-500 to-green-500 p-1">
+              <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-r from-primary to-secondary p-1">
                 <div className="w-full h-full rounded-full  flex items-center justify-center">
                   <Image
                     src="/images/1212-removebg-preview.png"
@@ -96,12 +96,12 @@ export default function AboutPage() {
           </div>
 
           <p className="text-foreground/80 leading-relaxed text-center text-lg font-rubik">
-            <strong className="text-blue-400">Chameleon FCDS</strong> is a revolutionary educational platform designed specifically for students at the Faculty of Computer and Data Science (FCDS) at Alexandria University. We bridge the gap between academic learning and real-world application, empowering the next generation of tech innovators.
+            <strong className="text-primary">Chameleon FCDS</strong> is a revolutionary educational platform designed specifically for students at the Faculty of Computer and Data Science (FCDS) at Alexandria University. We bridge the gap between academic learning and real-world application, empowering the next generation of tech innovators.
           </p>
 
-          <div className="flex items-center gap-2 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20 justify-center">
-            <Sparkles className="w-5 h-5 text-blue-400 flex-shrink-0" />
-            <span className="text-blue-400 text-sm font-medium font-rubik">Transforming Education Through Innovation</span>
+          <div className="flex items-center gap-2 p-4 bg-primary/10 rounded-lg border border-primary/20 justify-center">
+            <Sparkles className="w-5 h-5 text-primary flex-shrink-0" />
+            <span className="text-primary text-sm font-medium font-rubik">Transforming Education Through Innovation</span>
           </div>
         </div>
       )
@@ -110,72 +110,72 @@ export default function AboutPage() {
       id: 'mission',
       title: 'Our Mission & Vision',
       icon: Target,
-      color: 'from-green-400 to-emerald-400',
+      color: 'from-secondary to-accent',
       content: (
         <div className="space-y-6 font-rubik">
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-green-400 flex items-center gap-2 font-rubik">
+            <h4 className="text-lg font-semibold text-secondary flex items-center gap-2 font-rubik">
               <Target className="w-5 h-5" />
               Mission
             </h4>
             <div className="space-y-3 pl-7">
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
                 <span className="text-foreground/80 font-rubik">To democratize access to quality education and career guidance for FCDS students</span>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
                 <span className="text-foreground/80 font-rubik">To create a supportive community where students can thrive academically and professionally</span>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
                 <span className="text-foreground/80 font-rubik">To bridge the gap between theoretical knowledge and practical application</span>
               </div>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-green-400 flex items-center gap-2 font-rubik">
+            <h4 className="text-lg font-semibold text-secondary flex items-center gap-2 font-rubik">
               <Lightbulb className="w-5 h-5" />
               Vision
             </h4>
             <div className="space-y-3 pl-7">
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
                 <span className="text-foreground/80 font-rubik">To be the leading educational companion for FCDS students worldwide</span>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
                 <span className="text-foreground/80 font-rubik">To foster innovation and excellence in computer science and data science education</span>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-2 h-2 bg-secondary rounded-full mt-2 flex-shrink-0"></div>
                 <span className="text-foreground/80 font-rubik">To empower students to become future leaders in technology</span>
               </div>
             </div>
           </div>
 
-          <div className="p-6 bg-green-500/10 rounded-lg border border-green-500/30">
+          <div className="p-6 bg-secondary/10 rounded-lg border border-secondary/30">
             <div className="flex items-center gap-3 mb-3">
-              <Heart className="w-6 h-6 text-green-400" />
-              <span className="text-green-400 font-semibold font-rubik">Our Core Values</span>
+              <Heart className="w-6 h-6 text-secondary" />
+              <span className="text-secondary font-semibold font-rubik">Our Core Values</span>
             </div>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="text-center">
-                <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Users className="w-6 h-6 text-green-400" />
+                <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Users className="w-6 h-6 text-secondary" />
                 </div>
                 <span className="text-foreground/80 text-sm font-rubik">Community First</span>
               </div>
               <div className="text-center">
-                <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Lightbulb className="w-6 h-6 text-green-400" />
+                <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Lightbulb className="w-6 h-6 text-secondary" />
                 </div>
                 <span className="text-foreground/80 text-sm font-rubik">Innovation Driven</span>
               </div>
               <div className="text-center">
-                <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Trophy className="w-6 h-6 text-green-400" />
+                <div className="w-12 h-12 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Trophy className="w-6 h-6 text-secondary" />
                 </div>
                 <span className="text-foreground/80 text-sm font-rubik">Excellence Focused</span>
               </div>
@@ -188,59 +188,59 @@ export default function AboutPage() {
       id: 'offerings',
       title: 'What We Offer',
       icon: BookOpen,
-      color: 'from-purple-400 to-pink-400',
+      color: 'from-accent to-primary',
       content: (
         <div className="space-y-6 font-rubik">
           <div className="grid gap-6">
-            <div className="p-6 bg-purple-500/10 rounded-lg border border-purple-500/20">
+            <div className="p-6 bg-accent/10 rounded-lg border border-accent/20">
               <div className="flex items-center gap-3 mb-4">
-                <BookOpen className="w-6 h-6 text-purple-400" />
-                <span className="font-medium text-purple-400 font-rubik">Academic Guidance</span>
+                <BookOpen className="w-6 h-6 text-accent" />
+                <span className="font-medium text-accent font-rubik">Academic Guidance</span>
               </div>
               <p className="text-foreground/70 text-sm mb-3 font-rubik">Comprehensive information about FCDS programs, courses, and academic requirements.</p>
               <div className="flex flex-wrap gap-2">
-                <Badge className="bg-purple-500/20 text-purple-300 text-xs font-rubik">Course Selection</Badge>
-                <Badge className="bg-purple-500/20 text-purple-300 text-xs font-rubik">Academic Planning</Badge>
-                <Badge className="bg-purple-500/20 text-purple-300 text-xs font-rubik">Degree Requirements</Badge>
+                <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">Course Selection</Badge>
+                <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">Academic Planning</Badge>
+                <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">Degree Requirements</Badge>
               </div>
             </div>
 
-            <div className="p-6 bg-purple-500/10 rounded-lg border border-purple-500/20">
+            <div className="p-6 bg-accent/10 rounded-lg border border-accent/20">
               <div className="flex items-center gap-3 mb-4">
-                <Briefcase className="w-6 h-6 text-purple-400" />
-                <span className="font-medium text-purple-400 font-rubik">Career Development</span>
+                <Briefcase className="w-6 h-6 text-accent" />
+                <span className="font-medium text-accent font-rubik">Career Development</span>
               </div>
               <p className="text-foreground/70 text-sm mb-3 font-rubik">Easy Material Access, job placement assistance, and career counseling.</p>
               <div className="flex flex-wrap gap-2">
-                <Badge className="bg-purple-500/20 text-purple-300 text-xs font-rubik">Materials</Badge>
-                <Badge className="bg-purple-500/20 text-purple-300 text-xs font-rubik">Job Opportunities</Badge>
-                <Badge className="bg-purple-500/20 text-purple-300 text-xs font-rubik">Career Counseling</Badge>
+                <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">Materials</Badge>
+                <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">Job Opportunities</Badge>
+                <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">Career Counseling</Badge>
               </div>
             </div>
 
-            <div className="p-6 bg-purple-500/10 rounded-lg border border-purple-500/20">
+            <div className="p-6 bg-accent/10 rounded-lg border border-accent/20">
               <div className="flex items-center gap-3 mb-4">
-                <Award className="w-6 h-6 text-purple-400" />
-                <span className="font-medium text-purple-400 font-rubik">Materials & Grants</span>
+                <Award className="w-6 h-6 text-accent" />
+                <span className="font-medium text-accent font-rubik">Materials & Grants</span>
               </div>
               <p className="text-foreground/70 text-sm mb-3 font-rubik">Information about available Materials, grants, and financial aid opportunities.</p>
               <div className="flex flex-wrap gap-2">
-                <Badge className="bg-purple-500/20 text-purple-300 text-xs font-rubik">Local Scholarships</Badge>
-                <Badge className="bg-purple-500/20 text-purple-300 text-xs font-rubik">International Grants</Badge>
-                <Badge className="bg-purple-500/20 text-purple-300 text-xs font-rubik">Research Funding</Badge>
+                <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">Local Scholarships</Badge>
+                <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">International Grants</Badge>
+                <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">Research Funding</Badge>
               </div>
             </div>
 
-            <div className="p-6 bg-purple-500/10 rounded-lg border border-purple-500/20">
+            <div className="p-6 bg-accent/10 rounded-lg border border-accent/20">
               <div className="flex items-center gap-3 mb-4">
-                <Brain className="w-6 h-6 text-purple-400" />
-                <span className="font-medium text-purple-400 font-rubik">AI-Powered Assistance</span>
+                <Brain className="w-6 h-6 text-accent" />
+                <span className="font-medium text-accent font-rubik">AI-Powered Assistance</span>
               </div>
               <p className="text-foreground/70 text-sm mb-3 font-rubik">Intelligent chatbot (ExploAI) providing instant answers to student queries.</p>
               <div className="flex flex-wrap gap-2">
-                <Badge className="bg-purple-500/20 text-purple-300 text-xs font-rubik">24/7 Support</Badge>
-                <Badge className="bg-purple-500/20 text-purple-300 text-xs font-rubik">Smart Responses</Badge>
-                <Badge className="bg-purple-500/20 text-purple-300 text-xs font-rubik">Personalized Help</Badge>
+                <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">24/7 Support</Badge>
+                <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">Smart Responses</Badge>
+                <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">Personalized Help</Badge>
               </div>
             </div>
           </div>
@@ -251,33 +251,33 @@ export default function AboutPage() {
       id: 'features',
       title: 'Platform Features',
       icon: Zap,
-      color: 'from-orange-400 to-red-400',
+      color: 'from-primary to-accent',
       content: (
         <div className="space-y-6 font-rubik">
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-orange-400 flex items-center gap-2 font-rubik">
+            <h4 className="text-lg font-semibold text-primary flex items-center gap-2 font-rubik">
               <Code className="w-5 h-5" />
               Technical Excellence
             </h4>
             <div className="grid gap-4">
-              <div className="p-4 bg-orange-500/10 rounded-lg border border-orange-500/20 flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20 flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-orange-400 font-medium font-rubik">Modern Tech Stack</span>
+                  <span className="text-primary font-medium font-rubik">Modern Tech Stack</span>
                   <p className="text-foreground/70 text-sm mt-1 font-rubik">Built with Next.js, TypeScript, and cutting-edge web technologies</p>
                 </div>
               </div>
-              <div className="p-4 bg-orange-500/10 rounded-lg border border-orange-500/20 flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20 flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-orange-400 font-medium font-rubik">Responsive Design</span>
+                  <span className="text-primary font-medium font-rubik">Responsive Design</span>
                   <p className="text-foreground/70 text-sm mt-1 font-rubik">Optimized for all devices - desktop, tablet, and mobile</p>
                 </div>
               </div>
-              <div className="p-4 bg-orange-500/10 rounded-lg border border-orange-500/20 flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20 flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-orange-400 font-medium font-rubik">Fast Performance</span>
+                  <span className="text-primary font-medium font-rubik">Fast Performance</span>
                   <p className="text-foreground/70 text-sm mt-1 font-rubik">Lightning-fast loading with optimized images and code splitting</p>
                 </div>
               </div>
@@ -285,22 +285,22 @@ export default function AboutPage() {
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-orange-400 flex items-center gap-2 font-rubik">
+            <h4 className="text-lg font-semibold text-primary flex items-center gap-2 font-rubik">
               <Shield className="w-5 h-5" />
               Security & Privacy
             </h4>
             <div className="grid gap-4">
-              <div className="p-4 bg-orange-500/10 rounded-lg border border-orange-500/20 flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20 flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-orange-400 font-medium font-rubik">Data Protection</span>
+                  <span className="text-primary font-medium font-rubik">Data Protection</span>
                   <p className="text-foreground/70 text-sm mt-1 font-rubik">Your privacy is our priority with industry-standard security measures</p>
                 </div>
               </div>
-              <div className="p-4 bg-orange-500/10 rounded-lg border border-orange-500/20 flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+              <div className="p-4 bg-primary/10 rounded-lg border border-primary/20 flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-orange-400 font-medium font-rubik">Secure Authentication</span>
+                  <span className="text-primary font-medium font-rubik">Secure Authentication</span>
                   <p className="text-foreground/70 text-sm mt-1 font-rubik">Safe login with Google OAuth and encrypted sessions</p>
                 </div>
               </div>
@@ -313,56 +313,56 @@ export default function AboutPage() {
       id: 'impact',
       title: 'Our Impact',
       icon: TrendingUp,
-      color: 'from-cyan-400 to-blue-400',
+      color: 'from-secondary to-primary',
       content: (
         <div className="space-y-6 font-rubik">
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-cyan-500/10 rounded-lg border border-cyan-500/20">
-              <div className="text-3xl font-bold text-cyan-400 mb-2 font-rubik">1000+</div>
+            <div className="text-center p-6 bg-secondary/10 rounded-lg border border-secondary/20">
+              <div className="text-3xl font-bold text-secondary mb-2 font-rubik">1000+</div>
               <div className="text-foreground/80 text-sm font-rubik">Active Students</div>
               <div className="text-muted-foreground text-xs mt-1 font-rubik">Helped this semester</div>
             </div>
-            <div className="text-center p-6 bg-cyan-500/10 rounded-lg border border-cyan-500/20">
-              <div className="text-3xl font-bold text-cyan-400 mb-2 font-rubik">30000+</div>
+            <div className="text-center p-6 bg-secondary/10 rounded-lg border border-secondary/20">
+              <div className="text-3xl font-bold text-secondary mb-2 font-rubik">30000+</div>
               <div className="text-foreground/80 text-sm font-rubik">Quiz Solved Last Year</div>
               <div className="text-muted-foreground text-xs mt-1 font-rubik">Through our platform</div>
             </div>
-            <div className="text-center p-6 bg-cyan-500/10 rounded-lg border border-cyan-500/20">
-              <div className="text-3xl font-bold text-cyan-400 mb-2 font-rubik">100+</div>
+            <div className="text-center p-6 bg-secondary/10 rounded-lg border border-secondary/20">
+              <div className="text-3xl font-bold text-secondary mb-2 font-rubik">100+</div>
               <div className="text-foreground/80 text-sm font-rubik">Review</div>
               <div className="text-muted-foreground text-xs mt-1 font-rubik">By our students</div>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-cyan-400 flex items-center gap-2 font-rubik">
+            <h4 className="text-lg font-semibold text-secondary flex items-center gap-2 font-rubik">
               <Star className="w-5 h-5" />
               Success Stories
             </h4>
             <div className="space-y-4">
-              <div className="p-4 bg-cyan-500/10 rounded-lg border border-cyan-500/20">
+              <div className="p-4 bg-secondary/10 rounded-lg border border-secondary/20">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-cyan-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-cyan-400 font-bold text-sm font-rubik">A</span>
+                  <div className="w-8 h-8 bg-secondary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-secondary font-bold text-sm font-rubik">A</span>
                   </div>
                   <div>
                     <p className="text-foreground/80 text-sm italic font-rubik">
                       &ldquo;Chameleon FCDS helped me land my dream internship at Google through their career guidance and interview preparation resources.&rdquo;
                     </p>
-                    <span className="text-cyan-400 text-xs mt-2 block font-rubik">- Data Science Student</span>
+                    <span className="text-secondary text-xs mt-2 block font-rubik">- Data Science Student</span>
                   </div>
                 </div>
               </div>
-              <div className="p-4 bg-cyan-500/10 rounded-lg border border-cyan-500/20">
+              <div className="p-4 bg-secondary/10 rounded-lg border border-secondary/20">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-cyan-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-cyan-400 font-bold text-sm font-rubik">S</span>
+                  <div className="w-8 h-8 bg-secondary/20 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-secondary font-bold text-sm font-rubik">S</span>
                   </div>
                   <div>
                     <p className="text-foreground/80 text-sm italic font-rubik">
                       &ldquo;The AI chatbot saved me countless hours by answering my questions instantly. It&apos;s like having a personal academic advisor 24/7.&rdquo;
                     </p>
-                    <span className="text-cyan-400 text-xs mt-2 block font-rubik">- Cybersecurity Student</span>
+                    <span className="text-secondary text-xs mt-2 block font-rubik">- Cybersecurity Student</span>
                   </div>
                 </div>
               </div>
@@ -375,48 +375,48 @@ export default function AboutPage() {
       id: 'future',
       title: 'Future Roadmap',
       icon: Rocket,
-      color: 'from-yellow-400 to-orange-400',
+      color: 'from-accent to-secondary',
       content: (
         <div className="space-y-6 font-rubik">
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-yellow-400 flex items-center gap-2 font-rubik">
+            <h4 className="text-lg font-semibold text-accent flex items-center gap-2 font-rubik">
               <Rocket className="w-5 h-5" />
               Upcoming Features
             </h4>
             <div className="grid gap-4">
-              <div className="p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20 flex items-start gap-3">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+              <div className="p-4 bg-accent/10 rounded-lg border border-accent/20 flex items-start gap-3">
+                <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
                 <div>
-                  <span className="text-yellow-400 font-medium font-rubik">Virtual Study Groups</span>
+                  <span className="text-accent font-medium font-rubik">Virtual Study Groups</span>
                   <p className="text-foreground/70 text-sm mt-1 font-rubik">Connect with peers for collaborative learning and project work</p>
                 </div>
               </div>
-              <div className="p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20 flex items-start gap-3">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+              <div className="p-4 bg-accent/10 rounded-lg border border-accent/20 flex items-start gap-3">
+                <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
                 <div>
-                  <span className="text-yellow-400 font-medium font-rubik">AI-Powered Career Matching</span>
+                  <span className="text-accent font-medium font-rubik">AI-Powered Career Matching</span>
                   <p className="text-foreground/70 text-sm mt-1 font-rubik">Personalized job and internship recommendations based on your profile</p>
                 </div>
               </div>
-              <div className="p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20 flex items-start gap-3">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+              <div className="p-4 bg-accent/10 rounded-lg border border-accent/20 flex items-start gap-3">
+                <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
                 <div>
-                  <span className="text-yellow-400 font-medium font-rubik">Interactive Learning Modules</span>
+                  <span className="text-accent font-medium font-rubik">Interactive Learning Modules</span>
                   <p className="text-foreground/70 text-sm mt-1 font-rubik">Gamified learning experiences for complex computer science concepts</p>
                 </div>
               </div>
-              <div className="p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20 flex items-start gap-3">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+              <div className="p-4 bg-accent/10 rounded-lg border border-accent/20 flex items-start gap-3">
+                <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0"></div>
                 <div>
-                  <span className="text-yellow-400 font-medium font-rubik">Industry Partnerships</span>
+                  <span className="text-accent font-medium font-rubik">Industry Partnerships</span>
                   <p className="text-foreground/70 text-sm mt-1 font-rubik">Direct connections with tech companies for exclusive opportunities</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="p-6 bg-yellow-500/10 rounded-lg border border-yellow-500/30">
-            <h4 className="text-lg font-semibold text-yellow-400 flex items-center gap-2 mb-4 font-rubik">
+          <div className="p-6 bg-accent/10 rounded-lg border border-accent/30">
+            <h4 className="text-lg font-semibold text-accent flex items-center gap-2 mb-4 font-rubik">
               <Globe className="w-5 h-5" />
               Our Vision for 2026
             </h4>
@@ -431,7 +431,7 @@ export default function AboutPage() {
       id: 'contact',
       title: 'Get In Touch',
       icon: Mail,
-      color: 'from-pink-400 to-purple-400',
+      color: 'from-primary to-secondary',
       content: (
         <div className="space-y-6 font-rubik">
           <p className="text-foreground/80 leading-relaxed font-rubik">
@@ -439,27 +439,27 @@ export default function AboutPage() {
           </p>
 
           <div className="grid gap-4">
-            <div className="p-4 bg-pink-500/10 rounded-lg border border-pink-500/20 flex items-center gap-3">
-              <Mail className="w-5 h-5 text-pink-400 flex-shrink-0" />
+            <div className="p-4 bg-primary/10 rounded-lg border border-primary/20 flex items-center gap-3">
+              <Mail className="w-5 h-5 text-primary flex-shrink-0" />
               <div>
-                <span className="text-pink-400 font-medium font-rubik">Email:</span>
+                <span className="text-primary font-medium font-rubik">Email:</span>
                 <span className="text-foreground/80 ml-2 font-rubik">tokyo9900777@gmail.com</span>
               </div>
             </div>
-            <div className="p-4 bg-pink-500/10 rounded-lg border border-pink-500/20 flex items-center gap-3">
-              <Globe className="w-5 h-5 text-pink-400 flex-shrink-0" />
+            <div className="p-4 bg-primary/10 rounded-lg border border-primary/20 flex items-center gap-3">
+              <Globe className="w-5 h-5 text-primary flex-shrink-0" />
               <div>
-                <span className="text-pink-400 font-medium font-rubik">Website:</span>
+                <span className="text-primary font-medium font-rubik">Website:</span>
                 <span className="text-foreground/80 ml-2 font-rubik">abdoahmedportfolio.vercel.app</span>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 p-4 bg-pink-500/10 rounded-lg border border-pink-500/20">
-            <Calendar className="w-5 h-5 text-pink-400 flex-shrink-0" />
+          <div className="flex items-center gap-2 p-4 bg-primary/10 rounded-lg border border-primary/20">
+            <Calendar className="w-5 h-5 text-primary flex-shrink-0" />
             <span className=" text-sm font-rubik">
-              <strong className='text-pink-400'>Founded:</strong> August 18, 2024 •
-              <strong className='text-pink-400'>Last Updated:</strong> September 21, 2025
+              <strong className='text-primary'>Founded:</strong> August 18, 2024 •
+              <strong className='text-primary'>Last Updated:</strong> September 21, 2025
             </span>
           </div>
         </div>
@@ -473,7 +473,7 @@ export default function AboutPage() {
 
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.05] via-transparent to-green-500/[0.05] blur-xl md:blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.05] via-transparent to-secondary/[0.05] blur-xl md:blur-3xl" />
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-5"
           style={{ backgroundImage: 'url(/images/Background.png)' }}
@@ -493,36 +493,36 @@ export default function AboutPage() {
           {/* Header */}
           <div className="text-center mb-16">
             <div className="mb-6 scroll-anim-slide-up scroll-anim-visible">
-              <div className="text-2xl md:text-3xl font-bold text-blue-400 mb-4 font-rubik">
+              <div className="text-2xl md:text-3xl font-bold text-primary mb-4 font-rubik">
                 بسم الله الرحمن الرحيم
               </div>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border">
-                <Heart className="w-4 h-4 text-blue-400" />
+                <Heart className="w-4 h-4 text-primary" />
                 <span className="text-sm text-muted-foreground tracking-wide font-rubik">About Us</span>
               </div>
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold  mb-6 font-rubik scroll-anim-slide-up scroll-anim-visible" style={{ transitionDelay: '0.2s' }}>
               About{" "}
-              <span className="bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Chameleon FCDS
               </span>
             </h1>
 
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8 font-rubik scroll-anim-slide-up scroll-anim-visible" style={{ transitionDelay: '0.4s' }}>
-              <span className="text-blue-400 font-medium font-rubik">&ldquo;مَن سلك طريقًا يلتمس فيه علمًا، سهَّل الله له به طريقًا إلى الجنة&rdquo; <br /></span> - Empowering the next generation of computer scientists and data scientists at Alexandria University through innovative education and community-driven excellence.
+              <span className="text-primary font-medium font-rubik">&ldquo;مَن سلك طريقًا يلتمس فيه علمًا، سهَّل الله له به طريقًا إلى الجنة&rdquo; <br /></span> - Empowering the next generation of computer scientists and data scientists at Alexandria University through innovative education and community-driven excellence.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 scroll-anim-slide-up scroll-anim-visible" style={{ transitionDelay: '0.6s' }}>
-              <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-4 py-2 font-rubik">
+              <Badge className="bg-primary/20 text-primary border border-primary/30 px-4 py-2 font-rubik">
                 <Users className="w-4 h-4 mr-2" />
                 Student-Centric
               </Badge>
-              <Badge className="bg-green-500/20 text-green-400 border-green-500/30 px-4 py-2 font-rubik">
+              <Badge className="bg-secondary/20 text-secondary border border-secondary/30 px-4 py-2 font-rubik">
                 <Zap className="w-4 h-4 mr-2" />
                 AI-Powered
               </Badge>
-              <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 px-4 py-2 font-rubik">
+              <Badge className="bg-accent/20 text-accent border border-accent/30 px-4 py-2 font-rubik">
                 <Trophy className="w-4 h-4 mr-2" />
                 Excellence Driven
               </Badge>
@@ -534,7 +534,7 @@ export default function AboutPage() {
             <Card className="bg-white/[0.02] border-border overflow-hidden">
               <div className="p-6 border-b border-border">
                 <h2 className="text-xl font-semibold  flex items-center gap-2 font-rubik">
-                  <BookOpen className="w-5 h-5 text-blue-400" />
+                  <BookOpen className="w-5 h-5 text-primary" />
                   Learn More About Us
                 </h2>
               </div>
@@ -551,17 +551,17 @@ export default function AboutPage() {
                         }}
                         className={`flex items-center gap-3 p-3 rounded-lg text-left transition-all duration-200 ${
                           activeSection === section.id
-                            ? 'bg-muted border border-border'
-                            : 'hover:bg-muted'
+                            ? 'bg-primary/10 border border-primary/20 text-primary'
+                            : 'hover:bg-muted hover:text-primary'
                         }`}
                       >
                         <div className={`p-2 rounded-lg bg-gradient-to-r ${section.color}`}>
-                          <IconComponent className="w-4 h-4 " />
+                          <IconComponent className="w-4 h-4 text-primary-foreground" />
                         </div>
                         <div className="flex-1">
                           <span className=" font-medium font-rubik">{section.title}</span>
                         </div>
-                        <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                        <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                       </button>
                     );
                   })}
@@ -591,7 +591,7 @@ export default function AboutPage() {
                           <div
                             className={`p-3 rounded-xl bg-gradient-to-r ${section.color} hover:scale-110 transition-transform duration-200`}
                           >
-                            <IconComponent className="w-6 h-6 " />
+                            <IconComponent className="w-6 h-6 text-primary-foreground" />
                           </div>
                           <div>
                             <h2 className="text-xl font-semibold  font-rubik">
@@ -621,7 +621,7 @@ export default function AboutPage() {
 
           {/* Bottom CTA */}
           <ScrollAnimatedSection className="mt-16 text-center">
-            <Card className="bg-gradient-to-r from-blue-500/10 to-green-500/10 border-blue-500/20">
+            <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20">
               <CardContent className="p-8">
                 <div>
                   <h3 className="text-2xl font-bold  mb-4 font-rubik">
@@ -631,11 +631,11 @@ export default function AboutPage() {
                     Ready to transform your academic journey? Join thousands of FCDS students who are already benefiting from our platform. Your future in tech starts here.
                   </p>
                   <div className="flex flex-wrap gap-4 justify-center">
-                    <Button className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600  font-rubik">
+                    <Button className="bg-gradient-to-r from-primary to-secondary hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 font-rubik text-primary-foreground">
                       <Sparkles className="w-4 h-4 mr-2" />
                       Start Your Journey
                     </Button>
-                    <Button variant="outline" className="bg-muted border-border  hover:bg-muted hover: font-rubik" onClick={() => (window.location.href = 'mailto:tokyo9900777@gmail.com')}>
+                    <Button variant="outline" className="bg-muted border-border hover:bg-primary/10 hover:text-primary font-rubik" onClick={() => (window.location.href = 'mailto:tokyo9900777@gmail.com')}>
                       <Mail className="w-4 h-4 mr-2" />
                       Contact Us
                     </Button>

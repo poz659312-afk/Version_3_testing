@@ -95,7 +95,15 @@ const TabButton = memo(({
       {isActive && (
         <motion.div
           layoutId="activeTabBadge"
-          className="absolute inset-0 bg-primary/10 dark:bg-primary/20 rounded-full border border-primary/20 pointer-events-none shadow-sm"
+          className={cn(
+            "absolute inset-0 rounded-full pointer-events-none shadow-sm border",
+            section.id === "lectures" && "bg-primary/10 dark:bg-primary/20 border-primary/20",
+            section.id === "sections" && "bg-secondary/10 dark:bg-secondary/20 border-secondary/20",
+            section.id === "summaries" && "bg-accent/10 dark:bg-accent/20 border-accent/20",
+            section.id === "videos" && "bg-primary/10 dark:bg-primary/20 border-primary/20",
+            section.id === "quizzes" && "bg-secondary/10 dark:bg-secondary/20 border-secondary/20",
+            section.id === "exams" && "bg-accent/10 dark:bg-accent/20 border-accent/20"
+          )}
           transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
         />
       )}
@@ -300,11 +308,70 @@ const TabContentRenderer = memo(({
 
   const IconComponent = section.icon;
 
+  const colorMap = {
+    lectures: {
+      hoverBorder: "hover:border-primary/50",
+      hoverShadow: "hover:shadow-primary/10",
+      gradient: "from-primary/0 via-primary/5 to-primary/10",
+      text: "group-hover:text-primary",
+      textStatic: "text-primary",
+      bgLight: "bg-primary/10",
+      borderLight: "border-primary/20",
+    },
+    sections: {
+      hoverBorder: "hover:border-secondary/50",
+      hoverShadow: "hover:shadow-secondary/10",
+      gradient: "from-secondary/0 via-secondary/5 to-secondary/10",
+      text: "group-hover:text-secondary",
+      textStatic: "text-secondary",
+      bgLight: "bg-secondary/10",
+      borderLight: "border-secondary/20",
+    },
+    summaries: {
+      hoverBorder: "hover:border-accent/50",
+      hoverShadow: "hover:shadow-accent/10",
+      gradient: "from-accent/0 via-accent/5 to-accent/10",
+      text: "group-hover:text-accent",
+      textStatic: "text-accent",
+      bgLight: "bg-accent/10",
+      borderLight: "border-accent/20",
+    },
+    exams: {
+      hoverBorder: "hover:border-accent/50",
+      hoverShadow: "hover:shadow-accent/10",
+      gradient: "from-accent/0 via-accent/5 to-accent/10",
+      text: "group-hover:text-accent",
+      textStatic: "text-accent",
+      bgLight: "bg-accent/10",
+      borderLight: "border-accent/20",
+    },
+    videos: {
+      hoverBorder: "hover:border-primary/50",
+      hoverShadow: "hover:shadow-primary/10",
+      gradient: "from-primary/0 via-primary/5 to-primary/10",
+      text: "group-hover:text-primary",
+      textStatic: "text-primary",
+      bgLight: "bg-primary/10",
+      borderLight: "border-primary/20",
+    },
+    quizzes: {
+      hoverBorder: "hover:border-secondary/50",
+      hoverShadow: "hover:shadow-secondary/10",
+      gradient: "from-secondary/0 via-secondary/5 to-secondary/10",
+      text: "group-hover:text-secondary",
+      textStatic: "text-secondary",
+      bgLight: "bg-secondary/10",
+      borderLight: "border-secondary/20",
+    }
+  };
+
+  const style = colorMap[section.id as keyof typeof colorMap] || colorMap.lectures;
+
   if (!section.content) {
     return (
       <div className="text-center py-16 flex flex-col items-center">
         <div className="p-6 bg-muted/40 rounded-full mb-6 relative">
-          <div className="absolute inset-0 border border-primary/20 animate-ping rounded-full opacity-20" />
+          <div className={`absolute inset-0 border ${style.borderLight} animate-ping rounded-full opacity-20`} />
           <IconComponent className={cn("w-10 h-10 opacity-30", section.iconColor)} />
         </div>
         <h4 className="font-outfit text-lg font-bold mb-2">Module Offline</h4>
@@ -327,25 +394,29 @@ const TabContentRenderer = memo(({
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1, duration: 0.4 }}
-              className="group relative flex flex-col justify-between p-6 bg-card border border-border rounded-2xl hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 overflow-hidden min-h-[140px]"
+              className={cn(
+                "group relative flex flex-col justify-between p-6 bg-card border border-border rounded-2xl transition-all duration-300 hover:shadow-xl overflow-hidden min-h-[140px]",
+                style.hoverBorder,
+                style.hoverShadow
+              )}
             >
               {/* Neon Glow Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              <div className={cn("absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none", style.gradient.replace('to-secondary/10', 'to-secondary/5').replace('to-primary/10', 'to-primary/5'))} />
               
               <div className="relative z-10 flex flex-col h-full justify-between">
                 <div>
-                  <h4 className="font-bold font-outfit text-lg leading-tight mb-2 group-hover:text-primary transition-colors">
+                  <h4 className={cn("font-bold font-outfit text-lg leading-tight mb-2 transition-colors", style.text)}>
                     {quiz.name}
                   </h4>
                   <div className="flex flex-wrap gap-2 text-xs font-medium text-muted-foreground font-outfit">
                     <span className="bg-muted px-2 py-0.5 rounded-md border border-border/50 text-foreground/80">{quiz.code}</span>
                     <span className="bg-muted px-2 py-0.5 rounded-md border border-border/50 text-foreground/80">{quiz.duration}</span>
-                    <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-md border border-primary/20">{quiz.questions} Q</span>
+                    <span className={cn("px-2 py-0.5 rounded-md border text-xs font-medium", style.bgLight, style.textStatic, style.borderLight)}>{quiz.questions} Q</span>
                   </div>
                 </div>
                 
                 <div className="flex justify-end mt-4">
-                  <div className="flex items-center text-sm font-bold text-muted-foreground group-hover:text-primary transition-colors">
+                  <div className={cn("flex items-center text-sm font-bold transition-colors", style.text)}>
                     Start Protocol <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
@@ -367,22 +438,26 @@ const TabContentRenderer = memo(({
         <Link 
           href={`/drive/${extractDriveId(typeof section.content === 'string' ? section.content : '')}`}
         >
-          <div className="group relative w-full flex items-center justify-between p-6 sm:p-8 bg-card border border-border rounded-2xl hover:border-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 overflow-hidden cursor-pointer">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+          <div className={cn(
+            "group relative w-full flex items-center justify-between p-6 sm:p-8 bg-card border border-border rounded-2xl transition-all duration-300 hover:shadow-2xl overflow-hidden cursor-pointer",
+            style.hoverBorder,
+            style.hoverShadow
+          )}>
+            <div className={cn("absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none", style.gradient)} />
             
             <div className="flex items-center gap-5 relative z-10">
               <div className="w-14 h-14 bg-muted border border-border/50 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                <ExternalLink className="w-7 h-7 text-muted-foreground group-hover:text-primary transition-colors" />
+                <ExternalLink className={cn("w-7 h-7 text-muted-foreground transition-colors", style.text)} />
               </div>
               <div className="flex flex-col">
-                <h4 className="font-outfit font-bold text-xl text-foreground group-hover:text-primary transition-colors">
+                <h4 className={cn("font-outfit font-bold text-xl text-foreground transition-colors", style.text)}>
                   {section.buttonText}
                 </h4>
                 <span className="text-muted-foreground text-sm font-medium">Access cloud drive database</span>
               </div>
             </div>
-            <div className="relative z-10 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-              <ChevronRight className="w-5 h-5 text-primary" />
+            <div className={cn("relative z-10 w-10 h-10 rounded-full flex items-center justify-center opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300", style.bgLight)}>
+              <ChevronRight className={cn("w-5 h-5", style.textStatic)} />
             </div>
           </div>
         </Link>
@@ -405,16 +480,20 @@ const TabContentRenderer = memo(({
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: (index || 0) * 0.1, duration: 0.4 }}
-                className="group relative flex items-center p-5 bg-card border border-border rounded-2xl hover:border-red-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/10 overflow-hidden cursor-pointer"
+                className={cn(
+                  "group relative flex items-center p-5 bg-card border border-border rounded-2xl transition-all duration-300 hover:shadow-xl overflow-hidden cursor-pointer",
+                  style.hoverBorder,
+                  style.hoverShadow
+                )}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 via-red-500/5 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                <div className={cn("absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none", style.gradient)} />
                 
-                <div className="w-12 h-12 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_0_rgba(239,68,68,0.2)]">
-                  <Play className="w-5 h-5 text-red-500 ml-1" />
+                <div className={cn("w-12 h-12 border rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_0_rgba(var(--primary),0.2)]", style.bgLight, style.borderLight)}>
+                  <Play className={cn("w-5 h-5 ml-1", style.textStatic)} />
                 </div>
                 
                 <div className="flex-1 flex flex-col">
-                  <h4 className="font-outfit font-bold text-foreground group-hover:text-red-500 transition-colors">
+                  <h4 className={cn("font-outfit font-bold text-foreground transition-colors", style.text)}>
                     {isMultiple ? `Video Playlist Sequence ${index! + 1}` : section.buttonText}
                   </h4>
                   <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Launch Visuals</span>
@@ -473,8 +552,8 @@ async function SubjectContent({ params }: Props) {
       id: "lectures",
       title: "Lectures",
       icon: BookOpen,
-      color: "from-blue-500",
-      iconColor: "text-blue-500",
+      color: "from-primary/15",
+      iconColor: "text-primary",
       content: subject.materials.lectures,
       description: "Theoretical frameworks and notes",
       buttonText: "Open Lecture Materials",
@@ -484,8 +563,8 @@ async function SubjectContent({ params }: Props) {
       id: "sections",
       title: "Sections",
       icon: FileText,
-      color: "from-emerald-500",
-      iconColor: "text-emerald-500",
+      color: "from-secondary/15",
+      iconColor: "text-secondary",
       content: subject.materials.sections,
       description: "Practice problems and section data",
       buttonText: "Open Section Materials",
@@ -495,8 +574,8 @@ async function SubjectContent({ params }: Props) {
       id: "summaries",
       title: "Summaries",
       icon: Layers,
-      color: "from-indigo-500",
-      iconColor: "text-indigo-500",
+      color: "from-accent/15",
+      iconColor: "text-accent",
       content: subject.materials.summaries,
       description: "Quick reference study guides",
       buttonText: "Open Summary Materials",
@@ -506,8 +585,8 @@ async function SubjectContent({ params }: Props) {
       id: "videos",
       title: "Videos",
       icon: Video,
-      color: "from-red-500",
-      iconColor: "text-red-500",
+      color: "from-primary/15",
+      iconColor: "text-primary",
       content: subject.materials.videos,
       description: "Comprehensive video lectures",
       buttonText: "Open Video Playlist",
@@ -517,8 +596,8 @@ async function SubjectContent({ params }: Props) {
       id: "quizzes",
       title: "Quizzes",
       icon: ClipboardList,
-      color: "from-amber-500",
-      iconColor: "text-amber-500",
+      color: "from-secondary/15",
+      iconColor: "text-secondary",
       content: (subject.materials.quizzes?.length || 0) > 0 ? true : null,
       description: "Evaluate your knowledge",
       buttonText: "View Quizzes",
@@ -528,8 +607,8 @@ async function SubjectContent({ params }: Props) {
       id: "exams",
       title: "Last Exams",
       icon: GraduationCap,
-      color: "from-primary",
-      iconColor: "text-primary",
+      color: "from-accent/15",
+      iconColor: "text-accent",
       content: subject.materials.exams,
       description: "Previous exam matrices",
       buttonText: subject.materials.exams ? "Open Last Exams" : "Coming Soon",
@@ -555,7 +634,7 @@ async function SubjectContent({ params }: Props) {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-muted-foreground hover:text-foreground rounded-full h-9 bg-background/50 border-border/50 backdrop-blur-md font-outfit"
+                className="text-muted-foreground hover:text-primary hover:bg-primary/10 hover:border-primary/30 rounded-full h-9 bg-background/50 border-border/50 backdrop-blur-md font-outfit transition-all duration-300"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Return to {levelNum}{yearSuffix} Year Data
@@ -573,7 +652,7 @@ async function SubjectContent({ params }: Props) {
           >
             {/* Ambient Background Shaders inside Hero */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-primary/20 via-transparent to-transparent opacity-60 rounded-full blur-xl md:blur-3xl -mt-40 -mr-40 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-indigo-500/10 via-transparent to-transparent rounded-full blur-xl md:blur-3xl -mb-40 -ml-40 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-secondary/10 via-transparent to-transparent rounded-full blur-xl md:blur-3xl -mb-40 -ml-40 pointer-events-none" />
             
             <div className="relative p-8 sm:p-12 z-10 flex flex-col md:flex-row gap-10 items-center md:items-start justify-between">
               <div className="flex-1 space-y-6 text-center md:text-left">
@@ -582,10 +661,10 @@ async function SubjectContent({ params }: Props) {
                   <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 px-3 py-1 font-outfit text-sm tracking-wide rounded-lg">
                     {dept.name}
                   </Badge>
-                  <Badge variant="outline" className="bg-muted text-foreground border-border px-3 py-1 font-outfit text-sm tracking-wide rounded-lg">
+                  <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary/20 px-3 py-1 font-outfit text-sm tracking-wide rounded-lg">
                     {levelNum}{yearSuffix} Year Level
                   </Badge>
-                  <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 px-3 py-1 font-outfit text-sm tracking-wide rounded-lg flex items-center gap-1">
+                  <Badge variant="outline" className="bg-accent/10 text-accent border-accent/20 px-3 py-1 font-outfit text-sm tracking-wide rounded-lg flex items-center gap-1">
                     <Sparkles className="w-3.5 h-3.5" />
                     {subject.creditHours} Credits
                   </Badge>
@@ -594,7 +673,7 @@ async function SubjectContent({ params }: Props) {
                 {/* Title and Description */}
                 <div>
                   <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight font-outfit mb-4 leading-tight">
-                    <span style={{ WebkitTextStroke: '1.2px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 dark:border-white/10 border-black/10">
+                    <span style={{ WebkitTextStroke: '1.2px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 text-primary">
                       {subject.name}
                     </span>
                   </h1>
@@ -623,7 +702,7 @@ async function SubjectContent({ params }: Props) {
               className="mb-10"
             >
               <div className="flex items-center gap-3 mb-6 ml-2">
-                <Layers className="w-5 h-5 text-amber-500" />
+                <Layers className="w-5 h-5 text-secondary" />
                 <h3 className="font-outfit font-bold text-xl text-foreground">Required Prerequisites</h3>
               </div>
               
@@ -639,11 +718,11 @@ async function SubjectContent({ params }: Props) {
                     <Link
                       href={`/specialization/${resolvedParams.department}/${findSubjectLevel(dept, prereq.id)}/${prereq.id}`}
                     >
-                      <div className="group relative overflow-hidden flex items-center justify-between p-5 rounded-2xl border border-border bg-card hover:border-amber-500/40 transition-all cursor-pointer shadow-sm hover:shadow-lg hover:shadow-amber-500/5">
-                        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/0 via-amber-500/5 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="group relative overflow-hidden flex items-center justify-between p-5 rounded-2xl border border-border bg-card hover:border-secondary/40 transition-all cursor-pointer shadow-sm hover:shadow-lg hover:shadow-secondary/5">
+                        <div className="absolute inset-0 bg-gradient-to-r from-secondary/0 via-secondary/5 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                         
                         <div className="relative z-10">
-                          <h4 className="font-bold font-outfit text-foreground group-hover:text-amber-500 transition-colors mb-1">
+                          <h4 className="font-bold font-outfit text-foreground group-hover:text-secondary transition-colors mb-1">
                             {prereq.name}
                           </h4>
                           <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border/50">
@@ -651,8 +730,8 @@ async function SubjectContent({ params }: Props) {
                           </span>
                         </div>
                         
-                        <div className="relative z-10 w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center scale-90 group-hover:scale-100 transition-transform">
-                          <ChevronRight className="w-5 h-5 text-amber-500" />
+                        <div className="relative z-10 w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center scale-90 group-hover:scale-100 transition-transform">
+                          <ChevronRight className="w-5 h-5 text-secondary" />
                         </div>
                       </div>
                     </Link>
@@ -675,10 +754,6 @@ async function SubjectContent({ params }: Props) {
               resolvedParams={resolvedParams}
             />
           </motion.div>
-
-          <div className="mt-16">
-            <AdBanner dataAdSlot="8021269551" />
-          </div>
         </div>
       </div>
     </div>
