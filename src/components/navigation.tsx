@@ -26,6 +26,75 @@ const navItems = [
   { name: "Explo", href: "/explo", icon: BrainCircuit, target: "_blank" }
 ]
 
+function NavClock() {
+  const [time, setTime] = useState<Date | null>(null)
+  const [format, setFormat] = useState<'12h' | '24h'>('12h')
+  const [showSeconds, setShowSeconds] = useState(true)
+  const [showDate, setShowDate] = useState(false)
+
+  useEffect(() => {
+    setTime(new Date())
+    
+    // Load initial settings
+    const savedFormat = localStorage.getItem('chameleon_time_format') as '12h' | '24h'
+    if (savedFormat) setFormat(savedFormat)
+    
+    const savedSeconds = localStorage.getItem('chameleon_show_seconds') !== 'false'
+    setShowSeconds(savedSeconds)
+    
+    const savedDate = localStorage.getItem('chameleon_show_date') === 'true'
+    setShowDate(savedDate)
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'chameleon_time_format') setFormat(e.newValue as '12h' | '24h')
+      if (e.key === 'chameleon_show_seconds') setShowSeconds(e.newValue !== 'false')
+      if (e.key === 'chameleon_show_date') setShowDate(e.newValue === 'true')
+    }
+
+    const handleCustomChange = () => {
+      const savedFormat = localStorage.getItem('chameleon_time_format') as '12h' | '24h'
+      if (savedFormat) setFormat(savedFormat)
+      
+      const savedSeconds = localStorage.getItem('chameleon_show_seconds') !== 'false'
+      setShowSeconds(savedSeconds)
+      
+      const savedDate = localStorage.getItem('chameleon_show_date') === 'true'
+      setShowDate(savedDate)
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('chameleon_time_settings_changed', handleCustomChange)
+
+    const timer = setInterval(() => setTime(new Date()), 1000)
+
+    return () => {
+      clearInterval(timer)
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('chameleon_time_settings_changed', handleCustomChange)
+    }
+  }, [])
+
+  if (!time) return null
+
+  return (
+    <div className="flex flex-row items-center gap-1.5 justify-center text-[10.5px] font-mono font-bold text-foreground border border-border/40 bg-foreground/5 px-2.5 py-0.5 rounded-full select-none flex-shrink-0 min-w-max shadow-sm backdrop-blur-sm">
+      {showDate && (
+        <span className="md:hidden text-[9.5px] text-foreground/90 uppercase tracking-tight self-end relative top-[0.5px]">
+          {time.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+        </span>
+      )}
+      <span className="leading-none text-primary">
+        {time.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: showSeconds ? '2-digit' : undefined,
+          hour12: format === '12h'
+        })}
+      </span>
+    </div>
+  )
+}
+
 export default function Navigation() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
@@ -244,7 +313,7 @@ export default function Navigation() {
                : "border-border/40"
            } ${mounted ? 'animate-nav-enter' : 'opacity-0'}`}
         >
-          <div className="container h-full mx-auto px-4 md:px-6">
+          <div className="container h-full mx-auto px-4 md:px-6 relative">
             <div className="flex items-center justify-between h-full">
               {/* Logo */}
               <div className="flex items-center gap-3 hover:scale-105 transition-transform duration-200">
@@ -259,7 +328,15 @@ export default function Navigation() {
                 />
               </div>
               </div>
-              <span className="text-xl font-bold ">Chameleon</span>
+              <span className="text-xl font-bold hidden sm:inline-block md:inline-block">Chameleon</span>
+              <div className="hidden md:block">
+                <NavClock />
+              </div>
+            </div>
+
+            {/* Mobile Clock (Centered) */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:hidden pointer-events-none">
+              <NavClock />
             </div>
 
             {/* Desktop Navigation — pure CSS entrance */}
