@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck } from "lucide-react"
+import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
@@ -179,7 +179,7 @@ function getCurrentTerm(): 'term1' | 'term2' {
   return 'term1'
 }
 
-function ColorThemeSelector() {
+function ColorThemeSelector({ inventory }: { inventory: string[] }) {
   const { colorTheme, setColorTheme } = useColorTheme()
 
   const colorThemes = [
@@ -198,6 +198,12 @@ function ColorThemeSelector() {
     { value: "indigo", label: "Indigo", colors: ["239 84% 67%", "243 75% 59%", "249 95% 63%"] },
     { value: "emerald", label: "Emerald", colors: ["158 64% 52%", "142 76% 36%", "152 60% 53%"] },
     { value: "coral", label: "Coral", colors: ["16 100% 66%", "14 91% 68%", "351 95% 71%"] },
+    { value: "diamond", label: "Diamond (Premium)", colors: ["185 100% 57%", "195 90% 45%", "185 100% 75%"], premium: true },
+    { value: "luxury", label: "Luxury Velvet (Premium)", colors: ["45 100% 50%", "275 80% 25%", "45 100% 70%"], premium: true },
+    { value: "cyberpunk", label: "Cyberpunk Neon (Premium)", colors: ["327 100% 54%", "190 100% 45%", "272 85% 60%"], premium: true },
+    { value: "matrix", label: "Matrix Hacker (Premium)", colors: ["120 100% 45%", "120 60% 12%", "120 100% 70%"], premium: true },
+    { value: "nebula", label: "Cosmic Nebula (Premium)", colors: ["280 85% 55%", "15 95% 55%", "330 90% 50%"], premium: true },
+    { value: "glacier", label: "Arctic Glacier (Premium)", colors: ["195 100% 70%", "210 30% 25%", "195 100% 90%"], premium: true },
   ]
 
   return (
@@ -210,33 +216,49 @@ function ColorThemeSelector() {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {colorThemes.map((theme) => (
-            <button
-              key={theme.value}
-              onClick={() => setColorTheme(theme.value as any)}
-              className={`relative p-4 border-2 rounded-lg transition-all hover:border-primary/50 ${
-                colorTheme === theme.value ? "border-primary bg-primary/10" : "border-border/30 bg-muted/20"
-              }`}
-            >
-              <div className="space-y-3">
-                <div className="flex gap-1 justify-center">
-                  {theme.colors.map((color, idx) => (
-                    <div
-                      key={idx}
-                      className="h-8 w-8 rounded-full border border-background shadow-sm"
-                      style={{ backgroundColor: `hsl(${color})` }}
-                    />
-                  ))}
+          {colorThemes.map((theme) => {
+            const isOwned = !theme.premium || inventory.includes(`theme-${theme.value}`)
+            return (
+              <button
+                key={theme.value}
+                onClick={() => setColorTheme(theme.value as any)}
+                className={`relative p-4 border-2 rounded-lg transition-all hover:border-primary/50 ${
+                  colorTheme === theme.value 
+                    ? "border-primary bg-primary/10" 
+                    : isOwned 
+                      ? "border-border/30 bg-muted/20" 
+                      : "border-border/20 bg-muted/5 opacity-60 hover:opacity-85"
+                }`}
+              >
+                {theme.premium && (
+                  <span className="absolute top-1.5 left-1.5 text-[8px] uppercase tracking-wider font-bold bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 px-1 py-0.5 rounded-full border border-yellow-500/20 animate-pulse">
+                    Premium
+                  </span>
+                )}
+                <div className="space-y-3 pt-2">
+                  <div className="flex gap-1 justify-center">
+                    {theme.colors.map((color, idx) => (
+                      <div
+                        key={idx}
+                        className="h-8 w-8 rounded-full border border-background shadow-sm"
+                        style={{ backgroundColor: `hsl(${color})` }}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-xs font-medium text-center font-outfit text-foreground">{theme.label}</p>
                 </div>
-                <p className="text-xs font-medium text-center font-outfit text-foreground">{theme.label}</p>
-              </div>
-              {colorTheme === theme.value && (
-                <div className="absolute top-2 right-2">
-                  <Check className="size-4 text-primary" />
-                </div>
-              )}
-            </button>
-          ))}
+                {colorTheme === theme.value ? (
+                  <div className="absolute top-2 right-2">
+                    <Check className="size-4 text-primary" />
+                  </div>
+                ) : !isOwned ? (
+                  <div className="absolute top-2 right-2 text-muted-foreground/60">
+                    <Lock className="size-3.5" />
+                  </div>
+                ) : null}
+              </button>
+            )
+          })}
         </div>
       </CardContent>
     </Card>
@@ -924,7 +946,13 @@ export default function ProfilePage() {
                           const badgeInfo: Record<string, any> = {
                             "badge-quiz-master": { name: "Quiz Master", color: "text-yellow-500 bg-yellow-500/10", icon: Award },
                             "badge-speed-demon": { name: "Speed Demon", color: "text-blue-500 bg-blue-500/10", icon: Zap },
-                            "badge-pro-solver": { name: "Pro Solver", color: "text-purple-500 bg-purple-500/10", icon: ShieldCheck }
+                            "badge-pro-solver": { name: "Pro Solver", color: "text-purple-500 bg-purple-500/10", icon: ShieldCheck },
+                            "theme-diamond": { name: "Diamond Theme", color: "text-cyan-500 bg-cyan-500/10", icon: Sparkles },
+                            "theme-luxury": { name: "Luxury Theme", color: "text-amber-500 bg-amber-500/10", icon: Palette },
+                            "theme-cyberpunk": { name: "Cyberpunk Theme", color: "text-pink-500 bg-pink-500/10", icon: Zap },
+                            "theme-matrix": { name: "Matrix Theme", color: "text-green-500 bg-green-500/10", icon: Shield },
+                            "theme-nebula": { name: "Nebula Theme", color: "text-purple-500 bg-purple-500/10", icon: Sparkles },
+                            "theme-glacier": { name: "Glacier Theme", color: "text-sky-400 bg-sky-400/10", icon: Star }
                           }
                           const info = badgeInfo[itemId] || { name: "Achievement", color: "text-muted-foreground bg-muted", icon: Trophy }
                           const Icon = info.icon
@@ -1331,7 +1359,7 @@ export default function ProfilePage() {
                     </div>
                   </CardContent>
                 </Card>
-                <ColorThemeSelector />
+                 <ColorThemeSelector inventory={userData?.inventory || []} />
                 <ThemeModeSelector />
               </motion.div>
             </TabsContent>
