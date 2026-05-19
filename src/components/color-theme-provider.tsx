@@ -1,6 +1,8 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState } from "react"
+import { getStudentSession } from "@/lib/auth"
+import { toast } from "sonner"
 
 export type ColorTheme = 
   | "default"
@@ -18,6 +20,12 @@ export type ColorTheme =
   | "indigo"
   | "emerald"
   | "coral"
+  | "diamond"
+  | "luxury"
+  | "cyberpunk"
+  | "matrix"
+  | "nebula"
+  | "glacier"
 
 type ColorThemeProviderProps = {
   children: React.ReactNode
@@ -37,6 +45,8 @@ const initialState: ColorThemeProviderState = {
 
 const ColorThemeProviderContext = createContext<ColorThemeProviderState>(initialState)
 
+const PREMIUM_THEMES: ColorTheme[] = ["diamond", "luxury", "cyberpunk", "matrix", "nebula", "glacier"]
+
 export function ColorThemeProvider({
   children,
   defaultTheme = "default",
@@ -46,10 +56,13 @@ export function ColorThemeProvider({
   const [colorTheme, setColorTheme] = useState<ColorTheme>(defaultTheme)
 
   useEffect(() => {
-    const stored = localStorage.getItem(storageKey) as ColorTheme
-    if (stored) {
-      setColorTheme(stored)
+    const validateAndSetTheme = async () => {
+      const stored = localStorage.getItem(storageKey) as ColorTheme
+      if (stored) {
+        setColorTheme(stored)
+      }
     }
+    validateAndSetTheme()
   }, [storageKey])
 
   useEffect(() => {
@@ -70,7 +83,13 @@ export function ColorThemeProvider({
       "theme-crimson",
       "theme-indigo",
       "theme-emerald",
-      "theme-coral"
+      "theme-coral",
+      "theme-diamond",
+      "theme-luxury",
+      "theme-cyberpunk",
+      "theme-matrix",
+      "theme-nebula",
+      "theme-glacier"
     )
 
     // Add new theme class if not default
@@ -104,3 +123,4 @@ export const useColorTheme = () => {
 
   return context
 }
+
