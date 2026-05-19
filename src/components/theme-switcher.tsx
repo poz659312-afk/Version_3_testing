@@ -31,6 +31,12 @@ const colorThemes: { name: ColorTheme; color: string }[] = [
   { name: "indigo", color: "hsl(239, 84%, 67%)" },
   { name: "emerald", color: "hsl(158, 64%, 52%)" },
   { name: "coral", color: "hsl(16, 100%, 66%)" },
+  { name: "diamond", color: "hsl(185, 100%, 57%)" },
+  { name: "luxury", color: "hsl(45, 100%, 50%)" },
+  { name: "cyberpunk", color: "hsl(327, 100%, 54%)" },
+  { name: "matrix", color: "hsl(120, 100%, 45%)" },
+  { name: "nebula", color: "hsl(280, 85% 55%)" },
+  { name: "glacier", color: "hsl(195, 100%, 70%)" },
 ]
 
 export function ThemeSwitcher() {
