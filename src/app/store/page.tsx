@@ -10,9 +10,11 @@ import {
   Zap, 
   Award, 
   CheckCircle2, 
-  ArrowRight,
-  TrendingUp,
-  Sparkles
+  ArrowRight, 
+  TrendingUp, 
+  Sparkles,
+  Palette,
+  Shield
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
@@ -49,6 +51,60 @@ const STORE_ITEMS = [
     icon: ShieldCheck, 
     color: "from-purple-500 to-pink-500",
     shadow: "shadow-purple-500/20"
+  },
+  { 
+    id: "theme-diamond", 
+    name: "Diamond Theme", 
+    description: "Shine like a diamond with this premium cyber-cyan and silver metallic theme.",
+    price: 1500, 
+    icon: Sparkles, 
+    color: "from-cyan-300 via-sky-400 to-blue-500",
+    shadow: "shadow-cyan-500/20"
+  },
+  { 
+    id: "theme-luxury", 
+    name: "Luxury Velvet Theme", 
+    description: "A premium velvet royal purple background combined with glowing gold accents. Pure luxury.",
+    price: 1500, 
+    icon: Palette, 
+    color: "from-amber-400 via-yellow-500 to-purple-600",
+    shadow: "shadow-yellow-500/20"
+  },
+  { 
+    id: "theme-cyberpunk", 
+    name: "Cyberpunk Theme", 
+    description: "Vibrant synthwave aesthetic with hot magenta and neon cyber-cyan glowing highlights.",
+    price: 1500, 
+    icon: Zap, 
+    color: "from-pink-500 via-purple-600 to-cyan-400",
+    shadow: "shadow-pink-500/20"
+  },
+  { 
+    id: "theme-matrix", 
+    name: "Matrix Theme", 
+    description: "Deep digital green code style. Unlocks a dark hacking environment grid vibe.",
+    price: 3000, 
+    icon: Shield, 
+    color: "from-green-600 via-emerald-700 to-green-400",
+    shadow: "shadow-green-500/20"
+  },
+  { 
+    id: "theme-nebula", 
+    name: "Nebula Theme", 
+    description: "Vivid cosmic dust cloud style combining deep space violet with bright sun flare orange accents.",
+    price: 1500, 
+    icon: Sparkles, 
+    color: "from-indigo-600 via-purple-600 to-orange-500",
+    shadow: "shadow-purple-500/20"
+  },
+  { 
+    id: "theme-glacier", 
+    name: "Glacier Theme", 
+    description: "Arctic cold frost aesthetics combining glacial light blues and glowing ice white lines.",
+    price: 3000, 
+    icon: Star, 
+    color: "from-blue-300 via-sky-400 to-teal-200",
+    shadow: "shadow-blue-500/20"
   },
 ]
 
@@ -219,7 +275,9 @@ export default function StorePage() {
                   
                   <CardContent>
                     <div className="p-4 rounded-xl bg-muted/50 border border-border/40 text-sm italic text-muted-foreground">
-                      "Equipping this badge grants unique visual effects on your profile page."
+                      {item.id.startsWith("theme-") 
+                        ? "Unlocks this color palette globally, which you can equip in your profile settings."
+                        : "Equipping this badge grants unique visual effects on your profile page."}
                     </div>
                   </CardContent>
                   
