@@ -6,6 +6,12 @@ const STORE_ITEMS = [
   { id: "badge-quiz-master", name: "Quiz Master Badge", price: 500, type: "badge" },
   { id: "badge-speed-demon", name: "Speed Demon Badge", price: 300, type: "badge" },
   { id: "badge-pro-solver", name: "Pro Solver Badge", price: 1000, type: "badge" },
+  { id: "theme-diamond", name: "Diamond Theme", price: 1500, type: "theme" },
+  { id: "theme-luxury", name: "Luxury Theme", price: 1500, type: "theme" },
+  { id: "theme-cyberpunk", name: "Cyberpunk Theme", price: 1500, type: "theme" },
+  { id: "theme-matrix", name: "Matrix Theme", price: 3000, type: "theme" },
+  { id: "theme-nebula", name: "Nebula Theme", price: 1500, type: "theme" },
+  { id: "theme-glacier", name: "Glacier Theme", price: 3000, type: "theme" },
 ]
 
 export async function POST(request: NextRequest) {
