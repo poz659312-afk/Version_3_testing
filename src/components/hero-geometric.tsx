@@ -130,9 +130,9 @@ export default function HeroGeometric({
               <span className="relative inline-block mt-2 md:mt-4 px-6 md:px-10 py-2 md:py-4">
                 {/* Glitchy Highlight Background */}
                 <span 
-                  className="absolute inset-0 bg-background shadow-2xl -rotate-2 -skew-x-6"
+                  className="absolute inset-0 bg-background shadow-2xl -rotate-2"
                   style={{
-                    borderRadius: "255px 15px 225px 15px/15px 225px 15px 255px",
+                    borderRadius: "20px",
                   }}
                 />
                 <span className={cn(
