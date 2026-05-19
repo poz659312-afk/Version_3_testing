@@ -493,6 +493,7 @@ export default function ProfilePage() {
     const newFormat = timeFormat === '12h' ? '24h' : '12h'
     setTimeFormat(newFormat)
     localStorage.setItem('chameleon_time_format', newFormat)
+    window.dispatchEvent(new Event('chameleon_time_settings_changed'))
     addToast(`Clock format switched to ${newFormat}`, "success")
   }
 
@@ -500,6 +501,7 @@ export default function ProfilePage() {
     const newValue = !showSeconds
     setShowSeconds(newValue)
     localStorage.setItem('chameleon_show_seconds', String(newValue))
+    window.dispatchEvent(new Event('chameleon_time_settings_changed'))
     addToast(`Seconds display ${newValue ? 'enabled' : 'disabled'}`, "success")
   }
 
@@ -507,6 +509,7 @@ export default function ProfilePage() {
     const newValue = !showDate
     setShowDate(newValue)
     localStorage.setItem('chameleon_show_date', String(newValue))
+    window.dispatchEvent(new Event('chameleon_time_settings_changed'))
     addToast(`Date display ${newValue ? 'enabled' : 'disabled'}`, "success")
   }
 
