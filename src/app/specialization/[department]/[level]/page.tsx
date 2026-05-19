@@ -185,7 +185,7 @@ function LevelContentClient({ department, level }: { department: string; level: 
                 </TabsTrigger>
                 <TabsTrigger
                   value="term2"
-                  className="flex items-center gap-2 data-[state=active]:bg-secondary/10 data-[state=active]:text-secondary text-muted-foreground transition-all"
+                  className="flex items-center gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary text-muted-foreground transition-all"
                   onClick={() => {
                     // Use router.push instead of Link
                     window.history.pushState({}, '', `?mode=term2`);
@@ -263,21 +263,21 @@ function LevelContentClient({ department, level }: { department: string; level: 
                       animate="visible"
                     >
                       <Link href={`/specialization/${department}/${level}/${subject.id}`}>
-                        <Card className="h-full bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04] hover:border-secondary/30 hover:shadow-lg hover:shadow-secondary/5 transition-all duration-300 group cursor-pointer backdrop-blur-sm">
+                        <Card className="h-full bg-white/[0.02] border-white/[0.08] hover:bg-white/[0.04] hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group cursor-pointer backdrop-blur-sm">
                           <CardHeader>
                             <div className="flex items-center gap-3 mb-2">
                               <motion.div
                                 whileHover={{ scale: 1.1, rotate: 5 }}
                                 transition={{ duration: 0.3 }}
-                                className="w-10 h-10 rounded-lg bg-gradient-to-r from-secondary/[0.15] to-transparent border border-white/[0.15] flex items-center justify-center backdrop-blur-sm"
+                                className="w-10 h-10 rounded-lg bg-gradient-to-r from-primary/[0.15] to-transparent border border-white/[0.15] flex items-center justify-center backdrop-blur-sm"
                               >
-                                <BookOpen className="w-5 h-5 text-secondary" />
+                                <BookOpen className="w-5 h-5 text-primary" />
                               </motion.div>
-                              <Badge variant="outline" className="bg-white/[0.03] border-secondary/20 text-secondary group-hover:bg-secondary/10 transition-colors">
+                              <Badge variant="outline" className="bg-white/[0.03] border-primary/20 text-primary group-hover:bg-primary/10 transition-colors">
                                 Term 2
                               </Badge>
                             </div>
-                            <CardTitle className="text-lg font-semibold group-hover:text-secondary transition-colors">
+                            <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors">
                               {subject.name}
                             </CardTitle>
                           </CardHeader>
@@ -288,13 +288,13 @@ function LevelContentClient({ department, level }: { department: string; level: 
                             <div className="flex flex-wrap gap-2">
                               <Badge
                                 variant="outline"
-                                className="text-xs bg-white/[0.03] border-white/[0.1] text-muted-foreground group-hover:border-secondary/20 group-hover:text-secondary transition-colors"
+                                className="text-xs bg-white/[0.03] border-white/[0.1] text-muted-foreground group-hover:border-primary/20 group-hover:text-primary transition-colors"
                               >
                                 {subject.creditHours} Credits
                               </Badge>
                               <Badge
                                 variant="outline"
-                                className="text-xs bg-white/[0.03] border-white/[0.1] text-muted-foreground group-hover:border-secondary/20 group-hover:text-secondary transition-colors"
+                                className="text-xs bg-white/[0.03] border-white/[0.1] text-muted-foreground group-hover:border-primary/20 group-hover:text-primary transition-colors"
                               >
                                 5 Sections
                               </Badge>
