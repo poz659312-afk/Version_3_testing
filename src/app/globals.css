@@ -266,6 +266,14 @@
 .theme-indigo { --primary: hsl(239 84% 67%); --primary-foreground: hsl(0 0% 100%); --secondary: hsl(243 75% 59%); --secondary-foreground: hsl(0 0% 100%); --accent: hsl(249 95% 63%); --accent-foreground: hsl(0 0% 100%); }
 .theme-emerald { --primary: hsl(158 64% 52%); --primary-foreground: hsl(0 0% 100%); --secondary: hsl(142 76% 36%); --secondary-foreground: hsl(0 0% 100%); --accent: hsl(152 60% 53%); --accent-foreground: hsl(0 0% 0%); }
 .theme-coral { --primary: hsl(16 100% 66%); --primary-foreground: hsl(0 0% 100%); --secondary: hsl(14 91% 68%); --secondary-foreground: hsl(0 0% 100%); --accent: hsl(351 95% 71%); --accent-foreground: hsl(0 0% 0%); }
+.theme-diamond { --primary: hsl(185 100% 57%); --primary-foreground: hsl(0 0% 0%); --secondary: hsl(195 90% 45%); --secondary-foreground: hsl(0 0% 100%); --accent: hsl(185 100% 75%); --accent-foreground: hsl(0 0% 0%); }
+.theme-luxury { --primary: hsl(45 100% 50%); --primary-foreground: hsl(0 0% 0%); --secondary: hsl(275 80% 25%); --secondary-foreground: hsl(0 0% 100%); --accent: hsl(45 100% 70%); --accent-foreground: hsl(0 0% 0%); }
+.theme-cyberpunk { --primary: hsl(327 100% 54%); --primary-foreground: hsl(0 0% 100%); --secondary: hsl(190 100% 45%); --secondary-foreground: hsl(0 0% 100%); --accent: hsl(272 85% 60%); --accent-foreground: hsl(0 0% 100%); }
+.theme-matrix { --primary: hsl(120 100% 45%); --primary-foreground: hsl(0 0% 0%); --secondary: hsl(120 60% 12%); --secondary-foreground: hsl(0 0% 100%); --accent: hsl(120 100% 70%); --accent-foreground: hsl(0 0% 0%); }
+.theme-nebula { --primary: hsl(280 85% 55%); --primary-foreground: hsl(0 0% 100%); --secondary: hsl(15 95% 55%); --secondary-foreground: hsl(0 0% 100%); --accent: hsl(330 90% 50%); --accent-foreground: hsl(0 0% 100%); }
+.theme-glacier { --primary: hsl(195 100% 70%); --primary-foreground: hsl(220 40% 10%); --secondary: hsl(210 30% 25%); --secondary-foreground: hsl(0 0% 100%); --accent: hsl(195 100% 90%); --accent-foreground: hsl(220 40% 10%); }
+
+
 
 @layer base {
   * {
