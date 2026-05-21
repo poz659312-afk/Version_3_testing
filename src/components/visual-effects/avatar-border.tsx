@@ -80,16 +80,17 @@ export default function AvatarBorder({
         />
       )}
 
-      {/* Rainbow Pulse border effect */}
-      {borderToRender === "border-rainbow-pulse" && (
+      {/* Cosmic Aurora border effect */}
+      {borderToRender === "border-cosmic-aurora" && (
         <div 
           className={cn(
             "absolute -inset-[3px] rounded-full -z-10",
-            isPowerSave ? "" : "animate-[avatar-pulse-scale_6s_ease-in-out_infinite]"
+            isPowerSave ? "" : "animate-[aurora-wave_6s_ease_infinite,avatar-spin_12s_linear_infinite]"
           )}
           style={{
-            background: "conic-gradient(from 0deg, #ef4444, #f97316, #eab308, #22c55e, #06b6d4, #3b82f6, #a855f7, #ec4899, #ef4444)",
-            filter: isPowerSave ? "none" : "drop-shadow(0 0 6px rgba(168, 85, 247, 0.6))",
+            background: "linear-gradient(135deg, #10b981, #06b6d4, #6366f1, #10b981)",
+            backgroundSize: "200% 200%",
+            filter: isPowerSave ? "none" : "drop-shadow(0 0 6px rgba(6, 182, 212, 0.65))",
             willChange: isPowerSave ? "auto" : "transform"
           }}
         />
@@ -155,6 +156,10 @@ const BORDER_STYLES = `
   @keyframes avatar-pulse-scale {
     0%, 100% { transform: scale(1) rotate(0deg); }
     50% { transform: scale(1.05) rotate(180deg); }
+  }
+  @keyframes aurora-wave {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
   }
   @keyframes neon-glitch-cyan {
     0%, 100% { transform: translate(0, 0); opacity: 0.8; }

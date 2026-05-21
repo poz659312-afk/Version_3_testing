@@ -393,7 +393,7 @@ function VisualEffectsSettings({ inventory = [] }: { inventory?: string[] }) {
 
   const ALL_BORDERS = [
     { id: "border-gold-glow", name: "Gold Glow Border", desc: "Premium rotating golden aura.", color: "from-amber-400 to-yellow-500" },
-    { id: "border-rainbow-pulse", name: "Rainbow Pulse Border", desc: "A shifting spectrum of pulsing color.", color: "from-pink-500 via-purple-500 to-cyan-500" },
+    { id: "border-cosmic-aurora", name: "Cosmic Aurora Border", desc: "A waving, ethereal gradient of emerald green, deep cyan, and violet purple.", color: "from-emerald-400 via-cyan-500 to-indigo-600" },
     { id: "border-neon-glitch", name: "Cyber Neon Border", desc: "Cyberpunk glitching dual shadow effect.", color: "from-cyan-400 via-indigo-500 to-fuchsia-500" }
   ]
 

@@ -130,14 +130,14 @@ const STORE_ITEMS = [
     isNew: true
   },
   { 
-    id: "border-rainbow-pulse", 
-    name: "Rainbow Pulse Border", 
-    description: "A shifting spectrum of color that pulses around your profile picture.",
+    id: "border-cosmic-aurora", 
+    name: "Cosmic Aurora Border", 
+    description: "A waving, ethereal gradient of emerald green, deep cyan, and violet purple with a soft aurora glow.",
     price: 900, 
     originalPrice: 1200,
     icon: Palette, 
-    color: "from-pink-500 via-purple-500 to-cyan-500",
-    shadow: "shadow-purple-500/20",
+    color: "from-emerald-400 via-cyan-500 to-indigo-600",
+    shadow: "shadow-emerald-500/20",
     category: "border",
     isNew: true
   },
