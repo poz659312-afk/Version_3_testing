@@ -701,7 +701,7 @@ For support and questions:
 
 This project is proprietary software. All rights reserved © 2025 Chameleon FCDS.
 
-**Created by**: Abdelrahman Ahmed Abdelmonem  
+**Created by**: Levi Ackerman  
 **Platform**: Chameleon FCDS Educational Platform  
 **Website**: [chameleon-nu.tech](https://chameleon-nu.vercel.app)
 
@@ -728,4 +728,4 @@ This project is proprietary software. All rights reserved © 2025 Chameleon FCDS
 
 **Built with ❤️ for FCDS students**
 
-*Last Updated: May 12, 2026*
+*Last Updated: October 28, 2025*

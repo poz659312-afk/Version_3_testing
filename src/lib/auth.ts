@@ -12,6 +12,8 @@ export interface StudentUser {
   created_at: string
   profile_image?: string
   email?: string
+  coins?: number
+  inventory?: string[]
 }
 
 const SESSION_CACHE_KEY = 'chameleon_user_cache'

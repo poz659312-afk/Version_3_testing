@@ -6,7 +6,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { Moon, Sun, Menu, X, LogIn, UserPlus, BrainCircuit, SquareUserRound, LogOut, Home, HelpCircle, ChevronDown, ShoppingBag } from "lucide-react"
+import { Moon, Sun, Menu, X, LogIn, UserPlus, BrainCircuit, SquareUserRound, LogOut, Home, HelpCircle, ChevronDown, ShoppingBag, BookOpen } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { getStudentSession } from "@/lib/auth"
@@ -17,11 +17,13 @@ import { useLenis } from "lenis/react"
 // ThemeSwitcher and extra icons removed (not used here)
 import { User } from "@/lib/types"
 import { useTheme } from "next-themes"
+import AvatarBorder from "./visual-effects/avatar-border"
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
   { name: "Store", href: "/store", icon: ShoppingBag },
   { name: "Specializations", href: "#", icon: SquareUserRound },
+  { name: "Guide", href: "/manual", icon: BookOpen },
   { name: "About", href: "/about", icon: HelpCircle  },
   { name: "Explo", href: "/explo", icon: BrainCircuit, target: "_blank" }
 ]
@@ -401,34 +403,22 @@ export default function Navigation() {
                   <div className="flex items-center gap-4">
                   <NotificationBell />
                   <Link href="/profile" className="relative group">
-                    <div className="relative">
-                      {/* Animated border for admin */}
-                      {user.is_admin && (
-                        <div 
-                          className="absolute -inset-1 rounded-full opacity-75 group-hover:opacity-100 transition-opacity"
-                          style={{
-                            background: 'conic-gradient(from 0deg, #ef4444, #eab308, #22c55e, #3b82f6, #ef4444)',
-                            animation: 'spin 3s linear infinite'
-                          }}
+                    <AvatarBorder isAdmin={user.is_admin} className="w-10 h-10 shadow-lg">
+                      {user.profile_image ? (
+                        <Image
+                          src={user.profile_image}
+                          alt={user.username || 'User'}
+                          width={40}
+                          height={40}
+                          unoptimized
+                          className="w-full h-full object-cover"
                         />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                          <span className="font-bold text-sm">{user.username?.charAt(0)?.toUpperCase() || 'U'}</span>
+                        </div>
                       )}
-                      <div className={`relative w-10 h-10 rounded-full overflow-hidden border-2 ${user.is_admin ? 'border-transparent' : 'border-border'} group-hover:border-purple-500/50 transition-all duration-300`}>
-                        {user.profile_image ? (
-                          <Image
-                            src={user.profile_image}
-                            alt={user.username || 'User'}
-                            width={40}
-                            height={40}
-                            unoptimized
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                            <span className=" font-bold text-sm">{user.username?.charAt(0)?.toUpperCase() || 'U'}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    </AvatarBorder>
                   </Link>
                   <Button
                     variant="outline"
@@ -562,35 +552,24 @@ export default function Navigation() {
                       <Link 
                         href="/profile" 
                         onClick={() => setIsOpen(false)}
-                        className="flex items-center gap-3  p-3 rounded-lg hover:bg-muted transition-all duration-300"
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-all duration-300"
                       >
-                        <div className="relative">
-                          {user.is_admin && (
-                            <div 
-                              className="absolute -inset-1 rounded-full opacity-75"
-                              style={{
-                                background: 'conic-gradient(from 0deg, #ef4444, #eab308, #22c55e, #3b82f6, #ef4444)',
-                                animation: 'spin 3s linear infinite'
-                              }}
+                        <AvatarBorder isAdmin={user.is_admin} className="w-10 h-10 shadow-lg">
+                          {user.profile_image ? (
+                            <Image
+                              src={user.profile_image}
+                              alt={user.username || 'User'}
+                              width={40}
+                              height={40}
+                              unoptimized
+                              className="w-full h-full object-cover"
                             />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                              <span className="font-bold text-sm">{user.username?.charAt(0)?.toUpperCase() || 'U'}</span>
+                            </div>
                           )}
-                          <div className={`relative w-10 h-10 rounded-full overflow-hidden border-2 ${user.is_admin ? 'border-transparent' : 'border-border'}`}>
-                            {user.profile_image ? (
-                              <Image
-                                src={user.profile_image}
-                                alt={user.username || 'User'}
-                                width={40}
-                                height={40}
-                                unoptimized
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                                <span className=" font-bold text-sm">{user.username?.charAt(0)?.toUpperCase() || 'U'}</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                        </AvatarBorder>
                         <span>{formatTAName(user.username, user.current_level)}</span>
                       </Link>
                       <Button

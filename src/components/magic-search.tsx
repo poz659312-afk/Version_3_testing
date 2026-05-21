@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useLenis } from 'lenis/react'
 import { Search, X, Sparkles, TrendingUp, Clock, ArrowRight, BookOpen } from 'lucide-react'
+import Image from 'next/image'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 
@@ -158,16 +159,17 @@ export default function MagicSearch() {
       {/* Search Trigger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="group relative flex items-center gap-3 px-6 py-3 bg-muted border border-border rounded-full hover:bg-muted hover:border-border transition-all duration-300 overflow-hidden"
+        className="group relative flex items-center gap-3 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full hover:opacity-90 transition-all duration-300 overflow-hidden"
       >
-        {/* Animated gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse" />
-        
-        <Search className="w-5 h-5 text-muted-foreground group-hover:text-foreground/80 transition-colors relative z-10" />
-        <span className="text-muted-foreground group-hover:text-foreground/80 transition-colors relative z-10">
-          Search anything...
-        </span>
-        <div className="flex items-center gap-1 relative z-10">
+        {/* Subtle theme-colored background */}
+        <div className="absolute inset-0 opacity-100" style={{ background: 'linear-gradient(90deg, hsla(var(--primary),0.06), hsla(var(--secondary),0.04))' }} />
+
+        <div className="relative z-10 flex items-center gap-3">
+          <Image src="/images/new_chameleom.png" alt="Chameleon" width={44} height={44} className="rounded-full" />
+          <span className="text-foreground/80 hidden sm:inline">Explore with Chameleon</span>
+        </div>
+
+        <div className="flex items-center gap-1 ml-auto relative z-10">
           <kbd className="px-2 py-1 text-xs bg-muted border border-border rounded text-muted-foreground">
             {navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'}
           </kbd>

@@ -1,12 +1,6 @@
 // app/drive/page.tsx
-'use client';
-// RedirectToRoot.tsx
-import { useEffect } from 'react';
+import { redirect } from "next/navigation";
 
-export default function Redirect() {
-  useEffect(() => {
-    window.location.href = '/';
-  }, []);
-
-  return null;
+export default function DriveRedirectPage() {
+  redirect("/");
 }

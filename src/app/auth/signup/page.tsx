@@ -326,14 +326,13 @@ export default function SignUpPage() {
                 transition={{ delay: 0.2, duration: 0.6 }}
                 className="mx-auto w-32 h-32 md:w-40 md:h-40 relative mb-[-1.5rem]"
               >
-                {/* @ts-ignore */}
-                <dotlottie-player
-                  src="https://lottie.host/e113f2b9-9e85-47b2-9743-cf4e30fb43f4/y9usFgethv.lottie"
-                  background="transparent"
-                  speed="1"
-                  style={{ width: '100%', height: '100%' }}
-                  loop
-                  autoplay
+                {/* Static fallback instead of Lottie animation to reduce hydration and CPU usage */}
+                <Image
+                  src="/images/chameleon.png"
+                  alt="Chameleon"
+                  width={160}
+                  height={160}
+                  className="object-contain mx-auto"
                 />
               </motion.div>
 

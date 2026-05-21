@@ -23,6 +23,7 @@ import { getStudentSession } from "@/lib/auth"
 import { toast } from "sonner"
 import { formatTAName } from "@/lib/ta-utils"
 import Link from "next/link"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const STORE_ITEMS = [
   { 
@@ -32,7 +33,8 @@ const STORE_ITEMS = [
     price: 500, 
     icon: Award, 
     color: "from-yellow-400 to-orange-500",
-    shadow: "shadow-yellow-500/20"
+    shadow: "shadow-yellow-500/20",
+    category: "badge"
   },
   { 
     id: "badge-speed-demon", 
@@ -41,7 +43,8 @@ const STORE_ITEMS = [
     price: 300, 
     icon: Zap, 
     color: "from-blue-400 to-cyan-500",
-    shadow: "shadow-blue-500/20"
+    shadow: "shadow-blue-500/20",
+    category: "badge"
   },
   { 
     id: "badge-pro-solver", 
@@ -50,7 +53,8 @@ const STORE_ITEMS = [
     price: 1000, 
     icon: ShieldCheck, 
     color: "from-purple-500 to-pink-500",
-    shadow: "shadow-purple-500/20"
+    shadow: "shadow-purple-500/20",
+    category: "badge"
   },
   { 
     id: "theme-diamond", 
@@ -59,7 +63,8 @@ const STORE_ITEMS = [
     price: 1500, 
     icon: Sparkles, 
     color: "from-cyan-300 via-sky-400 to-blue-500",
-    shadow: "shadow-cyan-500/20"
+    shadow: "shadow-cyan-500/20",
+    category: "theme"
   },
   { 
     id: "theme-luxury", 
@@ -68,7 +73,8 @@ const STORE_ITEMS = [
     price: 1500, 
     icon: Palette, 
     color: "from-amber-400 via-yellow-500 to-purple-600",
-    shadow: "shadow-yellow-500/20"
+    shadow: "shadow-yellow-500/20",
+    category: "theme"
   },
   { 
     id: "theme-cyberpunk", 
@@ -77,7 +83,8 @@ const STORE_ITEMS = [
     price: 1500, 
     icon: Zap, 
     color: "from-pink-500 via-purple-600 to-cyan-400",
-    shadow: "shadow-pink-500/20"
+    shadow: "shadow-pink-500/20",
+    category: "theme"
   },
   { 
     id: "theme-matrix", 
@@ -86,7 +93,8 @@ const STORE_ITEMS = [
     price: 3000, 
     icon: Shield, 
     color: "from-green-600 via-emerald-700 to-green-400",
-    shadow: "shadow-green-500/20"
+    shadow: "shadow-green-500/20",
+    category: "theme"
   },
   { 
     id: "theme-nebula", 
@@ -95,7 +103,8 @@ const STORE_ITEMS = [
     price: 1500, 
     icon: Sparkles, 
     color: "from-indigo-600 via-purple-600 to-orange-500",
-    shadow: "shadow-purple-500/20"
+    shadow: "shadow-purple-500/20",
+    category: "theme"
   },
   { 
     id: "theme-glacier", 
@@ -104,9 +113,85 @@ const STORE_ITEMS = [
     price: 3000, 
     icon: Star, 
     color: "from-blue-300 via-sky-400 to-teal-200",
-    shadow: "shadow-blue-500/20"
+    shadow: "shadow-blue-500/20",
+    category: "theme"
+  },
+  // New Categories: Borders (25% Discount)
+  { 
+    id: "border-gold-glow", 
+    name: "Gold Glow Border", 
+    description: "Wrap your avatar in a premium rotating golden aura. Exquisite craftsmanship.",
+    price: 600, 
+    originalPrice: 800,
+    icon: Award, 
+    color: "from-amber-400 to-yellow-500",
+    shadow: "shadow-amber-500/20",
+    category: "border",
+    isNew: true
+  },
+  { 
+    id: "border-rainbow-pulse", 
+    name: "Rainbow Pulse Border", 
+    description: "A shifting spectrum of color that pulses around your profile picture.",
+    price: 900, 
+    originalPrice: 1200,
+    icon: Palette, 
+    color: "from-pink-500 via-purple-500 to-cyan-500",
+    shadow: "shadow-purple-500/20",
+    category: "border",
+    isNew: true
+  },
+  { 
+    id: "border-neon-glitch", 
+    name: "Cyber Neon Border", 
+    description: "Cyberpunk glitching dual shadow effect. Stand out in the hacker workspace.",
+    price: 750, 
+    originalPrice: 1000,
+    icon: Zap, 
+    color: "from-cyan-400 via-indigo-500 to-fuchsia-500",
+    shadow: "shadow-cyan-500/20",
+    category: "border",
+    isNew: true
+  },
+  // New Categories: Cursors (25% Discount)
+  { 
+    id: "cursor-sparkles", 
+    name: "Cosmic Sparkles Cursor", 
+    description: "Leaves a tail of glowing star dust particles that fade away beautifully.",
+    price: 450, 
+    originalPrice: 600,
+    icon: Sparkles, 
+    color: "from-blue-400 to-purple-500",
+    shadow: "shadow-blue-500/20",
+    category: "cursor",
+    isNew: true
+  },
+  { 
+    id: "cursor-cyber-cross", 
+    name: "Cyber Cross Cursor", 
+    description: "A cool futuristic crosshair cursor that follows your movement with precision.",
+    price: 600, 
+    originalPrice: 800,
+    icon: ShieldCheck, 
+    color: "from-green-400 to-emerald-600",
+    shadow: "shadow-green-500/20",
+    category: "cursor",
+    isNew: true
+  },
+  { 
+    id: "cursor-bubbles", 
+    name: "Bouncing Bubbles Cursor", 
+    description: "Generate floating bubbles behind your cursor that drift and pop dynamically.",
+    price: 750, 
+    originalPrice: 1000,
+    icon: Star, 
+    color: "from-cyan-300 via-sky-400 to-blue-500",
+    shadow: "shadow-cyan-500/20",
+    category: "cursor",
+    isNew: true
   },
 ]
+
 
 export default function StorePage() {
   const [user, setUser] = useState<any>(null)
@@ -234,87 +319,130 @@ export default function StorePage() {
 
       {/* Items Grid */}
       <section className="container px-4 mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {STORE_ITEMS.map((item, index) => {
-            const isOwned = user?.inventory?.includes(item.id)
-            const canAfford = (user?.coins || 0) >= item.price
+        <Tabs defaultValue="badge" className="w-full">
+          <div className="flex justify-center mb-12">
+            <TabsList className="bg-muted border border-border h-auto p-1 gap-1 rounded-full px-2">
+              <TabsTrigger value="badge" className="rounded-full px-6 py-2 font-bold font-outfit data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+                Badges
+              </TabsTrigger>
+              <TabsTrigger value="theme" className="rounded-full px-6 py-2 font-bold font-outfit data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+                Themes
+              </TabsTrigger>
+              <TabsTrigger value="border" className="rounded-full px-6 py-2 font-bold font-outfit data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+                Borders
+              </TabsTrigger>
+              <TabsTrigger value="cursor" className="rounded-full px-6 py-2 font-bold font-outfit data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">
+                Cursors
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
+          {["badge", "theme", "border", "cursor"].map((category) => {
+            const filteredItems = STORE_ITEMS.filter((item) => item.category === category)
             return (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
-              >
-                <Card className={`relative h-full overflow-hidden group transition-all duration-500 hover:shadow-2xl ${item.shadow} ${isOwned ? 'opacity-75 grayscale-[0.5]' : ''}`}>
-                  <div className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${item.color}`} />
-                  
-                  <CardHeader className="pt-8">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className={`p-4 rounded-2xl bg-gradient-to-br ${item.color} text-white shadow-lg`}>
-                        <item.icon className="size-8" />
-                      </div>
-                      {isOwned ? (
-                        <Badge variant="secondary" className="bg-green-500/10 text-green-500 border-green-500/20">
-                          <CheckCircle2 className="size-3 mr-1" /> Owned
-                        </Badge>
-                      ) : (
-                        <div className="flex items-center gap-1.5 text-yellow-500 font-bold">
-                          <Coins className="size-4" />
-                          <span>{item.price}</span>
-                        </div>
-                      )}
-                    </div>
-                    <CardTitle className="text-2xl font-black tracking-tight group-hover:text-primary transition-colors">
-                      {item.name}
-                    </CardTitle>
-                    <CardDescription className="text-base leading-relaxed">
-                      {item.description}
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="p-4 rounded-xl bg-muted/50 border border-border/40 text-sm italic text-muted-foreground">
-                      {item.id.startsWith("theme-") 
-                        ? "Unlocks this color palette globally, which you can equip in your profile settings."
-                        : "Equipping this badge grants unique visual effects on your profile page."}
-                    </div>
-                  </CardContent>
-                  
-                  <CardFooter className="pb-8">
-                    <Button 
-                      className="w-full rounded-full h-12 font-bold group-hover:shadow-lg transition-all"
-                      disabled={isOwned || !canAfford || purchasing === item.id}
-                      onClick={() => handlePurchase(item.id)}
-                      variant={isOwned ? "outline" : "default"}
-                    >
-                      {purchasing === item.id ? (
-                        <motion.div 
-                          animate={{ rotate: 360 }} 
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        >
-                          <RefreshCw className="size-4" />
-                        </motion.div>
-                      ) : isOwned ? (
-                        "Already Purchased"
-                      ) : !canAfford ? (
-                        "Insufficient Coins"
-                      ) : (
-                        <>
-                          Purchase Item
-                          <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
-                        </>
-                      )}
-                    </Button>
-                  </CardFooter>
+              <TabsContent key={category} value={category} className="outline-none mt-0 animate-in fade-in-50 duration-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {filteredItems.map((item, index) => {
+                    const isOwned = user?.inventory?.includes(item.id)
+                    const canAfford = (user?.coins || 0) >= item.price
 
-                  {/* Aesthetic backgrounds */}
-                  <div className="absolute -bottom-10 -right-10 size-40 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-xl md:blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Card>
-              </motion.div>
+                    return (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 + index * 0.05 }}
+                      >
+                        <Card className={`relative h-full overflow-hidden group transition-all duration-500 hover:shadow-2xl ${item.shadow} ${isOwned ? 'opacity-75 grayscale-[0.5]' : ''}`}>
+                          <div className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${item.color}`} />
+                          
+                          <CardHeader className="pt-8">
+                            <div className="flex justify-between items-start mb-4">
+                              <div className={`p-4 rounded-2xl bg-gradient-to-br ${item.color} text-white shadow-lg relative`}>
+                                <item.icon className="size-8" />
+                                {item.isNew && (
+                                  <span className="absolute -top-2 -right-2 text-[8px] uppercase tracking-wider font-extrabold bg-red-500 text-white px-1.5 py-0.5 rounded-full border border-background animate-pulse shadow-md">
+                                    -25%
+                                  </span>
+                                )}
+                              </div>
+                              {isOwned ? (
+                                <Badge variant="secondary" className="bg-green-500/10 text-green-500 border-green-500/20">
+                                  <CheckCircle2 className="size-3 mr-1" /> Owned
+                                </Badge>
+                              ) : (
+                                <div className="flex flex-col items-end gap-0.5">
+                                  {item.originalPrice && (
+                                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground/75 line-through">
+                                      <Coins className="size-3" />
+                                      <span>{item.originalPrice}</span>
+                                    </div>
+                                  )}
+                                  <div className="flex items-center gap-1.5 text-yellow-500 font-bold">
+                                    <Coins className="size-4" />
+                                    <span>{item.price}</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            <CardTitle className="text-2xl font-black tracking-tight group-hover:text-primary transition-colors">
+                              {item.name}
+                            </CardTitle>
+                            <CardDescription className="text-base leading-relaxed">
+                              {item.description}
+                            </CardDescription>
+                          </CardHeader>
+                          
+                          <CardContent>
+                            <div className="p-4 rounded-xl bg-muted/50 border border-border/40 text-sm italic text-muted-foreground">
+                              {item.id.startsWith("theme-") 
+                                ? "Unlocks this color theme globally, which you can equip in your profile settings."
+                                : item.id.startsWith("border-")
+                                ? "Unlocks this premium avatar border, which you can equip in your visual settings."
+                                : item.id.startsWith("cursor-")
+                                ? "Unlocks this unique interactive cursor path effect, active across the entire platform."
+                                : "Equipping this badge grants unique visual effects on your profile page."}
+                            </div>
+                          </CardContent>
+                          
+                          <CardFooter className="pb-8">
+                            <Button 
+                              className="w-full rounded-full h-12 font-bold group-hover:shadow-lg transition-all"
+                              disabled={isOwned || !canAfford || purchasing === item.id}
+                              onClick={() => handlePurchase(item.id)}
+                              variant={isOwned ? "outline" : "default"}
+                            >
+                              {purchasing === item.id ? (
+                                <motion.div 
+                                  animate={{ rotate: 360 }} 
+                                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                >
+                                  <RefreshCw className="size-4" />
+                                </motion.div>
+                              ) : isOwned ? (
+                                "Already Purchased"
+                              ) : !canAfford ? (
+                                "Insufficient Coins"
+                              ) : (
+                                <>
+                                  Purchase Item
+                                  <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+                                </>
+                              )}
+                            </Button>
+                          </CardFooter>
+
+                          {/* Aesthetic backgrounds */}
+                          <div className="absolute -bottom-10 -right-10 size-40 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-xl md:blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </Card>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              </TabsContent>
             )
           })}
-        </div>
+        </Tabs>
       </section>
 
       {/* Footer Info */}

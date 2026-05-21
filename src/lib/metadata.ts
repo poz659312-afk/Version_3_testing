@@ -188,4 +188,9 @@ export const pageMetadata = {
     description: "Unlock prestigious certifications that showcase your academic achievements and dedication to excellence in computer science and data science education.",
     keywords: ["certifications", "achievements", "badges", "academic excellence", "recognition"],
   },
+  manual: {
+    title: "User Guide & Manual",
+    description: "Learn how to use Chameleon FCDS features: quizzes, tournaments, Google Drive integration, Explo AI chatbot, and Workspace AI.",
+    keywords: ["manual", "guide", "user manual", "quiz system", "scoring formula", "leaderboard", "explo", "workspace ai"],
+  },
 }

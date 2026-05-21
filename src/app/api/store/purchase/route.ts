@@ -7,12 +7,21 @@ const STORE_ITEMS = [
   { id: "badge-speed-demon", name: "Speed Demon Badge", price: 300, type: "badge" },
   { id: "badge-pro-solver", name: "Pro Solver Badge", price: 1000, type: "badge" },
   { id: "theme-diamond", name: "Diamond Theme", price: 1500, type: "theme" },
-  { id: "theme-luxury", name: "Luxury Theme", price: 1500, type: "theme" },
+  { id: "theme-luxury", name: "Luxury Velvet Theme", price: 1500, type: "theme" },
   { id: "theme-cyberpunk", name: "Cyberpunk Theme", price: 1500, type: "theme" },
   { id: "theme-matrix", name: "Matrix Theme", price: 3000, type: "theme" },
   { id: "theme-nebula", name: "Nebula Theme", price: 1500, type: "theme" },
   { id: "theme-glacier", name: "Glacier Theme", price: 3000, type: "theme" },
+  // Borders (Original price is discounted by 25% on store purchase)
+  { id: "border-gold-glow", name: "Gold Glow Border", price: 600, type: "border" },
+  { id: "border-rainbow-pulse", name: "Rainbow Pulse Border", price: 900, type: "border" },
+  { id: "border-neon-glitch", name: "Cyber Neon Border", price: 750, type: "border" },
+  // Cursors (Original price is discounted by 25% on store purchase)
+  { id: "cursor-sparkles", name: "Cosmic Sparkles Cursor", price: 450, type: "cursor" },
+  { id: "cursor-cyber-cross", name: "Cyber Cross Cursor", price: 600, type: "cursor" },
+  { id: "cursor-bubbles", name: "Bouncing Bubbles Cursor", price: 750, type: "cursor" },
 ]
+
 
 export async function POST(request: NextRequest) {
   try {

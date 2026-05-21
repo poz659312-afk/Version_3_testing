@@ -20,6 +20,11 @@ const LazyNotificationProvider = dynamic(
   { ssr: false }
 );
 
+const Cursor = dynamic(
+  () => import("@/components/visual-effects/cursor"),
+  { ssr: false }
+);
+
 // Inter as Geist Sans replacement
 const geistSans = Inter({
   subsets: ["latin"],
@@ -122,6 +127,7 @@ export default function RootLayout({
                 {/* <DevToolsProtection /> */}
                 <SmoothScrollProvider>
                     <Navigation />
+                    <Cursor />
                     {children}
                 </SmoothScrollProvider>
               </ToastProvider>

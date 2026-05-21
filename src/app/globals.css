@@ -1448,3 +1448,7 @@ html.lenis-stopped body {
     backdrop-filter: none !important;
   }
 }
+
+/* Hide default cursor when custom cursor active */
+.hide-default-cursor, .hide-default-cursor * { cursor: none !important; }
+

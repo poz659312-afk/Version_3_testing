@@ -24,6 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { useTheme } from "next-themes"
 import { useColorTheme } from "@/components/color-theme-provider"
+import AvatarBorder from "@/components/visual-effects/avatar-border"
 
 
 
@@ -311,17 +312,26 @@ function ThemeModeSelector() {
   )
 }
 
-function VisualEffectsSettings() {
+function VisualEffectsSettings({ inventory = [] }: { inventory?: string[] }) {
   const [backgroundEnabled, setBackgroundEnabled] = useState(true)
   const [smoothScrollEnabled, setSmoothScrollEnabled] = useState(true)
   const [glassmorphismEnabled, setGlassmorphismEnabled] = useState(true)
   const [performanceMode, setPerformanceMode] = useState<'performance' | 'power-save'>('performance')
+  
+  // Equipped items
+  const [equippedBorder, setEquippedBorder] = useState<string | null>(null)
+  const [equippedCursor, setEquippedCursor] = useState<string | null>(null)
+  const isPowerSave = performanceMode === 'power-save'
 
   useEffect(() => {
     setBackgroundEnabled(localStorage.getItem('chameleon_bg_animation') !== 'false')
     setSmoothScrollEnabled(localStorage.getItem('chameleon_smooth_scroll') !== 'false')
     setGlassmorphismEnabled(localStorage.getItem('chameleon_glassmorphism') !== 'false')
     setPerformanceMode((localStorage.getItem('chameleon_perf_mode') as 'performance' | 'power-save') || 'performance')
+    
+    // Load equipped states
+    setEquippedBorder(localStorage.getItem('chameleon-equipped-border'))
+    setEquippedCursor(localStorage.getItem('chameleon-equipped-cursor'))
   }, [])
 
   const handleBgToggle = () => {
@@ -359,68 +369,219 @@ function VisualEffectsSettings() {
     window.dispatchEvent(new Event('chameleon_visual_settings_changed'))
   }
 
+  const handleEquipBorder = (borderId: string | null) => {
+    if (borderId) {
+      localStorage.setItem('chameleon-equipped-border', borderId)
+      setEquippedBorder(borderId)
+    } else {
+      localStorage.removeItem('chameleon-equipped-border')
+      setEquippedBorder(null)
+    }
+    window.dispatchEvent(new Event('chameleon_visual_settings_changed'))
+  }
+
+  const handleEquipCursor = (cursorId: string | null) => {
+    if (cursorId) {
+      localStorage.setItem('chameleon-equipped-cursor', cursorId)
+      setEquippedCursor(cursorId)
+    } else {
+      localStorage.removeItem('chameleon-equipped-cursor')
+      setEquippedCursor(null)
+    }
+    window.dispatchEvent(new Event('chameleon_visual_settings_changed'))
+  }
+
+  const ALL_BORDERS = [
+    { id: "border-gold-glow", name: "Gold Glow Border", desc: "Premium rotating golden aura.", color: "from-amber-400 to-yellow-500" },
+    { id: "border-rainbow-pulse", name: "Rainbow Pulse Border", desc: "A shifting spectrum of pulsing color.", color: "from-pink-500 via-purple-500 to-cyan-500" },
+    { id: "border-neon-glitch", name: "Cyber Neon Border", desc: "Cyberpunk glitching dual shadow effect.", color: "from-cyan-400 via-indigo-500 to-fuchsia-500" }
+  ]
+
+  const ALL_CURSORS = [
+    { id: "cursor-sparkles", name: "Cosmic Sparkles Cursor", desc: "Leaves a tail of glowing star dust.", color: "from-blue-400 to-purple-500" },
+    { id: "cursor-cyber-cross", name: "Cyber Cross Cursor", desc: "Futuristic tracking crosshair HUD.", color: "from-green-400 to-emerald-600" },
+    { id: "cursor-bubbles", name: "Bouncing Bubbles Cursor", desc: "Generate floating bubble trails.", color: "from-cyan-300 via-sky-400 to-blue-500" }
+  ]
+
+  const ownedBorders = ALL_BORDERS.filter(b => inventory.includes(b.id))
+  const ownedCursors = ALL_CURSORS.filter(c => inventory.includes(c.id))
+
   return (
     <Card className="bg-card border-border shadow-xl">
       <CardHeader>
         <CardTitle className="font-outfit font-bold italic flex items-center gap-2">
           <Zap className="size-5 text-primary"/> Visual Effects & Performance
         </CardTitle>
-        <CardDescription className="font-outfit text-muted-foreground">Customize animations and rendering performance across the app</CardDescription>
+        <CardDescription className="font-outfit text-muted-foreground">Customize animations, active styles, and rendering performance across the app</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
-          <div>
-            <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-green-500"></div>Animated Background</h4>
-            <p className="text-sm text-muted-foreground font-outfit">Enable the interactive WebGL background in the hero section.</p>
+      <CardContent className="space-y-8">
+        
+        {/* Toggle Controls */}
+        <div className="space-y-4">
+          <h3 className="font-outfit font-extrabold text-lg text-foreground border-b border-border/40 pb-2">Preferences</h3>
+          
+          <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
+            <div>
+              <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-green-500"></div>Animated Background</h4>
+              <p className="text-sm text-muted-foreground font-outfit">Enable the interactive WebGL background in the hero section.</p>
+            </div>
+            <button 
+               onClick={handleBgToggle}
+               className={`w-14 h-7 rounded-full transition-colors relative ${backgroundEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+            >
+               <div className={`size-6 rounded-full bg-white absolute top-0.5 transition-all ${backgroundEnabled ? 'left-7' : 'left-0.5'}`}></div>
+            </button>
           </div>
-          <button 
-             onClick={handleBgToggle}
-             className={`w-14 h-7 rounded-full transition-colors relative ${backgroundEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
-          >
-             <div className={`size-6 rounded-full bg-white absolute top-0.5 transition-all ${backgroundEnabled ? 'left-7' : 'left-0.5'}`}></div>
-          </button>
+
+          <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
+            <div>
+              <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-blue-500"></div>Smooth Animations</h4>
+              <p className="text-sm text-muted-foreground font-outfit">Enable buttery smooth scrolling (disable if experiencing lag).</p>
+            </div>
+            <button 
+               onClick={handleSmoothScrollToggle}
+               className={`w-14 h-7 rounded-full transition-colors relative ${smoothScrollEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+            >
+               <div className={`size-6 rounded-full bg-white absolute top-0.5 transition-all ${smoothScrollEnabled ? 'left-7' : 'left-0.5'}`}></div>
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
+            <div>
+              <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-purple-500"></div>Glassmorphism Effects</h4>
+              <p className="text-sm text-muted-foreground font-outfit">Enable high-quality blur filters (disable on weak mobile devices).</p>
+            </div>
+            <button 
+               onClick={handleGlassmorphismToggle}
+               className={`w-14 h-7 rounded-full transition-colors relative ${glassmorphismEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+            >
+               <div className={`size-6 rounded-full bg-white absolute top-0.5 transition-all ${glassmorphismEnabled ? 'left-7' : 'left-0.5'}`}></div>
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
-          <div>
-            <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-blue-500"></div>Smooth Animations</h4>
-            <p className="text-sm text-muted-foreground font-outfit">Enable buttery smooth scrolling (disable if experiencing lag).</p>
-          </div>
-          <button 
-             onClick={handleSmoothScrollToggle}
-             className={`w-14 h-7 rounded-full transition-colors relative ${smoothScrollEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
-          >
-             <div className={`size-6 rounded-full bg-white absolute top-0.5 transition-all ${smoothScrollEnabled ? 'left-7' : 'left-0.5'}`}></div>
-          </button>
-        </div>
-
-        <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
-          <div>
-            <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-purple-500"></div>Glassmorphism Effects</h4>
-            <p className="text-sm text-muted-foreground font-outfit">Enable high-quality blur filters (disable on weak mobile devices).</p>
-          </div>
-          <button 
-             onClick={handleGlassmorphismToggle}
-             className={`w-14 h-7 rounded-full transition-colors relative ${glassmorphismEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
-          >
-             <div className={`size-6 rounded-full bg-white absolute top-0.5 transition-all ${glassmorphismEnabled ? 'left-7' : 'left-0.5'}`}></div>
-          </button>
-        </div>
-
-        <div className="p-4 border border-border/50 rounded-lg bg-muted/20 mt-4">
+        {/* Performance Mode */}
+        <div className="p-4 border border-border/50 rounded-lg bg-muted/20">
           <h4 className="font-bold mb-4 font-outfit text-foreground">System Performance Mode</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <button onClick={() => handlePerfModeChange('performance')} className={`p-4 border-2 rounded-lg flex flex-col items-center gap-2 transition-all ${performanceMode === 'performance' ? 'border-primary bg-primary/10 text-primary' : 'border-border/50 hover:border-primary/50 text-muted-foreground'}`}>
+             <button type="button" onClick={() => handlePerfModeChange('performance')} className={`p-4 border-2 rounded-lg flex flex-col items-center gap-2 transition-all ${performanceMode === 'performance' ? 'border-primary bg-primary/10 text-primary' : 'border-border/50 hover:border-primary/50 text-muted-foreground'}`}>
                <Zap className="size-6" />
                <span className="font-bold font-outfit">Performance Mode</span>
                <span className="text-xs text-center opacity-80 font-outfit">Best visuals, higher battery usage</span>
              </button>
-             <button onClick={() => handlePerfModeChange('power-save')} className={`p-4 border-2 rounded-lg flex flex-col items-center gap-2 transition-all ${performanceMode === 'power-save' ? 'border-amber-500 bg-amber-500/10 text-amber-500' : 'border-border/50 hover:border-amber-500/50 text-muted-foreground'}`}>
+             <button type="button" onClick={() => handlePerfModeChange('power-save')} className={`p-4 border-2 rounded-lg flex flex-col items-center gap-2 transition-all ${performanceMode === 'power-save' ? 'border-amber-500 bg-amber-500/10 text-amber-500' : 'border-border/50 hover:border-amber-500/50 text-muted-foreground'}`}>
                <Laptop className="size-6" />
                <span className="font-bold font-outfit">Power Save Mode</span>
                <span className="text-xs text-center opacity-80 font-outfit">Disables heavy animations, saves battery</span>
              </button>
           </div>
+        </div>
+
+        {/* Owned Avatar Borders */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center border-b border-border/40 pb-2">
+            <h3 className="font-outfit font-extrabold text-lg text-foreground flex items-center gap-2">
+              <Award className="size-5 text-amber-500" /> Equipped Avatar Border
+            </h3>
+            <span className="text-xs text-muted-foreground font-outfit">{ownedBorders.length} unlocked</span>
+          </div>
+
+          {ownedBorders.length === 0 ? (
+            <div className="text-center p-6 border border-dashed border-border rounded-lg bg-muted/5">
+              <p className="text-sm text-muted-foreground font-outfit mb-3">You don't own any avatar borders yet.</p>
+              <Link href="/store">
+                <Button size="sm" variant="outline" className="rounded-full font-bold">
+                  Browse Store
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {/* Default Border option */}
+              <Card 
+                onClick={() => handleEquipBorder(null)}
+                className={`cursor-pointer p-4 border-2 flex items-center justify-between transition-all hover:border-primary/50 ${equippedBorder === null ? 'border-primary bg-primary/5' : 'border-border/50'}`}
+              >
+                <div>
+                  <h5 className="font-bold font-outfit text-sm">None / Default</h5>
+                  <p className="text-[11px] text-muted-foreground">Standard border styling</p>
+                </div>
+                {equippedBorder === null && <Check className="size-4 text-primary shrink-0" />}
+              </Card>
+
+              {ownedBorders.map((border) => (
+                <Card 
+                  key={border.id}
+                  onClick={() => handleEquipBorder(border.id)}
+                  className={`cursor-pointer p-4 border-2 flex items-center justify-between transition-all hover:border-primary/50 relative overflow-hidden ${equippedBorder === border.id ? 'border-primary bg-primary/5' : 'border-border/50'}`}
+                >
+                  <div className={`absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b ${border.color}`} />
+                  <div className="pl-2">
+                    <h5 className="font-bold font-outfit text-sm">{border.name}</h5>
+                    <p className="text-[11px] text-muted-foreground">{border.desc}</p>
+                  </div>
+                  {equippedBorder === border.id && <Check className="size-4 text-primary shrink-0" />}
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Owned Cursors */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center border-b border-border/40 pb-2">
+            <h3 className="font-outfit font-extrabold text-lg text-foreground flex items-center gap-2">
+              <Sparkles className="size-5 text-indigo-500" /> Equipped Cursor Trail
+            </h3>
+            <span className="text-xs text-muted-foreground font-outfit">{ownedCursors.length} unlocked</span>
+          </div>
+
+          {isPowerSave && (
+            <div className="p-3 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-lg text-xs font-outfit flex items-center gap-2">
+              <Laptop className="size-4 shrink-0" />
+              <span>Cursor trails are currently suspended to preserve battery because Power Save Mode is active.</span>
+            </div>
+          )}
+
+          {ownedCursors.length === 0 ? (
+            <div className="text-center p-6 border border-dashed border-border rounded-lg bg-muted/5">
+              <p className="text-sm text-muted-foreground font-outfit mb-3">You don't own any custom cursor trails yet.</p>
+              <Link href="/store">
+                <Button size="sm" variant="outline" className="rounded-full font-bold">
+                  Browse Store
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {/* Default Cursor option */}
+              <Card 
+                onClick={() => handleEquipCursor(null)}
+                className={`cursor-pointer p-4 border-2 flex items-center justify-between transition-all hover:border-primary/50 ${equippedCursor === null ? 'border-primary bg-primary/5' : 'border-border/50'}`}
+              >
+                <div>
+                  <h5 className="font-bold font-outfit text-sm">None / Default</h5>
+                  <p className="text-[11px] text-muted-foreground">Standard pointer</p>
+                </div>
+                {equippedCursor === null && <Check className="size-4 text-primary shrink-0" />}
+              </Card>
+
+              {ownedCursors.map((cursor) => (
+                <Card 
+                  key={cursor.id}
+                  onClick={() => handleEquipCursor(cursor.id)}
+                  className={`cursor-pointer p-4 border-2 flex items-center justify-between transition-all hover:border-primary/50 relative overflow-hidden ${equippedCursor === cursor.id ? 'border-primary bg-primary/5' : 'border-border/50'}`}
+                >
+                  <div className={`absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b ${cursor.color}`} />
+                  <div className="pl-2">
+                    <h5 className="font-bold font-outfit text-sm">{cursor.name}</h5>
+                    <p className="text-[11px] text-muted-foreground">{cursor.desc}</p>
+                  </div>
+                  {equippedCursor === cursor.id && <Check className="size-4 text-primary shrink-0" />}
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
         
         <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-2 mt-4 font-outfit">
@@ -535,7 +696,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const loadProfileData = async () => {
-      const session = await getStudentSession()
+      const session = await getStudentSession(true)
       if (!session) {
         setIsRedirecting(true)
         router.push("/auth/signin")
@@ -876,24 +1037,24 @@ export default function ProfilePage() {
                 {/* Profile Header Image Display */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between p-6 rounded-lg bg-card border border-border shadow-md gap-4">
                 <div className="flex items-center gap-4">
-                  <div 
-                    className={`relative rounded-full shadow-lg ${userData.is_admin ? 'w-24 h-24' : 'w-20 h-20'} bg-primary/20 flex items-center justify-center border-4 border-background`}
-                  >
-                    <div className="w-full h-full rounded-full overflow-hidden bg-background flex items-center justify-center">
-                      {userData.profile_image ? (
-                        <Image
-                          src={userData.profile_image}
-                          alt="Profile"
-                          width={96}
-                          height={96}
-                          unoptimized
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <User className="w-10 h-10 text-primary" />
-                      )}
+                  <AvatarBorder isAdmin={userData.is_admin} className="shadow-lg">
+                    <div className={`${userData.is_admin ? 'w-24 h-24' : 'w-20 h-20'} bg-primary/20 flex items-center justify-center`}>
+                      <div className="w-full h-full rounded-full overflow-hidden bg-background flex items-center justify-center">
+                        {userData.profile_image ? (
+                          <Image
+                            src={userData.profile_image}
+                            alt="Profile"
+                            width={96}
+                            height={96}
+                            unoptimized
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-10 h-10 text-primary" />
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  </AvatarBorder>
                   <div className="space-y-1">
                     <h3 className="font-outfit font-extrabold text-2xl text-foreground">{userData.username}</h3>
                     <p className="text-sm text-muted-foreground font-outfit">Identity synchronizer active</p>
@@ -1375,7 +1536,7 @@ export default function ProfilePage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <VisualEffectsSettings />
+                <VisualEffectsSettings inventory={userData?.inventory || []} />
               </motion.div>
             </TabsContent>
 
@@ -1405,7 +1566,7 @@ export default function ProfilePage() {
                 <CardContent className="space-y-4 pt-6">
                   <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/20 font-outfit">
                     <p className="text-foreground text-sm mb-4">
-                      ⚠️ <span className="italic font-bold text-red-500">"SOMETIMES WE NEED TO INITIALIZE A SYSTEM WIPE."</span> 
+                      ⚠️ <span className="italic font-bold text-red-500">SOMETIMES WE NEED TO INITIALIZE A SYSTEM WIPE</span> 
                     </p>
                     <p className="text-muted-foreground text-[11px] leading-relaxed">
                       Executing account termination will purge all synchronized attempt data, encrypted notifications, and identity footprints. 

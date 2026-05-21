@@ -22,6 +22,7 @@ const nextConfig = {
 
   // Production webpack configuration
   webpack: (config, { dev, isServer }) => {
+    const path = require('path')
     if (!dev && !isServer) {
       config.optimization = {
         ...config.optimization,
@@ -50,6 +51,8 @@ const nextConfig = {
         });
       }
     }
+
+    // (removed) framer-noop alias so the real `framer-motion` package is used
 
     return config;
   },
