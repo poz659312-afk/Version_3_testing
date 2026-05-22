@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles } from "lucide-react"
+import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles, MousePointer } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
@@ -1116,7 +1116,15 @@ export default function ProfilePage() {
                             "theme-cyberpunk": { name: "Cyberpunk Theme", color: "text-pink-500 bg-pink-500/10", icon: Zap },
                             "theme-matrix": { name: "Matrix Theme", color: "text-green-500 bg-green-500/10", icon: Shield },
                             "theme-nebula": { name: "Nebula Theme", color: "text-purple-500 bg-purple-500/10", icon: Sparkles },
-                            "theme-glacier": { name: "Glacier Theme", color: "text-sky-400 bg-sky-400/10", icon: Star }
+                            "theme-glacier": { name: "Glacier Theme", color: "text-sky-400 bg-sky-400/10", icon: Star },
+                            // Custom Borders
+                            "border-gold-glow": { name: "Gold Glow Border", color: "text-amber-500 bg-amber-500/10", icon: Award },
+                            "border-cosmic-aurora": { name: "Cosmic Aurora Border", color: "text-emerald-400 bg-emerald-400/10", icon: Palette },
+                            "border-neon-glitch": { name: "Cyber Neon Border", color: "text-cyan-500 bg-cyan-500/10", icon: Zap },
+                            // Custom Cursors
+                            "cursor-sparkles": { name: "Cosmic Sparkles Cursor", color: "text-blue-400 bg-blue-400/10", icon: Sparkles },
+                            "cursor-cyber-cross": { name: "Cyber Cross Cursor", color: "text-green-400 bg-green-400/10", icon: MousePointer },
+                            "cursor-bubbles": { name: "Bouncing Bubbles Cursor", color: "text-sky-400 bg-sky-400/10", icon: Sparkles }
                           }
                           const info = badgeInfo[itemId] || { name: "Achievement", color: "text-muted-foreground bg-muted", icon: Trophy }
                           const Icon = info.icon
