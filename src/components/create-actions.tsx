@@ -13,6 +13,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog"
 import {
   Plus,
@@ -24,9 +25,12 @@ import {
   CloudUpload,
   FileText,
   X,
+  CheckCircle,
+  AlertTriangle,
 } from "lucide-react"
 import { useToast } from "@/components/ToastProvider"
 import { useUpload } from "./upload-context"
+import { useColorTheme } from "@/components/color-theme-provider"
 
 interface CreateActionsProps {
   currentFolderId: string
@@ -35,6 +39,7 @@ interface CreateActionsProps {
 }
 
 export function CreateActions({ currentFolderId, onFileCreated, userSession }: CreateActionsProps) {
+  const { colorTheme } = useColorTheme()
   const [showCreateFolder, setShowCreateFolder] = useState(false)
   const [showUploadDialog, setShowUploadDialog] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -452,50 +457,66 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
         <DialogTrigger asChild>
           <Button
             size="sm"
-            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600  border-0 shadow-lg hover:shadow-xl transition-all duration-300"
+            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-9 px-3 rounded-lg"
           >
-            <div className="hover:scale-105 transition-transform">
+            <div className="hover:scale-115 transition-transform flex items-center gap-1.5 font-bold">
               <Shield className="w-4 h-4" />
             </div>
           </Button>
         </DialogTrigger>
-        <DialogContent className="/90 backdrop-blur-xl border-border  max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-              Authentication Required
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              You need to connect your Google Drive to upload files
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-slate-200/60 dark:border-white/10 max-w-md shadow-lg dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden rounded-2xl p-6">
+          <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-amber-400 via-orange-500 to-yellow-400" />
+          
+          <div className="flex flex-col items-center text-center pt-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/15 dark:to-orange-500/15 border border-amber-500/30 flex items-center justify-center mb-4 text-amber-500 dark:text-amber-400 shadow-[0_8px_30px_rgb(245,158,11,0.15)] animate-bounce duration-1000">
+              <Shield className="w-6 h-6" />
+            </div>
+            
+            <DialogHeader className="items-center text-center">
+              <DialogTitle className="text-2xl font-black italic tracking-tight bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent uppercase">
+                Authentication Required
+              </DialogTitle>
+              <DialogDescription className="text-slate-600 dark:text-muted-foreground/80 font-medium mt-1">
+                You need to connect your Google Drive to upload files
+              </DialogDescription>
+            </DialogHeader>
+          </div>
           
           <div className="space-y-4 py-4">
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
+            <div className="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
-                <AlertCircle className="w-4 h-4 text-amber-400" />
-                <span className="text-amber-300 font-medium">Individual Authentication Required</span>
+                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 animate-pulse" />
+                <span className="text-amber-800 dark:text-amber-300 font-bold text-xs uppercase tracking-wider">Individual Credentials</span>
               </div>
-              <p className="text-amber-200/80 text-sm">
+              <p className="text-amber-900/80 dark:text-amber-200/80 text-xs leading-relaxed">
                 As an admin, you must authenticate with your own Google account. Files you upload will be owned by your Google account.
               </p>
             </div>
 
             {authError && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-                <p className="text-red-300 text-sm">{authError}</p>
+              <div className="bg-red-500/5 dark:bg-red-500/10 border border-red-500/20 rounded-xl p-3">
+                <p className="text-red-700 dark:text-red-300 text-xs font-medium">{authError}</p>
               </div>
             )}
-
-            <div className="space-y-2">
-              <Button
-                onClick={handleAuthenticate}
-                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600  border-0"
-              >
-                <Shield className="w-4 h-4 mr-2" />
-                Connect Google Drive
-              </Button>
-            </div>
           </div>
+
+          <DialogFooter className="gap-2 sm:gap-0 flex sm:flex-row justify-between w-full border-t border-slate-100 dark:border-white/5 pt-4 mt-2">
+            <DialogClose asChild>
+              <Button
+                variant="outline"
+                className="flex-1 bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-foreground text-slate-700 dark:text-foreground/80 text-sm font-semibold rounded-xl h-11"
+              >
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              onClick={handleAuthenticate}
+              className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 border-0 text-white font-semibold shadow-lg shadow-amber-500/10 rounded-xl h-11"
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              Connect Drive
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     )
@@ -520,60 +541,62 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
       <div className="relative flex items-center gap-2">
         <Dialog>
           <DialogTrigger asChild>
-          <Button
-            size="sm"
-
-            className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600  border-0 shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            <div className="hover:rotate-45 transition-transform">
-              <Plus className="w-4 h-4" />
+            <Button
+              size="sm"
+              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 border-0 shadow-lg hover:shadow-xl transition-all duration-300 h-9 px-3 rounded-lg text-white font-bold"
+            >
+              <div className="hover:rotate-90 transition-transform duration-300">
+                <Plus className="w-4 h-4" />
+              </div>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-slate-200/60 dark:border-white/10 max-w-sm shadow-lg dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden rounded-2xl p-6">
+            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary via-primary/80 to-accent" />
+            
+            <div className="flex flex-col items-center text-center pt-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/30 flex items-center justify-center mb-4 text-primary shadow-[0_8px_30px_rgba(var(--primary),0.15)] animate-bounce duration-1000">
+                <Plus className="w-6 h-6" />
+              </div>
+              
+              <DialogHeader className="items-center text-center">
+                <DialogTitle className="text-2xl font-black italic tracking-tight bg-gradient-to-r from-primary via-primary/85 to-accent bg-clip-text text-transparent uppercase">
+                  Create New
+                </DialogTitle>
+                <DialogDescription className="text-slate-600 dark:text-muted-foreground/80 font-medium mt-1">
+                  Choose what you&apos;d like to create
+                </DialogDescription>
+              </DialogHeader>
             </div>
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="/90 backdrop-blur-xl border-border  max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Create New
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              Choose what you&apos;d like to create
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid gap-2 py-4">
-            <Button
-              onClick={() => {
-              setShowCreateFolder(true)
-              }}
-              className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 hover: border-blue-500/30 justify-start"
-              variant="outline"
-            >
-              <FolderPlus className="w-4 h-4 mr-2" />
-              New Folder
-            </Button>
-            <Button
-              onClick={() => {
-              setShowUploadDialog(true)
-              }}
-              className="bg-purple-500/30 hover:bg-purple-500/20 text-purple-300 hover: border-purple-500/30 justify-start"
-              variant="outline"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              Upload Files
-            </Button>
-            {/* <Button
-              onClick={() => {
-              handleFolderSelect()
-              }}
-              className="bg-green-500/20 hover:bg-green-500/30 text-green-300 hover: border-green-500/30 justify-start"
-              variant="outline"
-            >
-              <FolderOpen className="w-4 h-4 mr-2" />
-              Upload Folder
-            </Button> */}
-          </div>
-        </DialogContent>
-      </Dialog>
+            
+            <div className="grid gap-3 py-4 mt-2">
+              <DialogClose asChild>
+                <Button
+                  onClick={() => {
+                    setShowCreateFolder(true)
+                  }}
+                  className="bg-primary/5 hover:bg-primary/10 dark:bg-primary/10 dark:hover:bg-primary/20 border border-primary/20 hover:border-primary/45 text-slate-800 dark:text-primary hover:text-slate-900 dark:hover:text-primary-foreground/90 rounded-xl py-3 justify-start px-4 h-12 font-semibold transition-all duration-300 hover:scale-[1.02] w-full"
+                  variant="outline"
+                >
+                  <FolderPlus className="w-5 h-5 mr-3 text-primary" />
+                  New Folder
+                </Button>
+              </DialogClose>
+              
+              <DialogClose asChild>
+                <Button
+                  onClick={() => {
+                    setShowUploadDialog(true)
+                  }}
+                  className="bg-accent/5 hover:bg-accent/10 dark:bg-accent/10 dark:hover:bg-accent/20 border border-accent/20 hover:border-accent/45 text-slate-800 dark:text-accent hover:text-slate-900 dark:hover:text-accent-foreground/90 rounded-xl py-3 justify-start px-4 h-12 font-semibold transition-all duration-300 hover:scale-[1.02] w-full"
+                  variant="outline"
+                >
+                  <Upload className="w-5 h-5 mr-3 text-accent" />
+                  Upload Files
+                </Button>
+              </DialogClose>
+            </div>
+          </DialogContent>
+        </Dialog>
 
       {/* Animated upload indicator */}
       {hasActiveUploads && (
@@ -615,15 +638,23 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
 
       {/* File Upload Dialog with Drag & Drop */}
       <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
-        <DialogContent className="/90 backdrop-blur-xl border-border  max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Upload Files
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              Drag and drop files here or click to browse
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-slate-200/60 dark:border-white/10 max-w-2xl shadow-lg dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden rounded-2xl p-6">
+          <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500" />
+          
+          <div className="flex flex-col items-center text-center pt-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 dark:from-purple-500/15 dark:to-pink-500/15 border border-purple-500/30 flex items-center justify-center mb-4 text-purple-500 dark:text-purple-400 shadow-[0_8px_30px_rgba(168,85,247,0.15)] animate-bounce duration-1000">
+              <CloudUpload className="w-6 h-6" />
+            </div>
+            
+            <DialogHeader className="items-center text-center">
+              <DialogTitle className="text-2xl font-black italic tracking-tight bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent uppercase">
+                Upload Files
+              </DialogTitle>
+              <DialogDescription className="text-slate-600 dark:text-muted-foreground/80 font-medium mt-1">
+                Drag and drop files here or click to browse
+              </DialogDescription>
+            </DialogHeader>
+          </div>
           
           <div className="space-y-4 py-4">
             {/* Drag and Drop Zone */}
@@ -635,10 +666,10 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
               className={`
-                relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-300
+                relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 overflow-hidden
                 ${isDragActive 
-                  ? 'border-purple-500 bg-purple-500/10' 
-                  : 'border-white/30 hover:border-purple-500/50 hover:bg-muted'
+                  ? 'border-primary bg-primary/5 dark:bg-primary/10 shadow-[0_0_30px_rgba(var(--primary),0.1)]' 
+                  : 'border-slate-200 dark:border-white/10 hover:border-primary/50 hover:bg-slate-50/50 dark:hover:bg-black/20'
                 }
               `}
             >
@@ -648,10 +679,10 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
                 <div className="flex justify-center">
                   <div
                     className={`
-                      w-16 h-16 rounded-full flex items-center justify-center transition-all duration-200
+                      w-16 h-16 rounded-2xl border flex items-center justify-center transition-all duration-200
                       ${isDragActive 
-                        ? 'bg-purple-500/20 text-purple-400 -translate-y-1' 
-                        : 'bg-muted text-muted-foreground'
+                        ? 'bg-primary/20 border-primary text-primary -translate-y-1' 
+                        : 'bg-slate-100 dark:bg-black/40 border-slate-200 dark:border-white/5 text-slate-500 dark:text-muted-foreground'
                       }
                     `}
                   >
@@ -660,10 +691,10 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
                 </div>
                 
                 <div>
-                  <h3 className={`text-lg font-medium mb-2 ${isDragActive ? 'text-purple-300' : ''}`}>
-                    {isDragActive ? 'Drop files here' : 'Upload Files'}
+                  <h3 className={`text-lg font-bold mb-1 ${isDragActive ? 'text-primary' : 'text-slate-900 dark:text-slate-100'}`}>
+                    {isDragActive ? 'Drop files here' : 'Select Files'}
                   </h3>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-slate-500 dark:text-muted-foreground text-sm">
                     {isDragActive 
                       ? 'Release to upload files' 
                       : 'Drag and drop files here, or click to browse'
@@ -678,7 +709,7 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
                     e.stopPropagation()
                     fileInputRef.current?.click()
                   }}
-                  className="bg-muted border-white/30  hover:bg-muted hover:"
+                  className="bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-foreground text-slate-700 dark:text-foreground/80 rounded-xl font-semibold h-10"
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   Choose Files
@@ -689,15 +720,15 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
             {/* Selected Files List */}
             {selectedFiles.length > 0 && (
               <div className="space-y-2">
-                <h4 className="text-sm font-medium text-foreground/80">
-                  Selected Files ({selectedFiles.length})
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-foreground/70 flex justify-between items-center">
+                  <span>Selected Files ({selectedFiles.length})</span>
                   {isUploading && (
-                    <span className="ml-2 text-xs text-blue-400">
+                    <span className="text-xs text-primary animate-pulse font-semibold">
                       Uploading {uploadedCount}/{selectedFiles.length}
                     </span>
                   )}
                 </h4>
-                <div className="max-h-48 overflow-y-auto space-y-2 bg-muted rounded-lg p-3 custom-scrollbar">
+                <div className="max-h-48 overflow-y-auto space-y-2 bg-slate-50/50 dark:bg-black/40 border border-slate-100 dark:border-white/5 rounded-xl p-3 custom-scrollbar">
                   {selectedFiles.map((file, index) => {
                     const fileKey = `${file.name}-${file.size}-${index}`
                     const progress = uploadProgress[fileKey]
@@ -708,60 +739,62 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
                     return (
                       <div
                         key={fileKey}
-                        className="relative animate-in fade-in slide-in-from-left-2 duration-200"
+                        className="relative animate-in fade-in slide-in-from-left-2 duration-200 rounded-xl overflow-hidden"
                       >
-                        <div className="flex items-center justify-between p-3 bg-muted rounded border border-border relative overflow-hidden">
+                        <div className="flex items-center justify-between p-3 bg-white dark:bg-black/20 rounded-xl border border-slate-200/50 dark:border-white/5 relative overflow-hidden">
                           {/* Progress background */}
                           {isFileUploading && (
                             <div 
-                              className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 transition-all duration-300"
+                              className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 transition-all duration-300"
                               style={{ width: `${progress}%` }}
                             />
                           )}
                           {isFileCompleted && (
-                            <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-emerald-500/10" />
                           )}
                           {isFileFailed && (
-                            <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-pink-500/20" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-pink-500/10" />
                           )}
                           
-                          <div className="flex items-center gap-2 flex-1 min-w-0 relative z-10">
+                          <div className="flex items-center gap-3 flex-1 min-w-0 relative z-10">
                             <div className="flex-shrink-0">
                               {isFileCompleted ? (
-                                <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
-                                  <svg className="w-2 h-2 " fill="currentColor" viewBox="0 0 8 8">
-                                    <path d="M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z"/>
-                                  </svg>
+                                <div className="w-5 h-5 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center text-green-500">
+                                  <CheckCircle className="w-3.5 h-3.5" />
                                 </div>
                               ) : isFileFailed ? (
-                                <X className="w-4 h-4 text-red-400" />
+                                <div className="w-5 h-5 rounded-full bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-500">
+                                  <AlertTriangle className="w-3.5 h-3.5" />
+                                </div>
                               ) : isFileUploading ? (
-                                <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                                <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                               ) : (
-                                <FileText className="w-4 h-4 text-blue-400" />
+                                <div className="w-5 h-5 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                                  <FileText className="w-3 h-3" />
+                                </div>
                               )}
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm  truncate" title={file.name}>
+                              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate" title={file.name}>
                                 {file.name}
                               </p>
-                              <div className="flex items-center gap-2">
-                                <p className="text-xs text-muted-foreground">
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <p className="text-xs text-slate-500 dark:text-muted-foreground/75 font-medium">
                                   {formatFileSize(file.size)}
                                 </p>
                                 {isFileUploading && (
-                                  <p className="text-xs text-blue-400">
+                                  <p className="text-xs text-primary font-bold">
                                     {progress}%
                                   </p>
                                 )}
                                 {isFileCompleted && (
-                                  <p className="text-xs text-green-400">
-                                    ✓ Uploaded
+                                  <p className="text-xs text-green-500 dark:text-green-400 font-bold">
+                                    Completed
                                   </p>
                                 )}
                                 {isFileFailed && (
-                                  <p className="text-xs text-red-400">
-                                    ✗ Failed
+                                  <p className="text-xs text-red-500 dark:text-red-400 font-bold">
+                                    Failed
                                   </p>
                                 )}
                               </div>
@@ -772,7 +805,7 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
                               variant="ghost"
                               size="sm"
                               onClick={() => removeFile(index)}
-                              className="h-8 w-8 p-0 text-muted-foreground hover:text-red-400 hover:bg-red-500/10 relative z-10"
+                              className="h-8 w-8 p-0 text-slate-400 dark:text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-lg relative z-10"
                             >
                               <X className="w-4 h-4" />
                             </Button>
@@ -786,7 +819,7 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
             )}
           </div>
 
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 sm:gap-0 flex sm:flex-row justify-between w-full border-t border-slate-100 dark:border-white/5 pt-4 mt-2">
             <Button
               variant="outline"
               onClick={() => {
@@ -798,24 +831,24 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
                 }
               }}
               disabled={isUploading}
-              className="bg-transparent border-border  hover:bg-muted disabled:opacity-50 hover:text-red"
+              className="flex-1 bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-foreground text-slate-700 dark:text-foreground/80 text-sm font-semibold rounded-xl h-11"
             >
               {isUploading ? 'Uploading...' : 'Cancel'}
             </Button>
             <Button
               onClick={uploadSelectedFiles}
               disabled={selectedFiles.length === 0 || isUploading}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600  border-0 disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px]"
+              className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 border-0 text-white font-semibold shadow-lg shadow-purple-500/10 rounded-xl h-11"
             >
               {isUploading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   <span>
-                    {uploadedCount}/{selectedFiles.length}
+                    {uploadedCount}/{selectedFiles.length} Uploaded
                   </span>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center gap-2">
                   <Upload className="w-4 h-4" />
                   <span>
                     Upload {selectedFiles.length > 0 ? `${selectedFiles.length} ` : ''}Files
@@ -833,19 +866,27 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
           setShowCreateFolder(open)
         }
       }}>
-        <DialogContent className="/90 backdrop-blur-xl border-border  max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Create New Folder
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              Enter a name for your new folder
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-slate-200/60 dark:border-white/10 max-w-md shadow-lg dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden rounded-2xl p-6">
+          <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500" />
+          
+          <div className="flex flex-col items-center text-center pt-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 dark:from-blue-500/15 dark:to-indigo-500/15 border border-blue-500/30 flex items-center justify-center mb-4 text-blue-500 dark:text-blue-400 shadow-[0_8px_30px_rgba(59,130,246,0.15)] animate-bounce duration-1000">
+              <FolderPlus className="w-6 h-6" />
+            </div>
+            
+            <DialogHeader className="items-center text-center">
+              <DialogTitle className="text-2xl font-black italic tracking-tight bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500 bg-clip-text text-transparent uppercase">
+                Create New Folder
+              </DialogTitle>
+              <DialogDescription className="text-slate-600 dark:text-muted-foreground/80 font-medium mt-1">
+                Enter a name for your new folder
+              </DialogDescription>
+            </DialogHeader>
+          </div>
           
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="folderName" className="text-foreground/80">
+              <Label htmlFor="folderName" className="text-slate-700 dark:text-foreground/80 text-xs font-bold uppercase tracking-wider">
                 Folder Name
               </Label>
               <Input
@@ -853,7 +894,7 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
                 value={folderName}
                 onChange={(e) => setFolderName(e.target.value)}
                 placeholder="Enter folder name..."
-                className="bg-muted border-border  placeholder:text-muted-foreground focus:border-blue-500/50 focus:ring-blue-500/20"
+                className="bg-slate-50/50 dark:bg-black/40 border-slate-200 dark:border-white/10 text-foreground placeholder:text-slate-400 dark:placeholder:text-muted-foreground/30 focus:border-blue-500/50 focus:ring-blue-500/20 h-11 rounded-xl"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !isCreatingFolder) {
                     handleCreateFolder()
@@ -865,7 +906,7 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
             
             {isAutoClosing && (
               <div
-                className="flex items-center gap-2 text-sm text-blue-400 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 animate-in fade-in slide-in-from-bottom-1 duration-200"
+                className="flex items-center gap-2 text-sm text-blue-800 dark:text-blue-400 bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 animate-in fade-in slide-in-from-bottom-1 duration-200"
               >
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span>The page will be refreshed for loading the new content...</span>
@@ -873,7 +914,7 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
             )}
           </div>
 
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 sm:gap-0 flex sm:flex-row justify-between w-full border-t border-slate-100 dark:border-white/5 pt-4 mt-2">
             <Button
               variant="outline"
               onClick={() => {
@@ -883,14 +924,14 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
                 }
               }}
               disabled={isCreatingFolder || isAutoClosing}
-              className="bg-transparent border-border  hover:bg-muted"
+              className="flex-1 bg-transparent border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-foreground text-slate-700 dark:text-foreground/80 text-sm font-semibold rounded-xl h-11"
             >
               Cancel
             </Button>
             <Button
               onClick={handleCreateFolder}
               disabled={isCreatingFolder || isAutoClosing || !folderName.trim()}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600  border-0"
+              className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 border-0 text-white font-semibold shadow-lg shadow-blue-500/10 rounded-xl h-11"
             >
               {isCreatingFolder ? (
                 <>
