@@ -126,7 +126,7 @@ export default function AuthPage() {
     const stepParam = searchParams.get("step")
     if (modeParam === "signup") {
       setMode("signup"); setStep(1)
-      if (stepParam === "name" || stepParam === "name-phone") setAuthStep("name")
+      if (stepParam === "name" || stepParam === "name-phone") setAuthStep("otp")
     } else { setMode("login") }
   }, [searchParams])
 
@@ -184,17 +184,48 @@ export default function AuthPage() {
     const handleAuthFlow = async () => {
       const stepParam = searchParams.get("step"); const modeParam = searchParams.get("mode")
       if ((stepParam === "name" || stepParam === "name-phone") && modeParam === "signup" && !googleUserData && !otpSentRef.current) {
-        otpSentRef.current = true; const supabase = createBrowserClient()
+        otpSentRef.current = true;
+        // Clean URL to prevent multiple OTP sends on page refresh, navigation, or clicking "Go back"
+        router.replace('/auth?mode=signup')
+        const supabase = createBrowserClient()
         const { data: { session } } = await supabase.auth.getSession()
         if (session?.user) {
           const provider = session.user.app_metadata?.provider || 'google'; setOauthProvider(provider as "google" | "github")
-          setGoogleUserData({ email: session.user.email || "", name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || "", picture: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || "", sub: session.user.id })
-          const otp = Math.floor(100000 + Math.random() * 900000).toString(); setGeneratedOtp(otp)
-          try {
-            const response = await fetch('/api/send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: session.user.email, otp, name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'User' }) })
-            const data = await response.json()
-            if (response.ok && data.success) { setAuthStep("otp"); setResendTimer(600); setTimeout(() => addToast('Verification code sent!', 'success'), 0) } else setError('Failed to send verification code.')
-          } catch (err) { setError('Failed to send verification code.') }
+          const email = session.user.email || ""
+          setGoogleUserData({ email, name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || "", picture: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || "", sub: session.user.id })
+          
+          // Use sessionStorage to persist OTP code across page reloads
+          const otpKey = `otp_code_${email}`
+          
+          setAuthStep("otp");
+          
+          // Prevent double-sending due to Next.js remount race conditions
+          const storageKey = 'last_otp_sent_time'
+          const lastSentStr = sessionStorage.getItem(storageKey)
+          const lastSent = lastSentStr ? parseInt(lastSentStr, 10) : 0
+          const now = Date.now()
+
+          if (now - lastSent < 10000) {
+            // Sent within the last 10 seconds (duplicate execution or refresh)
+            let currentOtp = sessionStorage.getItem(otpKey)
+            if (!currentOtp) {
+              currentOtp = Math.floor(100000 + Math.random() * 900000).toString()
+              sessionStorage.setItem(otpKey, currentOtp)
+            }
+            setGeneratedOtp(currentOtp)
+            setResendTimer(600)
+          } else {
+            const newOtp = Math.floor(100000 + Math.random() * 900000).toString()
+            sessionStorage.setItem(otpKey, newOtp)
+            setGeneratedOtp(newOtp)
+            sessionStorage.setItem(storageKey, now.toString())
+            setResendTimer(600)
+            try {
+              const response = await fetch('/api/send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: session.user.email, otp: newOtp, name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'User' }) })
+              const data = await response.json()
+              if (response.ok && data.success) { setTimeout(() => addToast('Verification code sent!', 'success'), 0) } else setError('Failed to send verification code.')
+            } catch (err) { setError('Failed to send verification code.') }
+          }
           setMode("signup"); setStep(1)
         }
       }
@@ -229,7 +260,13 @@ export default function AuthPage() {
   }
 
   const handleStepBack = () => {
-    if (authStep === "otp") { setAuthStep("google"); setGoogleUserData(null); setOtpCode(""); setGeneratedOtp(""); otpSentRef.current = false }
+    if (authStep === "otp") {
+      if (googleUserData?.email) {
+        sessionStorage.removeItem(`otp_sent_${googleUserData.email}`)
+        sessionStorage.removeItem(`otp_code_${googleUserData.email}`)
+      }
+      setAuthStep("google"); setGoogleUserData(null); setOtpCode(""); setGeneratedOtp(""); otpSentRef.current = false
+    }
     else if (authStep === "name") { setAuthStep("google"); setGoogleUserData(null) }
     else if (authStep === "specialization") setAuthStep("name")
     else if (authStep === "password") setAuthStep("specialization")
@@ -243,7 +280,12 @@ export default function AuthPage() {
 
   const handleResendOtp = async () => {
     if (!googleUserData?.email || resendTimer > 0) return
-    const otp = Math.floor(100000 + Math.random() * 900000).toString(); setGeneratedOtp(otp); setOtpCode(""); setIsLoading(true)
+    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    
+    // Update stored code
+    sessionStorage.setItem(`otp_code_${googleUserData.email}`, otp)
+    
+    setGeneratedOtp(otp); setOtpCode(""); setIsLoading(true)
     try {
       const response = await fetch('/api/send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: googleUserData.email, otp, name: googleUserData.name }) })
       const data = await response.json()
@@ -284,7 +326,7 @@ export default function AuthPage() {
   if (!mounted) return null
 
   return (
-    <div className="-mt-24 -mb-12 h-screen bg-background text-foreground selection:bg-primary/30 relative overflow-hidden font-sans">
+    <div className="min-h-[100dvh] w-full bg-background text-foreground selection:bg-primary/30 relative overflow-hidden font-sans flex flex-col">
       {/* Dynamic Aura Background */}
       <motion.div 
         className="absolute inset-0 z-0 pointer-events-none"
@@ -295,15 +337,15 @@ export default function AuthPage() {
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.05] dark:opacity-[0.02]" />
       </motion.div>
 
-      <div className="container relative z-10 h-full flex flex-col px-4 pt-12 pb-12">
-        {/* Top Branding Anchor */}
+      <div className="flex-1 w-full flex flex-col items-center justify-center relative z-10 px-4 py-20">
+        {/* Top Branding Anchor - Absolutely Positioned */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between w-full mb-8 relative z-20"
+          className="absolute top-6 lg:top-8 left-4 right-4 lg:left-8 lg:right-8 flex items-center justify-between z-50 pointer-events-none"
         >
           <div className="flex-1" />
-          <Link href="/" className="flex items-center gap-2 font-bold group focus:outline-none">
+          <Link href="/" className="flex items-center gap-2 font-bold group focus:outline-none pointer-events-auto">
             <div className="relative size-9 rounded-full bg-primary flex items-center justify-center overflow-hidden">
               <Image 
                 src="/images/chameleon.png" 
@@ -315,7 +357,7 @@ export default function AuthPage() {
             </div>
             <span className="text-xl rock-salt group-hover:text-primary transition-colors">Chameleon</span>
           </Link>
-          <div className="flex-1 flex justify-end">
+          <div className="flex-1 flex justify-end pointer-events-auto">
             <Button 
               variant="ghost" 
               size="icon" 
@@ -327,7 +369,7 @@ export default function AuthPage() {
           </div>
         </motion.div>
 
-        <div className="flex-1 flex flex-col items-center justify-center">
+        <div className="w-full max-w-xl mx-auto flex flex-col items-center text-center">
           <AnimatePresence mode="wait">
           {/* STATE 0: Welcome Splash */}
           {step === 0 && authStep === "google" && (
@@ -535,7 +577,9 @@ export default function AuthPage() {
                       <button type="button" onClick={handleOtpVerification} disabled={otpCode.length !== 6} className="flex items-center justify-center gap-3 w-full group p-5 rounded-[32px] bg-foreground text-background hover:scale-[1.02] transition-all font-black italic tracking-tighter text-xl disabled:opacity-50">Verify Code <ArrowRight className="size-5" /></button>
                       <div className="flex items-center justify-between">
                         <button type="button" onClick={handleStepBack} className="text-neutral-500 hover:text-foreground transition-colors inline-flex items-center gap-2 text-sm font-bold"><ArrowLeft className="size-4" /> Go back</button>
-                        <button type="button" onClick={handleResendOtp} disabled={resendTimer > 0} className={`text-sm font-bold ${resendTimer > 0 ? 'text-neutral-400' : 'text-primary hover:text-primary/80'} transition-colors`}>{resendTimer > 0 ? `Resend in ${Math.floor(resendTimer / 60)}:${(resendTimer % 60).toString().padStart(2, '0')}` : "Resend code"}</button>
+                        {resendTimer === 0 && (
+                          <button type="button" onClick={handleResendOtp} className="text-sm font-bold text-primary hover:text-primary/80 transition-colors">Resend code</button>
+                        )}
                       </div>
                     </div>
                   )}
