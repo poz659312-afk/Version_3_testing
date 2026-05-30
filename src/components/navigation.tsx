@@ -23,7 +23,6 @@ const navItems = [
   { name: "Home", href: "/", icon: Home },
   { name: "Store", href: "/store", icon: ShoppingBag },
   { name: "Specializations", href: "#", icon: SquareUserRound },
-  { name: "Guide", href: "/manual", icon: BookOpen },
   { name: "About", href: "/about", icon: HelpCircle  },
   { name: "Explo", href: "/explo", icon: BrainCircuit, target: "_blank" }
 ]
@@ -318,23 +317,25 @@ export default function Navigation() {
           <div className="container h-full mx-auto px-4 md:px-6 relative">
             <div className="flex items-center justify-between h-full">
               {/* Logo */}
-              <div className="flex items-center gap-3 hover:scale-105 transition-transform duration-200">
-              <div className="rounded-full bg-primary">
-              <div className="relative">
-                <Image
-                  src="/images/chameleon.png"
-                  alt="Logo"
-                  width={40}
-                  height={40}
-                  className="object-cover rounded-full"
-                />
+              <div className="flex items-center gap-3">
+                <Link href="/" className="flex items-center gap-3">
+                  <div className="rounded-full bg-primary">
+                    <div className="relative">
+                      <Image
+                        src="/images/chameleon.png"
+                        alt="Logo"
+                        width={40}
+                        height={40}
+                        className="object-cover rounded-full invert dark:invert-0"
+                      />
+                    </div>
+                  </div>
+                  <span className="text-xl font-bold hidden sm:inline-block md:inline-block">Chameleon</span>
+                </Link>
+                <div className="hidden md:block">
+                  <NavClock />
+                </div>
               </div>
-              </div>
-              <span className="text-xl font-bold hidden sm:inline-block md:inline-block">Chameleon</span>
-              <div className="hidden md:block">
-                <NavClock />
-              </div>
-            </div>
 
             {/* Mobile Clock (Centered) */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:hidden pointer-events-none">
