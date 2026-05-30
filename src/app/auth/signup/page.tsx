@@ -115,6 +115,7 @@ export default function SignUpPage() {
     const stepParam = searchParams.get("step")
     if (stepParam === "name" || stepParam === "name-phone") {
       setStep(1)
+      setAuthStep("otp")
     }
   }, [searchParams])
 
@@ -128,6 +129,8 @@ export default function SignUpPage() {
       const stepParam = searchParams.get("step")
       if ((stepParam === "name" || stepParam === "name-phone") && !googleUserData && !otpSentRef.current) {
         otpSentRef.current = true
+        // Clean URL to prevent multiple OTP sends on page refresh, navigation, or clicking "Go back"
+        router.replace('/auth/signup')
         const supabase = createBrowserClient()
         const { data: { session } } = await supabase.auth.getSession()
         if (session?.user) {
@@ -139,17 +142,41 @@ export default function SignUpPage() {
             picture: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || "",
             sub: session.user.id,
           })
-          const otp = Math.floor(100000 + Math.random() * 900000).toString()
-          setGeneratedOtp(otp)
-          try {
-            const response = await fetch('/api/send-otp', {
-              method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: session.user.email, otp, name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'User' })
-            })
-            const data = await response.json()
-            if (response.ok && data.success) { setAuthStep("otp"); setResendTimer(600); setTimeout(() => addToast('Verification code sent!', 'success'), 0) }
-            else setError('Failed to send verification code.')
-          } catch (err) { setError('Failed to send verification code.') }
+          const otpKey = `otp_code_${session.user.email}`
+
+          setAuthStep("otp");
+          
+          // Prevent double-sending due to Next.js remount race conditions
+          const storageKey = 'last_otp_sent_time'
+          const lastSentStr = sessionStorage.getItem(storageKey)
+          const lastSent = lastSentStr ? parseInt(lastSentStr, 10) : 0
+          const now = Date.now()
+
+          if (now - lastSent < 10000) {
+            // Sent within the last 10 seconds (duplicate execution or refresh)
+            let currentOtp = sessionStorage.getItem(otpKey)
+            if (!currentOtp) {
+              currentOtp = Math.floor(100000 + Math.random() * 900000).toString()
+              sessionStorage.setItem(otpKey, currentOtp)
+            }
+            setGeneratedOtp(currentOtp)
+            setResendTimer(600)
+          } else {
+            const newOtp = Math.floor(100000 + Math.random() * 900000).toString()
+            sessionStorage.setItem(otpKey, newOtp)
+            setGeneratedOtp(newOtp)
+            sessionStorage.setItem(storageKey, now.toString())
+            setResendTimer(600)
+            try {
+              const response = await fetch('/api/send-otp', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: session.user.email, otp: newOtp, name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'User' })
+              })
+              const data = await response.json()
+              if (response.ok && data.success) { setTimeout(() => addToast('Verification code sent!', 'success'), 0) }
+              else setError('Failed to send verification code.')
+            } catch (err) { setError('Failed to send verification code.') }
+          }
           setStep(1)
         }
       }
@@ -487,7 +514,9 @@ export default function SignUpPage() {
                       <button type="button" onClick={handleOtpVerification} disabled={otpCode.length !== 6} className="flex items-center justify-center gap-3 w-full p-4 lg:p-5 rounded-[24px] lg:rounded-[32px] bg-foreground text-background hover:scale-[1.02] transition-all font-black italic tracking-tighter text-lg lg:text-xl disabled:opacity-50 mt-4">Verify Code <ArrowRight className="size-5" /></button>
                       <div className="flex items-center justify-between mt-4">
                         <button type="button" onClick={handleStepBack} className="text-neutral-500 hover:text-foreground transition-colors inline-flex items-center gap-2 text-sm font-bold"><ArrowLeft className="size-4" /> Go back</button>
-                        <button type="button" onClick={handleResendOtp} disabled={resendTimer > 0} className={`text-sm font-bold ${resendTimer > 0 ? 'text-neutral-400' : 'text-primary hover:text-primary/80'} transition-colors`}>{resendTimer > 0 ? `Resend in ${Math.floor(resendTimer / 60)}:${(resendTimer % 60).toString().padStart(2, '0')}` : "Resend code"}</button>
+                        {resendTimer === 0 && (
+                          <button type="button" onClick={handleResendOtp} className="text-sm font-bold text-primary hover:text-primary/80 transition-colors">Resend code</button>
+                        )}
                       </div>
                     </div>
                   )}
