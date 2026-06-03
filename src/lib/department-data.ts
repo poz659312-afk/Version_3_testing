@@ -1971,7 +1971,49 @@ export const departmentData: { [key: string]: Department } = {
                 sections: "https://drive.google.com/drive/folders/149t4EDeg2uQkt97V_m94S6aJYPqCaekY?usp=drive_link",
                 videos: "https://youtube.com/playlist?list=PL7snZ0LSsq3ghVGnrH2n6jIdY40wFrKcl&si=fRZbzfepWYhW7xGJ",
                 summaries: "https://drive.google.com/drive/folders/1KJuTX2s7cXjBiX9al646SbgwfGXRLBXf?usp=drive_link",
-                exams: "https://drive.google.com/drive/folders/1FVBJtarizr-5ZQbTRMZ3CQ5YaQlyusOV?usp=drive_link"
+                exams: "https://drive.google.com/drive/folders/1FVBJtarizr-5ZQbTRMZ3CQ5YaQlyusOV?usp=drive_link",
+                quizzes: [
+                  {
+                    id: "CISM_001",
+                    name: "Quiz 1 : Simulation and Bootstrap Methods",
+                    code: "CISM_001",
+                    duration: "OP",
+                    questions: 20,
+                    jsonFile: "/quizzes/computing-intensive-statistical-methods/CISM_001.json"
+                  },
+                  {
+                    id: "CISM_002",
+                    name: "Quiz 2 : Jackknife Resampling and Estimation",
+                    code: "CISM_002",
+                    duration: "OP",
+                    questions: 20,
+                    jsonFile: "/quizzes/computing-intensive-statistical-methods/CISM_002.json"
+                  },
+                  {
+                    id: "CISM_003",
+                    name: "Quiz 3 : Empirical Distribution Function & Plug-in Principle",
+                    code: "CISM_003",
+                    duration: "OP",
+                    questions: 20,
+                    jsonFile: "/quizzes/computing-intensive-statistical-methods/CISM_003.json"
+                  },
+                  {
+                    id: "CISM_004",
+                    name: "Quiz 4 : Parameter Estimation (MME, MLE) & EM Algorithm",
+                    code: "CISM_004",
+                    duration: "OP",
+                    questions: 20,
+                    jsonFile: "/quizzes/computing-intensive-statistical-methods/CISM_004.json"
+                  },
+                  {
+                    id: "CISM_005",
+                    name: "Quiz 5 : Hypothesis Testing & Likelihood Ratio Tests (LRT)",
+                    code: "CISM_005",
+                    duration: "OP",
+                    questions: 20,
+                    jsonFile: "/quizzes/computing-intensive-statistical-methods/CISM_005.json"
+                  }
+                ]
               },
             },
             // {
@@ -2000,6 +2042,104 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1trcmqKcpKAGVRNmGBl2ROkGeoete6nkO?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1HalJgXrhKyBuFRHGj0Z9WZiUQWr7GlmJ?usp=drive_link",
+                quizzes: [
+                  {
+                    id: "ADV_001",
+                    name: "Lecture 1: Introduction",
+                    code: "ADV_001",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/AdvancedDB/ADV_001.json"
+                  },
+                  {
+                    id: "ADV_002",
+                    name: "Lecture 2: Transaction 1",
+                    code: "ADV_002",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/AdvancedDB/ADV_002.json"
+                  },
+                  {
+                    id: "ADV_003",
+                    name: "Lecture 3: Transaction 2",
+                    code: "ADV_003",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/AdvancedDB/ADV_003.json"
+                  },
+                  {
+                    id: "ADV_004",
+                    name: "Lecture 3: Concurrency",
+                    code: "ADV_004",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/AdvancedDB/ADV_004.json"
+                  },
+                  {
+                    id: "ADV_005",
+                    name: "Lecture 4: Lock",
+                    code: "ADV_005",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/AdvancedDB/ADV_005.json"
+                  },
+                  {
+                    id: "ADV_006",
+                    name: "Lecture 5: Modeling",
+                    code: "ADV_006",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/AdvancedDB/ADV_006.json"
+                  },
+                  {
+                    id: "ADV_007",
+                    name: "Lecture 6: Recovery",
+                    code: "ADV_007",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/AdvancedDB/ADV_007.json"
+                  },
+                  {
+                    id: "ADV_008",
+                    name: "Lecture 8: NoSQL",
+                    code: "ADV_008",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/AdvancedDB/ADV_008.json"
+                  },
+                  {
+                    id: "ADV_009",
+                    name: "Lecture 9: Query Optimization 1",
+                    code: "ADV_009",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/AdvancedDB/ADV_009.json"
+                  },
+                  {
+                    id: "ADV_010",
+                    name: "Lecture 10: Query Optimization 2",
+                    code: "ADV_010",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/AdvancedDB/ADV_010.json"
+                  },
+                  {
+                    id: "ADV_STAR1",
+                    name: "Review Quiz 1 (Standard)",
+                    code: "ADV_STAR1",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/AdvancedDB/ADV_STAR1.json"
+                  },
+                  {
+                    id: "ADV_STAR2",
+                    name: "Review Quiz 2 (Advanced)",
+                    code: "ADV_STAR2",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/AdvancedDB/ADV_STAR2.json"
+                  }
+                ]
               },
             },
             // {
