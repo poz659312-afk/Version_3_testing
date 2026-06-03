@@ -1506,7 +1506,10 @@ export default function QuizInterface({
         <div className="pt-24 pb-8" />
 
         {/* Question Card */}
-        <div className="relative z-10 px-4 md:px-6 flex-1 flex items-center justify-center">
+        <div className={cn(
+          "relative px-4 md:px-6 flex-1 flex items-center justify-center",
+          showAnswer && selectedMode === "instant" ? "z-[9999]" : "z-10"
+        )}>
           <div className="w-full max-w-4xl">
             <AnimatePresence mode="wait">
               <motion.div
@@ -1583,7 +1586,7 @@ export default function QuizInterface({
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         className={cn(
-                          "mt-6 p-5 rounded-[1.8rem] border-2 border-b-[5px] flex flex-col md:flex-row gap-5 items-start md:items-center relative overflow-hidden backdrop-blur-xl",
+                          "mt-6 p-5 rounded-[1.8rem] border-2 border-b-[5px] flex flex-col md:flex-row gap-5 items-start md:items-center relative z-[9999] overflow-hidden backdrop-blur-xl",
                           isCorrect
                             ? "bg-green-500/10 dark:bg-green-950/20 border-green-500/30 text-green-700 dark:text-green-400 border-b-green-600/40"
                             : "bg-red-500/10 dark:bg-red-950/20 border-red-500/30 text-red-700 dark:text-red-400 border-b-red-600/40"
@@ -1645,10 +1648,10 @@ export default function QuizInterface({
                         </div>
 
                         {/* Next Button inside Feedback (Instant Mode) */}
-                        <div className="ml-auto mt-4 md:mt-0">
+                        <div className="ml-auto mt-4 md:mt-0 relative z-[9999]">
                           <Button
                             onClick={nextQuestion}
-                            className="px-6 py-2.5 md:px-8 text-sm md:text-base font-bold rounded-xl shadow-sm transition-all bg-foreground text-background hover:scale-105 active:scale-95"
+                            className="px-6 py-2.5 md:px-8 text-sm md:text-base font-bold rounded-xl shadow-sm transition-all bg-foreground text-background hover:scale-105 active:scale-95 relative z-[9999]"
                           >
                             {currentQuestion === questions.length - 1 ? "Finish" : "Continue"}
                             <ArrowRight className="w-4 h-4 ml-2" />
