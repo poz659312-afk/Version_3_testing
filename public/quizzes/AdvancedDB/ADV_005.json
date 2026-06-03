@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "What is a 'Lock' in database concurrency control?",
+    "options": [
+      "A physical access key used for the DBMS database file",
+      "A variable describing lock state of a specific database item",
+      "A validation check to ensure primary keys are unique",
+      "The ARIES log record containing committed transactions"
+    ],
+    "answer": "A variable describing lock state of a specific database item",
+    "explanation": "A lock is a variable associated with a data item in the database, describing the status of that item (such as whether it is read-locked or write-locked) to synchronize concurrent access.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "Which of the following is true about binary locks?",
+    "options": [
+      "A binary lock has three states: read, write, and unlocked",
+      "A binary lock has two states: locked (1) and unlocked (0)",
+      "Binary locks automatically guarantee schedule serializability",
+      "Binary locks are only compatible with read-only operations"
+    ],
+    "answer": "A binary lock has two states: locked (1) and unlocked (0)",
+    "explanation": "Binary locks have only two states: 1 (locked) and 0 (unlocked). They enforce simple mutual exclusion but do not automatically guarantee serializability unless a protocol like 2PL is used.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "What are the states of a multiple-mode Shared/Exclusive (read/write) lock?",
+    "options": [
+      "shared-locked, exclusive-locked, and unlocked",
+      "locked-1, locked-0, and active-state-mode",
+      "active, partially committed, and aborted-state",
+      "growing-phase, shrinking-phase, and committed-state"
+    ],
+    "answer": "shared-locked, exclusive-locked, and unlocked",
+    "explanation": "Shared/Exclusive (read/write) locks have three states: shared-locked (read-locked, allowing concurrent reads), exclusive-locked (write-locked, allowing only one writer and no readers), and unlocked.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "According to the lock-compatibility matrix for shared/exclusive locks, which request is allowed on an item that is currently read_locked (shared)?",
+    "options": [
+      "A read_lock (shared) request by another transaction in system",
+      "A write_lock (exclusive) request by another transaction in system",
+      "Both read_lock and write_lock requests by other transactions",
+      "No lock requests are allowed until the lock has been released"
+    ],
+    "answer": "A read_lock (shared) request by another transaction in system",
+    "explanation": "Read locks are compatible with other read locks. Multiple transactions can hold a shared (read) lock on the same data item simultaneously, but a write (exclusive) lock is blocked.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "Which request is compatible if a transaction holds a write_lock (exclusive) on a database item X?",
+    "options": [
+      "A read_lock request by another transaction in the system",
+      "A write_lock request by another transaction in the system",
+      "No lock request on X by any other transaction is compatible",
+      "An upgrade lock request by another transaction in the system"
+    ],
+    "answer": "No lock request on X by any other transaction is compatible",
+    "explanation": "An exclusive (write) lock is incompatible with any other lock. If a transaction holds a write lock on X, no other transaction can read or write X until the lock is released.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "Why do simple binary locks or shared/exclusive locks fail to guarantee serializability on their own?",
+    "options": [
+      "They release locks too early, leading to bad interleaving",
+      "They automatically cause wait-die deadlock starvation errors",
+      "They bypass the write-ahead logging recovery protocols entirely",
+      "They require too many dirty page table updates in the cache"
+    ],
+    "answer": "They release locks too early, leading to bad interleaving",
+    "explanation": "If a transaction locks and unlocks items without restrictions, operations from different transactions can interleave in a way that creates a cycle in the precedence graph, violating serializability.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "What is the defining rule of the Two-Phase Locking (2PL) protocol?",
+    "options": [
+      "All write locks must be acquired in the first phase of transactions",
+      "Transactions must obtain all locks before reading or writing data",
+      "All lock acquisitions must precede any lock releases in transaction",
+      "Locks can only be released after the transaction has committed"
+    ],
+    "answer": "All lock acquisitions must precede any lock releases in transaction",
+    "explanation": "Two-Phase Locking (2PL) requires that no transaction can acquire a new lock after it has released any lock. This splits the transaction into a growing phase (locking only) and a shrinking phase (unlocking only).",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "What happens during the 'growing phase' of a 2PL transaction?",
+    "options": [
+      "The transaction can acquire new locks and release old locks",
+      "The transaction can acquire new locks but cannot release any",
+      "The transaction can only upgrade read locks to write locks",
+      "The transaction releases all active locks and commits data"
+    ],
+    "answer": "The transaction can acquire new locks but cannot release any",
+    "explanation": "During the growing (first) phase of a 2PL transaction, the transaction can obtain new locks of any mode, but is prohibited from releasing any locks.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "What is 'lock conversion' in 2PL?",
+    "options": [
+      "Converting a database table lock into a page lock on disk",
+      "Upgrading during growing phase, or degrading during shrinking",
+      "Replacing a timestamp with a lock in the wait-for graph",
+      "Moving a lock from a committed transaction to an active one"
+    ],
+    "answer": "Upgrading during growing phase, or degrading during shrinking",
+    "explanation": "Lock conversion allows upgrading a shared lock to an exclusive lock (must occur in the growing phase) or degrading an exclusive lock to a shared lock (must occur in the shrinking phase).",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "Which variation of 2PL requires a transaction to acquire all of its locks before it starts executing, and if any lock cannot be obtained, the transaction must release its obtained locks and wait?",
+    "options": [
+      "Basic 2PL protocol that allows locks dynamically",
+      "Conservative (Static) 2PL protocol locking upfront",
+      "Strict 2PL protocol holding exclusive write locks",
+      "Rigorous 2PL protocol holding all active locks"
+    ],
+    "answer": "Conservative (Static) 2PL protocol locking upfront",
+    "explanation": "Conservative (or Static) 2PL requires a transaction to declare and lock all its required data items in shared or exclusive mode before execution starts, preventing dynamic locking.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "What is the primary advantage of Conservative 2PL?",
+    "options": [
+      "It is completely deadlock-free",
+      "It maximizes transaction concurrency",
+      "It is the easiest to implement in commercial databases",
+      "It allows lock downgrading during the growing phase"
+    ],
+    "answer": "It is completely deadlock-free",
+    "explanation": "Because a transaction in Conservative 2PL acquires all its locks at once (or waits without holding any locks), it can never form a circular wait condition, making the protocol deadlock-free.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "Which protocol variation of 2PL requires that a transaction does not release any of its exclusive (write) locks until it has committed or aborted?",
+    "options": [
+      "Basic 2PL protocol that allows locks dynamically",
+      "Conservative 2PL protocol locking upfront",
+      "Strict 2PL protocol holding write locks",
+      "Rigorous 2PL protocol holding all locks"
+    ],
+    "answer": "Strict 2PL protocol holding write locks",
+    "explanation": "Strict 2PL requires that a transaction holds all its exclusive (write) locks until it commits or aborts. Shared locks can be released dynamically in the shrinking phase.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "Which variation of 2PL requires that a transaction holds ALL of its locks (both shared and exclusive) until it commits or aborts?",
+    "options": [
+      "Basic 2PL protocol that allows locks dynamically",
+      "Conservative 2PL protocol locking upfront",
+      "Strict 2PL protocol holding write locks",
+      "Rigorous 2PL protocol holding all locks"
+    ],
+    "answer": "Rigorous 2PL protocol holding all locks",
+    "explanation": "Rigorous 2PL is more restrictive than Strict 2PL. It requires that all locks (both shared and exclusive) be held by the transaction until it commits or aborts, ensuring serialization in commit order.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "How does Rigorous 2PL benefit implementation compared to Strict 2PL?",
+    "options": [
+      "It makes the transaction deadlock-free during execution",
+      "It serializes transactions in commit order and simplifies lock release",
+      "It allows transactions to execute without using a system catalog",
+      "It eliminates the shrinking phase of locking completely"
+    ],
+    "answer": "It serializes transactions in commit order and simplifies lock release",
+    "explanation": "Rigorous 2PL is simpler to implement because all locks are released at once at commit/abort time, and it ensures that the conflict serialization order is identical to the commit order of the transactions.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "In deadlock prevention, how does the 'Wait-Die' scheme decide what happens when a transaction $T_i$ requests a lock held by $T_j$?",
+    "options": [
+      "If $T_i$ is older, it waits; if younger, it dies (aborts)",
+      "If $T_i$ is older, it wounds $T_j$; if younger, it waits",
+      "If $T_i$ is older, both abort; if younger, both wait",
+      "$T_i$ always preempts $T_j$ regardless of timestamp"
+    ],
+    "answer": "If $T_i$ is older, it waits; if younger, it dies (aborts)",
+    "explanation": "Wait-Die is non-preemptive. If the requesting transaction $T_i$ is older (smaller timestamp) than the holder $T_j$, $T_i$ is allowed to wait. If $T_i$ is younger (larger timestamp) than $T_j$, it dies (aborts and restarts).",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "In deadlock prevention, how does the 'Wound-Wait' scheme decide what happens when $T_i$ requests a lock held by $T_j$?",
+    "options": [
+      "If $T_i$ is older, it waits; if younger, it dies (aborts)",
+      "If $T_i$ is older, it wounds (aborts) $T_j$; if younger, it waits",
+      "If $T_i$ is older, it dies; if younger, it wounds $T_j$",
+      "If $T_i$ is younger, it wounds $T_j$ immediately"
+    ],
+    "answer": "If $T_i$ is older, it wounds (aborts) $T_j$; if younger, it waits",
+    "explanation": "Wound-Wait is preemptive. If the requesting transaction $T_i$ is older than the holder $T_j$, $T_i$ wounds (aborts and preempts) $T_j$ to steal the lock. If $T_i$ is younger, it is allowed to wait.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "Which of the following is true about Wait-Die and Wound-Wait schemes?",
+    "options": [
+      "Wound-Wait leads to more rollbacks than Wait-Die",
+      "Wait-Die is a preemptive scheme, whereas Wound-Wait is non-preemptive",
+      "Both schemes use transaction start times as timestamps and are deadlock-free",
+      "Wait-Die allows younger transactions to wound older ones in the WFG"
+    ],
+    "answer": "Both schemes use transaction start times as timestamps and are deadlock-free",
+    "explanation": "Both schemes rely on unique transaction timestamps (assigned at startup) to define a strict order. Because they only allow waiting in one direction (older waiting for younger, or vice versa), they prevent circular wait (deadlocks).",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "What does a directed edge $T_i \\to T_j$ in a Wait-for Graph (WFG) indicate?",
+    "options": [
+      "That $T_i$ has committed before $T_j$ has started",
+      "That transaction $T_i$ is waiting for a lock held by $T_j$",
+      "That $T_i$ has written a dirty page that $T_j$ read",
+      "That $T_i$ is younger than $T_j$ in timestamp ordering"
+    ],
+    "answer": "That transaction $T_i$ is waiting for a lock held by $T_j$",
+    "explanation": "In a Wait-for Graph, a directed edge $T_i \\to T_j$ shows that transaction $T_i$ is blocked and waiting to acquire a lock currently held by transaction $T_j$.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "How is a deadlock detected in a system that uses a Wait-for Graph?",
+    "options": [
+      "When the graph has no nodes in memory",
+      "When a cycle is detected in the directed graph",
+      "When a transaction is aborted by a wound request",
+      "When active locks exceed memory buffer size"
+    ],
+    "answer": "When a cycle is detected in the directed graph",
+    "explanation": "A deadlock exists if and only if the directed Wait-for Graph (WFG) contains a cycle, representing a circular dependency where transactions are waiting for each other.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "What is a transaction timestamp in the Timestamp Ordering (TO) protocol?",
+    "options": [
+      "The physical system clock value at transaction commit",
+      "A unique identifier based on start time, ordering database operations",
+      "The duration in minutes allocated to the execution plan",
+      "The number of read operations inside a transaction on disk"
+    ],
+    "answer": "A unique identifier based on start time, ordering database operations",
+    "explanation": "A transaction timestamp is a unique identifier (assigned when the transaction begins, such as a logical counter or system clock) that defines the chronological order of transactions.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "In the Basic Timestamp Ordering protocol, what does the variable $W\\_TS(X)$ store?",
+    "options": [
+      "The write lock status of item X in lock table",
+      "The write timestamp of the oldest active transaction",
+      "The largest timestamp of a transaction that wrote X",
+      "The timestamp of the transaction waiting to write X"
+    ],
+    "answer": "The largest timestamp of a transaction that wrote X",
+    "explanation": "The write timestamp $W\\_TS(X)$ records the timestamp of the youngest (most recent) transaction that successfully wrote item X.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "In Basic TO, what happens if transaction $T$ with timestamp $TS(T)$ issues read(X) and $TS(T) < W\\_TS(X)$?",
+    "options": [
+      "The read is executed immediately in buffer cache",
+      "$T$ is allowed to wait until the write commits",
+      "The read is rejected, $T$ is aborted and restarted",
+      "$T$ is upgraded to an exclusive lock in system"
+    ],
+    "answer": "The read is rejected, $T$ is aborted and restarted",
+    "explanation": "If $TS(T) < W\\_TS(X)$, it means a younger transaction (with a larger timestamp) has already written a newer value of X, making $T$'s read request 'too late'. $T$ is aborted and restarted.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "In Basic TO, what happens if transaction $T$ issues write(X) and $TS(T) < R\\_TS(X)$?",
+    "options": [
+      "The write is executed and $W\\_TS(X)$ is updated",
+      "The write is rejected, $T$ is aborted and restarted",
+      "The write is deferred until $R\\_TS(X)$ commits",
+      "The read timestamp is reset to 0 in database"
+    ],
+    "answer": "The write is rejected, $T$ is aborted and restarted",
+    "explanation": "If $TS(T) < R\\_TS(X)$, a younger transaction has already read the older value of X. $T$ writing a new value now would invalidate that younger read. Thus, $T$ is aborted and restarted.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "What is the primary difference between deadlock prevention and deadlock detection?",
+    "options": [
+      "Prevention checks periodically; detection checks continuously",
+      "Prevention avoids deadlocks; detection resolves them after occurrence",
+      "Prevention is for read-only; detection is for update systems",
+      "Prevention is in ARIES; detection is in Cypher matches"
+    ],
+    "answer": "Prevention avoids deadlocks; detection resolves them after occurrence",
+    "explanation": "Deadlock prevention uses static policies (like Conservative 2PL or Wait-Die/Wound-Wait) to guarantee deadlocks never happen. Detection allows deadlocks to occur, periodically checking wait-for graphs and aborting a victim to resolve them.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "Why could a transaction timestamp based on physical real-time system clocks be problematic in distributed systems?",
+    "options": [
+      "Physical clocks are not unique and synchronization errors can violate serializability",
+      "Real-time clocks consume too much CPU cache space",
+      "Real-time clocks are incompatible with logical counters",
+      "Real-time clocks do not permit transaction rollback"
+    ],
+    "answer": "Physical clocks are not unique and synchronization errors can violate serializability",
+    "explanation": "Physical clocks on different machines can drift and are hard to keep perfectly synchronized. If clock drift occurs, a transaction on one machine might get an incorrect timestamp order relative to another machine, violating consistency.",
+    "image": null
+  }
+]

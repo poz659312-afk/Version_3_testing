@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "What is the primary function of the parser in DBMS query processing?",
+    "options": [
+      "It compiles logical algebraic trees and generates machine binary instructions",
+      "It checks query syntax, validates identifiers, and creates an algebraic tree",
+      "It schedules transactions, allocates memory cache, and sets row lock bits",
+      "It updates database catalogs, flushes dirty pages, and builds index keys"
+    ],
+    "answer": "It checks query syntax, validates identifiers, and creates an algebraic tree",
+    "explanation": "The parser checks SQL syntax, verifies table and attribute names against the system catalog, and translates the query into an internal logical representation (query tree).",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "In query execution modes, what is the difference between Row mode and Batch mode execution?",
+    "options": [
+      "Row mode uses parallel nodes; Batch mode uses a central server setup",
+      "Row mode processes one tuple at a time; Batch mode processes block vectors",
+      "Row mode requires write-ahead logs; Batch mode bypasses disk log flushing",
+      "Row mode uses procedural cursor loops; Batch mode uses SQL subqueries"
+    ],
+    "answer": "Row mode processes one tuple at a time; Batch mode processes block vectors",
+    "explanation": "Row mode processes records one-by-one. Batch mode processes collections of records (typically 900+ rows in vectors) to minimize CPU instruction overhead and leverage cache/SIMD capabilities.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "What does a 'Physical Query Plan' specify in contrast to a 'Logical Query Plan'?",
+    "options": [
+      "Physical plan uses algebra; Logical plan uses SQL declarative queries",
+      "Physical plan specifies algorithms and execution order; Logical plan doesn't",
+      "Physical plan is stored in catalogs; Logical plan resides in RAM buffers",
+      "Physical plan is for OLAP databases; Logical plan is for OLTP databases"
+    ],
+    "answer": "Physical plan specifies algorithms and execution order; Logical plan doesn't",
+    "explanation": "A logical query plan only specifies relational algebra expressions. A physical query plan details specific algorithms (e.g., hash join, index scan) and execution order.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "What is the block transfer cost of performing a linear file scan (A1) on a relation with $b$ blocks to select a record on a non-key attribute?",
+    "options": [
+      "Cost = $\\log_2 b$ block transfers",
+      "Cost = $b$ block transfers",
+      "Cost = $b / 2$ block transfers",
+      "Cost = $1$ block transfer"
+    ],
+    "answer": "Cost = $b$ block transfers",
+    "explanation": "A linear scan on a non-key attribute must scan all blocks since multiple matching records could reside anywhere, yielding a cost of $b$ block transfers.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "If a relation is sorted on a non-key attribute, and we select records satisfying an equality condition, what is the block transfer cost using binary search (A2) where the matching records occupy $b_s$ blocks?",
+    "options": [
+      "Cost = $b$ block transfers",
+      "Cost = $\\log_2 b + b_s - 1$ block transfers",
+      "Cost = $\\log_2 b$ block transfers",
+      "Cost = $b_s$ block transfers"
+    ],
+    "answer": "Cost = $\\log_2 b + b_s - 1$ block transfers",
+    "explanation": "Binary search takes $\\log_2 b$ blocks to find the first match. Since the relation is sorted, subsequent matching records reside in consecutive blocks, adding $b_s - 1$ blocks.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "What is the average cost (in block transfers) to retrieve a single record satisfying an equality selection on a key attribute using a primary B+ tree index of height $h$?",
+    "options": [
+      "Cost = $h$ block transfers",
+      "Cost = $h + 1$ block transfers",
+      "Cost = $1$ block transfer",
+      "Cost = $b$ block transfers"
+    ],
+    "answer": "Cost = $h + 1$ block transfers",
+    "explanation": "Traversing the B+ tree from root to leaf takes $h$ transfers. Retrieving the actual record from the data block takes $1$ additional block transfer, yielding $h + 1$.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "What is the primary constraint of using an Indexed Nested-Loop Join ($r \\bowtie s$)?",
+    "options": [
+      "It requires both relations to be sorted on the join attribute",
+      "It requires an index to exist on the inner relation join attribute",
+      "It requires a hash function with a very low collision rate",
+      "It requires that the outer relation fits completely in cache memory"
+    ],
+    "answer": "It requires an index to exist on the inner relation join attribute",
+    "explanation": "An Indexed Nested-Loop Join looks up matching tuples in the inner relation $s$ for each tuple in the outer relation $r$. This requires an index on $s$'s join attribute.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "What is the block transfer cost of a standard Nested-Loop Join ($r \\bowtie s$) if relation $r$ is the outer relation, $s$ is the inner relation, $b_r$ and $b_s$ are the block counts, and $f_r$ is the number of tuples in $r$?",
+    "options": [
+      "Cost = $b_r + b_s$ block transfers",
+      "Cost = $b_r + f_r \\times b_s$ block transfers",
+      "Cost = $b_r \\times b_s + f_r$ block transfers",
+      "Cost = $b_r \\times b_s$ block transfers"
+    ],
+    "answer": "Cost = $b_r + f_r \\times b_s$ block transfers",
+    "explanation": "The outer relation is read once ($b_r$ blocks). For each of the $f_r$ tuples in the outer relation, the entire inner relation ($b_s$ blocks) is scanned, giving $b_r + f_r \\times b_s$.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "How does Block Nested-Loop Join reduce the cost of a join operation compared to standard tuple-level Nested-Loop Join?",
+    "options": [
+      "It normalizes relation schemas during query compilation",
+      "It scans the inner relation per outer block, not per outer tuple",
+      "It builds a hash index on the outer relation primary key",
+      "It automatically sorts both relations before executing joins"
+    ],
+    "answer": "It scans the inner relation per outer block, not per outer tuple",
+    "explanation": "Block Nested-Loop Join processes the outer relation block-by-block, scanning the inner relation once for each block of the outer relation, rather than once for each tuple.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "What is the block transfer cost of a Block Nested-Loop Join ($r \\bowtie s$) assuming $b_r$ and $b_s$ blocks, with $r$ as the outer relation, and the buffer allocation fits only one block of the outer relation?",
+    "options": [
+      "Cost = $b_r + b_s$ block transfers",
+      "Cost = $b_r + b_r \\times b_s$ block transfers",
+      "Cost = $b_r \\times b_s$ block transfers",
+      "Cost = $b_r + b_s + f_r$ block transfers"
+    ],
+    "answer": "Cost = $b_r + b_r \\times b_s$ block transfers",
+    "explanation": "With 1 block for outer relation $r$ and 1 for inner relation $s$, we read $r$ once ($b_r$). For each of the $b_r$ blocks of $r$, we scan $s$ ($b_s$ blocks), costing $b_r + b_r \\times b_s$.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "Under what condition is the Merge-Join algorithm highly efficient?",
+    "options": [
+      "When the join condition contains disjunctions of inequality checks",
+      "When relations are sorted on the join attributes or have sorted indexes",
+      "When relations are key-value store maps with consistent hashing rings",
+      "When the hash function has zero collisions across the partitions"
+    ],
+    "answer": "When relations are sorted on the join attributes or have sorted indexes",
+    "explanation": "Merge-Join is highly efficient when input relations are sorted on the join attributes. It can join them in a single pass without extra sorting or hashing.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "What are the two phases of the Hash-Join algorithm?",
+    "options": [
+      "Growing phase and Shrinking phase of lock protocol",
+      "Partition (build) phase and Probe (matching) phase",
+      "Analysis pass and Redo pass of ARIES algorithm",
+      "Linear search phase and Index scan phase of parser"
+    ],
+    "answer": "Partition (build) phase and Probe (matching) phase",
+    "explanation": "Hash-Join consists of a partition (or build) phase where input relations are partitioned using a hash function, and a probe phase where partitions are matched.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "What happens during the Partition (build) phase of a Hash-Join?",
+    "options": [
+      "It checks active wait-for graphs for deadlock cycles",
+      "It groups tuples into buckets using a join-attribute hash",
+      "It reorders joins into left-deep trees in optimizer",
+      "It logs active transactions at database checkpoint times"
+    ],
+    "answer": "It groups tuples into buckets using a join-attribute hash",
+    "explanation": "During partition, a hash function is applied to join attributes of both relations to distribute their tuples into matching sets of buckets.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "What happens during the Probe (matching) phase of a Hash-Join?",
+    "options": [
+      "It queries the system catalog to find index height attributes",
+      "It builds in-memory hash tables for partitions to find matches",
+      "It executes linear searches over the cached dirty page table",
+      "It runs ARIES physiological redoes to restore indexes"
+    ],
+    "answer": "It builds in-memory hash tables for partitions to find matches",
+    "explanation": "The probe phase loads one partition of the build relation into an in-memory hash table, then scans (probes) the corresponding partition of the other relation for matches.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "For what type of joins is the Hash-Join algorithm applicable?",
+    "options": [
+      "Only natural joins and equi-joins",
+      "Any theta join including inequalities",
+      "Only cross product join operations",
+      "Only joins involving weak entity sets"
+    ],
+    "answer": "Only natural joins and equi-joins",
+    "explanation": "Hash-Join relies on mapping equal values to the same bucket using a hash function. It is only applicable to equi-joins and natural joins, not inequality joins.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Which of the following describes how duplicate elimination can be implemented efficiently?",
+    "options": [
+      "By sorting relation blocks or grouping using hash buckets",
+      "By applying total completeness constraints on primary keys",
+      "By taking a fuzzy checkpoint to clear RAM buffer pages",
+      "By running wait-die deadlock resolver on locks"
+    ],
+    "answer": "By sorting relation blocks or grouping using hash buckets",
+    "explanation": "Duplicate elimination sorts the relation (making duplicates adjacent) or hashes it (putting duplicates in the same bucket) to easily filter out duplicate tuples.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "How can aggregation operations (such as COUNT or SUM with GROUP BY) be implemented?",
+    "options": [
+      "Using waits-for graphs to resolve transaction dependencies",
+      "Using sorting or hashing to group and aggregate tuples",
+      "By pushing projection operations below selection operations",
+      "By writing compensation log records for each active group"
+    ],
+    "answer": "Using sorting or hashing to group and aggregate tuples",
+    "explanation": "GROUP BY is implemented by sorting the tuples on group attributes (bringing groups together) or hashing them (aggregating values inside hash buckets).",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "How are set operations (Union, Intersection, and Set Difference) implemented using hashing?",
+    "options": [
+      "By building a single hash table for the union set in memory",
+      "By partitioning both relations into identical buckets to match",
+      "By converting the set operations into Cypher graph pattern matches",
+      "By executing a linear scan on the Google File System blocks"
+    ],
+    "answer": "By partitioning both relations into identical buckets to match",
+    "explanation": "For set operations, both relations are partitioned into matching buckets using the same hash function, then set operations are applied to each bucket pair independently.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "What is the block transfer cost of an outer join calculated as if no index is available?",
+    "options": [
+      "Same as normal join plus additional scan to append nulls",
+      "Exactly half the cost of a nested loop join block read",
+      "Cost is $\\log_2 (b_r + b_s)$ block transfers on disk",
+      "It requires zero block transfers because it uses catalog"
+    ],
+    "answer": "Same as normal join plus additional scan to append nulls",
+    "explanation": "An outer join is computed similarly to a normal join, but the result must be scanned (or tracked during join) to output unmatched tuples padded with null values.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "Why are query trees used in query optimization?",
+    "options": [
+      "To draw ER diagrams of the database conceptual schema layout",
+      "To represent relational algebra expressions as tree structures",
+      "To trace checkpoint log sequence numbers during ARIES runs",
+      "To model specialization subclasses in general hierarchies"
+    ],
+    "answer": "To represent relational algebra expressions as tree structures",
+    "explanation": "A query tree represents relational algebra expressions graphically, where leaf nodes are input relations and internal nodes are relational algebra operators.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "What is an equivalence rule in relational algebra?",
+    "options": [
+      "A rule indicating that two schemas have identical table names",
+      "A rule stating that two expressions yield identical tuple sets",
+      "A rule that defines how a weak entity maps to owner relations",
+      "A rule that enforces availability choices in CP networks"
+    ],
+    "answer": "A rule stating that two expressions yield identical tuple sets",
+    "explanation": "Equivalence rules state that two relational algebra expressions generate the same set of tuples for all valid database states.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "According to equivalence rules, which logical selection operation is equivalent to a conjunctive selection $\\sigma_{\\theta_1 \\wedge \\theta_2}(r)$?",
+    "options": [
+      "$\\sigma_{\\theta_1}(r) \\cup \\sigma_{\\theta_2}(r)$",
+      "$\\sigma_{\\theta_1}(\\sigma_{\\theta_2}(r))$",
+      "$\\sigma_{\\theta_1}(r) - \\sigma_{\\theta_2}(r)$",
+      "$\\sigma_{\\theta_1 \\vee \\theta_2}(r)$"
+    ],
+    "answer": "$\\sigma_{\\theta_1}(\\sigma_{\\theta_2}(r))$",
+    "explanation": "A conjunctive selection can be decomposed into a cascade of individual selections: $\\sigma_{\\theta_1 \\wedge \\theta_2}(r) \\equiv \\sigma_{\\theta_1}(\\sigma_{\\theta_2}(r))$.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "Which equivalence rule describes the commutativity of the natural join?",
+    "options": [
+      "$\\sigma_{\\theta}(r \\bowtie s) \\equiv r \\bowtie \\sigma_{\\theta}(s)$",
+      "$r \\bowtie s \\equiv s \\bowtie r$",
+      "$(r \\bowtie s) \\bowtie t \\equiv r \\bowtie (s \\bowtie t)$",
+      "$\\Pi_L(r \\bowtie s) \\equiv \\Pi_L(r) \\bowtie \\Pi_L(s)$"
+    ],
+    "answer": "$r \\bowtie s \\equiv s \\bowtie r$",
+    "explanation": "Relational join is commutative, meaning the order of join operands does not affect the logical result set: $r \\bowtie s \\equiv s \\bowtie r$.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "What does cost-based query optimization do?",
+    "options": [
+      "To optimize hardware procurement and system licensing budgets",
+      "To select the plan with the lowest estimated execution cost",
+      "To reduce transaction log sizes to save storage blocks",
+      "To compute server licensing prices for distributed clusters"
+    ],
+    "answer": "To select the plan with the lowest estimated execution cost",
+    "explanation": "Cost-based optimization generates alternative execution plans, estimates their costs (I/O, CPU, etc.) using catalog statistics, and selects the cheapest plan.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "Which database statistics are typically kept in the system catalog for cost estimation?",
+    "options": [
+      "Transaction start times and active lock counts",
+      "Relation block counts, tuple counts, and distinct value counts",
+      "Dirty bits of cache buffers and transaction tables",
+      "Wait-for graph edge logs and active lock descriptors"
+    ],
+    "answer": "Relation block counts, tuple counts, and distinct value counts",
+    "explanation": "The system catalog stores statistics like $n_r$ (number of tuples), $b_r$ (number of blocks), and $V(A, r)$ (number of distinct values of attribute $A$ in $r$) to estimate sizes and costs.",
+    "image": null
+  }
+]

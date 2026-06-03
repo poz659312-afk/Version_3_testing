@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "What is the difference between concurrent and parallel execution in multi-user database systems?",
+    "options": [
+      "Concurrent runs on multiple CPUs; parallel runs on one CPU",
+      "Concurrent interleaves on one CPU; parallel runs on multiple",
+      "Concurrent guarantees consistency; parallel does not",
+      "There is no difference; they are implementation synonyms"
+    ],
+    "answer": "Concurrent interleaves on one CPU; parallel runs on multiple",
+    "explanation": "Concurrent execution simulates simultaneous processing by interleaving operations on a single CPU. Parallel execution actually runs operations at the same time on multiple CPUs or cores.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "Which component manages the assignment of locks and maintains the lock table to ensure correct interleaving of operations?",
+    "options": [
+      "Recovery manager database logs",
+      "Lock Manager (Concurrency control subsystem)",
+      "DML compiler parsing SQL statements",
+      "Operating system file block coordinator"
+    ],
+    "answer": "Lock Manager (Concurrency control subsystem)",
+    "explanation": "The Lock Manager (or Concurrency Control Subsystem) maintains the lock table, processes lock requests, handles lock conversions, and unlocks data items when transactions commit or abort.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "Why does interleaved transaction execution need to be regulated by a concurrency control system?",
+    "options": [
+      "To prevent database files from exceeding disk block sizes",
+      "To ensure concurrent operations do not cause inconsistency",
+      "To speed up the execution of single-user database requests",
+      "To compile SQL schemas into storage definition languages"
+    ],
+    "answer": "To ensure concurrent operations do not cause inconsistency",
+    "explanation": "Interleaving operations can lead to data anomalies (like lost updates, dirty reads, and incorrect summaries). Concurrency control ensures transactions run safely without causing inconsistencies.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "Consider the schedule $S_3: r_1(X); r_2(Z); r_3(X); r_1(Z); r_2(Y); w_3(X); c_3; r_1(Y); w_1(X); c_1; w_2(Y); c_2$. What is the relationship between the read and write operations of $T_3$ on item $X$?",
+    "options": [
+      "They do not conflict since they belong to the same transaction",
+      "They conflict with $r_1(X)$ because $T_3$ writes $X$ on disk",
+      "They are committed before $T_2$ starts writing $Y$",
+      "They are part of a cascading rollback scenario in ARIES"
+    ],
+    "answer": "They do not conflict since they belong to the same transaction",
+    "explanation": "Operations $r_3(X)$ and $w_3(X)$ belong to the same transaction $T_3$, so they do not conflict. Conflict rules only apply to operations belonging to different transactions.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "What is the primary objective of serializability in database transaction scheduling?",
+    "options": [
+      "To force all transactions to execute one by one sequentially",
+      "To ensure interleaved execution behaves like serial execution",
+      "To maximize the size of memory buffers in the DBMS cache",
+      "To avoid using log files for transaction recovery on disk"
+    ],
+    "answer": "To ensure interleaved execution behaves like serial execution",
+    "explanation": "Serializability is the criterion of correctness for concurrent schedules. It ensures that the interleaved execution of transactions has the same effect as executing them serially, preserving consistency.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "What concurrency problem is avoided if a schedule is cascadeless?",
+    "options": [
+      "Deadlock cycles waiting in graphs",
+      "Cascading rollbacks (aborts propagating to other transactions)",
+      "Incorrect summary calculations in aggregates",
+      "Lost updates overwriting each other"
+    ],
+    "answer": "Cascading rollbacks (aborts propagating to other transactions)",
+    "explanation": "A cascadeless schedule prevents cascading rollbacks. Because transactions are only allowed to read committed data, the abort of a transaction will never affect other committed or active transactions.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "In a database, what is the 'phantom problem' in concurrency control?",
+    "options": [
+      "Reading a data item that has been deleted by a committed transaction",
+      "Inserting a new row that matches a concurrent query condition",
+      "A transaction that fails during checkpointing leaving dirty pages",
+      "A lock conversion upgrade that occurs during the shrinking phase"
+    ],
+    "answer": "Inserting a new row that matches a concurrent query condition",
+    "explanation": "The phantom problem occurs when transaction $T_1$ reads a set of rows satisfying a condition. If $T_2$ inserts a new row matching that condition and commits, $T_1$ re-evaluating the query will see a 'phantom' row.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "Which of the SQL standard isolation levels allows 'dirty reads' (reading uncommitted data)?",
+    "options": [
+      "Read Uncommitted level",
+      "Read Committed level",
+      "Repeatable Read level",
+      "Serializable level"
+    ],
+    "answer": "Read Uncommitted level",
+    "explanation": "Read Uncommitted is the lowest isolation level. It permits transactions to read uncommitted changes made by other transactions, which can lead to dirty reads.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "Which SQL standard isolation level guarantees that any data read during the transaction cannot be modified by other transactions until the transaction completes, but still permits phantoms?",
+    "options": [
+      "Read Uncommitted level",
+      "Read Committed level",
+      "Repeatable Read level",
+      "Serializable level"
+    ],
+    "answer": "Repeatable Read level",
+    "explanation": "Repeatable Read prevents dirty reads and non-repeatable reads (by holding read locks to the end of the transaction), but it does not prevent phantom reads (inserting new matching records).",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "Which SQL standard isolation level provides the highest level of consistency, preventing dirty reads, non-repeatable reads, and phantoms?",
+    "options": [
+      "Read Uncommitted level",
+      "Read Committed level",
+      "Repeatable Read level",
+      "Serializable level"
+    ],
+    "answer": "Serializable level",
+    "explanation": "The Serializable isolation level provides complete transaction isolation, ensuring that concurrent execution has the exact same effect as some serial execution, preventing all concurrency anomalies.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "Which SQL standard isolation level is the default in many commercial RDBMSs (such as PostgreSQL or SQL Server) and prevents dirty reads but allows non-repeatable reads?",
+    "options": [
+      "Read Uncommitted level",
+      "Read Committed level",
+      "Repeatable Read level",
+      "Serializable level"
+    ],
+    "answer": "Read Committed level",
+    "explanation": "Read Committed is the default level in many databases. It prevents dirty reads by ensuring a transaction only reads committed data, but it does not hold read locks, allowing other transactions to modify data (non-repeatable reads).",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "In database systems, what is granularity of data items?",
+    "options": [
+      "The speed at which the transaction log is flushed to disk",
+      "The size of the data items chosen as the unit of locking",
+      "The number of active transactions at checkpoint time",
+      "The number of states in a transaction lifecycle"
+    ],
+    "answer": "The size of the data items chosen as the unit of locking",
+    "explanation": "Locking granularity refers to the size of database items that are locked (e.g. database, table, disk page, block, or individual record/tuple).",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "What is the trade-off of choosing a coarse locking granularity (e.g., locking an entire database or table)?",
+    "options": [
+      "High concurrency but high locking overhead (many locks)",
+      "Low concurrency but low locking overhead (few locks)",
+      "Guaranteed freedom from deadlocks in wait graphs",
+      "Higher rate of dirty reads in read committed level"
+    ],
+    "answer": "Low concurrency but low locking overhead (few locks)",
+    "explanation": "Coarse granularity requires keeping track of very few locks (low overhead), but blocks entire tables or databases, which severely limits the concurrent execution of other transactions (low concurrency).",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "What is the trade-off of choosing a fine locking granularity (e.g., locking individual records)?",
+    "options": [
+      "Low concurrency but low locking overhead",
+      "High concurrency but high locking overhead",
+      "Guaranteed prevention of cascading rollbacks",
+      "Automatic implementation of the CAP theorem"
+    ],
+    "answer": "High concurrency but high locking overhead",
+    "explanation": "Fine granularity allows different transactions to update different records in the same table concurrently (high concurrency), but requires managing a large lock table (high overhead).",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "What does 'starvation' refer to in concurrency control scheduling?",
+    "options": [
+      "A transaction consuming all CPU resources, causing crashes",
+      "A transaction delayed indefinitely due to other transactions",
+      "When the cache directory has no unpinned buffers left",
+      "When the log file runs out of stable storage space"
+    ],
+    "answer": "A transaction delayed indefinitely due to other transactions",
+    "explanation": "Starvation (or Livelock) occurs when a transaction is repeatedly aborted or kept waiting indefinitely because the scheduler keeps prioritizing other incoming transactions.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Under what condition is a schedule $S$ considered view-serializable but NOT conflict-serializable?",
+    "options": [
+      "When the precedence graph is acyclic but has active locks",
+      "When blind writes allow view equivalence despite a cycle",
+      "When it contains dirty reads committing before writers",
+      "When it utilizes rigorous two-phase locking protocols"
+    ],
+    "answer": "When blind writes allow view equivalence despite a cycle",
+    "explanation": "A schedule with a cycle in its precedence graph is not conflict-serializable. However, if it contains blind writes (writing without reading), it might still be view-serializable (view-equivalent to a serial schedule).",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "What does a cycle in the precedence graph of a schedule tell us about its execution?",
+    "options": [
+      "The schedule is guaranteed to be view-serializable",
+      "It is not conflict-serializable due to circular conflict order",
+      "The transactions are in a state of mutual deadlock waiting",
+      "The schedule must be rolled back using analysis pass"
+    ],
+    "answer": "It is not conflict-serializable due to circular conflict order",
+    "explanation": "A cycle in the precedence graph indicates that conflicting operations occur in a circular dependency (e.g. $T_1$ conflicts before $T_2$, and $T_2$ conflicts before $T_1$), which violates conflict serializability.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "If two schedules are conflict-equivalent, what must be true about their operations?",
+    "options": [
+      "They contain different operations but yield same final state",
+      "They have same operations, with conflicting ones in same order",
+      "They must have the exact same commit timestamps on disk",
+      "They are both serial schedules in real-time execution"
+    ],
+    "answer": "They have same operations, with conflicting ones in same order",
+    "explanation": "Conflict equivalence requires that both schedules contain the same operations of the same transactions, and the order of any two conflicting operations is identical in both schedules.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "In transaction processing, if we have $S: r_1(A); w_2(A); w_1(A)$, what type of conflict occurs between $w_2(A)$ and $w_1(A)$?",
+    "options": [
+      "Read-Write conflict on data item A",
+      "Write-Read conflict on data item A",
+      "Write-Write conflict on data item A",
+      "No conflict between write operations"
+    ],
+    "answer": "Write-Write conflict on data item A",
+    "explanation": "Since both operations are write_item(A) and belong to different transactions ($T_2, T_1$), they represent a Write-Write conflict on data item A.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "Which concurrency control protocol assigns a monotonically increasing identifier to transactions when they start and orders database access based on this value?",
+    "options": [
+      "Two-Phase Locking (2PL) lock protocol",
+      "Timestamp Ordering (TO) protocol",
+      "ARIES recovery algorithm passes",
+      "Master-Slave replication databases"
+    ],
+    "answer": "Timestamp Ordering (TO) protocol",
+    "explanation": "The Timestamp Ordering (TO) protocol assigns unique timestamps to transactions when they start and uses these timestamps to serialize execution by ensuring conflicting operations execute in timestamp order.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "What is the primary drawback of using the Timestamp Ordering (TO) protocol compared to Two-Phase Locking (2PL)?",
+    "options": [
+      "It cannot guarantee schedule serializability",
+      "It may lead to frequent cascading aborts and restarts",
+      "It requires maintaining a lock table with compatibility",
+      "It is susceptible to deadlock cycles in wait graphs"
+    ],
+    "answer": "It may lead to frequent cascading aborts and restarts",
+    "explanation": "Because TO decides serializability order at transaction start, any out-of-order operation triggers a transaction abort and restart, which can cause significant overhead and cascading rollbacks compared to locking which simply makes transactions wait.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "Which component of the DBMS tracks which disk blocks are currently loaded into RAM buffers, their dirty status, pin/unpin status, and concurrency lock indicators?",
+    "options": [
+      "The system catalog catalog mapping repository",
+      "The cache buffer pool directory manager",
+      "The transaction recovery log manager system",
+      "The embedded SQL pre-compiler host parser"
+    ],
+    "answer": "The cache buffer pool directory manager",
+    "explanation": "The buffer manager maintains a cache directory in memory to track which blocks are loaded, if they are modified (dirty), if they are pinned (pin-unpin bit), and what locks apply.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "Which of the following schedules is a serial schedule?",
+    "options": [
+      "$S: r_1(X); r_2(Y); w_1(X); c_1; w_2(Y); c_2$",
+      "$S: r_1(X); w_1(X); c_1; r_2(Y); w_2(Y); c_2$",
+      "$S: r_1(X); w_2(Y); w_1(X); c_1; c_2$",
+      "$S: r_2(Y); r_1(X); w_2(Y); c_2; w_1(X); c_1$"
+    ],
+    "answer": "$S: r_1(X); w_1(X); c_1; r_2(Y); w_2(Y); c_2$",
+    "explanation": "In this schedule, all operations of $T_1$ run to completion and commit before any operations of $T_2$ begin. There is no interleaving of operations, which defines a serial schedule.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "What does it mean for a schedule to be view-equivalent to another schedule?",
+    "options": [
+      "They contain the same set-at-a-time DML queries",
+      "They represent the same three-schema architecture mapping",
+      "They share identical read-from and final write relations",
+      "They both avoid cascading rollbacks using rigorous locks"
+    ],
+    "answer": "They share identical read-from and final write relations",
+    "explanation": "View equivalence requires that: 1. Transactions read initial values consistently. 2. Transactions read data written by the same source (read-from relation). 3. The same transaction performs the final write on any item in both schedules.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "Which of the following is true regarding transaction isolation?",
+    "options": [
+      "It is completely unnecessary if database is read-only",
+      "It means concurrent execution behaves as if run serially",
+      "It is enforced exclusively by database utility programs",
+      "It only applies to distributed heterogeneous databases"
+    ],
+    "answer": "It means concurrent execution behaves as if run serially",
+    "explanation": "The isolation property requires that even though transactions run concurrently with interleaved operations, each transaction behaves as if it is executing in isolation (serially), preserving database integrity.",
+    "image": null
+  }
+]
