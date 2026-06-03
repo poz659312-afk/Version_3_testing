@@ -163,6 +163,8 @@ const OptionButton = memo(function OptionButton({
   onSelect: (option: string) => void;
   isMobile: boolean;
 }) {
+  const letter = String.fromCharCode(65 + index);
+
   return (
     <motion.button
       key={index}
@@ -174,47 +176,71 @@ const OptionButton = memo(function OptionButton({
       onClick={() => !isQuestionAnswered && onSelect(option)}
       disabled={isQuestionAnswered}
       className={cn(
-        "w-full p-4 md:p-6 text-left rounded-2xl border-2 border-b-[5px] transition-all relative overflow-hidden bg-background text-foreground select-none",
-        showFeedback
-          ? isCorrectOption
-            ? "border-green-500 bg-green-500/10 border-b-green-600 text-green-700 dark:text-green-400 shadow-sm"
-            : isSelected
-            ? "border-red-500 bg-red-500/10 border-b-red-600 text-red-700 dark:text-red-400 shadow-sm"
-            : "border-border border-b-muted bg-muted/20 opacity-60"
-          : isSelected
-          ? "border-primary bg-primary/10 border-b-primary shadow-sm"
-          : "border-border border-b-muted hover:border-primary/50 hover:bg-muted/40 active:border-b-[2px] active:translate-y-[3px]",
+        "w-full flex items-stretch gap-3 md:gap-4 text-left select-none group focus:outline-none disabled:cursor-not-allowed active:translate-y-[3px] transition-all",
         isQuestionAnswered && "cursor-not-allowed"
       )}
     >
-      <AnimatePresence>
-        {showFeedback && isCorrectOption && !isMobile && (
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            className="absolute top-4 right-4"
-          >
-            <CheckCircle className="w-8 h-8 text-green-400" />
-          </motion.div>
+      {/* Letter Box */}
+      <div
+        className={cn(
+          "w-12 md:w-16 flex items-center justify-center rounded-2xl border-2 border-b-[5px] font-bold text-lg md:text-xl transition-all select-none shrink-0 bg-background text-foreground",
+          showFeedback
+            ? isCorrectOption
+              ? "border-green-500 bg-green-500/10 border-b-green-600 text-green-700 dark:text-green-400 shadow-sm"
+              : isSelected
+              ? "border-red-500 bg-red-500/10 border-b-red-600 text-red-700 dark:text-red-400 shadow-sm"
+              : "border-border border-b-muted bg-muted/20 opacity-60"
+            : isSelected
+            ? "border-primary bg-primary/10 border-b-primary text-primary shadow-sm"
+            : "border-border border-b-muted group-hover:border-primary/50 group-hover:bg-muted/40 group-hover:text-primary group-active:border-b-[2px]"
         )}
-        {showFeedback && isSelected && !isCorrectOption && !isMobile && (
-          <motion.div
-            initial={{ scale: 0, rotate: 180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            className="absolute top-4 right-4"
-          >
-            <XCircle className="w-8 h-8 text-red-400" />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      >
+        {letter}
+      </div>
 
-      <div className="flex items-center justify-between">
+      {/* Option Text Box */}
+      <div
+        className={cn(
+          "flex-1 p-4 md:p-6 rounded-2xl border-2 border-b-[5px] transition-all relative overflow-hidden bg-background text-foreground select-none flex items-center justify-between",
+          showFeedback
+            ? isCorrectOption
+              ? "border-green-500 bg-green-500/10 border-b-green-600 text-green-700 dark:text-green-400 shadow-sm"
+              : isSelected
+              ? "border-red-500 bg-red-500/10 border-b-red-600 text-red-700 dark:text-red-400 shadow-sm"
+              : "border-border border-b-muted bg-muted/20 opacity-60"
+            : isSelected
+            ? "border-primary bg-primary/10 border-b-primary shadow-sm"
+            : "border-border border-b-muted group-hover:border-primary/50 group-hover:bg-muted/40 group-active:border-b-[2px]"
+        )}
+      >
+        <AnimatePresence>
+          {showFeedback && isCorrectOption && !isMobile && (
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              className="absolute top-4 right-4"
+            >
+              <CheckCircle className="w-8 h-8 text-green-400" />
+            </motion.div>
+          )}
+          {showFeedback && isSelected && !isCorrectOption && !isMobile && (
+            <motion.div
+              initial={{ scale: 0, rotate: 180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              className="absolute top-4 right-4"
+            >
+              <XCircle className="w-8 h-8 text-red-400" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <span className="text-base md:text-lg font-medium leading-relaxed">{formatTextWithLatex(option)}</span>
+        
         {showFeedback && isCorrectOption && isMobile && (
-          <CheckCircle className="w-6 h-6 text-green-400" />
+          <CheckCircle className="w-6 h-6 text-green-400 shrink-0 ml-2" />
         )}
         {showFeedback && isSelected && !isCorrectOption && isMobile && (
-          <XCircle className="w-6 h-6 text-red-400" />
+          <XCircle className="w-6 h-6 text-red-400 shrink-0 ml-2" />
         )}
       </div>
     </motion.button>
@@ -1529,33 +1555,50 @@ export default function QuizInterface({
                   transition={{ duration: 0.5 }}
                 >
                 <Card className="bg-background/40 border border-border/60 backdrop-blur-xl shadow-2xl rounded-[2.5rem] overflow-hidden transition-all duration-300">
-                  <CardHeader className="pb-6 pt-8 px-8 border-b border-border/40">
-                    <div className="flex justify-between items-start gap-4">
-                      <CardTitle className="text-xl md:text-2xl leading-relaxed font-normal flex-1 tracking-tight text-foreground">
-                        {formatTextWithLatex(currentQ?.question)}
-                      </CardTitle>
-                      {currentQ?.image && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleShowImage(currentQ.image)}
-                            className="ml-4 border-border hover:bg-muted bg-background text-primary transition-colors rounded-full px-4"
+                  <CardHeader className="pb-2 pt-6 px-8">
+                    <div className="w-full p-5 md:p-6 rounded-[2rem] border-2 border-b-[5px] border-primary/10 border-b-primary/20 bg-primary/[0.02] dark:bg-primary/[0.04] backdrop-blur-md relative overflow-hidden">
+                      {/* Subtle decorative glow */}
+                      <div className="absolute -right-16 -top-16 w-32 h-32 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
+                      
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest px-2.5 py-1 bg-primary/10 text-primary rounded-full border border-primary/20">
+                          Question {currentQuestion + 1}
+                        </span>
+                        {currentQ?.type && (
+                          <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest px-2.5 py-1 bg-muted text-muted-foreground rounded-full">
+                            {currentQ.type}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex justify-between items-start gap-4 relative z-10">
+                        <CardTitle className="text-2xl md:text-[1.65rem] leading-relaxed font-bold flex-1 tracking-tight text-primary">
+                          {formatTextWithLatex(currentQ?.question)}
+                        </CardTitle>
+                        {currentQ?.image && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="shrink-0"
                           >
-                            <Code className="w-4 h-4 mr-2" />
-                            Show Code
-                          </Button>
-                        </motion.div>
-                      )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleShowImage(currentQ.image)}
+                              className="ml-4 border-border hover:bg-muted bg-background text-primary transition-colors rounded-full px-4"
+                            >
+                              <Code className="w-4 h-4 mr-2" />
+                              Show Code
+                            </Button>
+                          </motion.div>
+                        )}
+                      </div>
                     </div>
                   </CardHeader>
 
-                  <CardContent className="px-8 pt-8 pb-8">
+                  <CardContent className="px-8 pt-2 pb-8">
                     <div className="space-y-4 md:space-y-5">
                       {currentQ?.options.map((option, index) => {
                         const isSelected =
@@ -2405,4 +2448,3 @@ export default function QuizInterface({
   }
   return null;
 }
-
