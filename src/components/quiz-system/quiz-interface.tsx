@@ -222,7 +222,7 @@ const OptionButton = memo(function OptionButton({
 });
 
 
-// ── Confetti Fireworks (correct answer) ──
+// â”€â”€ Confetti Fireworks (correct answer) â”€â”€
 const ConfettiParticles = memo(function ConfettiParticles() {
   const particles = useMemo(() =>
     Array.from({ length: 30 }, (_, i) => ({
@@ -324,6 +324,7 @@ export default function QuizInterface({
   const [showAttemptsDialog, setShowAttemptsDialog] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [confirmExitCheckbox, setConfirmExitCheckbox] = useState(false);
+  const [enableNavigation, setEnableNavigation] = useState(false);
   const [showCalculator, setShowCalculator] = useState(false);
   const [isIslandExpanded, setIsIslandExpanded] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -387,7 +388,7 @@ export default function QuizInterface({
       if (session) {
         // ✅ Check if user is banned
         if (session.is_banned) {
-          console.log("🚫 User is banned, forcing logout");
+          console.log("ðŸš« User is banned, forcing logout");
           setIsBanned(true);
           setShowBannedDialog(true);
           return;
@@ -525,7 +526,7 @@ export default function QuizInterface({
 
   // Memoized callbacks for better performance
   const selectAnswer = useCallback((answer: string) => {
-    // 🔒 في Instant Mode: ممنوع تغيير الإجابة بعد ما تجاوب
+    // ðŸ”’ ÙÙŠ Instant Mode: Ù…Ù…Ù†ÙˆØ¹ ØªØºÙŠÙŠØ± Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø© Ø¨Ø¹Ø¯ Ù…Ø§ ØªØ¬Ø§ÙˆØ¨
     if (selectedMode === "instant" && userAnswers[currentQuestion] !== undefined) {
       return;
     }
@@ -749,16 +750,16 @@ export default function QuizInterface({
     const percentage = Math.round((score / questions.length) * 100);
     if (percentage >= 90)
       return {
-        message: "Outstanding! Perfect mastery! 🏆",
+        message: "Outstanding! Perfect mastery! ðŸ†",
         color: "text-yellow-400",
       };
     if (percentage >= 80)
       return {
-        message: "Excellent work! Well done! ⭐",
+        message: "Excellent work! Well done! â­",
         color: "text-green-400",
       };
     if (percentage >= 70)
-      return { message: "Great job! Keep it up! 👏", color: "text-blue-400" };
+      return { message: "Great job! Keep it up! ðŸ‘", color: "text-blue-400" };
     if (percentage >= 60)
       return {
         message: "Good effort! Room for improvement! 📚",
@@ -837,7 +838,7 @@ export default function QuizInterface({
         }
       });
 
-      console.log(`⏰ Final Score (Timed Out): ${correctAnswers} out of ${questions.length}`);
+      console.log(`â° Final Score (Timed Out): ${correctAnswers} out of ${questions.length}`);
 
       // Update state
       setQuizStatus("timed-out");
@@ -906,107 +907,97 @@ export default function QuizInterface({
     }
   }, [currentQuestion, currentStep, userAnswers, answerRevealed, selectedMode]);
 
-  // Authentication Dialog Component
-  const AuthDialog = () => (
-    <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
-      <DialogContent className="/80 backdrop-blur-md border-border ">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold flex items-center gap-2">
-            <User className="w-6 h-6" />
-            Authentication Required
-          </DialogTitle>
-          <DialogDescription className="text-foreground/70">
-            You need to be logged in to start this quiz. Please sign in to continue.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-4 mt-4">
-            <Button 
-                onClick={() => { window.location.href = "/auth/signin"; }}
-                className="w-full py-3 text-lg bg-primary text-primary-foreground hover:bg-white hover:text-primary transition-colors"
-            >
-            Sign In
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowAuthDialog(false)}
-              className="w-full py-3 text-lg border-primary/30 hover:bg-primary hover:text-primary-foreground transition-all"
-            >
-            Cancel
-            </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-
-  // Attempts Limit Dialog Component
-  const AttemptsDialog = () => (
-    <Dialog open={showAttemptsDialog} onOpenChange={setShowAttemptsDialog}>
-      <DialogContent className="/80 backdrop-blur-md border-border ">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold flex items-center gap-2">
-            <AlertCircle className="w-6 h-6 text-yellow-400" />
-            Maximum Attempts Reached
-          </DialogTitle>
-          <DialogDescription className="text-foreground/70">
-            You have already used {attemptsToday} out of 10 attempts for this quiz today. 
-            Please try again tomorrow.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-4 mt-4">
-            <Button 
-            onClick={() => setShowAttemptsDialog(false)}
-            className="w-full py-3 text-lg"
-            style={{
-              color: "white",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "white";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "white";
-            }}
-            >
-            Okay
-            </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-
-  // ✅ Banned User Dialog Component
-  const BannedDialog = () => (
-    <Dialog open={showBannedDialog} onOpenChange={() => {}}>
-      <DialogContent className="/80 backdrop-blur-md border-red-500/50 ">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold flex items-center gap-2 text-red-400">
-            <XCircle className="w-6 h-6" />
-            Account Banned
-          </DialogTitle>
-          <DialogDescription className="text-foreground/70">
-            Your account has been banned. You cannot access quizzes or other features. 
-            Please contact support if you believe this is a mistake.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-4 mt-4">
-            <Button 
-            onClick={handleBannedLogout}
-            className="w-full py-3 text-lg bg-red-600 hover:bg-red-700"
-            >
-            <XCircle className="w-5 h-5 mr-2" />
-            Logout
-            </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-
   if (currentStep === "setup") {
     return (
-      <MotionConfig reducedMotion={isMobile ? "always" : "user"}>
+      <>
       <div className="relative min-h-screen w-full overflow-hidden flex flex-col items-center justify-center py-16 px-4">
-        <AuthDialog />
-        <AttemptsDialog />
-        <BannedDialog />
+        {/* Auth Dialog */}
+        <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+          <DialogContent className="/80 backdrop-blur-md border-border ">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+                <User className="w-6 h-6" />
+                Authentication Required
+              </DialogTitle>
+              <DialogDescription className="text-foreground/70">
+                You need to be logged in to start this quiz. Please sign in to continue.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-4 mt-4">
+                <Button 
+                    onClick={() => { window.location.href = "/auth/signin"; }}
+                    className="w-full py-3 text-lg bg-primary text-primary-foreground hover:bg-white hover:text-primary transition-colors"
+                >
+                Sign In
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowAuthDialog(false)}
+                  className="w-full py-3 text-lg border-primary/30 hover:bg-primary hover:text-primary-foreground transition-all"
+                >
+                Cancel
+                </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Attempts Dialog */}
+        <Dialog open={showAttemptsDialog} onOpenChange={setShowAttemptsDialog}>
+          <DialogContent className="/80 backdrop-blur-md border-border ">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+                <AlertCircle className="w-6 h-6 text-yellow-400" />
+                Maximum Attempts Reached
+              </DialogTitle>
+              <DialogDescription className="text-foreground/70">
+                You have already used {attemptsToday} out of 10 attempts for this quiz today. 
+                Please try again tomorrow.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-4 mt-4">
+                <Button 
+                onClick={() => setShowAttemptsDialog(false)}
+                className="w-full py-3 text-lg"
+                style={{
+                  color: "white",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "white";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "white";
+                }}
+                >
+                Okay
+                </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Banned Dialog */}
+        <Dialog open={showBannedDialog} onOpenChange={() => {}}>
+          <DialogContent className="/80 backdrop-blur-md border-red-500/50 ">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold flex items-center gap-2 text-red-400">
+                <XCircle className="w-6 h-6" />
+                Account Banned
+              </DialogTitle>
+              <DialogDescription className="text-foreground/70">
+                Your account has been banned. You cannot access quizzes or other features. 
+                Please contact support if you believe this is a mistake.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex flex-col gap-4 mt-4">
+                <Button 
+                onClick={handleBannedLogout}
+                className="w-full py-3 text-lg bg-red-600 hover:bg-red-700"
+                >
+                <XCircle className="w-5 h-5 mr-2" />
+                Logout
+                </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.05] via-transparent to-rose-500/[0.05] blur-xl md:blur-3xl" />
 
         {/* Official Duolingo Logo Outside the Card */}
@@ -1078,7 +1069,7 @@ export default function QuizInterface({
 
                 {quizData.id === "ai-generated" && (
                   <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 max-w-xl mx-auto mt-6 text-center text-xs md:text-[13px] text-amber-400/90 font-medium leading-relaxed shadow-sm">
-                    <span className="font-bold text-amber-300 block mb-1 text-sm">⚠️ Important Notice for AI-Generated Quizzes</span>
+                    <span className="font-bold text-amber-300 block mb-1 text-sm">⚠️ Important Notice for AI-Generated Quizzes</span>
                     This quiz is for practice and study purposes only; grades are unofficial and will not be recorded in your academic history.
                     <br />
                     Please note that going back or refreshing the page will permanently lose your active quiz questions and session.
@@ -1172,6 +1163,63 @@ export default function QuizInterface({
                 </div>
               </div>
 
+              {/* Navigation settings Selection */}
+              <div>
+                <label className="text-lg font-bold mb-4 flex items-center text-foreground/90">
+                  <Layers className="w-5 h-5 mr-3 text-primary" />
+                  Quiz Navigation Mode
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button
+                    onClick={() => setEnableNavigation(true)}
+                    className={cn(
+                      "p-6 rounded-2xl border-2 border-b-[5px] transition-all text-left bg-background relative overflow-hidden select-none active:border-b-2 active:translate-y-[3px]",
+                      enableNavigation
+                        ? "border-primary bg-primary/5 border-b-primary shadow-inner"
+                        : "border-border border-b-muted hover:border-primary/50 hover:bg-muted/40"
+                    )}
+                  >
+                    <div className="flex items-start gap-4 relative z-10">
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-primary/20 bg-primary/10">
+                        <ArrowRight className="w-6 h-6 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-foreground mb-1">
+                          Free Navigation
+                        </div>
+                        <div className="text-sm text-muted-foreground font-medium">
+                          Move back and forth between questions freely (practice mode)
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => setEnableNavigation(false)}
+                    className={cn(
+                      "p-6 rounded-2xl border-2 border-b-[5px] transition-all text-left bg-background relative overflow-hidden select-none active:border-b-2 active:translate-y-[3px]",
+                      !enableNavigation
+                        ? "border-primary bg-primary/5 border-b-primary shadow-inner"
+                        : "border-border border-b-muted hover:border-primary/50 hover:bg-muted/40"
+                    )}
+                  >
+                    <div className="flex items-start gap-4 relative z-10">
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-primary/20 bg-primary/10">
+                        <Zap className="w-6 h-6 text-primary" />
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-foreground mb-1">
+                          Strict Navigation
+                        </div>
+                        <div className="text-sm text-muted-foreground font-medium">
+                          Answer to unlock next question, cannot go back (exam mode)
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
               {/* Quiz Info */}
               <div className="bg-muted/30 p-6 rounded-2xl border border-border/60 backdrop-blur-sm">
                 <h3 className="font-bold mb-4 text-foreground/90 text-lg">
@@ -1192,9 +1240,9 @@ export default function QuizInterface({
                   </div>
                   <div>
                     <div className="text-2xl font-black text-primary mb-0.5">
-                      Tactile
+                      {enableNavigation ? "Free" : "Strict"}
                     </div>
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Theme</div>
+                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Navigation</div>
                   </div>
                   <div>
                     <div className="text-2xl font-black text-foreground mb-0.5">
@@ -1243,7 +1291,7 @@ export default function QuizInterface({
           </Card>
         </div>
       </div>
-      </MotionConfig>
+      </>
     );
   }
 
@@ -1252,8 +1300,8 @@ export default function QuizInterface({
     const isAnswered = userAnswers[currentQuestion] !== undefined;
     const isCorrect = userAnswers[currentQuestion] === currentQ?.answer;
 
-    // Exit Confirmation Dialog Component
-    const ExitConfirmDialog = () => (
+    return (
+      <>
       <Dialog 
         open={showExitConfirm} 
         onOpenChange={(open) => {
@@ -1317,11 +1365,6 @@ export default function QuizInterface({
           </div>
         </DialogContent>
       </Dialog>
-    );
-
-    return (
-      <MotionConfig reducedMotion={isMobile ? "always" : "user"}>
-      <ExitConfirmDialog />
       
       {/* Backdrop blur and dimming overlay */}
       <AnimatePresence>
@@ -1360,7 +1403,7 @@ export default function QuizInterface({
             onClick={() => setShowExitConfirm(true)}
             className="text-red-500 hover:text-red-600 rounded-full h-10 w-10 border border-red-500/20 hover:border-red-500/40 bg-red-500/10 hover:bg-red-500/20 backdrop-blur shadow-sm hover:bg-red-500/15 transition-all duration-300"
           >
-            <span className="text-xl font-bold">✕</span>
+            <span className="text-xl font-bold">✖</span>
           </Button>
         </div>
 
@@ -1600,6 +1643,17 @@ export default function QuizInterface({
                             </div>
                           )}
                         </div>
+
+                        {/* Next Button inside Feedback (Instant Mode) */}
+                        <div className="ml-auto mt-4 md:mt-0">
+                          <Button
+                            onClick={nextQuestion}
+                            className="px-6 py-2.5 md:px-8 text-sm md:text-base font-bold rounded-xl shadow-sm transition-all bg-foreground text-background hover:scale-105 active:scale-95"
+                          >
+                            {currentQuestion === questions.length - 1 ? "Finish" : "Continue"}
+                            <ArrowRight className="w-4 h-4 ml-2" />
+                          </Button>
+                        </div>
                       </motion.div>
                     )}
                   </CardContent>
@@ -1609,54 +1663,56 @@ export default function QuizInterface({
             </AnimatePresence>
           </div>
         </div>
-
-        {/* Space for bottom feedback panel */}
-        <div className="h-6" />
-
-        {/* Navigation Bar (Always Visible) */}
+        {/* Navigation */}
         <div className="relative z-10 px-4 md:px-6 pb-12 mt-6">
-          <div className="max-w-4xl mx-auto flex justify-between items-center bg-background/50 dark:bg-black/30 backdrop-blur-xl border border-border/60 p-2 md:p-3 rounded-full shadow-lg">
-            <Button
-              variant="ghost"
-              onClick={prevQuestion}
-              disabled={currentQuestion === 0}
-              className="border-transparent hover:bg-muted/50 px-6 py-3 md:px-8 bg-transparent rounded-full font-bold transition-all text-muted-foreground disabled:opacity-50"
-            >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              <span className="hidden sm:inline">Previous</span>
-            </Button>
+          <div className="max-w-4xl mx-auto flex justify-between items-center bg-background/30 dark:bg-black/30 backdrop-blur-xl border border-white/10 p-2 md:p-3 rounded-full shadow-lg">
+            {enableNavigation ? (
+              <Button
+                variant="outline"
+                onClick={prevQuestion}
+                disabled={currentQuestion === 0}
+                className="border-transparent hover:bg-white/10 px-6 py-3 md:px-8 bg-transparent rounded-full font-medium transition-all"
+              >
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                <span className="hidden sm:inline">Previous</span>
+              </Button>
+            ) : (
+              <div className="w-[100px] sm:w-[130px]" />
+            )}
 
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 onClick={() => setShowCalculator(!showCalculator)}
-                className="w-12 h-12 md:w-14 md:h-14 rounded-full border border-border hover:bg-muted bg-background/50 backdrop-blur-md transition-all shadow-sm flex justify-center items-center p-0"
+                className="w-12 h-12 md:w-14 md:h-14 rounded-full border border-white/10 hover:bg-white/20 bg-background/50 dark:bg-white/5 backdrop-blur-md transition-all shadow-md flex justify-center items-center p-0"
                 variant="ghost"
               >
                 <CalculatorIcon className="w-5 h-5 md:w-6 md:h-6 text-foreground" />
               </Button>
             </motion.div>
 
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                onClick={nextQuestion}
-                disabled={!isAnswered}
-                className="px-6 py-3 md:px-10 text-base md:text-lg font-bold rounded-full shadow-md transition-all bg-primary text-primary-foreground border-b-[4px] border-indigo-700 dark:border-b-indigo-900 active:border-b-2 active:translate-y-[2px] hover:brightness-105"
-              >
-                {currentQuestion === questions.length - 1 ? (
-                  <>
-                    <Trophy className="w-5 h-5 mr-2 hidden sm:inline" />
-                    Finish
-                  </>
-                ) : (
-                  <>
-                    <span className="hidden sm:inline">
-                      {selectedMode === "instant" && showAnswer ? "Continue" : "Next"}
-                    </span>
-                    <ArrowRight className="w-5 h-5 sm:ml-2" />
-                  </>
-                )}
-              </Button>
-            </motion.div>
+            {selectedMode === "traditional" || enableNavigation ? (
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  onClick={nextQuestion}
+                  disabled={!enableNavigation && !isAnswered}
+                  className="px-6 py-3 md:px-10 text-base md:text-lg font-semibold rounded-full shadow-lg border border-white/10 transition-all bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  {currentQuestion === questions.length - 1 ? (
+                    <>
+                      <Trophy className="w-5 h-5 mr-2 hidden sm:inline" />
+                      Finish
+                    </>
+                  ) : (
+                    <>
+                      <span className="hidden sm:inline">Next</span>
+                      <ArrowRight className="w-5 h-5 sm:ml-2" />
+                    </>
+                  )}
+                </Button>
+              </motion.div>
+            ) : (
+              <div className="w-[100px] sm:w-[130px]" />
+            )}
           </div>
         </div>
 
@@ -1696,7 +1752,7 @@ export default function QuizInterface({
                       onClick={() => setShowCalculator(false)}
                       className="text-foreground/70 hover:bg-muted rounded-full w-8 h-8 p-0"
                     >
-                      ✕
+                      ✖
                     </Button>
                   </div>
                   <Calculator />
@@ -1717,7 +1773,7 @@ export default function QuizInterface({
                 onClick={() => setShowImageDialog(false)}
                 className="bg-primary text-primary-foreground hover:bg-white hover:text-primary transition-colors px-4 py-2 rounded-md"
               >
-                ✕
+                ✖
               </Button>
             </div>
             {currentImage && (
@@ -1753,7 +1809,7 @@ export default function QuizInterface({
           </ImageDialogContent>
         </ImageDialog>
       </div>
-      </MotionConfig>
+      </>
     );
   }
 
@@ -1772,7 +1828,7 @@ export default function QuizInterface({
     const isPassing = percentage >= 60;
     
     return (
-      <MotionConfig reducedMotion={isMobile ? "always" : "user"}>
+      <>
         <div className="relative min-h-[100dvh] w-full flex items-center justify-center p-4 md:p-8 overflow-hidden bg-background">
           
           {/* Ambient Background Glows */}
@@ -2041,14 +2097,14 @@ export default function QuizInterface({
             </Card>
           </motion.div>
         </div>
-      </MotionConfig>
+      </>
     );
   }
 
   if (currentStep === "review") {
 
     return (
-      <MotionConfig reducedMotion={isMobile ? "always" : "user"}>
+      <>
       <div className="relative min-h-screen w-full overflow-hidden pb-16">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.05] via-transparent to-rose-500/[0.05] blur-xl md:blur-3xl" />
 
@@ -2305,7 +2361,7 @@ export default function QuizInterface({
                 onClick={() => setShowImageDialog(false)}
                 className="bg-primary text-primary-foreground hover:bg-white hover:text-primary transition-colors px-4 py-2 rounded-md shadow-sm"
               >
-                ✕
+                ✖
               </Button>
             </div>
             {currentImage && (
@@ -2341,7 +2397,7 @@ export default function QuizInterface({
           </ImageDialogContent>
         </ImageDialog>
       </div>
-      </MotionConfig>
+      </>
     );
   }
   return null;
