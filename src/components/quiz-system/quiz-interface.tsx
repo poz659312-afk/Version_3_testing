@@ -750,16 +750,16 @@ export default function QuizInterface({
     const percentage = Math.round((score / questions.length) * 100);
     if (percentage >= 90)
       return {
-        message: "Outstanding! Perfect mastery! ðŸ†",
+        message: "Outstanding! Perfect mastery! 🏆",
         color: "text-yellow-400",
       };
     if (percentage >= 80)
       return {
-        message: "Excellent work! Well done! â­",
+        message: "Excellent work! Well done! 🌟",
         color: "text-green-400",
       };
     if (percentage >= 70)
-      return { message: "Great job! Keep it up! ðŸ‘", color: "text-blue-400" };
+      return { message: "Great job! Keep it up! 😎‘", color: "text-blue-400" };
     if (percentage >= 60)
       return {
         message: "Good effort! Room for improvement! 📚",
