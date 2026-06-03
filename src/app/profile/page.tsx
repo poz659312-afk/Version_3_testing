@@ -1400,14 +1400,7 @@ export default function ProfilePage() {
                   {paginatedData.length > 0 ? (
                     <div className="space-y-4">
                       {paginatedData.map((attempt, index) => {
-                        let themeColor = 'hsl(var(--primary))'; 
-                        if (attempt.chosen_theme) {
-                          switch(attempt.chosen_theme) {
-                            case "Ocean": themeColor = '#0066cc'; break;
-                            case "Forest": themeColor = '#228B22'; break;
-                            case "Sunset": themeColor = '#FF6B35'; break;
-                          }
-                        }
+                        const themeColor = 'hsl(var(--primary))'; 
                         
                         return (
                           <div
