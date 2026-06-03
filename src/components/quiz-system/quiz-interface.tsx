@@ -669,7 +669,7 @@ export default function QuizInterface({
       } else {
         // Update attempts count after successful submission
         setAttemptsToday(prev => prev + 1);
-        setMaxAttemptsReached(attemptsToday + 1 >= 10);
+        setMaxAttemptsReached(attemptsToday + 1 >= 5);
 
         // 🪙 Give coins = finalscore * 1.5
         const earnedCoins = finalScore * 1.5;
@@ -976,7 +976,7 @@ export default function QuizInterface({
                 Maximum Attempts Reached
               </DialogTitle>
               <DialogDescription className="text-foreground/70">
-                You have already used {attemptsToday} out of 10 attempts for this quiz today. 
+                You have already used {attemptsToday} out of 5 attempts for this quiz today. 
                 Please try again tomorrow.
               </DialogDescription>
             </DialogHeader>
@@ -1283,7 +1283,7 @@ export default function QuizInterface({
                   <div className="mt-6 pt-4 border-t border-border/60">
                     <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm font-medium">
                       <Clock className="w-4 h-4 text-primary" />
-                      <span>Attempts today: <strong className="text-foreground">{attemptsToday}</strong>/10</span>
+                      <span>Attempts today: <strong className="text-foreground">{attemptsToday}</strong>/5</span>
                       {maxAttemptsReached && (
                         <Badge variant="destructive" className="ml-2 rounded-full px-2.5">
                           Limit Reached
