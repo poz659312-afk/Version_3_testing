@@ -1336,7 +1336,7 @@ export default function QuizInterface({
         }}
         modal={false}
       >
-        <DialogContent className="bg-background/90 backdrop-blur-xl border border-border/60 max-w-md rounded-[2rem] p-6 shadow-2xl">
+        <DialogContent className="bg-background/90 backdrop-blur-xl border border-border/60 max-w-md rounded-[2rem] p-6 shadow-2xl z-[10001]">
           <DialogHeader className="space-y-3">
             <DialogTitle className="text-2xl font-black flex items-center gap-3 text-red-500 dark:text-red-400">
               <div className="w-10 h-10 rounded-full flex items-center justify-center bg-red-500/10 text-red-500">
@@ -1400,7 +1400,7 @@ export default function QuizInterface({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-black/60 pointer-events-auto cursor-pointer"
+            className="fixed inset-0 z-[10000] bg-black/60 pointer-events-auto cursor-pointer"
             style={{
               backdropFilter: "blur(20px)",
               WebkitBackdropFilter: "blur(20px)",
@@ -1691,15 +1691,17 @@ export default function QuizInterface({
                         </div>
 
                         {/* Next Button inside Feedback (Instant Mode) */}
-                        <div className="ml-auto mt-4 md:mt-0 relative z-[9999]">
-                          <Button
-                            onClick={nextQuestion}
-                            className="px-6 py-2.5 md:px-8 text-sm md:text-base font-bold rounded-xl shadow-sm transition-all bg-foreground text-background hover:scale-105 active:scale-95 relative z-[9999]"
-                          >
-                            {currentQuestion === questions.length - 1 ? "Finish" : "Continue"}
-                            <ArrowRight className="w-4 h-4 ml-2" />
-                          </Button>
-                        </div>
+                        {!enableNavigation && (
+                          <div className="ml-auto mt-4 md:mt-0 relative z-[9999]">
+                            <Button
+                              onClick={nextQuestion}
+                              className="px-6 py-2.5 md:px-8 text-sm md:text-base font-bold rounded-xl shadow-sm transition-all bg-foreground text-background hover:scale-105 active:scale-95 relative z-[9999]"
+                            >
+                              {currentQuestion === questions.length - 1 ? "Finish" : "Continue"}
+                              <ArrowRight className="w-4 h-4 ml-2" />
+                            </Button>
+                          </div>
+                        )}
                       </motion.div>
                     )}
                   </CardContent>
