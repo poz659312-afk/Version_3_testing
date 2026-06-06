@@ -116,12 +116,12 @@
     "type": "Multiple Choices",
     "question": "Which ACID property ensures that either all operations of a transaction are executed successfully and committed, or none of them are?",
     "options": [
-      "Atomicity (all or nothing property)",
-      "Consistency preservation transition",
-      "Isolation from concurrent updates",
-      "Durability of committed states"
+      "Atomicity",
+      "Consistenc",
+      "Isolation",
+      "Durability"
     ],
-    "answer": "Atomicity (all or nothing property)",
+    "answer": "Atomicity",
     "explanation": "Atomicity is the 'all-or-nothing' property, ensuring that either the entire sequence of operations in a transaction is successfully completed, or the database is rolled back to leave no trace of its execution.",
     "image": null
   },
@@ -130,12 +130,12 @@
     "type": "Multiple Choices",
     "question": "Which ACID property guarantees that the execution of a transaction in isolation will transition the database from one valid, consistent state to another?",
     "options": [
-      "Atomicity (all or nothing property)",
-      "Consistency preservation transition",
-      "Isolation from concurrent updates",
-      "Durability of committed states"
+      "Atomicity",
+      "Consistenc",
+      "Isolation",
+      "Durability"
     ],
-    "answer": "Consistency preservation transition",
+    "answer": "Consistency",
     "explanation": "Consistency preservation ensures that a transaction takes the database from one consistent state (violating no integrity constraints) to another consistent state.",
     "image": null
   },
@@ -144,12 +144,12 @@
     "type": "Multiple Choices",
     "question": "Which ACID property requires that a transaction's updates should not be visible to other transactions until after it has been committed?",
     "options": [
-      "Atomicity (all or nothing property)",
-      "Consistency preservation transition",
-      "Isolation from concurrent updates",
-      "Durability of committed states"
+      "Atomicity",
+      "Consistency",
+      "Isolation",
+      "Durability"
     ],
-    "answer": "Isolation from concurrent updates",
+    "answer": "Isolation",
     "explanation": "Isolation guarantees that the execution of a transaction is shielded from other concurrent transactions, preventing them from seeing its intermediate, uncommitted updates.",
     "image": null
   },
@@ -158,12 +158,12 @@
     "type": "Multiple Choices",
     "question": "Which ACID property ensures that once a transaction commits, its updates permanently persist in the database and cannot be lost due to a subsequent system failure?",
     "options": [
-      "Atomicity (all or nothing property)",
-      "Consistency preservation transition",
-      "Isolation from concurrent updates",
-      "Durability of committed states"
+      "Atomicity",
+      "Consistency",
+      "Isolation",
+      "Durability"
     ],
-    "answer": "Durability of committed states",
+    "answer": "Durability",
     "explanation": "Durability guarantees that once a transaction commits, its changes are written to non-volatile storage (such as a transaction log on disk) and survive any subsequent system crashes.",
     "image": null
   },
