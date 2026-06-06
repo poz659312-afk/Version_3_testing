@@ -1476,7 +1476,6 @@ export default function QuizInterface({
               ) : (
                 <div className="flex items-center gap-1 text-primary">
                   <Infinity className="w-4 h-4" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider">Practice</span>
                 </div>
               )}
             </motion.div>
