@@ -176,14 +176,14 @@ const OptionButton = memo(function OptionButton({
       onClick={() => !isQuestionAnswered && onSelect(option)}
       disabled={isQuestionAnswered}
       className={cn(
-        "w-full flex items-stretch gap-3 md:gap-4 text-left select-none group focus:outline-none disabled:cursor-not-allowed active:translate-y-[3px] transition-all",
+        "w-full flex items-center gap-3 md:gap-4 text-left select-none group focus:outline-none disabled:cursor-not-allowed active:translate-y-[3px] transition-all",
         isQuestionAnswered && "cursor-not-allowed"
       )}
     >
-      {/* Letter Box */}
+      {/* Letter Box (Fixed Square, Non-stretching) */}
       <div
         className={cn(
-          "w-12 md:w-16 flex items-center justify-center rounded-2xl border-2 border-b-[5px] font-bold text-lg md:text-xl transition-all select-none shrink-0 bg-background text-foreground",
+          "w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-2xl border-2 border-b-[5px] font-bold text-lg md:text-xl transition-all select-none shrink-0 bg-background text-foreground",
           showFeedback
             ? isCorrectOption
               ? "border-green-500 bg-green-500/10 border-b-green-600 text-green-700 dark:text-green-400 shadow-sm"
