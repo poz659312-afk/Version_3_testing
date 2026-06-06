@@ -6,6 +6,7 @@ import { ToastProvider } from "@/components/ToastProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ColorThemeProvider } from "@/components/color-theme-provider";
 import Navigation from "@/components/navigation";
+import { Toaster } from "@/components/ui/sonner";
 // [PERF] SmoothScrollProvider and NotificationProvider are now lazy-loaded
 // to prevent Lenis (~20kB) and Supabase (~25kB) from polluting the shared chunk
 import dynamic from "next/dynamic";
@@ -129,6 +130,7 @@ export default function RootLayout({
                     <Navigation />
                     <Cursor />
                     {children}
+                    <Toaster />
                 </SmoothScrollProvider>
               </ToastProvider>
             </LazyNotificationProvider>
