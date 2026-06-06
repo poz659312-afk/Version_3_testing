@@ -72,7 +72,6 @@ import { createSecureDriveUrl } from "@/lib/secure-drive-urls"
 import { FileCardSkeleton, StatsCardSkeleton } from "@/components/loading-skeletons"
 import { UploadProvider } from "@/components/upload-context"
 import { UploadProgressBar } from "@/components/upload-progress-bar"
-const AdBanner = dynamic(() => import("@/components/AdBanner"), { ssr: false })
 
 interface DriveFile {
   id: string
@@ -1341,7 +1340,6 @@ export default function DrivePage() {
         </>
       )}
       </div>
-      <AdBanner dataAdSlot="8021269551" />
       {aiModalOpen && (
         <AIModal
           isOpen={aiModalOpen}
