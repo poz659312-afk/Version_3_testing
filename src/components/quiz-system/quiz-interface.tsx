@@ -1865,10 +1865,13 @@ export default function QuizInterface({
     const scoreInfo = getScoreMessage();
     
     // Calculate time taken
-    const totalSeconds = selectedDuration > 0 ? (selectedDuration * 60) - timeLeft : timeLeft;
-    const mins = Math.floor(totalSeconds / 60);
-    const secs = totalSeconds % 60;
-    const formattedTimeTaken = `${mins}:${secs.toString().padStart(2, "0")}`;
+    let formattedTimeTaken = "Unlimited";
+    if (selectedDuration > 0) {
+      const totalSeconds = (selectedDuration * 60) - timeLeft;
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      formattedTimeTaken = `${mins}:${secs.toString().padStart(2, "0")}`;
+    }
     
     // Score based animations
     const isPerfect = percentage === 100;
