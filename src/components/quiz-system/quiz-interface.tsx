@@ -1554,9 +1554,9 @@ export default function QuizInterface({
                   animate={shakeCard ? { x: [-6, 6, -6, 6, -3, 3, 0] } : {}}
                   transition={{ duration: 0.5 }}
                 >
-                <Card className="bg-background/40 border border-border/60 backdrop-blur-xl shadow-2xl rounded-[2.5rem] overflow-hidden transition-all duration-300">
-                  <CardHeader className="pb-2 pt-6 px-8">
-                    <div className="w-full p-5 md:p-6 rounded-[2rem] border-2 border-b-[5px] border-primary/10 border-b-primary/20 bg-primary/[0.02] dark:bg-primary/[0.04] backdrop-blur-md relative overflow-hidden">
+                <Card className="bg-background/40 border border-border/60 backdrop-blur-xl shadow-2xl rounded-[2.5rem] overflow-hidden transition-all duration-300 pt-0 gap-0">
+                  <CardHeader className="p-0">
+                    <div className="w-full px-8 pt-8 pb-6 rounded-b-[2rem] border-b-[5px] border-primary/10 border-b-primary/20 bg-primary/[0.02] dark:bg-primary/[0.04] backdrop-blur-md relative overflow-hidden">
                       {/* Subtle decorative glow */}
                       <div className="absolute -right-16 -top-16 w-32 h-32 rounded-full bg-primary/10 blur-2xl pointer-events-none" />
                       
@@ -1572,7 +1572,7 @@ export default function QuizInterface({
                       </div>
 
                       <div className="flex justify-between items-start gap-4 relative z-10">
-                        <CardTitle className="text-2xl md:text-[1.65rem] leading-relaxed font-bold flex-1 tracking-tight text-primary">
+                        <CardTitle className="text-lg md:text-xl leading-relaxed font-bold flex-1 tracking-tight text-primary">
                           {formatTextWithLatex(currentQ?.question)}
                         </CardTitle>
                         {currentQ?.image && (
@@ -1598,7 +1598,7 @@ export default function QuizInterface({
                     </div>
                   </CardHeader>
 
-                  <CardContent className="px-8 pt-2 pb-8">
+                  <CardContent className="px-8 pt-7 pb-3">
                     <div className="space-y-4 md:space-y-5">
                       {currentQ?.options.map((option, index) => {
                         const isSelected =
@@ -1642,7 +1642,7 @@ export default function QuizInterface({
                         )} />
 
                         {/* Mascot Icon */}
-                        <div className="flex-shrink-0 flex items-center justify-center p-3 rounded-2xl bg-background/80 dark:bg-black/40 border border-border/40 shadow-sm relative z-10">
+                        <div className="flex-shrink-0 flex items-center justify-center p-1 relative z-10">
                           {isCorrect ? (
                             <svg width="56" height="56" viewBox="0 0 24 24" fill="none" className="drop-shadow-md animate-bounce">
                               <circle cx="12" cy="12" r="11" fill="#58cc02" />
