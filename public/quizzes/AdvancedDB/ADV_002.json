@@ -58,7 +58,7 @@
   {
     "numb": 5,
     "type": "Multiple Choices",
-    "question": "Which concurrency problem occurs when two transactions interleavedly read and write the same data item, and the second transaction overwrites the update made by the first one, losing the first update?",
+    "question": "Which concurrency problem occurs when two transactions interleavedly read and write the same data item, and the second transaction overwrites the update made by the first one?",
     "options": [
       "The dirty read (temporary update) problem",
       "The lost update problem of execution",
