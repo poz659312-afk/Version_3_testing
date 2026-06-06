@@ -40,6 +40,7 @@ import {
   Edit,
   Trash2,
   Lock,
+  Crown,
 } from "lucide-react"
 import {
   DropdownMenu,
