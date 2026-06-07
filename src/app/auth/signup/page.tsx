@@ -270,7 +270,19 @@ export default function SignUpPage() {
       if (!response.ok) { const errorData = await response.json(); setError('Failed to create profile: ' + (errorData.error || 'Unknown error')); setIsLoading(false); return }
       const { data: newUser, error: insertError } = await response.json()
       if (insertError) { setError("Failed to create user profile: " + insertError.message); setIsLoading(false); return }
-      if (newUser) { setAuthStep("complete"); window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: { userId: newUser.user_id } })); addToast(`Welcome, ${newUser.username}!`, "success"); setTimeout(() => router.push("/"), 2000) }
+      if (newUser) {
+        if (!googleUserData) {
+          const { error: signInError } = await supabase.auth.signInWithPassword({ email, password: signupData.password })
+          if (signInError) {
+            console.error("Auto login error during signup:", signInError)
+          }
+        }
+        sessionStorage.removeItem('chameleon_user_cache');
+        setAuthStep("complete"); 
+        window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: { userId: newUser.user_id } })); 
+        addToast(`Welcome, ${newUser.username}!`, "success"); 
+        setTimeout(() => router.push("/"), 2000) 
+      }
     } catch (err) { setError("An error occurred. Please try again."); setIsLoading(false) }
   }
 
