@@ -16,6 +16,15 @@ export async function POST(request: NextRequest) {
     // Create Supabase admin client (bypasses RLS for server-side operations)
     const supabase = createAdminClient()
 
+    // Auto-confirm the user's email since we generate a temp.local email for them
+    const { error: confirmError } = await supabase.auth.admin.updateUserById(
+      userData.auth_id,
+      { email_confirm: true }
+    )
+    if (confirmError) {
+      console.error('Error auto-confirming user email:', confirmError)
+    }
+
     // Insert user into chameleons table
     const { data: newUser, error: insertError } = await supabase
       .from('chameleons')
