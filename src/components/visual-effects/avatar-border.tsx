@@ -51,14 +51,14 @@ export default function AvatarBorder({
 
   // Don't render borders on server side to avoid hydration mismatch
   if (!isMounted) {
-    return <div className={cn("relative", className)}>{children}</div>
+    return <div className={cn("relative rounded-full overflow-hidden", className)}>{children}</div>
   }
 
   // Admin border is a fallback if user is admin and no other custom border is equipped
   const borderToRender = activeBorder || (isAdmin ? "admin-border" : null)
 
   if (!borderToRender) {
-    return <div className={cn("relative", className)}>{children}</div>
+    return <div className={cn("relative rounded-full overflow-hidden", className)}>{children}</div>
   }
 
   return (
