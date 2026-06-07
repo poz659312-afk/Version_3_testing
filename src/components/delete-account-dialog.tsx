@@ -16,6 +16,9 @@ import { Label } from "@/components/ui/label"
 import { Trash2, AlertTriangle, Heart, Clock, PartyPopper, Skull } from "lucide-react"
 import { useToast } from "@/components/ToastProvider"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { cn } from "@/lib/utils"
+import { motion, AnimatePresence } from "framer-motion"
+import { createClient } from "@/lib/supabase/client"
 
 interface DeleteAccountDialogProps {
   userId: number
@@ -68,6 +71,8 @@ export function DeleteAccountDialog({
   const [confirmText, setConfirmText] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [daysRemaining, setDaysRemaining] = useState<number | null>(null)
+  const [actualQuizCount, setActualQuizCount] = useState<number | null>(null)
+  const [isCountLoading, setIsCountLoading] = useState(false)
   const { addToast } = useToast()
 
   // Calculate days remaining if deletion is scheduled
@@ -84,6 +89,33 @@ export function DeleteAccountDialog({
       setDaysRemaining(null)
     }
   }, [deletionScheduledAt])
+
+  // Fetch actual quiz count from database when dialog opens
+  useEffect(() => {
+    if (open) {
+      const fetchQuizCount = async () => {
+        setIsCountLoading(true)
+        try {
+          const supabase = createClient()
+          const { count, error } = await supabase
+            .from("quiz_data")
+            .select("*", { count: "exact", head: true })
+            .eq("user_id", userId)
+          
+          if (!error && count !== null) {
+            setActualQuizCount(count)
+          }
+        } catch (err) {
+          console.error("Error fetching actual quiz count:", err)
+        } finally {
+          setIsCountLoading(false)
+        }
+      }
+      fetchQuizCount()
+    }
+  }, [open, userId])
+
+  const displayQuizCount = actualQuizCount !== null ? actualQuizCount : quizCount
 
   const handleScheduleDeletion = async () => {
     if (confirmText.toUpperCase() !== "DELETE") {
@@ -158,67 +190,72 @@ export function DeleteAccountDialog({
 
   const renderInitialStep = () => (
     <>
-      <DialogHeader>
-        <DialogDescription className="text-foreground/70 space-y-3">
-          <p className="text-lg font-medium text-red-400">
-            {SARCASTIC_MESSAGES.initial[0]}
-          </p>
-          <p>
-            Look, we get it. Sometimes you just need to burn it all down and start fresh. 
-            But before you go full scorched earth, here's what you'll be losing:
-          </p>
+      {/* Background glow effects inside the dialog */}
+      <div className="absolute top-[-20%] right-[-20%] w-[60%] h-[60%] bg-red-500/10 blur-[80px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-20%] left-[-20%] w-[60%] h-[60%] bg-amber-500/5 blur-[80px] rounded-full pointer-events-none" />
+      
+      <DialogHeader className="relative z-10">
+        <DialogTitle className="text-lg font-black tracking-tight text-red-500 dark:text-red-400 leading-tight">
+          {SARCASTIC_MESSAGES.initial[0]}
+        </DialogTitle>
+        <DialogDescription className="text-xs text-muted-foreground/90 mt-1.5 leading-relaxed">
+          Look, we get it. Sometimes you just need to burn it all down and start fresh. 
+          But before you go full scorched earth, here's what you'll be losing:
         </DialogDescription>
       </DialogHeader>
 
-      <div className="space-y-4 py-4">
-        {/* What will be deleted */}
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 space-y-3">
-          <h4 className="font-semibold text-red-400 flex items-center gap-2">
+      <div className="space-y-2.5 py-3 relative z-10">
+        {/* What will be deleted card */}
+        <div className="bg-red-500/5 dark:bg-red-950/10 border-2 border-red-500/20 border-b-[3px] border-b-red-500/30 rounded-xl p-3 space-y-2 backdrop-blur-sm transition-all duration-300 hover:scale-[1.01]">
+          <h4 className="font-bold text-red-500 dark:text-red-400 flex items-center gap-1.5 text-xs">
             <Trash2 className="w-4 h-4" />
             Things that will be obliterated:
           </h4>
-          <ul className="space-y-2 text-sm text-foreground/70">
+          <ul className="space-y-1.5 text-xs text-muted-foreground">
             <li className="flex items-center gap-2">
-              <span><strong>{quizCount}</strong> quiz attempts (they had dreams, you know)</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500/60" />
+              <span><strong>{displayQuizCount}</strong> quiz attempts (they had dreams, you know)</span>
             </li>
             <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500/60" />
               <span>All your notifications (the good ones AND the bad ones)</span>
             </li>
             <li className="flex items-center gap-2">
-              <span>Your beloved Chameleon profile (R.I.P. <strong>{username}</strong>)</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500/60" />
+              <span>Your beloved Chameleon profile (R.I.P. <strong className="text-foreground">{username}</strong>)</span>
             </li>
           </ul>
         </div>
 
-        {/* Timer explanation */}
-        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 space-y-2">
-          <h4 className="font-semibold text-amber-400 flex items-center gap-2">
+        {/* Timer explanation card */}
+        <div className="bg-amber-500/5 dark:bg-amber-950/10 border-2 border-amber-500/20 border-b-[3px] border-b-amber-500/30 rounded-xl p-3 space-y-1 backdrop-blur-sm transition-all duration-300 hover:scale-[1.01]">
+          <h4 className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5 text-xs">
             <Clock className="w-4 h-4" />
             The 14-Day Cooling Off Period
           </h4>
-          <p className="text-sm text-foreground/70">
+          <p className="text-xs text-muted-foreground leading-normal">
             Because we're hopeless romantics, we'll wait 14 days before actually deleting anything. 
             You know, in case you realize you can't live without us. 
-            <span className="italic"> (No pressure though... okay maybe a little pressure)</span>
+            <span className="italic block mt-0.5 text-[10px] text-amber-500/80"> (No pressure though... okay maybe a little pressure)</span>
           </p>
         </div>
       </div>
 
-      <DialogFooter className="gap-4 sm:gap-4 flex-col sm:flex-row w-full" style={{justifyContent: "space-between"}}>
+      <DialogFooter className="gap-2 flex-row w-full mt-2 relative z-10">
         <Button
           variant="outline"
           onClick={() => setOpen(false)}
-          className="border-green-500/30 -400 bg-green-500/30 hover:bg-green-500/10 hover:"
+          className="flex-1 h-10 text-xs font-bold rounded-xl border-2 border-b-[3px] border-green-500/30 border-b-green-700/40 bg-green-500/10 hover:bg-green-500/20 text-green-600 dark:text-green-400 transition-all active:border-b-2 active:translate-y-[1.5px]"
         >
-          <Heart className="w-4 h-4 mr-2" />
+          <Heart className="w-3.5 h-3.5 mr-1.5" />
           Nevermind, I love it here!
         </Button>
         <Button
           variant="destructive"
           onClick={() => setStep("confirm")}
-          className="bg-red-500 hover:bg-red-600"
+          className="flex-1 h-10 text-xs font-bold rounded-xl border-2 border-b-[3px] border-red-500 border-b-red-700 bg-red-500 text-white hover:brightness-105 transition-all active:border-b-2 active:translate-y-[1.5px]"
         >
-          <AlertTriangle className="w-4 h-4 mr-2" />
+          <AlertTriangle className="w-3.5 h-3.5 mr-1.5" />
           I'm sure, proceed...
         </Button>
       </DialogFooter>
@@ -227,14 +264,17 @@ export function DeleteAccountDialog({
 
   const renderConfirmStep = () => (
     <>
-      <DialogHeader>
-        <DialogTitle className="flex items-center gap-2 text-red-500">
-          <AlertTriangle className="w-6 h-6 animate-pulse" />
+      <div className="absolute top-[-20%] right-[-20%] w-[60%] h-[60%] bg-red-500/10 blur-[80px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-20%] left-[-20%] w-[60%] h-[60%] bg-amber-500/5 blur-[80px] rounded-full pointer-events-none" />
+
+      <DialogHeader className="relative z-10">
+        <DialogTitle className="flex items-center gap-1.5 text-lg font-black tracking-tight text-red-500 dark:text-red-400 leading-tight">
+          <AlertTriangle className="w-5 h-5 animate-pulse text-red-500" />
           Last Chance, {username}!
         </DialogTitle>
-        <DialogDescription className="text-foreground/70 space-y-2">
-          <p className="text-lg font-medium text-amber-400">
-            {SARCASTIC_MESSAGES.confirmation[0].replace("{ quizCount }", String(quizCount))}
+        <DialogDescription className="text-xs text-muted-foreground/90 mt-1.5 leading-relaxed space-y-1.5">
+          <p className="text-xs font-bold text-amber-500 dark:text-amber-400">
+            {SARCASTIC_MESSAGES.confirmation[1].replace("{ quizCount }", String(displayQuizCount))}
           </p>
           <p>
             Okay okay, we believe you. But we need you to prove you're not just having 
@@ -243,49 +283,48 @@ export function DeleteAccountDialog({
         </DialogDescription>
       </DialogHeader>
 
-      <div className="space-y-4 py-4">
-        <div className="space-y-2">
-          <Label htmlFor="confirm-delete" className="text-foreground/80">
-            Type <span className="text-red-500 font-bold">DELETE</span> to confirm 
-            (all caps, because we're dramatic like that):
+      <div className="space-y-3 py-3 relative z-10">
+        <div className="space-y-1.5">
+          <Label htmlFor="confirm-delete" className="text-xs font-bold text-muted-foreground/80">
+            Type <span className="text-red-500 font-black">DELETE</span> to confirm:
           </Label>
           <Input
             id="confirm-delete"
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
             placeholder="Type DELETE here..."
-            className="bg-muted border-red-500/30  placeholder:text-muted-foreground focus:border-red-500"
+            className="h-10 bg-background/50 border-2 border-border/50 placeholder:text-muted-foreground/40 rounded-xl focus:border-red-500 focus:ring-red-500/20 text-center font-bold tracking-widest text-base transition-all"
           />
         </div>
 
-        <p className="text-xs text-white/50 italic">
+        <p className="text-[10px] text-muted-foreground/60 italic text-center">
           Fun fact: Most people who get this far chicken out. No shame in it!
         </p>
       </div>
 
-      <DialogFooter className="gap-4 sm:gap-4 flex-col sm:flex-row w-full" style={{justifyContent: "space-between"}}>
+      <DialogFooter className="gap-2 flex-row w-full mt-2 relative z-10">
         <Button
           variant="outline"
           onClick={() => {
             setStep("initial")
             setConfirmText("")
           }}
-          className="border-border bg-green-500/30 text-foreground/70 hover:bg-muted hover:"
+          className="flex-1 h-10 text-xs font-bold rounded-xl border-2 border-b-[3px] border-green-500/30 border-b-green-700/40 bg-green-500/10 hover:bg-green-500/20 text-green-600 dark:text-green-400 transition-all active:border-b-2 active:translate-y-[1.5px]"
         >
-          Wait, let me reconsider...
+          Wait, let reconsider...
         </Button>
         <Button
           variant="destructive"
           onClick={handleScheduleDeletion}
           disabled={isLoading || confirmText.toUpperCase() !== "DELETE"}
-          className="bg-red-500 hover:bg-red-600 disabled:opacity-50"
+          className="flex-1 h-10 text-xs font-bold rounded-xl border-2 border-b-[3px] border-red-500 border-b-red-700 bg-red-500 text-white hover:brightness-105 transition-all active:border-b-2 active:translate-y-[1.5px] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
-            <LoadingSpinner size="sm" className="mr-2" />
+            <LoadingSpinner size="sm" className="mr-1.5" />
           ) : (
-            <Skull className="w-4 h-4 mr-2" />
+            <Skull className="w-3.5 h-3.5 mr-1.5" />
           )}
-          Schedule My Departure
+          Schedule Departure
         </Button>
       </DialogFooter>
     </>
@@ -293,55 +332,59 @@ export function DeleteAccountDialog({
 
   const renderScheduledStep = () => (
     <>
-      <DialogHeader>
-        <DialogTitle className="flex items-center gap-2 text-amber-500">
-          <Clock className="w-6 h-6 animate-spin-slow" />
+      <div className="absolute top-[-20%] right-[-20%] w-[60%] h-[60%] bg-amber-500/10 blur-[80px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-20%] left-[-20%] w-[60%] h-[60%] bg-red-500/5 blur-[80px] rounded-full pointer-events-none" />
+
+      <DialogHeader className="relative z-10">
+        <DialogTitle className="flex items-center gap-1.5 text-lg font-black tracking-tight text-amber-500 leading-tight">
+          <Clock className="w-5 h-5 animate-spin-slow text-amber-500" />
           Countdown Initiated
         </DialogTitle>
-        <DialogDescription className="text-foreground/70 space-y-2">
-          <p className="text-2xl font-bold text-red-400">
+        <DialogDescription className="text-xs text-muted-foreground/90 mt-1.5 leading-relaxed space-y-1">
+          <p className="text-lg font-black text-red-500 dark:text-red-400">
             {daysRemaining} day{daysRemaining !== 1 ? "s" : ""} remaining
           </p>
-          <p className="text-lg">
+          <p className="text-xs font-semibold text-foreground/85">
             {SARCASTIC_MESSAGES.scheduled[1]}
           </p>
         </DialogDescription>
       </DialogHeader>
 
-      <div className="space-y-4 py-4">
-        {/* Countdown visual */}
-        <div className="bg-gradient-to-r from-red-500/20 to-amber-500/20 border border-red-500/30 rounded-lg p-6 text-center">
-          <div className="text-6xl font-bold text-red-400 mb-2">
+      <div className="space-y-3 py-3 relative z-10">
+        {/* Countdown visual card */}
+        <div className="bg-gradient-to-br from-red-500/10 to-amber-500/10 border-2 border-red-500/20 border-b-[3px] border-b-red-500/30 rounded-xl p-4 text-center backdrop-blur-sm">
+          <div className="text-4xl font-black text-red-500 dark:text-red-400 mb-1 tracking-tighter">
             {daysRemaining}
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
             days until account deletion
           </p>
-          <div className="mt-4 h-2 bg-muted rounded-full overflow-hidden">
+          <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden p-0.5 border border-border/20">
             <div 
-              className="h-full bg-gradient-to-r from-green-500 via-amber-500 to-red-500 transition-all duration-500"
+              className="h-full bg-gradient-to-r from-green-500 via-amber-500 to-red-500 rounded-full transition-all duration-1000 ease-out"
               style={{ width: `${((14 - (daysRemaining || 0)) / 14) * 100}%` }}
             />
           </div>
         </div>
 
-        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
-          <p className="text-green-400 text-sm font-medium flex items-center gap-2">
+        {/* Change mind alert */}
+        <div className="bg-green-500/5 dark:bg-green-950/10 border-2 border-green-500/20 border-b-[3px] border-b-green-500/30 rounded-xl p-3 space-y-1 backdrop-blur-sm">
+          <p className="text-green-600 dark:text-green-400 text-xs font-bold flex items-center gap-1.5">
             <PartyPopper className="w-4 h-4" />
             Changed your mind? It's not too late!
           </p>
-          <p className="text-muted-foreground text-xs mt-1">
+          <p className="text-muted-foreground text-[11px] leading-normal">
             Just click the button below and pretend this never happened. We won't judge. 
-            <span className="italic">(Okay, maybe we'll judge a little bit)</span>
+            <span className="italic block mt-0.5 text-muted-foreground/60">(Okay, maybe we'll judge a little bit)</span>
           </p>
         </div>
       </div>
 
-      <DialogFooter className="gap-4 sm:gap-4 flex-col sm:flex-row w-full" style={{justifyContent: "space-between"}}>
+      <DialogFooter className="gap-2 flex-row w-full mt-2 relative z-10">
         <Button
           variant="outline"
           onClick={() => setOpen(false)}
-          className="border-border text-foreground/70 /20 hover:bg-muted hover: hover:border-black/20"
+          className="flex-1 h-10 text-xs font-bold rounded-xl border-2 border-b-[3px] border-border border-b-border/70 bg-transparent text-muted-foreground hover:bg-muted transition-all active:border-b-2 active:translate-y-[1.5px]"
         >
           Close
         </Button>
@@ -349,14 +392,14 @@ export function DeleteAccountDialog({
           variant="default"
           onClick={handleCancelDeletion}
           disabled={isLoading}
-          className="bg-green-500 hover:bg-green-600 "
+          className="flex-1 h-10 text-xs font-bold rounded-xl border-2 border-b-[3px] border-green-500 border-b-green-700 bg-green-500 text-white hover:brightness-105 transition-all active:border-b-2 active:translate-y-[1.5px]"
         >
           {isLoading ? (
-            <LoadingSpinner size="sm" className="mr-2" />
+            <LoadingSpinner size="sm" className="mr-1.5" />
           ) : (
-            <Heart className="w-4 h-4 mr-2" />
+            <Heart className="w-3.5 h-3.5 mr-1.5" />
           )}
-          Cancel Deletion (I'm Back!)
+          Cancel Deletion
         </Button>
       </DialogFooter>
     </>
@@ -384,7 +427,8 @@ export function DeleteAccountDialog({
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-[#1a1a2e] border-border  max-w-lg">
+      <DialogContent className="bg-background/80 dark:bg-zinc-950/80 backdrop-blur-2xl border-2 border-border/60 shadow-2xl rounded-[2rem] max-w-md p-5 overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
         {step === "initial" && renderInitialStep()}
         {step === "confirm" && renderConfirmStep()}
         {step === "scheduled" && renderScheduledStep()}
