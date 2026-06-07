@@ -158,17 +158,21 @@ function ProgressDotPlot({ quizData }: { quizData: any[] }) {
 }
 
 // Helper function to extract Google Drive folder ID from URL and create internal drive link
-function createDriveLink(googleDriveUrl: string, driveId: string = 'ee201328c6b4'): string {
-  if (!googleDriveUrl || googleDriveUrl === '' || googleDriveUrl === ' ') {
+function createDriveLink(googleDriveUrl: string | string[] | undefined, driveId: string = 'ee201328c6b4'): string {
+  if (!googleDriveUrl) {
+    return '#'
+  }
+  const url = Array.isArray(googleDriveUrl) ? googleDriveUrl[0] : googleDriveUrl
+  if (!url || url === '' || url === ' ') {
     return '#'
   }
   
-  const folderIdMatch = googleDriveUrl.match(/folders\/([a-zA-Z0-9_-]+)/)
+  const folderIdMatch = url.match(/folders\/([a-zA-Z0-9_-]+)/)
   if (folderIdMatch && folderIdMatch[1]) {
     const folderId = folderIdMatch[1]
     return `/drive/${driveId}/${folderId}`
   }
-  return googleDriveUrl
+  return url
 }
 
 function getCurrentTerm(): 'term1' | 'term2' {
@@ -423,7 +427,7 @@ function VisualEffectsSettings({ inventory = [] }: { inventory?: string[] }) {
           <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
             <div>
               <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-green-500"></div>Animated Background</h4>
-              <p className="text-sm text-muted-foreground font-outfit">Enable the interactive WebGL background in the Home Page.</p>
+              <p className="text-sm text-muted-foreground font-outfit">Enable the interactive WebGL background in the hero section.</p>
             </div>
             <button 
                onClick={handleBgToggle}
@@ -1038,7 +1042,7 @@ export default function ProfilePage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between p-6 rounded-lg bg-card border border-border shadow-md gap-4">
                 <div className="flex items-center gap-4">
                   <AvatarBorder isAdmin={userData.is_admin} className="shadow-lg">
-                    <div className={`${userData.is_admin ? 'w-24 h-24' : 'w-20 h-20'} bg-primary/20 flex items-center justify-center`}>
+                    <div className={`${userData.is_admin ? 'w-24 h-24' : 'w-20 h-20'} bg-primary/20 rounded-full flex items-center justify-center`}>
                       <div className="w-full h-full rounded-full overflow-hidden bg-background flex items-center justify-center">
                         {userData.profile_image ? (
                           <Image
@@ -1363,12 +1367,12 @@ export default function ProfilePage() {
                             
                             {/* Material Links */}
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 relative z-10">
-                              {subject.materials.lectures && subject.materials.lectures.trim() !== '' && (
+                              {subject.materials.lectures && (Array.isArray(subject.materials.lectures) ? subject.materials.lectures.length > 0 : subject.materials.lectures.trim() !== '') && (
                                 <Button asChild size="sm" variant="default" className="h-9 rounded-md font-outfit font-bold text-[11px] transition-all">
                                   <Link href={createDriveLink(subject.materials.lectures)}><BookOpen className="w-3 h-3 mr-1" /> LECTURES</Link>
                                 </Button>
                               )}
-                              {subject.materials.sections && subject.materials.sections.trim() !== '' && (
+                              {subject.materials.sections && (Array.isArray(subject.materials.sections) ? (subject.materials.sections as any).length > 0 : subject.materials.sections.trim() !== '') && (
                                 <Button asChild size="sm" variant="outline" className="h-9 rounded-md border text-primary font-outfit font-bold text-[11px] transition-all hover:bg-primary/10">
                                   <Link href={createDriveLink(subject.materials.sections)}><FileText className="w-3 h-3 mr-1" /> SECTIONS</Link>
                                 </Button>
