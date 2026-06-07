@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { departmentData, type Department, type Subject } from "@/lib/department-data";
 import { cn } from "@/lib/utils";
-import React, { Suspense, memo, useState, useEffect } from "react";
+import React, { Suspense, memo, useState, useEffect, useRef } from "react";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import AdBanner from "@/components/AdBanner";
 
@@ -89,14 +89,15 @@ const TabButton = memo(({
   
   return (
     <button
+      id={`tab-btn-${section.id}`}
       onClick={() => onSelect(section.id)}
-      className="relative px-4 py-2.5 rounded-full text-sm font-medium transition-colors outline-none z-10 flex items-center justify-center gap-2 group"
+      className="relative px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl text-xs font-medium transition-colors outline-none z-10 flex flex-col items-center justify-center gap-0.5 sm:gap-1 group min-w-[56px] sm:min-w-[76px]"
     >
       {isActive && (
         <motion.div
           layoutId="activeTabBadge"
           className={cn(
-            "absolute inset-0 rounded-full pointer-events-none shadow-sm border",
+            "absolute inset-0 rounded-xl sm:rounded-2xl pointer-events-none shadow-sm border",
             section.id === "lectures" && "bg-primary/10 dark:bg-primary/20 border-primary/20",
             section.id === "sections" && "bg-secondary/10 dark:bg-secondary/20 border-secondary/20",
             section.id === "summaries" && "bg-accent/10 dark:bg-accent/20 border-accent/20",
@@ -109,14 +110,14 @@ const TabButton = memo(({
       )}
       <IconComponent 
         className={cn(
-          "w-4 h-4 z-10 transition-transform duration-300 group-hover:scale-110", 
+          "w-3.5 h-3.5 sm:w-4 sm:h-4 z-10 transition-transform duration-300 group-hover:scale-110", 
           isActive ? section.iconColor : "text-muted-foreground group-hover:text-foreground"
         )} 
       />
       <span 
         className={cn(
-          "hidden sm:inline z-10 font-outfit", 
-          isActive ? "text-foreground font-bold" : "text-muted-foreground group-hover:text-foreground"
+          "text-[8.5px] sm:text-[10px] md:text-xs font-outfit tracking-tighter sm:tracking-tight z-10 leading-tight select-none", 
+          isActive ? "text-foreground font-bold" : "text-muted-foreground/75 group-hover:text-foreground"
         )}
       >
         {section.title}
@@ -174,6 +175,12 @@ function TabsWrapper({
   const [currentTab, setCurrentTab] = useState("lectures");
   const [mounted, setMounted] = useState(false);
 
+  // Swipe detection refs
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const touchEndY = useRef<number | null>(null);
+
   useEffect(() => {
     setMounted(true);
     const searchParams = new URLSearchParams(window.location.search);
@@ -183,11 +190,68 @@ function TabsWrapper({
     }
   }, [sections]);
 
+  // Auto scroll active tab button into view on mobile/tablet
+  useEffect(() => {
+    if (mounted) {
+      const activeElement = document.getElementById(`tab-btn-${currentTab}`);
+      if (activeElement) {
+        activeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center'
+        });
+      }
+    }
+  }, [currentTab, mounted]);
+
   const handleTabChange = (tabId: string) => {
     setCurrentTab(tabId);
     const url = new URL(window.location.href);
     url.searchParams.set("tab", tabId);
     window.history.pushState({}, "", url);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+    touchStartY.current = e.targetTouches[0].clientY;
+    touchEndX.current = null;
+    touchEndY.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+    touchEndY.current = e.targetTouches[0].clientY;
+  };
+
+  const handleTouchEnd = () => {
+    if (
+      touchStartX.current === null || 
+      touchEndX.current === null || 
+      touchStartY.current === null || 
+      touchEndY.current === null
+    ) return;
+
+    const distanceX = touchStartX.current - touchEndX.current;
+    const distanceY = touchStartY.current - touchEndY.current;
+    
+    // Trigger swipe only if horizontal movement is significant and larger than vertical scrolling
+    if (Math.abs(distanceX) > 60 && Math.abs(distanceX) > Math.abs(distanceY) * 1.5) {
+      const currentIndex = sections.findIndex(s => s.id === currentTab);
+      if (currentIndex !== -1) {
+        if (distanceX > 0 && currentIndex < sections.length - 1) {
+          // Swipe left -> next tab
+          handleTabChange(sections[currentIndex + 1].id);
+        } else if (distanceX < 0 && currentIndex > 0) {
+          // Swipe right -> previous tab
+          handleTabChange(sections[currentIndex - 1].id);
+        }
+      }
+    }
+    
+    touchStartX.current = null;
+    touchEndX.current = null;
+    touchStartY.current = null;
+    touchEndY.current = null;
   };
 
   if (!mounted) return null;
@@ -220,7 +284,12 @@ function TabsWrapper({
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="bg-card/40 border-border shadow-2xl backdrop-blur-lg md:backdrop-blur-3xl overflow-hidden rounded-[2rem] relative">
+          <Card 
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="bg-card/40 border-border shadow-2xl backdrop-blur-lg md:backdrop-blur-3xl overflow-hidden rounded-[2rem] relative touch-pan-y"
+          >
             <div className={`absolute top-0 right-0 w-64 h-64 opacity-5 bg-gradient-to-br ${activeSection.color} blur-xl md:blur-3xl pointer-events-none rounded-full -mt-20 -mr-20`} />
             
             <CardHeader className="border-b border-border/50 bg-muted/20 pb-6 pt-8 px-6 sm:px-8">
@@ -436,7 +505,7 @@ const TabContentRenderer = memo(({
         transition={{ duration: 0.3 }}
       >
         <Link 
-          href={`/drive/${extractDriveId(typeof section.content === 'string' ? section.content : '')}`}
+          href={`/drive/${extractDriveId(typeof section.content === 'string' ? section.content : (Array.isArray(section.content) ? section.content[0] : ''))}`}
         >
           <div className={cn(
             "group relative w-full flex items-center justify-between p-6 sm:p-8 bg-card border border-border rounded-2xl transition-all duration-300 hover:shadow-2xl overflow-hidden cursor-pointer",
