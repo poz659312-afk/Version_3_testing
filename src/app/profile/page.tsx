@@ -423,7 +423,7 @@ function VisualEffectsSettings({ inventory = [] }: { inventory?: string[] }) {
           <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
             <div>
               <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-green-500"></div>Animated Background</h4>
-              <p className="text-sm text-muted-foreground font-outfit">Enable the interactive WebGL background in the hero section.</p>
+              <p className="text-sm text-muted-foreground font-outfit">Enable the interactive WebGL background in the Home Page.</p>
             </div>
             <button 
                onClick={handleBgToggle}
