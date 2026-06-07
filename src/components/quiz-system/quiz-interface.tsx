@@ -126,6 +126,24 @@ function useReducedMotion() {
   return { prefersReducedMotion: prefersReducedMotion || isMobile, isMobile };
 }
 
+// Helper function to shuffle an array using Fisher-Yates algorithm
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+
+// Helper function to shuffle options for each question
+const shuffleOptions = (questionsList: QuizQuestion[]): QuizQuestion[] => {
+  return questionsList.map((q) => ({
+    ...q,
+    options: shuffleArray(q.options),
+  }));
+};
+
 // Helper to format LaTeX mathematically-like strings with inline code styling
 function formatTextWithLatex(text?: string | null) {
   if (!text) return text;
@@ -447,16 +465,16 @@ export default function QuizInterface({
   // Memoize loadQuestions
   const loadQuestions = useCallback(async () => {
     if (initialQuestions && initialQuestions.length > 0) {
-      setQuestions(initialQuestions);
+      setQuestions(shuffleOptions(initialQuestions));
       return;
     }
     try {
       const response = await fetch(quizData.jsonFile);
       const data = await response.json();
-      setQuestions(data);
+      setQuestions(shuffleOptions(data));
     } catch (error) {
       console.error("Failed to load questions:", error);
-      setQuestions([
+      setQuestions(shuffleOptions([
         {
           numb: 1,
           question: "Sample question - What is 2 + 2?",
@@ -465,7 +483,7 @@ export default function QuizInterface({
           options: ["2", "3", "4", "5"],
           image: null,
         },
-      ]);
+      ]));
     }
   }, [quizData.jsonFile, initialQuestions]);
 
