@@ -1,7 +1,7 @@
 // Define arrays of prefixes for each level
 const first_level_prefixes = ["PR1", "DS", "CS", "DSA", "DM", "PR2"];
-const second_level_prefixes = ["ECO", "CLC", "DMA", "DTS", "OS", "FAD"];
-const third_level_prefixes = ["DVT","WP", "CN","VIS","DOE"];
+const second_level_prefixes = ["ECO", "CLC", "DMA", "DTS", "OS", "FAD","MIG"];
+const third_level_prefixes = ["DVT","WP", "CN","VIS","DOE","ADV"];
 
 /**
  * Checks if a quiz ID starts with a specific prefix
