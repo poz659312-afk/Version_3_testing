@@ -424,42 +424,42 @@ function VisualEffectsSettings({ inventory = [] }: { inventory?: string[] }) {
         <div className="space-y-4">
           <h3 className="font-outfit font-extrabold text-lg text-foreground border-b border-border/40 pb-2">Preferences</h3>
           
-          <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
+          <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20 gap-4">
             <div>
               <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-green-500"></div>Animated Background</h4>
-              <p className="text-sm text-muted-foreground font-outfit">Enable the interactive WebGL background in the hero section.</p>
+              <p className="text-sm text-muted-foreground font-outfit">Enable the interactive WebGL background in the Home Page.</p>
             </div>
             <button 
                onClick={handleBgToggle}
-               className={`w-14 h-7 rounded-full transition-colors relative ${backgroundEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+               className={`w-14 h-7 rounded-full transition-colors relative shrink-0 ${backgroundEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
             >
-               <div className={`size-6 rounded-full bg-white absolute top-0.5 transition-all ${backgroundEnabled ? 'left-7' : 'left-0.5'}`}></div>
+               <div className={`size-6 rounded-full bg-white absolute top-0.5 left-0.5 transition-transform duration-200 ${backgroundEnabled ? 'translate-x-7' : 'translate-x-0'}`}></div>
             </button>
           </div>
 
-          <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
+          <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20 gap-4">
             <div>
               <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-blue-500"></div>Smooth Animations</h4>
               <p className="text-sm text-muted-foreground font-outfit">Enable buttery smooth scrolling (disable if experiencing lag).</p>
             </div>
             <button 
                onClick={handleSmoothScrollToggle}
-               className={`w-14 h-7 rounded-full transition-colors relative ${smoothScrollEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+               className={`w-14 h-7 rounded-full transition-colors relative shrink-0 ${smoothScrollEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
             >
-               <div className={`size-6 rounded-full bg-white absolute top-0.5 transition-all ${smoothScrollEnabled ? 'left-7' : 'left-0.5'}`}></div>
+               <div className={`size-6 rounded-full bg-white absolute top-0.5 left-0.5 transition-transform duration-200 ${smoothScrollEnabled ? 'translate-x-7' : 'translate-x-0'}`}></div>
             </button>
           </div>
 
-          <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20">
+          <div className="flex items-center justify-between p-4 border border-border/50 rounded-lg bg-muted/20 gap-4">
             <div>
               <h4 className="font-bold font-outfit text-foreground flex items-center gap-2"><div className="size-2 rounded-full bg-purple-500"></div>Glassmorphism Effects</h4>
               <p className="text-sm text-muted-foreground font-outfit">Enable high-quality blur filters (disable on weak mobile devices).</p>
             </div>
             <button 
                onClick={handleGlassmorphismToggle}
-               className={`w-14 h-7 rounded-full transition-colors relative ${glassmorphismEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+               className={`w-14 h-7 rounded-full transition-colors relative shrink-0 ${glassmorphismEnabled ? 'bg-primary' : 'bg-muted-foreground/30'}`}
             >
-               <div className={`size-6 rounded-full bg-white absolute top-0.5 transition-all ${glassmorphismEnabled ? 'left-7' : 'left-0.5'}`}></div>
+               <div className={`size-6 rounded-full bg-white absolute top-0.5 left-0.5 transition-transform duration-200 ${glassmorphismEnabled ? 'translate-x-7' : 'translate-x-0'}`}></div>
             </button>
           </div>
         </div>
