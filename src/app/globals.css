@@ -1453,3 +1453,10 @@ html.lenis-stopped body {
 /* Hide default cursor when custom cursor active */
 .hide-default-cursor, .hide-default-cursor * { cursor: none !important; }
 
+/* Custom backdrop blur selector that bypasses mobile disabled rules */
+.modal-backdrop-blur {
+  -webkit-backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+
