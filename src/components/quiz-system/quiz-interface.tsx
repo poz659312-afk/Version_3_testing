@@ -1788,34 +1788,37 @@ export default function QuizInterface({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm"
+              transition={{ duration: 0.25 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 pointer-events-auto"
+              style={{
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+              }}
               onClick={() => setShowCalculator(false)}
             >
               <motion.div
-                initial={{ y: "100%", opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: "100%", opacity: 0 }}
+                initial={{ scale: 0.92, opacity: 0, y: 15 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.92, opacity: 0, y: 15 }}
                 transition={{
                   type: "spring",
-                  damping: 25,
-                  stiffness: 300,
-                  duration: 0.4
+                  damping: 26,
+                  stiffness: 320
                 }}
-                className="w-full max-w-md mx-4 mb-6"
+                className="w-full max-w-md mx-4"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="bg-background/90 backdrop-blur-lg border border-border rounded-2xl p-6 shadow-2xl">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className=" font-semibold text-lg flex items-center gap-2">
-                      <CalculatorIcon className="w-5 h-5" />
+                <div className="bg-background/90 backdrop-blur-xl border border-border/80 rounded-3xl p-6 shadow-2xl">
+                  <div className="flex items-center justify-between mb-4 pb-2 border-b border-border/40">
+                    <h3 className="font-bold text-xl flex items-center gap-2 text-foreground">
+                      <CalculatorIcon className="w-6 h-6 text-primary" />
                       Calculator
                     </h3>
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon"
                       onClick={() => setShowCalculator(false)}
-                      className="text-foreground/70 hover:bg-muted rounded-full w-8 h-8 p-0"
+                      className="text-foreground/70 hover:bg-muted hover:text-foreground rounded-full w-9 h-9 p-0 transition-colors"
                     >
                       ✖
                     </Button>
