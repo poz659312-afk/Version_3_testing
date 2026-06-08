@@ -117,7 +117,7 @@
     "question": "Which ACID property ensures that either all operations of a transaction are executed successfully and committed, or none of them are?",
     "options": [
       "Atomicity",
-      "Consistenc",
+      "Consistency",
       "Isolation",
       "Durability"
     ],
@@ -131,7 +131,7 @@
     "question": "Which ACID property guarantees that the execution of a transaction in isolation will transition the database from one valid, consistent state to another?",
     "options": [
       "Atomicity",
-      "Consistenc",
+      "Consistency",
       "Isolation",
       "Durability"
     ],
