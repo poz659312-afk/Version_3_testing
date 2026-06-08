@@ -116,7 +116,7 @@
     "type": "Multiple Choices",
     "question": "Which category of NoSQL databases is the simplest, storing data as a collection of schema-less maps where each item has a unique key paired with an arbitrary value?",
     "options": [
-      "Document Databases (Document Stores)",
+      "Document Databases",
       "Key-Value Stores",
       "Column-oriented Stores",
       "Graph Databases"
@@ -131,11 +131,11 @@
     "question": "Which NoSQL database category pairs each key with a complex, nested data structure (typically JSON or BSON) that is readable by the database engine for indexing and querying?",
     "options": [
       "Key-Value Stores",
-      "Document Databases (Document Stores)",
+      "Document Databases",
       "Column-family Stores",
       "Graph Databases"
     ],
-    "answer": "Document Databases (Document Stores)",
+    "answer": "Document Databases",
     "explanation": "Document databases store semi-structured data as documents (JSON/XML). The DBMS can inspect the document contents, allowing indexing and querying on nested fields.",
     "image": null
   },
@@ -146,10 +146,10 @@
     "options": [
       "Key-Value Stores",
       "Document Stores",
-      "Column-Oriented (Column-family) Stores",
+      "Column-Oriented",
       "Graph Databases"
     ],
-    "answer": "Column-Oriented (Column-family) Stores",
+    "answer": "Column-Oriented",
     "explanation": "Column-family stores (like Cassandra or HBase) store data in columns grouped into column families. This optimizes analytical queries over specific attributes and avoids storing nulls for sparse rows.",
     "image": null
   },
@@ -187,11 +187,11 @@
     "question": "What is Apache Cassandra?",
     "options": [
       "A centralized relational database used for embedded systems",
-      "A distributed column-family NoSQL database designed at Facebook",
+      "A distributed key-value NoSQL store originally designed at Facebook",
       "A graph database query compiler executing Cypher matches",
       "A remote backup system that supports two-very-safe config"
     ],
-    "answer": "A distributed column-family NoSQL database designed at Facebook",
+    "answer": "A distributed key-value NoSQL store originally designed at Facebook",
     "explanation": "Apache Cassandra is a highly scalable, distributed column-family data store originally designed by Facebook to handle inbox search and later open-sourced as an Apache project.",
     "image": null
   },
