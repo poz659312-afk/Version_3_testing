@@ -1093,12 +1093,20 @@ export const departmentData: { [key: string]: Department } = {
                     jsonFile: "/quizzes/cloud computing/CLC_10665.json"
                   },
                   {
-                    id: "CLC_10666",
-                    name: "Cloud Security",
-                    code: "CLC_10666",
+                    id: "CLC_10666-1",
+                    name: "Cloud Security - Part 1 (By Team Materials ™)",
+                    code: "CLC_10666-1",
                     duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10666.json"
+                    questions: 25,
+                    jsonFile: "/quizzes/cloud computing/CLC_10666-1.json"
+                  },
+                  {
+                    id: "CLC_10666-2",
+                    name: "Cloud Security - Part 2 (By Team Materials ™)",
+                    code: "CLC_10666-2",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/cloud computing/CLC_10666-2.json"
                   },
                   {
                     id: "CLC_10667",
