@@ -1086,7 +1086,7 @@ export const departmentData: { [key: string]: Department } = {
                   },
                   {
                     id: "CLC_10665",
-                    name: "Distributed Storage Systems",
+                    name: "Distributed Storage Systems (By Material Team ™)",
                     code: "CLC_10665",
                     duration: "OP",
                     questions: 30,
