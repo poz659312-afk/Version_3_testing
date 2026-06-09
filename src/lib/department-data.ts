@@ -1110,10 +1110,10 @@ export const departmentData: { [key: string]: Department } = {
                   },
                   {
                     id: "CLC_10667",
-                    name: "Cloud Performance",
+                    name: "Cloud Performance (By Team Materials ™)",
                     code: "CLC_10667",
                     duration: "OP",
-                    questions: 30,
+                    questions: 25,
                     jsonFile: "/quizzes/cloud computing/CLC_10667.json"
                   },
                   {
@@ -1123,6 +1123,14 @@ export const departmentData: { [key: string]: Department } = {
                     duration: "OP",
                     questions: 50,
                     jsonFile: "/quizzes/cloud computing/CLC_10668_TOT.json"
+                  },
+                  {
+                    id: "CLC_1066_Final_Review",
+                    name: "Final Review (By Team Materials ™)",
+                    code: "CLC_1066_Final_Review",
+                    duration: "OP",
+                    questions: 60,
+                    jsonFile: "/quizzes/cloud computing/CLC_1066_Final_Review.json"
                   }
                 ],
               },
