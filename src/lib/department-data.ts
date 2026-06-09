@@ -1054,7 +1054,7 @@ export const departmentData: { [key: string]: Department } = {
                 quizzes: [
                   {
                     id: "CLC_10661",
-                    name: "Introduction to Cloud Computing (Team Materials)",
+                    name: "Introduction to Cloud Computing (By Team Materials ™)",
                     code: "CLC_10661",
                     duration: "OP", // <-- CHANGED THIS LINE
                     questions: 20,
@@ -1086,7 +1086,7 @@ export const departmentData: { [key: string]: Department } = {
                   },
                   {
                     id: "CLC_10665",
-                    name: "Distributed Storage Systems (By Material Team ™)",
+                    name: "Distributed Storage Systems (By Team Materials ™)",
                     code: "CLC_10665",
                     duration: "OP",
                     questions: 25,
