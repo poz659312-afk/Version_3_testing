@@ -1089,7 +1089,7 @@ export const departmentData: { [key: string]: Department } = {
                     name: "Distributed Storage Systems (By Material Team ™)",
                     code: "CLC_10665",
                     duration: "OP",
-                    questions: 30,
+                    questions: 25,
                     jsonFile: "/quizzes/cloud computing/CLC_10665.json"
                   },
                   {
