@@ -161,6 +161,12 @@ function formatTextWithLatex(text?: string | null) {
   });
 }
 
+// Helper to strip choice prefix (e.g. "A) ", "B. ", "C - ", etc.)
+function cleanOptionText(text?: string | null): string {
+  if (!text) return "";
+  return text.replace(/^[A-Z]\s*[\).\-]\s*/i, "");
+}
+
 // Memoized Option Button Component
 const OptionButton = memo(function OptionButton({ 
   option, 
@@ -252,7 +258,7 @@ const OptionButton = memo(function OptionButton({
           )}
         </AnimatePresence>
 
-        <span className="text-base md:text-lg font-medium leading-relaxed">{formatTextWithLatex(option)}</span>
+        <span className="text-base md:text-lg font-medium leading-relaxed">{formatTextWithLatex(cleanOptionText(option))}</span>
         
         {showFeedback && isCorrectOption && isMobile && (
           <CheckCircle className="w-6 h-6 text-green-400 shrink-0 ml-2" />
@@ -1696,7 +1702,7 @@ export default function QuizInterface({
                           </div>
                           {!isCorrect && (
                             <p className="text-base font-bold">
-                              Correct Answer: <span className="underline">{formatTextWithLatex(currentQ?.answer)}</span>
+                              Correct Answer: <span className="underline">{formatTextWithLatex(cleanOptionText(currentQ?.answer))}</span>
                             </p>
                           )}
                           {currentQ?.explanation && (
@@ -2308,7 +2314,7 @@ export default function QuizInterface({
                                 isCorrect ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
                               )}
                             >
-                              {userAnswer ? formatTextWithLatex(userAnswer) : "No answer selected"}
+                              {userAnswer ? formatTextWithLatex(cleanOptionText(userAnswer)) : "No answer selected"}
                             </p>
                           </div>
 
@@ -2326,7 +2332,7 @@ export default function QuizInterface({
                                 </span>
                               </div>
                               <p className="text-lg font-bold text-green-600 dark:text-green-400">
-                                {formatTextWithLatex(question.answer)}
+                                {formatTextWithLatex(cleanOptionText(question.answer))}
                               </p>
                             </motion.div>
                           )}
