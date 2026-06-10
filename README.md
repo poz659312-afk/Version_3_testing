@@ -206,7 +206,7 @@ Run the development server:
 npm run dev
 ```
 
-Open [chameleon-nu.tech](chameleon-nu.tech) with your browser.
+Open [chameleon-nu.vercel.app](chameleon-nu.vercel.app) with your browser.
 
 ---
 
@@ -703,7 +703,7 @@ This project is proprietary software. All rights reserved © 2025 Chameleon FCDS
 
 **Created by**: Levi Ackerman  
 **Platform**: Chameleon FCDS Educational Platform  
-**Website**: [chameleon-nu.tech](https://chameleon-nu.vercel.app)
+**Website**: [chameleon-nu.vercel.app](https://chameleon-nu.vercel.app)
 
 ---
 
