@@ -1054,7 +1054,7 @@ export const departmentData: { [key: string]: Department } = {
                 quizzes: [
                   {
                     id: "CLC_10661",
-                    name: "Introduction to Cloud Computing (By Team Materials ™)",
+                    name: "Introduction to Cloud Computing (Team Materials)",
                     code: "CLC_10661",
                     duration: "OP", // <-- CHANGED THIS LINE
                     questions: 20,
@@ -1086,34 +1086,26 @@ export const departmentData: { [key: string]: Department } = {
                   },
                   {
                     id: "CLC_10665",
-                    name: "Distributed Storage Systems (By Team Materials ™)",
+                    name: "Distributed Storage Systems",
                     code: "CLC_10665",
                     duration: "OP",
-                    questions: 25,
+                    questions: 30,
                     jsonFile: "/quizzes/cloud computing/CLC_10665.json"
                   },
                   {
-                    id: "CLC_10666-1",
-                    name: "Cloud Security - Part 1 (By Team Materials ™)",
-                    code: "CLC_10666-1",
+                    id: "CLC_10666",
+                    name: "Cloud Security",
+                    code: "CLC_10666",
                     duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/cloud computing/CLC_10666-1.json"
-                  },
-                  {
-                    id: "CLC_10666-2",
-                    name: "Cloud Security - Part 2 (By Team Materials ™)",
-                    code: "CLC_10666-2",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/cloud computing/CLC_10666-2.json"
+                    questions: 30,
+                    jsonFile: "/quizzes/cloud computing/CLC_10666.json"
                   },
                   {
                     id: "CLC_10667",
-                    name: "Cloud Performance (By Team Materials ™)",
+                    name: "Cloud Performance",
                     code: "CLC_10667",
                     duration: "OP",
-                    questions: 25,
+                    questions: 30,
                     jsonFile: "/quizzes/cloud computing/CLC_10667.json"
                   },
                   {
@@ -1123,14 +1115,6 @@ export const departmentData: { [key: string]: Department } = {
                     duration: "OP",
                     questions: 50,
                     jsonFile: "/quizzes/cloud computing/CLC_10668_TOT.json"
-                  },
-                  {
-                    id: "CLC_1066_Final_Review",
-                    name: "Final Review (By Team Materials ™)",
-                    code: "CLC_1066_Final_Review",
-                    duration: "OP",
-                    questions: 60,
-                    jsonFile: "/quizzes/cloud computing/CLC_1066_Final_Review.json"
                   }
                 ],
               },
@@ -1973,7 +1957,97 @@ export const departmentData: { [key: string]: Department } = {
                 sections: "https://drive.google.com/drive/folders/1NwcCR9EQyYjtEqshFechfDzQJwERAr8-?usp=drive_link",
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1AKHPJXp9VVhYGUutKPP7XqgPjfTbrkIf?usp=drive_link",
-                exams: "https://drive.google.com/drive/folders/1vgvf18-SQ8zlkhFk_HyNQVl6HhzlbtC4?usp=drive_link"
+                exams: "https://drive.google.com/drive/folders/1vgvf18-SQ8zlkhFk_HyNQVl6HhzlbtC4?usp=drive_link",
+                quizzes: [
+                  {
+                    id: "SUR_001",
+                    name: "Quiz 1 : Introduction to Survey Methodology",
+                    code: "SUR_001",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/Survey/SUR_001.json"
+                  },
+                  {
+                    id: "SUR_002",
+                    name: "Quiz 2 : Surveys based on Time Frame",
+                    code: "SUR_002",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/Survey/SUR_002.json"
+                  },
+                  {
+                    id: "SUR_003",
+                    name: "Quiz 3 : Experimental Surveys & Ethics",
+                    code: "SUR_003",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/Survey/SUR_003.json"
+                  },
+                  {
+                    id: "SUR_004",
+                    name: "Quiz 4 : Sampling Strategies",
+                    code: "SUR_004",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/Survey/SUR_004.json"
+                  },
+                  {
+                    id: "SUR_005",
+                    name: "Quiz 5 : Pilot Testing & Validity",
+                    code: "SUR_005",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/Survey/SUR_005.json"
+                  },
+                  {
+                    id: "SUR_006",
+                    name: "Quiz 6 : Descriptive & Inferential Statistics",
+                    code: "SUR_006",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/Survey/SUR_006.json"
+                  },
+                  {
+                    id: "SUR_007",
+                    name: "Quiz 7 : Advanced Survey Data Analysis",
+                    code: "SUR_007",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/Survey/SUR_007.json"
+                  },
+                  {
+                    id: "SUR_MID",
+                    name: "Quiz 8 : Midterm Exam",
+                    code: "SUR_MID",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/Survey/SUR_MID.json"
+                  },
+                  {
+                    id: "SUR_LEC",
+                    name: "Quiz 9 : Lecture Quizzes",
+                    code: "SUR_LEC",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/Survey/SUR_LEC.json"
+                  },
+                  {
+                    id: "SUR_STAR1",
+                    name: "Review 1 (SUR_STAR1) : General Course Review (Easy)",
+                    code: "SUR_STAR1",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/Survey/SUR_STAR1.json"
+                  },
+                  {
+                    id: "SUR_STAR2",
+                    name: "Review 2 (SUR_STAR2) : Core Concepts & Hidden Points (Hard)",
+                    code: "SUR_STAR2",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/Survey/SUR_STAR2.json"
+                  }
+                ]
               },
             },
             {
