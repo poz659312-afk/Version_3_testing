@@ -2,20 +2,6 @@
   {
     "numb": 1,
     "type": "Multiple Choices",
-    "question": "According to university policy, what attendance rate is required to sit for the final exam?",
-    "options": [
-      "A) An attendance rate of 75% or higher.",
-      "B) An attendance rate of 90% or higher.",
-      "C) An attendance rate of 60% or higher.",
-      "D) An attendance rate of 80% or higher."
-    ],
-    "answer": "D) An attendance rate of 80% or higher.",
-    "explanation": "Lecture 1 slides state that university policy requires 80% attendance to be able to seat for the final exam.",
-    "image": null
-  },
-  {
-    "numb": 2,
-    "type": "Multiple Choices",
     "question": "What is the primary definition of a survey in research methodology?",
     "options": [
       "A) A method of collecting information from a group of people to gather insights on opinions, behaviors, or characteristics.",
@@ -25,6 +11,20 @@
     ],
     "answer": "A) A method of collecting information from a group of people to gather insights on opinions, behaviors, or characteristics.",
     "explanation": "A survey is a method of collecting information from a group of people to gather insights on opinions, behaviors, or characteristics.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "A company wants to know customer satisfaction after launching a new mobile app it can use ?",
+    "options": [
+      "A) Surveys.",
+      "B) Washing Machine.",
+      "C) F16.",
+      "D) Keyboard."
+    ],
+    "answer": "A) Surveys.",
+    "explanation": "جامد .. عرفتها لوحدك ولا غشيتها من chatGPT ?.",
     "image": null
   },
   {
