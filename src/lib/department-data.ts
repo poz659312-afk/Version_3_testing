@@ -2001,7 +2001,7 @@ export const departmentData: { [key: string]: Department } = {
                   },
                   {
                     id: "SUR_006",
-                    name: "Quiz 6 : Descriptive & Inferential Statistics",
+                    name: "Quiz 6 : Data Cleaning & Preparation",
                     code: "SUR_006",
                     duration: "OP",
                     questions: 25,
@@ -2009,15 +2009,23 @@ export const departmentData: { [key: string]: Department } = {
                   },
                   {
                     id: "SUR_007",
-                    name: "Quiz 7 : Advanced Survey Data Analysis",
+                    name: "Quiz 7 : Descriptive & Inferential Statistics",
                     code: "SUR_007",
                     duration: "OP",
                     questions: 25,
                     jsonFile: "/quizzes/Survey/SUR_007.json"
                   },
                   {
+                    id: "SUR_008",
+                    name: "Quiz 8 : Advanced Survey Data Analysis",
+                    code: "SUR_008",
+                    duration: "OP",
+                    questions: 25,
+                    jsonFile: "/quizzes/Survey/SUR_008.json"
+                  },
+                  {
                     id: "SUR_MID",
-                    name: "Quiz 8 : Midterm Exam",
+                    name: "Quiz 9 : Midterm Exam",
                     code: "SUR_MID",
                     duration: "OP",
                     questions: 25,
@@ -2025,7 +2033,7 @@ export const departmentData: { [key: string]: Department } = {
                   },
                   {
                     id: "SUR_LEC",
-                    name: "Quiz 9 : Lecture Quizzes",
+                    name: "Quiz 10 : Lecture Quizzes",
                     code: "SUR_LEC",
                     duration: "OP",
                     questions: 25,
