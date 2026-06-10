@@ -2,281 +2,351 @@
   {
     "numb": 1,
     "type": "Multiple Choices",
-    "question": "A survey is best defined as a method for:",
+    "question": "According to university policy, what attendance rate is required to sit for the final exam?",
     "options": [
-      "A) Running controlled laboratory experiments on isolated variables",
-      "B) Collecting information from a group of people to gather insights into opinions, behaviors, or characteristics",
-      "C) Observing animal behavior in natural habitats over extended periods",
-      "D) Compiling secondary data exclusively from published government reports"
+      "A) An attendance rate of 75% or higher.",
+      "B) An attendance rate of 80% or higher.",
+      "C) An attendance rate of 90% or higher.",
+      "D) An attendance rate of 60% or higher."
     ],
-    "answer": "B) Collecting information from a group of people to gather insights into opinions, behaviors, or characteristics",
-    "explanation": "A survey is fundamentally a data collection method targeting people — it gathers their opinions, behaviors, or characteristics. Experiments (A) manipulate variables, observation (C) watches without asking, and secondary data compilation (D) doesn't involve direct collection from people.",
+    "answer": "B) An attendance rate of 80% or higher.",
+    "explanation": "Lecture 1 slides state that university policy requires 80% attendance to be able to seat for the final exam.",
     "image": null
   },
   {
     "numb": 2,
     "type": "Multiple Choices",
-    "question": "Which of the following is NOT one of the three key components of a survey?",
+    "question": "What is the primary definition of a survey in research methodology?",
     "options": [
-      "A) Population",
-      "B) Sample",
-      "C) Questions",
-      "D) Hypothesis"
+      "A) A secondary research method that relies on compiling government archives.",
+      "B) A method of collecting information from a group of people to gather insights on opinions, behaviors, or characteristics.",
+      "C) An unobtrusive method of observing animal behavior in natural habitats.",
+      "D) A method of conducting controlled laboratory experiments on isolated variables."
     ],
-    "answer": "D) Hypothesis",
-    "explanation": "The three key components of a survey are: Population (the entire group being studied), Sample (a subset selected from that population), and Questions (the structured inquiries). A hypothesis belongs to experiment design, not to the core components of a survey.",
+    "answer": "B) A method of collecting information from a group of people to gather insights on opinions, behaviors, or characteristics.",
+    "explanation": "A survey is a method of collecting information from a group of people to gather insights on opinions, behaviors, or characteristics.",
     "image": null
   },
   {
     "numb": 3,
     "type": "Multiple Choices",
-    "question": "A researcher allows respondents to answer freely and at any length. This type of question is classified as:",
+    "question": "Which of the following represents the correct set of the three key components of a survey?",
     "options": [
-      "A) Bipolar question",
-      "B) Closed question",
-      "C) Open-ended question",
-      "D) Probing question"
+      "A) Population, Sample, and Questions.",
+      "B) Interviews, Questionnaires, and Observation.",
+      "C) Nominal, Ordinal, and Interval scales.",
+      "D) Hypothesis, Control Group, and Variables."
     ],
-    "answer": "C) Open-ended question",
-    "explanation": "Open-ended questions give respondents complete freedom to answer in their own words at any length. Bipolar questions (A) only allow Yes/No, closed questions (B) offer limited predefined options, and probing questions (D) are follow-ups seeking more detail from a previous answer.",
+    "answer": "A) Population, Sample, and Questions.",
+    "explanation": "The three key components of a survey are the Population (group being studied), Sample (subset of population), and Questions (structured inquiries).",
     "image": null
   },
   {
     "numb": 4,
     "type": "Multiple Choices",
-    "question": "Which of the following is an advantage of $\\text{closed questions}$ in an interview?",
+    "question": "When is an analyst most justified in using open-ended questions in an interview?",
     "options": [
-      "A) They allow the interviewee to express rich, detailed opinions",
-      "B) They save time and make it easier to compare responses across interviews",
-      "C) They help build strong rapport between interviewer and respondent",
-      "D) They reveal unexpected avenues of questioning"
+      "A) When the interview time is highly restricted and must be kept short.",
+      "B) When the analyst needs precise, reliable, and easily quantified data.",
+      "C) When the analyst is interested in the breadth and depth of the reply.",
+      "D) When the interviewer lacks the skills required to probe responses."
     ],
-    "answer": "B) They save time and make it easier to compare responses across interviews",
-    "explanation": "Closed questions have predefined response categories, making them quick to answer and easy to compare statistically across multiple respondents. Rich detail (A), building rapport (C), and discovering new lines of inquiry (D) are advantages of open-ended questions, not closed ones.",
+    "answer": "C) When the analyst is interested in the breadth and depth of the reply.",
+    "explanation": "Open-ended questions allow interviewees to respond in their own words and are appropriate when interested in the breadth and depth of replies.",
     "image": null
   },
   {
     "numb": 5,
     "type": "Multiple Choices",
-    "question": "A question that can only be answered with $\\text{Yes/No}$ or $\\text{Agree/Disagree}$ is specifically called a:",
+    "question": "Which of the following is considered an advantage of open-ended questions for the interviewer?",
     "options": [
-      "A) Probing question",
-      "B) Leading question",
-      "C) Bipolar question",
-      "D) Double-barreled question"
+      "A) It makes it much easier to compare and quantify answers.",
+      "B) It allows the interviewer to pick up on the interviewee's vocabulary.",
+      "C) It requires significantly less time to analyze and compile results.",
+      "D) It ensures the interviewer maintains tight control of the discussion."
     ],
-    "answer": "C) Bipolar question",
-    "explanation": "Bipolar questions restrict the response to exactly two opposing choices — Yes/No or Agree/Disagree. They are a specific subtype of closed questions and should be used sparingly because they oversimplify complex opinions.",
+    "answer": "B) It allows the interviewer to pick up on the interviewee's vocabulary.",
+    "explanation": "An advantage of open-ended questions is allowing the interviewer to pick up on the interviewee's vocabulary, which reflects values and beliefs.",
     "image": null
   },
   {
     "numb": 6,
     "type": "Multiple Choices",
-    "question": "Which of the following is a disadvantage of $\\text{open-ended questions}$?",
+    "question": "What is a major disadvantage of open-ended questions in survey interviews?",
     "options": [
-      "A) They fail to put the interviewee at ease",
-      "B) They may result in too much irrelevant detail and loss of interviewer control",
-      "C) They do not allow for spontaneous responses",
-      "D) They make it impossible to discover new lines of inquiry"
+      "A) They may result in too much irrelevant detail and loss of control.",
+      "B) They are extremely boring and repetitive for the interviewee.",
+      "C) They prevent the discovery of new avenues of questioning.",
+      "D) They make it impossible for the interviewee to answer spontaneously."
     ],
-    "answer": "B) They may result in too much irrelevant detail and loss of interviewer control",
-    "explanation": "While open-ended questions provide rich data, they can lead to lengthy, off-topic responses and the interviewer may lose control of the conversation. Putting the interviewee at ease (A), allowing spontaneity (C), and discovering new topics (D) are actually advantages of open-ended questions.",
+    "answer": "A) They may result in too much irrelevant detail and loss of control.",
+    "explanation": "Open-ended questions can result in too much irrelevant detail, possibly losing control of the interview and taking too much time.",
     "image": null
   },
   {
     "numb": 7,
     "type": "Multiple Choices",
-    "question": "The question $\\text{\"Do you like the UI and the speed of the application?\"}$ is problematic because it is a:",
+    "question": "Closed interview questions are specifically appropriate when the researcher wants to:",
     "options": [
-      "A) Leading question",
-      "B) Bipolar question",
-      "C) Double-barreled question",
-      "D) Probing question"
+      "A) Build strong personal rapport with a reluctant respondent.",
+      "B) Give the interviewee complete freedom to reply at any length.",
+      "C) Explore the interviewee's vocabulary, education, and beliefs.",
+      "D) Generate precise, reliable data that is easy to analyze."
     ],
-    "answer": "C) Double-barreled question",
-    "explanation": "This question asks about two separate things — UI design AND speed — in a single question. A respondent might like one but not the other, making it impossible to give an accurate single answer. Each topic should be asked separately.",
+    "answer": "D) Generate precise, reliable data that is easy to analyze.",
+    "explanation": "Closed questions limit possible responses and are appropriate for generating precise, reliable data which is easy to analyze.",
     "image": null
   },
   {
     "numb": 8,
     "type": "Multiple Choices",
-    "question": "Which question sequencing structure starts with $\\text{specific/closed}$ questions and gradually broadens to $\\text{general/open-ended}$ questions?",
+    "question": "Which of the following is a disadvantage of closed interview questions?",
     "options": [
-      "A) Funnel structure",
-      "B) Diamond structure",
-      "C) Pyramid structure",
-      "D) Linear structure"
+      "A) They fail to build rapport and miss rich detail.",
+      "B) They make the phrasing of questions difficult for the interviewer.",
+      "C) They result in too much irrelevant and off-topic detail.",
+      "D) They require highly skilled interviewers to administer successfully."
     ],
-    "answer": "C) Pyramid structure",
-    "explanation": "The Pyramid structure begins narrow (specific, closed questions) and expands upward to broad, open-ended questions — like the shape of a pyramid. This works well for 'warming up' respondents. The Funnel (A) does the opposite, starting broad and narrowing down.",
+    "answer": "A) They fail to build rapport and miss rich detail.",
+    "explanation": "Disadvantages of closed questions include failure to obtain rich detail, missing main ideas, and failing to build rapport.",
     "image": null
   },
   {
     "numb": 9,
     "type": "Multiple Choices",
-    "question": "The $\\text{Funnel}$ question sequencing structure is considered particularly useful when:",
+    "question": "What is a bipolar question in survey methodology?",
     "options": [
-      "A) The interviewer wants to warm up the respondent with simple facts first",
-      "B) Dealing with emotionally sensitive topics, as it starts broad and narrows down",
-      "C) Maximum interview time is available and both broad and detailed coverage is needed",
-      "D) Only bipolar questions are being used in the survey"
+      "A) A question that asks about two different topics at the same time.",
+      "B) A closed question that only allows a yes/no or agree/disagree response.",
+      "C) An open question that starts narrow and broadens upward.",
+      "D) A leading question that forces the respondent to be positive."
     ],
-    "answer": "B) Dealing with emotionally sensitive topics, as it starts broad and narrows down",
-    "explanation": "The Funnel starts with general, non-threatening open-ended questions and progressively narrows to specific closed questions. This approach lets respondents ease into sensitive topics gradually rather than being confronted with direct questions immediately.",
+    "answer": "B) A closed question that only allows a yes/no or agree/disagree response.",
+    "explanation": "Bipolar questions are those that may be answered with a 'yes' or 'no' or 'agree' or 'disagree'. They should be used sparingly.",
     "image": null
   },
   {
     "numb": 10,
     "type": "Multiple Choices",
-    "question": "The $\\text{Diamond}$ question sequencing structure combines features of both Pyramid and Funnel. Its main disadvantage is that it:",
+    "question": "What is the primary purpose of using probing questions during an interview?",
     "options": [
-      "A) Cannot be used with open-ended questions",
-      "B) Is time-consuming to administer",
-      "C) Only works for online surveys",
-      "D) Produces unreliable data"
+      "A) To restrict the interviewee's choices to predefined answers.",
+      "B) To suggest a preferred answer to reduce response bias.",
+      "C) To clarify, get more meaning, and expand on the interviewee's point.",
+      "D) To change the topic to an unrelated subject to test spontaneity."
     ],
-    "answer": "B) Is time-consuming to administer",
-    "explanation": "The Diamond structure starts closed → opens up → closes again, combining the benefits of both Pyramid and Funnel approaches. However, covering this full cycle requires significantly more time than using either approach alone.",
+    "answer": "C) To clarify, get more meaning, and expand on the interviewee's point.",
+    "explanation": "Probing questions elicit more detail about previous questions to get more meaning, clarify, or expand on points.",
     "image": null
   },
   {
     "numb": 11,
     "type": "Multiple Choices",
-    "question": "When planning an interview, which of the following is NOT one of the five recommended planning steps?",
+    "question": "Why should leading questions be avoided in survey design?",
     "options": [
-      "A) Reading background material about the topic",
-      "B) Establishing interview objectives",
-      "C) Deciding whom to interview",
-      "D) Recording the interview without the interviewee's knowledge"
+      "A) They make the interview too time-consuming for the respondent.",
+      "B) They guide interviewees into responses desired by the interviewer, causing bias.",
+      "C) They restrict the response options to simple yes or no answers.",
+      "D) They ask about two different topics at once, making analysis difficult."
     ],
-    "answer": "D) Recording the interview without the interviewee's knowledge",
-    "explanation": "The five interview planning steps are: (1) Reading background material, (2) Establishing objectives, (3) Deciding whom to interview, (4) Preparing the interviewee, and (5) Deciding on question types and structure. Secret recording violates ethical principles of informed consent.",
+    "answer": "B) They guide interviewees into responses desired by the interviewer, causing bias.",
+    "explanation": "Leading questions imply an answer and guide interviewees into desired responses. Avoiding them reduces bias and improves reliability/validity.",
     "image": null
   },
   {
     "numb": 12,
     "type": "Multiple Choices",
-    "question": "A $\\text{probing question}$ is used to:",
+    "question": "A survey question that asks 'Do you like the UI and the speed of the application?' is:",
     "options": [
-      "A) Force the respondent to choose between exactly two options",
-      "B) Suggest a specific answer the researcher prefers",
-      "C) Dig deeper into a previous answer by requesting more detail, source of information, or confirmation",
-      "D) Introduce an entirely new topic unrelated to earlier responses"
+      "A) A double-barreled question, which makes interpretation difficult.",
+      "B) A leading question, which forces a highly positive opinion.",
+      "C) A probing question, which helps clarify specific features.",
+      "D) A bipolar question, which should be used for precise coding."
     ],
-    "answer": "C) Dig deeper into a previous answer by requesting more detail, source of information, or confirmation",
-    "explanation": "Probing questions are follow-up questions that explore a respondent's previous answer further. They work through three mechanisms: requesting more detail, asking for the source of information, or asking for confirmation of what was said.",
+    "answer": "A) A double-barreled question, which makes interpretation difficult.",
+    "explanation": "Double-barreled questions ask two things at once. Interviewees may answer only one, leading to difficulties in interpretation.",
     "image": null
   },
   {
     "numb": 13,
     "type": "Multiple Choices",
-    "question": "In survey methodology, $\\text{reliability}$ refers to:",
+    "question": "Which question sequencing structure starts with closed questions and works toward open-ended questions?",
     "options": [
-      "A) The degree to which a question measures what it intends to measure",
-      "B) The consistency of results when the same measurement is repeated",
-      "C) The number of respondents who complete the survey",
-      "D) How quickly the survey can be administered"
+      "A) The Pyramid structure.",
+      "B) The Diamond structure.",
+      "C) The Funnel structure.",
+      "D) The Linear structure."
     ],
-    "answer": "B) The consistency of results when the same measurement is repeated",
-    "explanation": "Reliability is about consistency — if you apply the same measurement instrument multiple times under similar conditions, you should get similar results. Option A describes validity, not reliability. These are two distinct but related concepts in measurement quality.",
+    "answer": "A) The Pyramid structure.",
+    "explanation": "The Pyramid structure starts with closed, detailed questions and expands to open-ended, generalized responses.",
     "image": null
   },
   {
     "numb": 14,
     "type": "Multiple Choices",
-    "question": "$\\text{Validity}$ in a questionnaire context is defined as:",
+    "question": "When is the Funnel question sequencing structure particularly useful?",
     "options": [
-      "A) The consistency of a measurement tool over time",
-      "B) The extent to which the questionnaire has visually appealing design",
-      "C) The degree to which a question actually measures what it is intended to measure",
-      "D) The percentage of respondents who return the survey"
+      "A) When the interviewee needs to be warmed up to the topic.",
+      "B) When only closed questions are being asked in the survey.",
+      "C) When the interviewee feels emotionally about the topic.",
+      "D) When the interviewer is completely unprepared for the interview."
     ],
-    "answer": "C) The degree to which a question actually measures what it is intended to measure",
-    "explanation": "Validity ensures you're measuring the right thing. For example, a question intended to measure 'job satisfaction' should actually capture satisfaction, not just salary happiness. Consistency over time (A) describes reliability, which is a separate concept.",
+    "answer": "C) When the interviewee feels emotionally about the topic.",
+    "explanation": "The Funnel structure starts with general, open-ended questions and narrows down. It is useful when the interviewee feels emotionally about the topic.",
     "image": null
   },
   {
     "numb": 15,
     "type": "Multiple Choices",
-    "question": "A questionnaire that uses a $\\text{Likert Scale}$ from 1 to 7 for all responses is an example of:",
+    "question": "What is the main disadvantage of the Diamond question sequencing structure?",
     "options": [
-      "A) Free format questionnaire",
-      "B) Fixed format questionnaire",
-      "C) Open-ended questionnaire",
-      "D) Bipolar questionnaire"
+      "A) It fails to build rapport with the interviewee.",
+      "B) It is highly time-consuming to execute.",
+      "C) It is only suitable for paper-based questionnaires.",
+      "D) It cannot be used with open-ended questions."
     ],
-    "answer": "B) Fixed format questionnaire",
-    "explanation": "A fixed format questionnaire uses predefined response options — in this case, a numerical scale from 1 to 7. Respondents select from these predetermined choices rather than writing their own answers. Free format questionnaires (A) provide open space for respondents to write freely.",
+    "answer": "B) It is highly time-consuming to execute.",
+    "explanation": "The Diamond structure combines closed-open-closed questions, making it time-consuming to administer.",
     "image": null
   },
   {
     "numb": 16,
     "type": "Multiple Choices",
-    "question": "A measurement scale that classifies data into categories with $\\textbf{no inherent order}$ (e.g., Gender, Department) is called:",
+    "question": "Which interview type strictly adheres to an interview protocol and does not allow probing?",
     "options": [
-      "A) Ordinal scale",
-      "B) Interval scale",
-      "C) Nominal scale",
-      "D) Ratio scale"
+      "A) Semi-structured interviews.",
+      "B) Unstructured interviews.",
+      "C) Informal conversations.",
+      "D) Structured interviews."
     ],
-    "answer": "C) Nominal scale",
-    "explanation": "Nominal scales categorize data into distinct groups (Male/Female, CS/IS/DS departments) without any ranking or order between categories. You cannot say one category is 'higher' or 'better' than another. Ordinal scales (A) add a meaningful order to categories.",
+    "answer": "D) Structured interviews.",
+    "explanation": "Structured interviews strictly adhere to the protocol, are rigid, and offer little opportunity to probe and explore new topics.",
     "image": null
   },
   {
     "numb": 17,
     "type": "Multiple Choices",
-    "question": "A scale that categorizes responses with a $\\textbf{meaningful ranking}$ (e.g., $\\text{Poor} \\to \\text{Fair} \\to \\text{Good} \\to \\text{Excellent}$) is:",
+    "question": "What is a defining feature of unstructured interviews?",
     "options": [
-      "A) Nominal scale",
-      "B) Ordinal scale",
-      "C) Ratio scale",
-      "D) Binary scale"
+      "A) They allow the researcher to easily generalize findings to large groups.",
+      "B) They are the most time-efficient style for quantitative data.",
+      "C) They progress like a normal conversation with few or no planned questions.",
+      "D) They strictly follow a detailed, predefined questionnaire protocol."
     ],
-    "answer": "B) Ordinal scale",
-    "explanation": "Ordinal scales have categories with a clear, meaningful order — you know Excellent > Good > Fair > Poor. However, the intervals between categories are not necessarily equal (the 'distance' between Poor and Fair may not equal the distance between Good and Excellent).",
+    "answer": "C) They progress like a normal conversation with few or no planned questions.",
+    "explanation": "Unstructured interviews have few, if any, planned questions. They progress like a normal conversation and are helpful for sensitive topics.",
     "image": null
   },
   {
     "numb": 18,
     "type": "Multiple Choices",
-    "question": "The polling failure in the $\\text{2016 US Presidential Election}$ was largely attributed to:",
+    "question": "When should an interview report be written?",
     "options": [
-      "A) Voters deliberately providing false information",
-      "B) Non-representative sampling (oversampling college-educated voters) and self-selection bias",
-      "C) Using too many open-ended questions in the polls",
-      "D) Conducting the polls exclusively through face-to-face interviews"
+      "A) Only after all project interviews have been completed.",
+      "B) Just before the final presentation of the project results.",
+      "C) As soon as possible after the interview has concluded.",
+      "D) At least one week later to ensure objective reflection."
     ],
-    "answer": "B) Non-representative sampling (oversampling college-educated voters) and self-selection bias",
-    "explanation": "The 2016 polling errors occurred because the samples were not representative: college-educated voters were over-represented, and urban respondents were more likely to voluntarily participate (self-selection bias). This meant rural and non-college-educated voters' preferences were underrepresented in predictions.",
+    "answer": "C) As soon as possible after the interview has concluded.",
+    "explanation": "The slides state you should write the interview report as soon as possible after the interview, summarize it, and review it with the respondent.",
     "image": null
   },
   {
     "numb": 19,
     "type": "Multiple Choices",
-    "question": "$\\text{Observation}$ as a data collection method is described as an approach that:",
+    "question": "In questionnaires, what do 'attitudes' measure?",
     "options": [
-      "A) Requires direct questioning of all participants in a formal setting",
-      "B) Unobtrusively watches decision-makers in their natural environment to confirm findings from other methods",
-      "C) Is only used in experimental research with controlled variables",
-      "D) Replaces the need for interviews and questionnaires entirely"
+      "A) What people in the organization say they want.",
+      "B) What people in the organization think is true.",
+      "C) The physical properties of people or things.",
+      "D) What organizational members actually do."
     ],
-    "answer": "B) Unobtrusively watches decision-makers in their natural environment to confirm findings from other methods",
-    "explanation": "Observation is a supplementary, unobtrusive method where the researcher watches people in their natural setting without interfering. It is used to confirm or validate findings obtained through interviews or questionnaires, not to replace them.",
+    "answer": "A) What people in the organization say they want.",
+    "explanation": "According to Lecture 1, questionnaires gather info about: Attitudes (what people say they want), Beliefs (what they think is true), Behaviors (what members do), and Characteristics (properties of people or things).",
     "image": null
   },
   {
     "numb": 20,
     "type": "Multiple Choices",
-    "question": "A researcher designs a survey question that subtly suggests a preferred answer. This type of flawed question is called a:",
+    "question": "Which language guideline is recommended for survey questionnaire wording?",
     "options": [
-      "A) Double-barreled question",
-      "B) Bipolar question",
-      "C) Leading question",
-      "D) Probing question"
+      "A) Use low-level patronizing language to make it easy for everyone.",
+      "B) Word the questions to be simple, specific, short, and free of bias.",
+      "C) Keep questions long and detailed to cover all possible aspects.",
+      "D) Use technical jargon to show expertise and validate the study."
     ],
-    "answer": "C) Leading question",
-    "explanation": "Leading questions are designed (intentionally or unintentionally) to push respondents toward a particular answer. For example, 'Don't you agree our service is excellent?' subtly pressures a positive response. This is a major pitfall in survey design that can skew results.",
+    "answer": "B) Word the questions to be simple, specific, short, and free of bias.",
+    "explanation": "Questionnaire language should be simple, specific, short, not patronizing, and free of bias.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "How is 'reliability' defined in the context of survey measurement scales?",
+    "options": [
+      "A) The degree to which the question measures what is intended.",
+      "B) The absolute accuracy of the data compared to external records.",
+      "C) The rate at which participants return the completed surveys.",
+      "D) The consistency in responses when the measurement is repeated."
+    ],
+    "answer": "D) The consistency in responses when the measurement is repeated.",
+    "explanation": "Reliability of scales refers to consistency in response, whereas validity is the degree to which it measures what is intended.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "What is a characteristic of fixed format questionnaires?",
+    "options": [
+      "A) They are much harder to interpret and analyze than free format.",
+      "B) They consist of questions that require responses from a series of predefined answers.",
+      "C) They allow respondents to easily express complex, unlisted opinions.",
+      "D) They allow respondents to write freely at any length in empty spaces."
+    ],
+    "answer": "B) They consist of questions that require responses from a series of predefined answers.",
+    "explanation": "Fixed format surveys consist of questions with predefined response options, making them easier to interpret but more rigid (latent).",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "What is the primary purpose of the 'Observation' method in survey research?",
+    "options": [
+      "A) To replace interviews and questionnaires entirely for data collection.",
+      "B) To watch what members do and help confirm findings from other methods.",
+      "C) To manipulate physical environments to test cause-and-effect.",
+      "D) To force participants into making ergonomic decisions."
+    ],
+    "answer": "B) To watch what members do and help confirm findings from other methods.",
+    "explanation": "Observation is an unobtrusive method that provides insight into what members do and helps confirm what was found through other methods.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "In the 2016 U.S. Election polling failure, what was the primary methodological issue?",
+    "options": [
+      "A) Using too many open-ended questions in the polls.",
+      "B) Voters deliberately lying about their political opinions.",
+      "C) Non-representative sampling and self-selection bias.",
+      "D) A low response rate due to short questionnaire design."
+    ],
+    "answer": "C) Non-representative sampling and self-selection bias.",
+    "explanation": "The pre-election polls oversampled college-educated voters and undersampled rural voters (non-representative sample, self-selection bias).",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "Why was Apple’s 2018 customer survey on the iPhone considered biased?",
+    "options": [
+      "A) It used a leading question and lacked a neutral option.",
+      "B) It relied on face-to-face interviews which introduced observer bias.",
+      "C) It utilized a free format structure that was hard to analyze.",
+      "D) It was too long and had a high participant dropout rate."
+    ],
+    "answer": "A) It used a leading question and lacked a neutral option.",
+    "explanation": "Apple's survey asked 'How much do you love your iPhone?' which is a leading question that pressured positive responses and lacked a neutral option.",
     "image": null
   }
 ]

@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "What is the main objective of a survey?",
+    "options": [
+      "A) To observe animal behavior in the wild.",
+      "B) To run controlled laboratory tests on variables.",
+      "C) To collect information from a group of people for insights.",
+      "D) To analyze government archives without asking people."
+    ],
+    "answer": "C) To collect information from a group of people for insights.",
+    "explanation": "A survey is a method to gather opinions, behaviors, or characteristics from a group of people.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "What are the three key elements that make up a survey?",
+    "options": [
+      "A) Nominal, ordinal, and ratio scales.",
+      "B) Hypothesis, variables, and control group.",
+      "C) Attitudes, beliefs, and behaviors.",
+      "D) Population, sample, and questions."
+    ],
+    "answer": "D) Population, sample, and questions.",
+    "explanation": "The three key components are the population under study, the sample selected, and the questions asked.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "Which survey data collection method is usually conducted using online tools?",
+    "options": [
+      "A) Online surveys like Google Forms or Qualtrics.",
+      "B) Face-to-face interviews.",
+      "C) Paper-based questionnaires.",
+      "D) Telephone surveys."
+    ],
+    "answer": "A) Online surveys like Google Forms or Qualtrics.",
+    "explanation": "Online surveys are conducted using digital platforms like Google Forms or Qualtrics.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "Which question type allows respondents to answer in their own words at any length?",
+    "options": [
+      "A) Open-ended questions.",
+      "B) Double-barreled questions.",
+      "C) Closed questions.",
+      "D) Bipolar questions."
+    ],
+    "answer": "A) Open-ended questions.",
+    "explanation": "Open-ended questions allow respondents to reply in whatever manner and length they wish.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "What is a bipolar question?",
+    "options": [
+      "A) A question that only offers two opposing choices like yes or no.",
+      "B) A question that is asked as a follow-up to clarify points.",
+      "C) A question that asks two different things at once.",
+      "D) A question that guides respondents to a positive answer."
+    ],
+    "answer": "A) A question that only offers two opposing choices like yes or no.",
+    "explanation": "Bipolar questions restrict responses to exactly two options (e.g. Yes/No, Agree/Disagree).",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "What is a double-barreled question?",
+    "options": [
+      "A) A question that asks about two different topics in a single item.",
+      "B) A question that is used to follow up on a previous answer.",
+      "C) A question that has only yes or no response options.",
+      "D) A question that leads the respondent to a specific answer."
+    ],
+    "answer": "A) A question that asks about two different topics in a single item.",
+    "explanation": "Double-barreled questions ask two questions at once, making it difficult for respondents to answer accurately.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "Which question sequence begins with narrow, closed questions and broadens to open ones?",
+    "options": [
+      "A) Linear structure.",
+      "B) Diamond structure.",
+      "C) Funnel structure.",
+      "D) Pyramid structure."
+    ],
+    "answer": "D) Pyramid structure.",
+    "explanation": "The Pyramid structure begins with detailed, closed questions and broadens to open-ended ones.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "What is the main difference between structured and unstructured interviews?",
+    "options": [
+      "A) Structured interviews strictly follow a protocol, while unstructured are conversational.",
+      "B) Structured interviews use open questions, while unstructured use closed.",
+      "C) Structured interviews are face-to-face, while unstructured are online.",
+      "D) Structured interviews are quick, while unstructured are very cheap."
+    ],
+    "answer": "A) Structured interviews strictly follow a protocol, while unstructured are conversational.",
+    "explanation": "Structured interviews adhere strictly to a guide; unstructured interviews have few, if any, set questions.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "What are questionnaires useful for gathering information about in an organization?",
+    "options": [
+      "A) Attitudes, beliefs, behaviors, and characteristics.",
+      "B) Z-scores, confidence intervals, and margins of error.",
+      "C) Independent variables, control groups, and lab conditions.",
+      "D) Lemmas, stems, tokens, and corpora in text files."
+    ],
+    "answer": "A) Attitudes, beliefs, behaviors, and characteristics.",
+    "explanation": "Questionnaires gather information about attitudes, beliefs, behaviors, and characteristics.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "How does a cross-sectional survey collect data?",
+    "options": [
+      "A) From the same individuals repeatedly over a long period.",
+      "B) From a cohort of graduates over their entire careers.",
+      "C) From a population at a single point in time.",
+      "D) From a panel of respondents using multiple survey waves."
+    ],
+    "answer": "C) From a population at a single point in time.",
+    "explanation": "Cross-sectional surveys collect data at a single point in time, providing a snapshot.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "What is a longitudinal survey?",
+    "options": [
+      "A) A survey conducted with pilots before launching the full project.",
+      "B) A survey that collects data from different groups at one time.",
+      "C) A survey that only measures the height and weight of subjects.",
+      "D) A survey that collects data from the same group over an extended period."
+    ],
+    "answer": "D) A survey that collects data from the same group over an extended period.",
+    "explanation": "Longitudinal surveys track changes and trends over time by collecting data repeatedly.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "What is a panel survey?",
+    "options": [
+      "A) A non-probability survey where convenience samples are used.",
+      "B) A cross-sectional survey that is conducted via phone interviews.",
+      "C) A longitudinal survey where the exact same individuals are surveyed multiple times.",
+      "D) An experimental survey where variables are manipulated in a lab."
+    ],
+    "answer": "C) A longitudinal survey where the exact same individuals are surveyed multiple times.",
+    "explanation": "Panel surveys track the same group of individuals (the panel) over multiple survey waves.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "What is an experimental survey?",
+    "options": [
+      "A) A survey that targets hard-to-reach populations with referrals.",
+      "B) A survey that tests cause-and-effect by manipulating variables.",
+      "C) A survey that collects opinions without introducing changes.",
+      "D) A survey that only uses open-ended free format questions."
+    ],
+    "answer": "B) A survey that tests cause-and-effect by manipulating variables.",
+    "explanation": "Experimental surveys manipulate one or more independent variables to test cause-and-effect relationships.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "What is a non-experimental survey?",
+    "options": [
+      "A) A survey that manipulated Facebook news feeds in 2014.",
+      "B) A survey that tests cause-and-effect relationships directly.",
+      "C) A survey that uses control groups and random assignment.",
+      "D) A survey that describes trends and opinions without manipulating variables."
+    ],
+    "answer": "D) A survey that describes trends and opinions without manipulating variables.",
+    "explanation": "Non-experimental surveys describe trends, opinions, and behaviors without introducing changes or treatments.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "What is the main ethical requirement of informed consent?",
+    "options": [
+      "A) Participants must complete the survey in a single online session.",
+      "B) Participants must be paid a financial reward for their time.",
+      "C) Participants must agree to join with full knowledge of the purpose.",
+      "D) Participants must agree to have their names published in reports."
+    ],
+    "answer": "C) Participants must agree to join with full knowledge of the purpose.",
+    "explanation": "Informed consent ensures participants are fully informed about the study's purpose and choose to participate voluntarily.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "What is the difference between anonymity and confidentiality?",
+    "options": [
+      "A) Anonymity collects no identifying info, while confidentiality keeps it private.",
+      "B) Anonymity is for online surveys, while confidentiality is for interviews.",
+      "C) There is no difference between the two terms in survey ethics.",
+      "D) Confidentiality collects no info, while anonymity keeps it private."
+    ],
+    "answer": "A) Anonymity collects no identifying info, while confidentiality keeps it private.",
+    "explanation": "Anonymity collects no personal identifiers; confidentiality collects them but keeps them secure/private.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "What is the process of selecting a subset of a population to study called?",
+    "options": [
+      "A) Pretesting.",
+      "B) Scaling.",
+      "C) Tokenization.",
+      "D) Sampling."
+    ],
+    "answer": "D) Sampling.",
+    "explanation": "Sampling is the process of selecting a subset of a population for data collection.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "Which sampling category ensures every individual has an equal chance of selection?",
+    "options": [
+      "A) Probability sampling.",
+      "B) Non-probability sampling.",
+      "C) Convenience sampling.",
+      "D) Purposive sampling."
+    ],
+    "answer": "A) Probability sampling.",
+    "explanation": "Probability sampling involves random selection, giving everyone an equal chance.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "What is convenience sampling?",
+    "options": [
+      "A) Selecting participants who recruit other members sequentially.",
+      "B) Selecting participants who are easiest for the researcher to reach.",
+      "C) Selecting participants who meet specialized clinical criteria.",
+      "D) Selecting participants using a random number generator."
+    ],
+    "answer": "B) Selecting participants who are easiest for the researcher to reach.",
+    "explanation": "Convenience sampling is a non-probability method choosing the most accessible participants.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "What is a pilot test?",
+    "options": [
+      "A) A method to extract text from PDF files using Python.",
+      "B) A survey conducted only with airline pilots and crew.",
+      "C) A statistical test to check if expected counts are over 5.",
+      "D) A small-scale test run of a survey before full launch."
+    ],
+    "answer": "D) A small-scale test run of a survey before full launch.",
+    "explanation": "A pilot test is a small-scale run of a survey to evaluate its performance and design.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "What does reliability mean in survey measurements?",
+    "options": [
+      "A) The number of questions in the final questionnaire form.",
+      "B) Whether the survey measures what it claims to measure.",
+      "C) The consistency and repeatability of the survey results.",
+      "D) The response rate percentage achieved during invitations."
+    ],
+    "answer": "C) The consistency and repeatability of the survey results.",
+    "explanation": "Reliability is about consistency; validity is about accuracy (measuring the right thing).",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "What does validity mean in survey measurements?",
+    "options": [
+      "A) The standard deviation of the scores in the sample.",
+      "B) The margin of error of the sample proportion.",
+      "C) Whether the survey results are repeatable over time.",
+      "D) Whether the survey actually measures what it's supposed to."
+    ],
+    "answer": "D) Whether the survey actually measures what it's supposed to.",
+    "explanation": "Validity ensures the survey measures the correct construct.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "Which statistics summarize what is happening in a sample?",
+    "options": [
+      "A) Descriptive statistics.",
+      "B) Non-parametric statistics.",
+      "C) Experimental statistics.",
+      "D) Inferential statistics."
+    ],
+    "answer": "A) Descriptive statistics.",
+    "explanation": "Descriptive statistics summarize and describe data; inferential statistics make predictions about the population.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "What is tokenization in text preprocessing?",
+    "options": [
+      "A) Removing syntax glue words like 'the' and 'is'.",
+      "B) Splitting text into individual units like words.",
+      "C) Converting all text characters to lowercase.",
+      "D) Converting words like 'better' to their base form 'good'."
+    ],
+    "answer": "B) Splitting text into individual units like words.",
+    "explanation": "Tokenization splits text into individual units (tokens), such as words or punctuation.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "What is the Bag of Words (BoW) model?",
+    "options": [
+      "A) A model that aligns sequences to find domain conservation.",
+      "B) A simple model that counts word frequencies, ignoring grammar and order.",
+      "C) A model that detects sarcasm and emotional tone in text.",
+      "D) A model that translates words into different languages."
+    ],
+    "answer": "B) A simple model that counts word frequencies, ignoring grammar and order.",
+    "explanation": "BoW treats text as an unordered bag of words, counting frequencies while ignoring grammar and order.",
+    "image": null
+  }
+]

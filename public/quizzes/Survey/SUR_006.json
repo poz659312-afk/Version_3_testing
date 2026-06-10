@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "Which scale of measurement classifies data into categories with no mathematical order?",
+    "options": [
+      "A) Interval scale.",
+      "B) Nominal scale.",
+      "C) Ordinal scale.",
+      "D) Ratio scale."
+    ],
+    "answer": "B) Nominal scale.",
+    "explanation": "Nominal data classifies responses into distinct groups with no inherent ranking (e.g. Gender, Department).",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "What distinguishes the Ordinal scale from the Nominal scale?",
+    "options": [
+      "A) Ordinal scale has equal intervals between units.",
+      "B) Ordinal scale has a meaningful ranking between categories.",
+      "C) Ordinal scale has an absolute true zero point.",
+      "D) Ordinal scale is only used for numerical measurements."
+    ],
+    "answer": "B) Ordinal scale has a meaningful ranking between categories.",
+    "explanation": "Ordinal scale categorizes responses with a meaningful order/ranking, but the intervals between rankings are not equal.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "What is the main difference between Interval and Ratio scales?",
+    "options": [
+      "A) Ratio scale has a true zero point, while Interval does not.",
+      "B) Interval scale is for population, while Ratio is for sample.",
+      "C) Ratio scale is categorical, while Interval is numerical.",
+      "D) Interval scale has equal intervals, while Ratio does not."
+    ],
+    "answer": "A) Ratio scale has a true zero point, while Interval does not.",
+    "explanation": "Both have equal intervals, but Ratio has a true absolute zero (e.g. height, income) whereas Interval has a relative zero (e.g. temperature).",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "How is descriptive statistics defined in survey analysis?",
+    "options": [
+      "A) It makes predictions and inferences about the target population.",
+      "B) It manipulates independent variables to test cause-and-effect.",
+      "C) It recruits participants through a network of referrals.",
+      "D) It summarizes data to describe what is happening in the sample."
+    ],
+    "answer": "D) It summarizes data to describe what is happening in the sample.",
+    "explanation": "Descriptive statistics summarizes data to show what is happening, while inferential statistics makes predictions about the population.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "What is the purpose of inferential statistics in surveys?",
+    "options": [
+      "A) To describe and summarize the raw scores of the sample.",
+      "B) To check for grammatical spelling errors in text responses.",
+      "C) To make predictions and inferences about what might happen in the population.",
+      "D) To create online forms and send personalized invitations."
+    ],
+    "answer": "C) To make predictions and inferences about what might happen in the population.",
+    "explanation": "Inferential statistics uses sample data to make predictions or draw conclusions about the broader population.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "Which of the following is an example of descriptive statistics?",
+    "options": [
+      "A) Hypothesizing that gender influences course recommendation.",
+      "B) Calculating that the average satisfaction score of respondents is 4.2.",
+      "C) Determining if a score is significantly different from last year.",
+      "D) Generalizing a sample preference to predict a national election."
+    ],
+    "answer": "B) Calculating that the average satisfaction score of respondents is 4.2.",
+    "explanation": "Stating the average satisfaction score of the sample is a summary description of the data (descriptive statistics).",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "Why is summarizing data important in survey research?",
+    "options": [
+      "A) It eliminates the need to calculate a confidence interval.",
+      "B) It increases the size of the population under study.",
+      "C) It replaces the necessity of having independent observations.",
+      "D) It helps spot patterns, compare groups, and reveal hidden trends."
+    ],
+    "answer": "D) It helps spot patterns, compare groups, and reveal hidden trends.",
+    "explanation": "Without summarizing, raw data is overwhelming, outliers go unnoticed, and trends stay hidden. Summary stats spot patterns and compare groups.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "What are the three common measures of central tendency?",
+    "options": [
+      "A) Chi-Square, Z-score, and p-value.",
+      "B) Mean, Median, and Mode.",
+      "C) Nominal, Ordinal, and Interval.",
+      "D) Range, Variance, and Standard Deviation."
+    ],
+    "answer": "B) Mean, Median, and Mode.",
+    "explanation": "Measures of central tendency indicate the center of the data and include the Mean, Median, and Mode.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "When is the Mean the best measure of central tendency to use?",
+    "options": [
+      "A) For nominal data to find the most frequent category.",
+      "B) For interval/ratio data that has no outliers.",
+      "C) For small sample sizes with non-probability sampling.",
+      "D) For ordinal data or when severe outliers are present."
+    ],
+    "answer": "B) For interval/ratio data that has no outliers.",
+    "explanation": "The mean is best for interval/ratio data without outliers. Outliers can severely distort the mean.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "Which measure of central tendency is best when outliers are present in the dataset?",
+    "options": [
+      "A) Mean.",
+      "B) Standard Deviation.",
+      "C) Median.",
+      "D) Mode."
+    ],
+    "answer": "C) Median.",
+    "explanation": "The median (the middle value) is robust to outliers, making it best for ordinal data or when outliers are present.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "When is the Mode the most appropriate measure of central tendency?",
+    "options": [
+      "A) For nominal/ordinal data to find the most frequent category.",
+      "B) For interval/ratio data with a perfectly normal distribution.",
+      "C) For tracking GPA changes in longitudinal cohort studies.",
+      "D) For calculating the margin of error of a sample proportion."
+    ],
+    "answer": "A) For nominal/ordinal data to find the most frequent category.",
+    "explanation": "The mode is the most frequent category, making it best for nominal/ordinal data.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "What does a confidence interval (CI) represent in surveys?",
+    "options": [
+      "A) The probability that the null hypothesis is true in a test.",
+      "B) A range within which we believe the true population parameter lies.",
+      "C) The percentage of invited individuals who completed the survey.",
+      "D) The difference between observed and expected cell counts."
+    ],
+    "answer": "B) A range within which we believe the true population parameter lies.",
+    "explanation": "A confidence interval provides a range within which we believe the true population parameter lies, based on a sample.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "Why do we need to calculate confidence intervals for survey data?",
+    "options": [
+      "A) To force categorical variables to become numerical variables.",
+      "B) Surveys collect data from a sample, not the entire population.",
+      "C) To ensure that all respondents answer the questions honestly.",
+      "D) To prove that the expected cell count is greater than 5."
+    ],
+    "answer": "B) Surveys collect data from a sample, not the entire population.",
+    "explanation": "Because we only study a sample, we need to express the reliability of our population estimates using confidence intervals.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "In the statement '62% support Policy X ± 4% (95% CI)', what is the ± 4% called?",
+    "options": [
+      "A) Confidence Level.",
+      "B) Standard Deviation.",
+      "C) Margin of Error.",
+      "D) Chi-Square Statistic."
+    ],
+    "answer": "C) Margin of Error.",
+    "explanation": "The ± percentage represents the margin of error, which is the maximum expected difference between sample and population.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "When is the Chi-Square Test for Independence used in survey analysis?",
+    "options": [
+      "A) When we want to clean and lowercase unstructured text data.",
+      "B) When we want to find the association between two categorical variables.",
+      "C) When we want to compare the means of two interval variables.",
+      "D) When we want to predict a ratio variable over a long time frame."
+    ],
+    "answer": "B) When we want to find the association between two categorical variables.",
+    "explanation": "The Chi-Square Test for Independence is used when both variables are categorical and we want to find if there is an association.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Which of the following is an assumption of the Chi-Square test?",
+    "options": [
+      "A) Variables must be measured on a ratio scale.",
+      "B) Categories can overlap and not be mutually exclusive.",
+      "C) Observations must be independent.",
+      "D) Expected cell counts must be less than 5."
+    ],
+    "answer": "C) Observations must be independent.",
+    "explanation": "Assumptions: 1. Independent observations (each respondent appears once), 2. Mutually exclusive categories, 3. Expected counts generally $\\ge 5$.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "What does 'independent observations' mean for the Chi-Square test?",
+    "options": [
+      "A) The sample size must be calculated using Cochran's formula.",
+      "B) The margin of error must be set to exactly 5%.",
+      "C) Each respondent appears only once and does not influence others.",
+      "D) The independent variable must be manipulated in a laboratory."
+    ],
+    "answer": "C) Each respondent appears only once and does not influence others.",
+    "explanation": "Observations must be independent: each individual appears once, and no participant influences another's response.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "In a Chi-Square test, what do 'observed counts' represent?",
+    "options": [
+      "A) The average satisfaction score of the sample.",
+      "B) The counts expected if there were no association.",
+      "C) The counts of participants who dropped out of the study.",
+      "D) The actual counts you recorded in your survey data."
+    ],
+    "answer": "D) The actual counts you recorded in your survey data.",
+    "explanation": "Observed counts are what you actually saw/recorded in the data.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "In a Chi-Square test, what do 'expected counts' represent?",
+    "options": [
+      "A) What you would expect if there were no association between variables.",
+      "B) The final counts after removing outliers from the sample.",
+      "C) The target sample size calculated before conducting the survey.",
+      "D) The percentage of respondents who gave positive opinions."
+    ],
+    "answer": "A) What you would expect if there were no association between variables.",
+    "explanation": "Expected counts are what we expect if the null hypothesis ($H_0$: no association) is true.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "What is the null hypothesis ($H_0$) for a Chi-Square test of gender and course recommendation?",
+    "options": [
+      "A) Gender and recommendation are independent.",
+      "B) Gender causes respondents to recommend the course.",
+      "C) The recommendation rate is exactly equal for males and females.",
+      "D) Gender and recommendation are not independent."
+    ],
+    "answer": "A) Gender and recommendation are independent.",
+    "explanation": "The null hypothesis ($H_0$) states that the two categorical variables are independent (no association).",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "What is the alternative hypothesis ($H_1$) for a Chi-Square test of gender and course recommendation?",
+    "options": [
+      "A) Expected counts are equal to observed counts.",
+      "B) Gender and recommendation are not independent.",
+      "C) Gender does not cause course recommendation.",
+      "D) Gender and recommendation are independent."
+    ],
+    "answer": "B) Gender and recommendation are not independent.",
+    "explanation": "The alternative hypothesis ($H_1$) states that the two variables are not independent (there is an association).",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "What is the formula to calculate expected counts in a Chi-Square test?",
+    "options": [
+      "A) $\\text{Expected Count} = \\frac{\\text{Row Total} + \\text{Column Total}}{\\text{Grand Total}}$",
+      "B) $\\text{Expected Count} = \\frac{\\text{Row Total} \\times \\text{Column Total}}{\\text{Grand Total}}$",
+      "C) $\\text{Expected Count} = \\frac{(\\text{Observed} - \\text{Expected})^2}{\\text{Expected}}$",
+      "D) $\\text{Expected Count} = \\frac{\\text{Row Total} \\times \\text{Column Total}}{2}$"
+    ],
+    "answer": "B) $\\text{Expected Count} = \\frac{\\text{Row Total} \\times \\text{Column Total}}{\\text{Grand Total}}$",
+    "explanation": "Expected count for a cell = (Row Total * Column Total) / Grand Total.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "In a survey of 400 people (200 Male, 200 Female), if 280 recommend the course, what is the expected count of Males who recommend the course?",
+    "options": [
+      "A) 200.",
+      "B) 120.",
+      "C) 60.",
+      "D) 140."
+    ],
+    "answer": "D) 140.",
+    "explanation": "Expected = (Row Total * Column Total) / Total = (200 * 280) / 400 = 140.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "What is the Chi-Square statistic ($\\chi^2$) formula?",
+    "options": [
+      "A) $\\chi^2 = \\sum \\frac{(\\text{Observed} - \\text{Expected})^2}{\\text{Observed}}$",
+      "B) $\\chi^2 = \\sum (\\text{Observed} - \\text{Expected})^2$",
+      "C) $\\chi^2 = \\sum \\frac{(\\text{Observed} - \\text{Expected})^2}{\\text{Expected}}$",
+      "D) $\\chi^2 = \\sum \\frac{\\text{Observed} - \\text{Expected}}{\\text{Expected}}$"
+    ],
+    "answer": "C) $\\chi^2 = \\sum \\frac{(\\text{Observed} - \\text{Expected})^2}{\\text{Expected}}$",
+    "explanation": "The Chi-Square statistic is the sum of (Observed - Expected)^2 / Expected for all cells.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "If the computed Chi-Square statistic is 19.06 and is highly significant, what does it conclude?",
+    "options": [
+      "A) We accept the null hypothesis; gender and recommendation are independent.",
+      "B) We must discard the survey data and run an experimental study.",
+      "C) The survey sample size of 400 was too small to draw conclusions.",
+      "D) We reject the null hypothesis; gender and recommendation are associated."
+    ],
+    "answer": "D) We reject the null hypothesis; gender and recommendation are associated.",
+    "explanation": "A high Chi-Square statistic allows us to reject the null hypothesis of independence, indicating a significant association between the variables.",
+    "image": null
+  }
+]

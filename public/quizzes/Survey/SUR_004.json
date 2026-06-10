@@ -2,281 +2,351 @@
   {
     "numb": 1,
     "type": "Multiple Choices",
-    "question": "$\\text{Sampling}$ in survey research is defined as:",
+    "question": "What is the primary definition of sampling in survey research?",
     "options": [
-      "A) Studying every single member of a population without exception",
-      "B) The process of selecting a subset of individuals from a population to collect data from",
-      "C) Randomly assigning participants to control and experimental groups",
-      "D) The process of cleaning and preprocessing survey responses"
+      "A) Assigning numerical scales to measure qualitative traits.",
+      "B) Selecting a subset of a population to collect data from.",
+      "C) Studying every single member of a defined population.",
+      "D) Manipulating independent variables in a controlled lab."
     ],
-    "answer": "B) The process of selecting a subset of individuals from a population to collect data from",
-    "explanation": "Sampling means choosing a representative subset rather than studying everyone. Studying the entire population is a census, not sampling. Random assignment (C) is an experimental design concept, and data cleaning (D) happens after data collection.",
+    "answer": "B) Selecting a subset of a population to collect data from.",
+    "explanation": "Sampling is the process of selecting a subset of a population to collect data from, instead of studying the entire population.",
     "image": null
   },
   {
     "numb": 2,
     "type": "Multiple Choices",
-    "question": "Which of the following is NOT a reason that sampling is important in survey research?",
+    "question": "Which of the following is a key reason for using sampling?",
     "options": [
-      "A) Resource efficiency — it saves time and money",
-      "B) Reduced burden on both researchers and respondents",
-      "C) It guarantees zero error in the survey results",
-      "D) Feasibility — it enables data collection even when the population is too large to study entirely"
+      "A) It allows researchers to avoid obtaining informed consent.",
+      "B) It saves time/resources and makes research feasible.",
+      "C) It guarantees a 100% response rate from the population.",
+      "D) It completely eliminates the margin of error in results."
     ],
-    "answer": "C) It guarantees zero error in the survey results",
-    "explanation": "Sampling always introduces some degree of sampling error — the inherent difference between sample results and true population values. No sampling method can guarantee zero error. Sampling's actual benefits are efficiency (A), reduced burden (B), and feasibility (D).",
+    "answer": "B) It saves time/resources and makes research feasible.",
+    "explanation": "Sampling is used because it saves time/resources, makes research feasible, and ensures accuracy.",
     "image": null
   },
   {
     "numb": 3,
     "type": "Multiple Choices",
-    "question": "In $\\text{probability sampling}$, every individual in the population:",
+    "question": "What are the two main types of sampling methods?",
     "options": [
-      "A) Has an unknown and potentially zero chance of being selected",
-      "B) Has a known, non-zero chance of being selected",
-      "C) Is selected based on the researcher's personal judgment",
-      "D) Must volunteer to participate before being eligible"
+      "A) Cross-sectional Sampling and Longitudinal Sampling.",
+      "B) Descriptive Sampling and Inferential Sampling.",
+      "C) Stratified Sampling and Cluster Sampling.",
+      "D) Probability Sampling and Non-Probability Sampling."
     ],
-    "answer": "B) Has a known, non-zero chance of being selected",
-    "explanation": "The defining characteristic of probability sampling is that each member's probability of selection is known and greater than zero. This mathematical property enables statistical inference and generalization. Personal judgment (C) and volunteering (D) are non-probability approaches.",
+    "answer": "D) Probability Sampling and Non-Probability Sampling.",
+    "explanation": "The two main types of sampling methods are probability sampling and non-probability sampling.",
     "image": null
   },
   {
     "numb": 4,
     "type": "Multiple Choices",
-    "question": "$\\text{Simple Random Sampling (SRS)}$ ensures that:",
+    "question": "What is the defining feature of probability sampling?",
     "options": [
-      "A) Every member of the population has an equal chance of being selected",
-      "B) The population is first divided into subgroups before selection",
-      "C) Every $n$-th individual from an ordered list is selected",
-      "D) Entire geographic clusters are randomly chosen"
+      "A) Participants are selected based on convenience and proximity.",
+      "B) Only individuals who meet specialized criteria are included.",
+      "C) Participants recruit other participants sequentially.",
+      "D) Every individual in the population has an equal chance of selection."
     ],
-    "answer": "A) Every member of the population has an equal chance of being selected",
-    "explanation": "SRS is the most basic probability method — like a lottery where every person has the same chance. Dividing into subgroups (B) is stratified sampling, selecting every $n$-th person (C) is systematic sampling, and choosing entire clusters (D) is cluster sampling.",
+    "answer": "D) Every individual in the population has an equal chance of selection.",
+    "explanation": "In probability sampling, every individual has an equal chance of being selected, which minimizes bias.",
     "image": null
   },
   {
     "numb": 5,
     "type": "Multiple Choices",
-    "question": "In $\\text{stratified sampling}$, the population is divided into subgroups called $\\text{strata}$ based on specific characteristics. A random sample is then drawn from:",
+    "question": "In Simple Random Sampling (SRS), how are individuals chosen?",
     "options": [
-      "A) Only the largest stratum to save time",
-      "B) A single randomly chosen stratum",
-      "C) Each stratum to ensure all segments are represented",
-      "D) Whichever stratum is most convenient to access"
+      "A) Assigned numbers and selected using a random number generator.",
+      "B) Chosen based on how easily reachable they are to the analyst.",
+      "C) Divided into subgroups and randomly sampled from each.",
+      "D) Grouped into clusters and all members of selected clusters surveyed."
     ],
-    "answer": "C) Each stratum to ensure all segments are represented",
-    "explanation": "The power of stratified sampling is that every subgroup gets represented by drawing random samples from each stratum. This guarantees representation of minorities or smaller segments that might be missed by simple random sampling.",
+    "answer": "A) Assigned numbers and selected using a random number generator.",
+    "explanation": "In SRS, every member is assigned a number, and a random number generator selects the sample.",
     "image": null
   },
   {
     "numb": 6,
     "type": "Multiple Choices",
-    "question": "$\\text{Cluster sampling}$ differs from stratified sampling in that cluster sampling:",
+    "question": "How is Stratified Sampling executed?",
     "options": [
-      "A) Divides the population into homogeneous strata and samples from each",
-      "B) Divides the population into subgroups called clusters and randomly selects entire clusters rather than individuals from each subgroup",
-      "C) Selects every $n$-th individual from a list",
-      "D) Requires all members of the population to be individually identified and numbered"
+      "A) The researcher recruits participants who are easiest to reach.",
+      "B) The entire population is surveyed at multiple intervals.",
+      "C) Population is split into subgroups, and a random sample is taken from each.",
+      "D) Specific clusters are selected, and all members in them are surveyed."
     ],
-    "answer": "B) Divides the population into subgroups called clusters and randomly selects entire clusters rather than individuals from each subgroup",
-    "explanation": "In cluster sampling, you randomly select whole clusters (e.g., entire schools or villages) and survey everyone within them. In stratified sampling, you sample individuals from every stratum. Cluster sampling is more practical for dispersed populations but less precise.",
+    "answer": "C) Population is split into subgroups, and a random sample is taken from each.",
+    "explanation": "Stratified sampling divides the population into subgroups (strata) based on characteristics, and takes a random sample from each.",
     "image": null
   },
   {
     "numb": 7,
     "type": "Multiple Choices",
-    "question": "A researcher selects every $10\\text{th}$ student from an alphabetical enrollment list. This technique is called:",
+    "question": "How does Cluster Sampling differ from Stratified Sampling?",
     "options": [
-      "A) Simple random sampling",
-      "B) Cluster sampling",
-      "C) Systematic sampling",
-      "D) Stratified sampling"
+      "A) Entire subgroups are randomly chosen and fully surveyed, rather than sampling within all subgroups.",
+      "B) It divides the population into strata based on age and gender only.",
+      "C) It is a non-probability sampling method, while stratified is probability.",
+      "D) It requires a random number generator for every single individual."
     ],
-    "answer": "C) Systematic sampling",
-    "explanation": "Systematic sampling selects every $k$-th individual from an ordered list after a random starting point. It's simpler to execute than SRS (no random number generator needed for each selection) but assumes the list doesn't contain hidden patterns that align with the sampling interval.",
+    "answer": "A) Entire subgroups are randomly chosen and fully surveyed, rather than sampling within all subgroups.",
+    "explanation": "In cluster sampling, the population is divided into clusters, a few clusters are randomly chosen, and all members of those clusters are surveyed. Stratified samples within all strata.",
     "image": null
   },
   {
     "numb": 8,
     "type": "Multiple Choices",
-    "question": "$\\text{Multistage sampling}$ is best described as:",
+    "question": "What is non-probability sampling best used for?",
     "options": [
-      "A) A simplified version of simple random sampling",
-      "B) A more complex version of cluster sampling involving multiple stages of selection (e.g., state → city → neighborhood)",
-      "C) The same as stratified sampling but with larger strata",
-      "D) A non-probability method that selects based on quotas"
+      "A) When the researcher wants to eliminate selection bias completely.",
+      "B) When quick results are needed with limited time and cost.",
+      "C) When conducting large-scale government census operations.",
+      "D) When high representativeness and generalizability are required."
     ],
-    "answer": "B) A more complex version of cluster sampling involving multiple stages of selection (e.g., state → city → neighborhood)",
-    "explanation": "Multistage sampling applies cluster sampling at multiple levels — for example, first randomly selecting states, then cities within those states, then neighborhoods within those cities. Each stage narrows the geographic scope while maintaining randomness.",
+    "answer": "B) When quick results are needed with limited time and cost.",
+    "explanation": "Non-probability sampling is used when quick results are needed, but it is less accurate than probability sampling.",
     "image": null
   },
   {
     "numb": 9,
     "type": "Multiple Choices",
-    "question": "$\\text{Convenience sampling}$ is a non-probability technique where participants are selected based on:",
+    "question": "What is Convenience Sampling?",
     "options": [
-      "A) A random number generator ensuring equal probability",
-      "B) How easy they are to reach or contact",
-      "C) Their specific expertise relevant to the research question",
-      "D) A pre-defined quota for each demographic group"
+      "A) Selecting participants who are recruited by previous respondents.",
+      "B) Selecting participants who are the easiest to reach.",
+      "C) Selecting participants using a random number generator.",
+      "D) Selecting participants based on specialized criteria."
     ],
-    "answer": "B) How easy they are to reach or contact",
-    "explanation": "Convenience sampling selects whoever is most accessible — classmates, nearby shoppers, social media followers. While fast and cheap, it introduces significant selection bias because the easily reached group may not represent the broader population.",
+    "answer": "B) Selecting participants who are the easiest to reach.",
+    "explanation": "Convenience sampling involves selecting participants who are easiest to reach for the researcher.",
     "image": null
   },
   {
     "numb": 10,
     "type": "Multiple Choices",
-    "question": "In $\\text{quota sampling}$, participants are selected until:",
+    "question": "Which sampling method is a researcher using if they target only diabetic patients for a study on diabetes?",
     "options": [
-      "A) The entire population has been surveyed",
-      "B) A pre-defined number for each category (quota) has been met (e.g., 50 males and 50 females)",
-      "C) A random number generator produces a stopping signal",
-      "D) All clusters in the population have been included"
+      "A) Snowball Sampling.",
+      "B) Convenience Sampling.",
+      "C) Simple Random Sampling.",
+      "D) Purposive Sampling."
     ],
-    "answer": "B) A pre-defined number for each category (quota) has been met (e.g., 50 males and 50 females)",
-    "explanation": "Quota sampling sets target numbers for specific demographic groups (quotas) and recruits from whoever is available until those targets are met. Unlike stratified sampling, the selection within each group is not random — it's based on convenience.",
+    "answer": "D) Purposive Sampling.",
+    "explanation": "Purposive sampling selects participants based on specific criteria (e.g. only diabetic patients for a diabetes study).",
     "image": null
   },
   {
     "numb": 11,
     "type": "Multiple Choices",
-    "question": "$\\text{Snowball sampling}$ is especially useful for:",
+    "question": "What is a disadvantage of purposive sampling?",
     "options": [
-      "A) Large, easily accessible populations",
-      "B) Populations where every member can be identified and numbered",
-      "C) Hard-to-reach populations where initial participants recruit other participants (e.g., rare diseases, specific social groups)",
-      "D) Ensuring that every individual has an equal chance of selection"
+      "A) It fails to target relevant people for specialized research.",
+      "B) The results are not generalizable to a large population.",
+      "C) It requires a complete list of the entire population to assign numbers.",
+      "D) It is extremely slow and expensive compared to probability sampling."
     ],
-    "answer": "C) Hard-to-reach populations where initial participants recruit other participants (e.g., rare diseases, specific social groups)",
-    "explanation": "Snowball sampling works like a chain reaction — each participant refers others from the same hard-to-reach community. This is invaluable when no sampling frame exists (e.g., undocumented immigrants, niche hobbyist groups, people with rare conditions).",
+    "answer": "B) The results are not generalizable to a large population.",
+    "explanation": "Purposive sampling is not generalizable because it is a non-probability method that targets a specific subgroup.",
     "image": null
   },
   {
     "numb": 12,
     "type": "Multiple Choices",
-    "question": "$\\text{Purposive sampling}$ involves selecting individuals who:",
+    "question": "What is Snowball Sampling?",
     "options": [
-      "A) Are chosen purely at random using a lottery system",
-      "B) Have specific knowledge or experience relevant to the research goal",
-      "C) Are the most convenient to contact regardless of their expertise",
-      "D) Recruit other participants through their social networks"
+      "A) Choosing participants based on the geographic clusters they live in.",
+      "B) Dividing the sample into equal numbers of males and females.",
+      "C) Starting with a small group of participants who recruit others.",
+      "D) Selecting participants from a random list of phone numbers."
     ],
-    "answer": "B) Have specific knowledge or experience relevant to the research goal",
-    "explanation": "Purposive (or judgmental) sampling targets individuals specifically because of their relevant expertise or experience. For example, interviewing only cybersecurity experts for a study on network vulnerabilities. It's common in qualitative research where depth of insight matters more than statistical generalization.",
+    "answer": "C) Starting with a small group of participants who recruit others.",
+    "explanation": "Snowball sampling starts with a small group of participants, who then recruit more participants from their network.",
     "image": null
   },
   {
     "numb": 13,
     "type": "Multiple Choices",
-    "question": "If a researcher's goal is to produce results that are $\\text{generalizable}$ to the entire population, they should use:",
+    "question": "Which of the following is an advantage of Snowball Sampling?",
     "options": [
-      "A) Convenience sampling",
-      "B) Snowball sampling",
-      "C) Probability sampling",
-      "D) Purposive sampling"
+      "A) It makes verifying sample diversity extremely easy.",
+      "B) It allows for easy statistical generalization to the population.",
+      "C) It is highly useful for reaching hard-to-reach populations.",
+      "D) It guarantees a very low risk of selection bias."
     ],
-    "answer": "C) Probability sampling",
-    "explanation": "Only probability sampling allows valid statistical generalization because every member of the population has a known chance of selection. Non-probability methods (convenience, snowball, purposive) may produce useful insights but cannot statistically represent the full population.",
+    "answer": "C) It is highly useful for reaching hard-to-reach populations.",
+    "explanation": "Snowball sampling is advantageous for hard-to-reach populations (e.g. drug addiction studies) where trust is needed.",
     "image": null
   },
   {
     "numb": 14,
     "type": "Multiple Choices",
-    "question": "The three key factors that determine the appropriate $\\text{sample size}$ for a survey are:",
+    "question": "What is a major disadvantage of Snowball Sampling?",
     "options": [
-      "A) Number of questions, survey mode, and researcher's budget",
-      "B) Required precision, confidence level, and population size",
-      "C) Type of questions, length of interviews, and available software",
-      "D) Interviewer experience, survey format, and time of year"
+      "A) It is too time-consuming to find the first participant.",
+      "B) It requires expensive random number generation software.",
+      "C) High bias risk and difficulty verifying sample diversity.",
+      "D) It cannot be used for sensitive qualitative topics."
     ],
-    "answer": "B) Required precision, confidence level, and population size",
-    "explanation": "Sample size calculations depend on: how precise you need your estimates to be (precision/margin of error), how confident you want to be in those estimates (confidence level, typically 95%), and how large the total population is. Larger populations, higher confidence, and tighter precision all require bigger samples.",
+    "answer": "C) High bias risk and difficulty verifying sample diversity.",
+    "explanation": "Disadvantages of snowball sampling include high bias risk (referrals share traits) and difficulty verifying diversity.",
     "image": null
   },
   {
     "numb": 15,
     "type": "Multiple Choices",
-    "question": "$\\text{Sampling error}$ is defined as:",
+    "question": "Why is probability sampling more scientifically accurate than non-probability sampling?",
     "options": [
-      "A) Errors caused by poor question wording or survey design",
-      "B) The inherent difference between results found in the sample and the actual results for the entire population",
-      "C) Errors resulting from data entry mistakes by the research team",
-      "D) The bias introduced when participants refuse to complete the survey"
+      "A) It is much faster and cheaper to execute in the field.",
+      "B) It relies on convenience to ensure participants answer honestly.",
+      "C) Random selection reduces bias and allows statistical inference.",
+      "D) It requires much smaller sample sizes for the same accuracy."
     ],
-    "answer": "B) The inherent difference between results found in the sample and the actual results for the entire population",
-    "explanation": "Sampling error is unavoidable — any time you study a subset rather than the full population, your results will differ somewhat from the true population values. This error decreases with larger sample sizes and better sampling methods, but never reaches zero.",
+    "answer": "C) Random selection reduces bias and allows statistical inference.",
+    "explanation": "Probability sampling reduces selection bias, increases representativeness, and allows for statistical inference/generalization.",
     "image": null
   },
   {
     "numb": 16,
     "type": "Multiple Choices",
-    "question": "$\\text{Non-sampling error}$ includes problems such as:",
+    "question": "What happens if a survey's sample size is too small?",
     "options": [
-      "A) The natural variation that occurs because only a subset of the population is studied",
-      "B) Non-response bias, researcher bias, or data entry errors — issues unrelated to how the sample was selected",
-      "C) The mathematical uncertainty inherent in all statistical estimates",
-      "D) Selecting too large a sample, which increases accuracy beyond what is needed"
+      "A) Resources are wasted without any improvement in accuracy.",
+      "B) The margin of error becomes extremely close to zero.",
+      "C) The confidence level of the results automatically increases.",
+      "D) The results may not be representative of the population."
     ],
-    "answer": "B) Non-response bias, researcher bias, or data entry errors — issues unrelated to how the sample was selected",
-    "explanation": "Non-sampling errors come from sources other than the sampling process: people refusing to respond (nonresponse bias), interviewers influencing answers (researcher bias), data entry mistakes, faulty instruments, etc. Unlike sampling error, these cannot be reduced simply by increasing sample size.",
+    "answer": "D) The results may not be representative of the population.",
+    "explanation": "If the sample size is too small, the results may not be representative of the population, increasing sampling error.",
     "image": null
   },
   {
     "numb": 17,
     "type": "Multiple Choices",
-    "question": "A researcher studying health habits surveys only her own university classmates because they are easily accessible. This is an example of:",
+    "question": "Which factor measures how much the sample result may differ from the actual population value?",
     "options": [
-      "A) Stratified sampling",
-      "B) Systematic sampling",
-      "C) Convenience sampling",
-      "D) Simple random sampling"
+      "A) Confidence Level.",
+      "B) Population Size.",
+      "C) Margin of Error.",
+      "D) Standard Deviation."
     ],
-    "answer": "C) Convenience sampling",
-    "explanation": "The researcher chose participants based solely on easy access (her classmates), not through any random or systematic selection process. This is the textbook definition of convenience sampling — fast and easy but highly prone to selection bias.",
+    "answer": "C) Margin of Error.",
+    "explanation": "Margin of error (sampling error) measures how much the sample result may differ from the actual population value.",
     "image": null
   },
   {
     "numb": 18,
     "type": "Multiple Choices",
-    "question": "Which of the following statements about $\\text{non-probability sampling}$ is TRUE?",
+    "question": "What are the common margins of error used in survey research?",
     "options": [
-      "A) It provides the most statistically robust results for generalization",
-      "B) Every member of the population has a known chance of inclusion",
-      "C) It is quicker and easier to implement but more prone to bias than probability sampling",
-      "D) It always requires a complete list of the population"
+      "A) 10%, 15%, 20%.",
+      "B) 1%, 3%, 5%.",
+      "C) 0.1%, 0.2%, 0.3%.",
+      "D) 50%, 60%, 70%."
     ],
-    "answer": "C) It is quicker and easier to implement but more prone to bias than probability sampling",
-    "explanation": "Non-probability methods are practical — faster, cheaper, and don't require a complete population list. The trade-off is that without random selection, bias is more likely, and results can't be statistically generalized. Probability sampling (not non-probability) requires known selection chances (B).",
+    "answer": "B) 1%, 3%, 5%.",
+    "explanation": "Common margins of error are 1%, 3%, and 5%.",
     "image": null
   },
   {
     "numb": 19,
     "type": "Multiple Choices",
-    "question": "A national health survey first randomly selects 5 states, then randomly selects 3 cities within each state, and finally randomly selects households within those cities. This is an example of:",
+    "question": "What is the Z-score for the most common confidence level (95%) in survey research?",
     "options": [
-      "A) Simple random sampling",
-      "B) Stratified sampling",
-      "C) Systematic sampling",
-      "D) Multistage sampling"
+      "A) 2.576.",
+      "B) 1.96.",
+      "C) 1.645.",
+      "D) 1.00."
     ],
-    "answer": "D) Multistage sampling",
-    "explanation": "This uses three sequential stages of random selection: states → cities → households. Each stage narrows the scope further while maintaining probability-based selection. This is far more practical for national studies than trying to directly sample individual households across the entire country.",
+    "answer": "B) 1.96.",
+    "explanation": "The Z-score for a 95% confidence level is 1.96, which is the most common confidence level used.",
     "image": null
   },
   {
     "numb": 20,
     "type": "Multiple Choices",
-    "question": "Cluster sampling is particularly useful when:",
+    "question": "What Z-score corresponds to a 99% confidence level?",
     "options": [
-      "A) The population is small and easily accessible in one location",
-      "B) A complete list of all individuals in the population is available",
-      "C) The population is geographically dispersed and it is impractical to sample individuals directly",
-      "D) The researcher wants to ensure exact quotas for each demographic group"
+      "A) 2.576.",
+      "B) 1.645.",
+      "C) 1.50.",
+      "D) 1.96."
     ],
-    "answer": "C) The population is geographically dispersed and it is impractical to sample individuals directly",
-    "explanation": "Cluster sampling is ideal when the population is spread across many locations (e.g., all schools in a country). Instead of sampling individual students from every school, you randomly select a few schools (clusters) and survey all students within them — dramatically reducing travel and logistical costs.",
+    "answer": "A) 2.576.",
+    "explanation": "The Z-score for a 99% confidence level is 2.576.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "If the population standard deviation ($\\sigma$) is unknown, what value is assumed in sample size calculations?",
+    "options": [
+      "A) 1.0.",
+      "B) 0.05.",
+      "C) 0.5.",
+      "D) 0.95."
+    ],
+    "answer": "C) 0.5.",
+    "explanation": "If we don't know the population standard deviation, we assume a conservative proportion of p = 0.5 (or $\\sigma = 0.5$).",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "What is Cochran's sample size formula for a large population?",
+    "options": [
+      "A) $n = \\frac{z \\cdot p^2}{E^2}$",
+      "B) $n = \\frac{z \\cdot p \\cdot (1-p)}{E}$",
+      "C) $n = \\frac{z^2 \\cdot \\sigma}{E^2}$",
+      "D) $n = \\frac{z^2 \\cdot p \\cdot (1-p)}{E^2}$"
+    ],
+    "answer": "D) $n = \\frac{z^2 \\cdot p \\cdot (1-p)}{E^2}$",
+    "explanation": "Cochran's formula is $n = z^2 \\cdot p \\cdot (1-p) / E^2$ where z is the Z-score, p is estimated proportion, and E is margin of error.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "For a large population, 95% confidence, p=0.5, and 5% margin of error, what is the required sample size?",
+    "options": [
+      "A) 384.",
+      "B) 500.",
+      "C) 250.",
+      "D) 322."
+    ],
+    "answer": "A) 384.",
+    "explanation": "$n = (1.96)^2 \\cdot 0.5 \\cdot (1-0.5) / (0.05)^2 = 3.8416 \\cdot 0.25 / 0.0025 = 384$.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "What formula is used to adjust the sample size for a small population N?",
+    "options": [
+      "A) $n_{adjusted} = n + \\frac{n}{N}$",
+      "B) $n_{adjusted} = \\frac{n \\cdot N}{n + N}$",
+      "C) $n_{adjusted} = \\frac{n}{1 + N}$",
+      "D) $n_{adjusted} = \\frac{n}{1 + \\frac{n-1}{N}}$"
+    ],
+    "answer": "D) $n_{adjusted} = \\frac{n}{1 + \\frac{n-1}{N}}$",
+    "explanation": "The adjustment formula for small populations is $n_{adjusted} = n / (1 + (n-1)/N)$.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "If a university has 2,000 students, and the large-population sample size is 384, what is the adjusted sample size?",
+    "options": [
+      "A) 384.",
+      "B) 350.",
+      "C) 250.",
+      "D) 322."
+    ],
+    "answer": "D) 322.",
+    "explanation": "$n_{adjusted} = 384 / (1 + (384-1)/2000) = 384 / (1 + 383/2000) = 384 / 1.1915 \\approx 322$.",
     "image": null
   }
 ]
