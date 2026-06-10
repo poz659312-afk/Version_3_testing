@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "Which of the following is NOT one of the common data issues in surveys listed in Lecture 6?",
+    "options": [
+      "A) Inconsistent formats.",
+      "B) Missing values and outliers.",
+      "C) Univariate analysis variables.",
+      "D) Misspellings and duplicates."
+    ],
+    "answer": "C) Univariate analysis variables.",
+    "explanation": "Common data issues are misspellings, duplicate responses, inconsistent formats, outliers, and missing values.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "Why does survey data go missing?",
+    "options": [
+      "A) Using the correct sample size calculation formulas.",
+      "B) Applying stopword removal to unstructured feedback.",
+      "C) Technical glitches, skipped questions, or sensitive questions left blank.",
+      "D) Analyzing data using univariate pie charts."
+    ],
+    "answer": "C) Technical glitches, skipped questions, or sensitive questions left blank.",
+    "explanation": "Survey data goes missing because a participant skips a question, a technical glitch occurs, or sensitive questions are left blank.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "What is MCAR (Missing Completely At Random) defined as?",
+    "options": [
+      "A) The missingness is purely random and has no relationship to any data.",
+      "B) The missingness is related only to demographic variables.",
+      "C) The missingness is caused by human data manipulation.",
+      "D) The missingness is related to the missing value itself."
+    ],
+    "answer": "A) The missingness is purely random and has no relationship to any data.",
+    "explanation": "MCAR means the missingness is purely random and independent of any observed or unobserved data.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "A participant skips a question due to a temporary internet disconnection. This is:",
+    "options": [
+      "A) Listwise Deletion.",
+      "B) MAR (Missing At Random).",
+      "C) MCAR (Missing Completely At Random).",
+      "D) MNAR (Missing Not At Random)."
+    ],
+    "answer": "C) MCAR (Missing Completely At Random).",
+    "explanation": "Skipping a question due to an internet disconnection is a random occurrence unrelated to any data values, representing MCAR.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "What is MAR (Missing At Random) defined as?",
+    "options": [
+      "A) The missingness is directly related to the missing value itself.",
+      "B) The missingness is related to other variables, but not to the missing value itself.",
+      "C) The missingness is caused by survey fraud or data manipulation.",
+      "D) The missingness is purely random and has no relation to other variables."
+    ],
+    "answer": "B) The missingness is related to other variables, but not to the missing value itself.",
+    "explanation": "MAR means the missingness relates to other observed variables in the dataset, but not to the missing value itself.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "If younger survey respondents are more likely to skip the income question, this is:",
+    "options": [
+      "A) MNAR (Missing Not At Random).",
+      "B) MCAR (Missing Completely At Random).",
+      "C) Imputation.",
+      "D) MAR (Missing At Random)."
+    ],
+    "answer": "D) MAR (Missing At Random).",
+    "explanation": "Since the missingness is related to another variable (Age/younger group) but not the income value itself, it is MAR.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "What is MNAR (Missing Not At Random) defined as?",
+    "options": [
+      "A) The missingness has no relationship to any data whatsoever.",
+      "B) The missingness is related to other variables but not the value itself.",
+      "C) The missingness is related to the missing value itself.",
+      "D) The missingness is caused by duplicate entries in the database."
+    ],
+    "answer": "C) The missingness is related to the missing value itself.",
+    "explanation": "MNAR means the probability of a value being missing is related to the value of the missing variable itself.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "People with very low income choosing not to report their income is an example of:",
+    "options": [
+      "A) MCAR (Missing Completely At Random).",
+      "B) MNAR (Missing Not At Random).",
+      "C) MAR (Missing At Random).",
+      "D) Exploratory Data Analysis."
+    ],
+    "answer": "B) MNAR (Missing Not At Random).",
+    "explanation": "Since the missingness is directly related to the value itself (very low income), it represents MNAR.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "What are the three techniques listed in Lecture 6 to handle missing data?",
+    "options": [
+      "A) Mean, Median, and Mode calculation.",
+      "B) SRS, Stratified Sampling, and Cluster Sampling.",
+      "C) Listwise Deletion, Imputation, and Flag Missing Values.",
+      "D) Tokenization, Lowercasing, and Stopword Removal."
+    ],
+    "answer": "C) Listwise Deletion, Imputation, and Flag Missing Values.",
+    "explanation": "The techniques to handle missing data are Listwise Deletion, Imputation, and Flag Missing Values.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "What is Exploratory Data Analysis (EDA) for surveys?",
+    "options": [
+      "A) Examining the dataset visually and statistically to understand its structure.",
+      "B) Faking responses to increase the overall response rate of the survey.",
+      "C) Manipulating variables in a control group to establish cause-and-effect.",
+      "D) Adding LaTeX math formulas to the questionnaire layout."
+    ],
+    "answer": "A) Examining the dataset visually and statistically to understand its structure.",
+    "explanation": "EDA is the process of examining the dataset visually and statistically to understand structure, patterns, anomalies, and relationships before modeling.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "Why is EDA critical for survey data analysis?",
+    "options": [
+      "A) Surveys have categorical, ordinal, and textual data that can be biased or inconsistent.",
+      "B) It guarantees that the response rate will be exactly 100%.",
+      "C) It reduces the sample size needed to run the Chi-Square test.",
+      "D) It eliminates the need to obtain informed consent from participants."
+    ],
+    "answer": "A) Surveys have categorical, ordinal, and textual data that can be biased or inconsistent.",
+    "explanation": "EDA is critical because surveys contain categorical, ordinal, and text data which is often biased, missing, or inconsistent, and EDA helps clean it.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "What is the third step in performing EDA for survey data?",
+    "options": [
+      "A) Clean the data.",
+      "B) Analyze one variable at a time.",
+      "C) Visualize the data.",
+      "D) Compare two or more variables."
+    ],
+    "answer": "B) Analyze one variable at a time.",
+    "explanation": "EDA steps: 1. Understand Dataset, 2. Clean Data, 3. Analyze One Variable, 4. Compare Two/More, 5. Look for Patterns, 6. Visualize, 7. Draw Insights, 8. Summary Report.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "In EDA data cleaning, what is typically done?",
+    "options": [
+      "A) Imputing values for the entire population using the Cochran formula.",
+      "B) Removing all text responses to focus only on nominal data variables.",
+      "C) Conducting A/B testing on two versions of the survey questionnaire.",
+      "D) Fixing inconsistent labels, removing duplicates, and standardizing formats."
+    ],
+    "answer": "D) Fixing inconsistent labels, removing duplicates, and standardizing formats.",
+    "explanation": "Cleaning the data in EDA involves fixing inconsistent labels, removing duplicates, and standardizing formats.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "Which variables are analyzed one at a time (univariate analysis) in survey EDA?",
+    "options": [
+      "A) Categorical, rating scales, and numerical variables.",
+      "B) Tokens, documents, and corpora from sentiment analysis.",
+      "C) Independent and dependent manipulated variables only.",
+      "D) Mean, median, and mode for nominal classifications only."
+    ],
+    "answer": "A) Categorical, rating scales, and numerical variables.",
+    "explanation": "Analyzing one variable at a time includes: Categorical (Gender, Education), Rating Scales (1-5), and Numerical (Age, Income).",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "What is an example of comparing two or more variables in survey EDA?",
+    "options": [
+      "A) Fixing spelling and grammar errors in open-ended feedback.",
+      "B) Checking if younger students report higher satisfaction than older ones.",
+      "C) Counting the total number of survey responses in the entire dataset.",
+      "D) Creating a word cloud of all comments on course improvement."
+    ],
+    "answer": "B) Checking if younger students report higher satisfaction than older ones.",
+    "explanation": "Comparing two/more variables examines relationships (e.g. comparing student age groups against satisfaction level).",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "When visualizing survey data, what is a pie chart best used for?",
+    "options": [
+      "A) Comparing satisfaction levels across five different employment groups.",
+      "B) Showing the proportion of categories, such as gender percentage.",
+      "C) Displaying the keyword frequencies of open-ended text comments.",
+      "D) Showing the distribution of age or income over a continuous scale."
+    ],
+    "answer": "B) Showing the proportion of categories, such as gender percentage.",
+    "explanation": "Pie charts are best used for displaying proportions of categories (e.g., % of Male vs. Female respondents).",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "Which visual tool is recommended in Lecture 6 for seeing the distribution of age or income?",
+    "options": [
+      "A) Histograms.",
+      "B) Word clouds.",
+      "C) Box plots.",
+      "D) Pie charts."
+    ],
+    "answer": "A) Histograms.",
+    "explanation": "Histograms are used to visualize the distribution of continuous numerical variables (like Age or Income).",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "What are box plots best used for in survey EDA visualization?",
+    "options": [
+      "A) Finding spelling and grammar duplicates in raw databases.",
+      "B) Comparing satisfaction or other ratings across different groups.",
+      "C) Showing the percentage of categories like country of origin.",
+      "D) Visualizing the frequency of tokens in unstructured text data."
+    ],
+    "answer": "B) Comparing satisfaction or other ratings across different groups.",
+    "explanation": "Box plots are best used to compare satisfaction or rating distributions across different groups.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "What visualization is recommended for text-based survey responses?",
+    "options": [
+      "A) Box plots and scatter plots.",
+      "B) Word clouds or keyword frequency charts.",
+      "C) Pie charts and histograms.",
+      "D) Univariate bar charts."
+    ],
+    "answer": "B) Word clouds or keyword frequency charts.",
+    "explanation": "Visualizing text-based responses is done using word clouds or keyword frequencies.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "Which of the following is included in a survey EDA summary report?",
+    "options": [
+      "A) Dataset summary, key insights with visuals, recommendations, and limitations.",
+      "B) The mathematical derivation of the Cochran formula parameters.",
+      "C) The raw uncleaned data containing all spelling errors.",
+      "D) The full name and address of every single respondent."
+    ],
+    "answer": "A) Dataset summary, key insights with visuals, recommendations, and limitations.",
+    "explanation": "A summary report includes a dataset summary, key insights (visuals/tables), recommendations, and limitations (e.g., small sample, bias).",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "In the course evaluation case study, what online course was evaluated?",
+    "options": [
+      "A) \"Data Literacy for Beginners\".",
+      "B) \"Introduction to Survey Methodology\".",
+      "C) \"Descriptive and Inferential Statistics\".",
+      "D) \"Sentiment Analysis and Opinion Mining\"."
+    ],
+    "answer": "A) \"Data Literacy for Beginners\".",
+    "explanation": "The online course evaluated in the case study was 'Data Literacy for Beginners'.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "What sample size was analyzed in the online course case study?",
+    "options": [
+      "A) 322 students.",
+      "B) 384 students.",
+      "C) 500 responses.",
+      "D) 10,000 students."
+    ],
+    "answer": "C) 500 responses.",
+    "explanation": "The case study states: 'Imagine you have a dataset of 500 responses'.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "In the case study sample data, what did the 21-year-old student from India report?",
+    "options": [
+      "A) Satisfaction of 5, clarity of 5, and did not recommend.",
+      "B) Satisfaction of 4, clarity of 4, and recommended the course.",
+      "C) Satisfaction of 3, clarity of 2, and did not recommend.",
+      "D) Satisfaction of 2, clarity of 3, and recommended the course."
+    ],
+    "answer": "B) Satisfaction of 4, clarity of 4, and recommended the course.",
+    "explanation": "Case Entry 1: India, Female, 21, Student, Hours 5, Satisfaction 4, Clarity 4, Recommend Yes.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "In the case study sample entries, who reported that the course had 'too much theory'?",
+    "options": [
+      "A) The 19-year-old student from India.",
+      "B) The 35-year-old employee from USA.",
+      "C) The 28-year-old employee from Canada.",
+      "D) The 42-year-old self-employed female from UK."
+    ],
+    "answer": "A) The 19-year-old student from India.",
+    "explanation": "Entry 4: India, Male, 19, Student, Hours 8, Satisfaction 2, Clarity 3, Recommend No, Liked: Access anytime, Improve: Too much theory.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "What did the 28-year-old employee from Canada suggest for course improvement?",
+    "options": [
+      "A) Add practice quizzes.",
+      "B) Instructor pacing adjustments.",
+      "C) More peer discussion.",
+      "D) More real-world cases."
+    ],
+    "answer": "A) Add practice quizzes.",
+    "explanation": "Entry 3: Canada, Female, 28, Employed, Hours 4, Satisfaction 5, Clarity 5, Recommend Yes, Liked: Interactive examples, Improve: Add practice quizzes.",
+    "image": null
+  }
+]
