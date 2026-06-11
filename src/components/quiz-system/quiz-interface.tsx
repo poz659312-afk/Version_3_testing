@@ -354,6 +354,8 @@ export default function QuizInterface({
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [userAnswers, setUserAnswers] = useState<{ [key: number]: string }>({});
   const [score, setScore] = useState(0);
+  const [currentCombo, setCurrentCombo] = useState(0);
+  const [maxCombo, setMaxCombo] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [selectedDuration, setSelectedDuration] = useState(10);
   const [selectedMode, setSelectedMode] = useState("traditional");
@@ -558,6 +560,16 @@ export default function QuizInterface({
     
     // Clear any previous session storage when starting a new quiz
     sessionStorage.removeItem(`quiz_${quizData.code}_answers`);
+    localStorage.removeItem(`quiz_${quizData.id}_result`);
+    localStorage.removeItem(`quiz_${quizData.code}_result`);
+    
+    // Reset submission flags, combo, and score
+    submissionInProgress.current = false;
+    setQuizSubmitted(false);
+    setScore(0);
+    setCurrentCombo(0);
+    setMaxCombo(0);
+    
     setUserAnswers({});
     setAnswerRevealed({});
     setShowAnswer(false);
@@ -605,13 +617,19 @@ export default function QuizInterface({
         setShowConfetti(true);
         try { correctAudioRef.current?.play(); } catch {}
         setTimeout(() => { setShowConfetti(false); }, 1800);
+        setCurrentCombo(prev => {
+          const nextCombo = prev + 1;
+          setMaxCombo(max => Math.max(max, nextCombo));
+          return nextCombo;
+        });
       } else {
         setShakeCard(true);
         try { wrongAudioRef.current?.play(); } catch {}
         setTimeout(() => { setShakeCard(false); }, 600);
+        setCurrentCombo(0);
       }
     }
-  }, [selectedMode, currentQuestion, userAnswers, quizData.code, questions]);
+  }, [selectedMode, currentQuestion, userAnswers, quizData.code, questions, setCurrentCombo, setMaxCombo]);
 
   const nextQuestion = useCallback(() => {
     if (currentQuestion < questions.length - 1) {
@@ -728,7 +746,7 @@ export default function QuizInterface({
   };
 
   // Updated saveScore function for localStorage
-  const saveScore = (finalScore: number, status: "completed" | "timed-out") => {
+  const saveScore = (finalScore: number, status: "completed" | "timed-out", finalMaxCombo: number) => {
     const quizResult = {
       quizId: quizData.code,
       score: finalScore,
@@ -738,6 +756,7 @@ export default function QuizInterface({
       answers: userAnswers,
       mode: selectedMode,
       duration: selectedDuration,
+      maxCombo: finalMaxCombo,
     };
 
     localStorage.setItem(
@@ -761,8 +780,10 @@ export default function QuizInterface({
       timerRef.current = null;
     }
 
-    // Calculate score using the passed answers
+    // Calculate score and combo using the passed answers
     let correctAnswers = 0;
+    let tempCombo = 0;
+    let calculatedMaxCombo = 0;
     
     questions.forEach((question, index) => {
       const userAnswer = answersToUse[index];
@@ -779,17 +800,24 @@ export default function QuizInterface({
             
       if (isMatch) {
         correctAnswers++;
+        tempCombo++;
+        if (tempCombo > calculatedMaxCombo) {
+          calculatedMaxCombo = tempCombo;
+        }
+      } else {
+        tempCombo = 0;
       }
     });
 
     setScore(correctAnswers);
+    setMaxCombo(calculatedMaxCombo);
     setCurrentStep("results");
 
     // Clear session storage after finishing
     sessionStorage.removeItem(`quiz_${quizData.code}_answers`);
 
     // Save to localStorage and database
-    saveScore(correctAnswers, quizStatus);
+    saveScore(correctAnswers, quizStatus, calculatedMaxCombo);
     saveScoreToSupabase(correctAnswers, quizStatus);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questions, userAnswers, quizStatus, quizData.code]);
@@ -873,8 +901,10 @@ export default function QuizInterface({
     
     // Use functional update to get the latest userAnswers
     setUserAnswers(currentAnswers => {
-      // Calculate score using current answers
+      // Calculate score and combo using current answers
       let correctAnswers = 0;
+      let tempCombo = 0;
+      let calculatedMaxCombo = 0;
       questions.forEach((question, index) => {
         const userAnswer = currentAnswers[index];
         const correctAnswer = question.answer;
@@ -885,14 +915,21 @@ export default function QuizInterface({
         
         if (isMatch) {
           correctAnswers++;
+          tempCombo++;
+          if (tempCombo > calculatedMaxCombo) {
+            calculatedMaxCombo = tempCombo;
+          }
+        } else {
+          tempCombo = 0;
         }
       });
 
-      console.log(`â° Final Score (Timed Out): ${correctAnswers} out of ${questions.length}`);
+      console.log(`⏰ Final Score (Timed Out): ${correctAnswers} out of ${questions.length}`);
 
       // Update state
       setQuizStatus("timed-out");
       setScore(correctAnswers);
+      setMaxCombo(calculatedMaxCombo);
       setCurrentStep("results");
       
       // Save to localStorage
@@ -905,6 +942,7 @@ export default function QuizInterface({
         answers: currentAnswers,
         mode: selectedMode,
         duration: selectedDuration,
+        maxCombo: calculatedMaxCombo,
       };
       localStorage.setItem(
         `quiz_${quizData.id}_result`,
@@ -1592,6 +1630,11 @@ export default function QuizInterface({
                             {currentQ.type}
                           </span>
                         )}
+                        {selectedMode === "instant" && currentCombo >= 2 && (
+                          <span className="text-[10px] md:text-xs font-black uppercase tracking-widest px-2.5 py-1 bg-amber-500/20 text-amber-500 border border-amber-500/35 rounded-full animate-pulse flex items-center gap-1">
+                            🔥 {currentCombo} Combo
+                          </span>
+                        )}
                       </div>
 
                       <div className="flex justify-between items-start gap-4 relative z-10">
@@ -1690,7 +1733,7 @@ export default function QuizInterface({
                         </div>
 
                         <div className="flex-1 space-y-2 relative z-10">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             {isCorrect ? (
                               <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
                             ) : (
@@ -1699,6 +1742,15 @@ export default function QuizInterface({
                             <h4 className="text-xl font-black tracking-tight">
                               {isCorrect ? "You got it! Superb!" : "Incorrect Answer"}
                             </h4>
+                            {isCorrect && currentCombo >= 2 && (
+                              <motion.div
+                                initial={{ scale: 0, y: 10 }}
+                                animate={{ scale: [1.3, 1], y: 0 }}
+                                className="px-3 py-1 bg-amber-500 text-white text-xs md:text-sm font-black rounded-full flex items-center gap-1 shadow-lg animate-pulse"
+                              >
+                                <span>🔥 {currentCombo}x Combo</span>
+                              </motion.div>
+                            )}
                           </div>
                           {!isCorrect && (
                             <p className="text-base font-bold">
@@ -2137,6 +2189,24 @@ export default function QuizInterface({
                         <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider">Duration</div>
                       </div>
                     </motion.div>
+
+                    {/* Max Combo Streak */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 1.3 }}
+                      className="col-span-2 flex border border-border/50 items-center justify-center p-4 md:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent backdrop-blur-sm shadow-sm group hover:scale-[1.01] transition-all border-amber-500/20"
+                    >
+                      <div className="p-3 md:p-4 rounded-xl mr-4 transition-colors bg-amber-500/25 group-hover:bg-amber-500/35 animate-bounce">
+                        <Zap className="w-6 h-6 md:w-8 md:h-8 text-amber-500 fill-amber-500" />
+                      </div>
+                      <div className="text-center sm:text-left">
+                        <div className="text-2xl md:text-3xl font-black text-amber-500 flex items-center gap-1.5 justify-center sm:justify-start">
+                          {maxCombo} <span className="text-lg md:text-xl font-bold">Consecutive</span> 🔥
+                        </div>
+                        <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider">Max Correct Streak (Combo)</div>
+                      </div>
+                    </motion.div>
                   </div>
                 </div>
 
@@ -2155,7 +2225,16 @@ export default function QuizInterface({
                     Review Answers
                   </button>
                   <button
-                    onClick={() => setCurrentStep("setup")}
+                    onClick={() => {
+                      localStorage.removeItem(`quiz_${quizData.id}_result`);
+                      localStorage.removeItem(`quiz_${quizData.code}_result`);
+                      submissionInProgress.current = false;
+                      setQuizSubmitted(false);
+                      setScore(0);
+                      setCurrentCombo(0);
+                      setMaxCombo(0);
+                      setCurrentStep("setup");
+                    }}
                     className="w-full sm:w-auto h-14 px-8 text-lg font-bold rounded-2xl border-2 border-b-[5px] border-primary border-b-primary/50 bg-transparent text-primary hover:bg-primary/5 transition-all active:border-b-2 active:translate-y-[3px] flex items-center justify-center group shadow-md"
                   >
                     <Play className="w-5 h-5 mr-2 group-hover:translate-x-1 transition-transform" />
@@ -2377,7 +2456,7 @@ export default function QuizInterface({
                   <h3 className="text-2xl font-black mb-6 tracking-tight">
                     Quiz Summary
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                     <div className="p-4 rounded-2xl bg-green-500/[0.05] border border-green-500/20">
                       <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
                       <div className="text-2xl font-black text-green-500 mb-0.5">
@@ -2402,6 +2481,13 @@ export default function QuizInterface({
                         {Math.round((score / questions.length) * 100)}%
                       </div>
                       <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Final Score</div>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-amber-500/[0.05] border border-amber-500/20">
+                      <Zap className="w-8 h-8 text-amber-500 mx-auto mb-2 animate-bounce" />
+                      <div className="text-2xl font-black text-amber-500 mb-0.5">
+                        {maxCombo} 🔥
+                      </div>
+                      <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Max Combo</div>
                     </div>
                   </div>
 
