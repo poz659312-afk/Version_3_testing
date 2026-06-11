@@ -20,6 +20,7 @@ import {
   FileJson,
   FileCode,
   File,
+  Crown,
   Download,
   Search,
   Calendar,
@@ -40,7 +41,6 @@ import {
   Edit,
   Trash2,
   Lock,
-  Crown,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -72,6 +72,7 @@ import { createSecureDriveUrl } from "@/lib/secure-drive-urls"
 import { FileCardSkeleton, StatsCardSkeleton } from "@/components/loading-skeletons"
 import { UploadProvider } from "@/components/upload-context"
 import { UploadProgressBar } from "@/components/upload-progress-bar"
+const AdBanner = dynamic(() => import("@/components/AdBanner"), { ssr: false })
 
 interface DriveFile {
   id: string
@@ -123,7 +124,7 @@ function getFileIcon(mimeType: string) {
   if (mimeType.includes("spreadsheet") || mimeType.includes("excel")) return FileSpreadsheet
   if (mimeType.includes("document") || mimeType.includes("word")) return FilePlus
   if (mimeType.includes("text") || mimeType.includes("plain")) return FileText
-  if (mimeType.includes("code") || mimeType.includes("javascript") || mimeType.includes("typescript")) return FileCode
+  if (mimeType.includes("code") || mimeType.includes("javascript") || mimeType.includes("typescript") || mimeType.includes("python") || mimeType.includes("java") || mimeType.includes("c")) return FileCode
   return File
 }
 
@@ -260,6 +261,7 @@ export default function DrivePage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [isAuthorized, setIsAuthorized] = useState(false)
   const [userSession, setUserSession] = useState<any>(null)
+  const [sessionChecked, setSessionChecked] = useState(false)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [aiModalOpen, setAiModalOpen] = useState(false);
   const [selectedAIFile, setSelectedAIFile] = useState<any>(null);
@@ -322,6 +324,7 @@ export default function DrivePage() {
           setIsAdmin(session?.is_admin || false)
         }
       }
+      setSessionChecked(true)
     }
     
     loadSession()
@@ -877,9 +880,9 @@ export default function DrivePage() {
               </span>
               ) : (
               <>
-                <span className="text-primary">Cloud</span> <br/>
+                <span className="text-primary">Loading</span> <br/>
                 <span style={{ WebkitTextStroke: '1.5px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 dark:border-white/10 border-black/10">
-                  Content
+                  Content ...
                 </span>
               </>
               )}
@@ -1065,17 +1068,17 @@ export default function DrivePage() {
                                     {isFolder ? "Open" : isPDF ? "View PDF" : "View"}
                                   </DropdownMenuItem>
                                   {!isFolder && (
-                                     <DropdownMenuItem 
-                                       disabled
-                                       className="text-muted-foreground/50 flex items-center justify-between cursor-not-allowed opacity-50"
-                                     >
-                                       <span className="flex items-center gap-2">
-                                         <Sparkles className="w-4 h-4" />
-                                         Summarize with AI
-                                       </span>
-                                       <Lock className="w-3.5 h-3.5" />
-                                     </DropdownMenuItem>
-                                   )}
+                                    <DropdownMenuItem 
+                                      onClick={() => {
+                                        setSelectedAIFile(file);
+                                        setAiModalOpen(true);
+                                      }}
+                                      className="text-indigo-400 focus:text-indigo-400 focus:bg-indigo-500/10 cursor-pointer"
+                                    >
+                                      <Sparkles className="w-4 h-4 mr-2" />
+                                      Summarize with AI
+                                    </DropdownMenuItem>
+                                  )}
                                   <DropdownMenuItem onClick={() => handleDownload(file)} className="cursor-pointer">
                                     <Download className="w-4 h-4 mr-2" />
                                     Download
@@ -1232,14 +1235,14 @@ export default function DrivePage() {
                                 <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-md border-border">
                                   {!isFolder && (
                                      <DropdownMenuItem 
-                                       disabled
-                                       className="text-muted-foreground/50 flex items-center justify-between cursor-not-allowed opacity-50"
+                                       onClick={() => {
+                                         setSelectedAIFile(file);
+                                         setAiModalOpen(true);
+                                       }}
+                                       className="text-indigo-400 focus:text-indigo-400 focus:bg-indigo-500/10 cursor-pointer"
                                      >
-                                       <span className="flex items-center gap-2">
-                                         <Sparkles className="w-4 h-4" />
-                                         Summarize with AI
-                                       </span>
-                                       <Lock className="w-3.5 h-3.5" />
+                                       <Sparkles className="w-4 h-4 mr-2" />
+                                       Summarize with AI
                                      </DropdownMenuItem>
                                    )}
                                   <DropdownMenuItem onClick={() => handleDownload(file)} className="cursor-pointer">
@@ -1340,6 +1343,7 @@ export default function DrivePage() {
         </>
       )}
       </div>
+      <AdBanner dataAdSlot="8021269551" />
       {aiModalOpen && (
         <AIModal
           isOpen={aiModalOpen}
@@ -1398,6 +1402,38 @@ export default function DrivePage() {
             setActiveDeleteFolder(null);
           }}
         />
+      )}
+      {sessionChecked && !userSession && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-3xl bg-black/95 animate-in fade-in duration-300">
+          <div className="bg-card/90 backdrop-blur-xl border border-border rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-[0_0_50px_rgba(0,0,0,0.8)] text-center relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/10 to-transparent opacity-50 pointer-events-none" />
+            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6 border border-primary/20 shadow-lg animate-pulse">
+              <Lock className="w-8 h-8 text-primary" />
+            </div>
+            
+            <h2 className="text-2xl font-bold mb-1 text-foreground tracking-wide">
+              Login Required
+            </h2>
+            <h3 className="text-lg font-bold mb-4 text-primary">
+              تسجيل الدخول مطلوب
+            </h3>
+            <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
+              Unlogged users cannot see the drive data due to our policy of privacy. Please log in to your account to view the content.
+              <br />
+              <span className="text-xs text-muted-foreground/70 block mt-2">
+                غير مسموح للمستخدمين غير المسجلين باستعراض البيانات لحماية الخصوصية. يرجى تسجيل الدخول.
+              </span>
+            </p>
+            
+            <Button
+              onClick={() => router.push("/auth/signin")}
+              className="w-full bg-primary hover:bg-primary/95 text-primary-foreground font-bold py-3 px-6 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-primary/20 hover:cursor-pointer"
+            >
+              <User className="w-5 h-5" />
+              <span>Direct Login / تسجيل دخول مباشر</span>
+            </Button>
+          </div>
+        </div>
       )}
     </UploadProvider>
   )
