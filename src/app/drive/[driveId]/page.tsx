@@ -777,9 +777,9 @@ export default function DriveRootPage() {
                     </span>
                   ) : (
                     <>
-                      <span className="text-primary">Cloud</span> <br/>
+                      <span className="text-primary">Loading</span> <br/>
                       <span style={{ WebkitTextStroke: '1.5px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 dark:border-white/10 border-black/10">
-                        Content
+                        Content ...
                       </span>
                     </>
                   )}
