@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles, MousePointer } from "lucide-react"
+import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles, MousePointer, Search, ChevronUp, ChevronDown, Trash2, Plus } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
@@ -17,6 +17,8 @@ import { useToast } from "@/components/ToastProvider"
 import Image from "next/image"
 import { useAddNotification } from "@/components/notification"
 import { DeleteAccountDialog } from "@/components/delete-account-dialog"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
 import dynamic from 'next/dynamic'
 const AdBanner = dynamic(() => import("@/components/AdBanner"), { ssr: false })
@@ -182,6 +184,42 @@ function getCurrentTerm(): 'term1' | 'term2' {
     return 'term2'
   }
   return 'term1'
+}
+
+function checkAndResetRegistrations(registrations: any): { lastUpdated: string; courses: string[] } | null {
+  const now = new Date()
+  if (!registrations || !registrations.lastUpdated) {
+    return { lastUpdated: now.toISOString(), courses: [] }
+  }
+
+  const lastUpdated = new Date(registrations.lastUpdated)
+  const currentYear = now.getUTCFullYear()
+
+  // Reset target dates in UTC:
+  // - Feb 1 of current year (Month 1, 0-indexed)
+  // - June 1 of current year (Month 5, 0-indexed)
+  // - Feb 1 of previous year
+  // - June 1 of previous year
+  const resetDates = [
+    new Date(Date.UTC(currentYear, 1, 1)),
+    new Date(Date.UTC(currentYear, 5, 1)),
+    new Date(Date.UTC(currentYear - 1, 1, 1)),
+    new Date(Date.UTC(currentYear - 1, 5, 1)),
+  ]
+
+  // Filter for reset dates that are in the past
+  const pastResetDates = resetDates
+    .filter(d => d <= now)
+    .sort((a, b) => b.getTime() - a.getTime())
+
+  const mostRecentReset = pastResetDates[0]
+
+  if (lastUpdated < mostRecentReset) {
+    // Expired! Reset to empty array and update the lastUpdated timestamp
+    return { lastUpdated: now.toISOString(), courses: [] }
+  }
+
+  return null // Not expired, no reset needed
 }
 
 function ColorThemeSelector({ inventory }: { inventory: string[] }) {
@@ -601,6 +639,11 @@ export default function ProfilePage() {
   const [userDepartmentKey, setUserDepartmentKey] = useState<string>('computing-data-sciences')
   const [subjectsLoading, setSubjectsLoading] = useState(true)
   const [userData, setUserData] = useState<any>(null)
+  const [registrations, setRegistrations] = useState<{ lastUpdated: string; courses: string[] }>({ lastUpdated: '', courses: [] })
+  const [allDepartmentSubjects, setAllDepartmentSubjects] = useState<any[]>([])
+  const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [tempSelectedCourses, setTempSelectedCourses] = useState<string[]>([])
   const [quizData, setQuizData] = useState<any[]>([])
   const [paginatedData, setPaginatedData] = useState<any[]>([])
   const [page, setPage] = useState(0)
@@ -653,6 +696,21 @@ export default function ProfilePage() {
       window.removeEventListener('storage', handleStorageChange)
     }
   }, [])
+
+  // Disable body scroll when registrations dialog is open
+  useEffect(() => {
+    if (isRegisterDialogOpen) {
+      document.body.style.overflow = 'hidden'
+      document.documentElement.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+      document.documentElement.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+      document.documentElement.style.overflow = 'unset'
+    }
+  }, [isRegisterDialogOpen])
 
   const toggleTimeFormat = () => {
     const newFormat = timeFormat === '12h' ? '24h' : '12h'
@@ -719,7 +777,7 @@ export default function ProfilePage() {
       // Fetch deletion status AND existence check in single query (was previously 2 separate queries)
       const { data: freshUserData } = await supabase
         .from("chameleons")
-        .select("auth_id, deletion_scheduled_at")
+        .select("auth_id, deletion_scheduled_at, Registrations")
         .eq("auth_id", session.auth_id)
         .maybeSingle()
 
@@ -743,18 +801,68 @@ export default function ProfilePage() {
         deletion_scheduled_at: freshUserData.deletion_scheduled_at
       }))
 
+      // Check and reset registrations if expired
+      let currentReg = freshUserData.Registrations
+      const resetResult = checkAndResetRegistrations(currentReg)
+      if (resetResult) {
+        console.log("⏰ Registrations expired or uninitialized. Resetting...")
+        await supabase
+          .from("chameleons")
+          .update({ Registrations: resetResult })
+          .eq("auth_id", session.auth_id)
+        currentReg = resetResult
+
+        // Also update local cached session
+        try {
+          const cached = { data: { ...session, Registrations: resetResult }, timestamp: Date.now() }
+          sessionStorage.setItem('chameleon_user_cache', JSON.stringify(cached))
+        } catch (e) {
+          console.error("Failed to update cache", e)
+        }
+      }
+
+      const activeReg = currentReg || { lastUpdated: new Date().toISOString(), courses: [] }
+      setRegistrations(activeReg)
+
       // Lazy load user subjects using department-data-accessor
       try {
         const accessor = await import('@/lib/department-data-accessor')
-        const term = getCurrentTerm()
         const key = await accessor.resolveDepartmentKey(session.specialization || '') || 'computing-data-sciences'
         setUserDepartmentKey(key)
         
         const dept = await accessor.getDepartment(key)
-        if (dept && dept.levels[session.current_level]) {
-          setUserSubjects(dept.levels[session.current_level].subjects[term] || [])
+        if (dept) {
+          // Gather all subjects in department
+          const allSubjects: any[] = []
+          Object.entries(dept.levels).forEach(([levelNum, levelData]) => {
+            const num = Number(levelNum)
+            if (levelData.subjects) {
+              if (levelData.subjects.term1) {
+                levelData.subjects.term1.forEach(s => {
+                  allSubjects.push({ ...s, level: num, term: 'term1' })
+                })
+              }
+              if (levelData.subjects.term2) {
+                levelData.subjects.term2.forEach(s => {
+                  allSubjects.push({ ...s, level: num, term: 'term2' })
+                })
+              }
+            }
+          })
+          setAllDepartmentSubjects(allSubjects)
+
+          // Map user's registered courses in saved order
+          const courseIds = activeReg.courses || []
+          const orderedSubjects = courseIds
+            .map((id: string) => allSubjects.find(s => s.id === id))
+            .filter(Boolean)
+          
+          setUserSubjects(orderedSubjects)
+          setTempSelectedCourses(courseIds)
         } else {
+          setAllDepartmentSubjects([])
           setUserSubjects([])
+          setTempSelectedCourses([])
         }
       } catch (err) {
         console.error("Error loading subjects:", err)
@@ -937,6 +1045,85 @@ export default function ProfilePage() {
         [name]: undefined
       }))
     }
+  }
+
+  const handleSaveRegistrations = async (newCourses: string[]) => {
+    if (!userData) return
+    setIsSaving(true)
+    const supabase = createBrowserClient()
+    
+    const newReg = {
+      lastUpdated: new Date().toISOString(),
+      courses: newCourses
+    }
+
+    try {
+      const { error } = await supabase
+        .from("chameleons")
+        .update({ Registrations: newReg })
+        .eq("auth_id", userData.auth_id)
+
+      if (error) {
+        console.error("Error saving registrations:", error)
+        addToast("Failed to save course registrations. Please try again.", "error")
+        return
+      }
+
+      setRegistrations(newReg)
+      const orderedSubjects = newCourses
+        .map(id => allDepartmentSubjects.find(s => s.id === id))
+        .filter(Boolean)
+      setUserSubjects(orderedSubjects)
+      setTempSelectedCourses(newCourses)
+      
+      // Update local storage cached session
+      try {
+        const cachedSession = sessionStorage.getItem('chameleon_user_cache')
+        if (cachedSession) {
+          const parsed = JSON.parse(cachedSession)
+          parsed.data.Registrations = newReg
+          sessionStorage.setItem('chameleon_user_cache', JSON.stringify(parsed))
+        }
+      } catch (e) {
+        console.error("Failed to update cache", e)
+      }
+
+      addToast("Course registrations updated successfully!", "success")
+      
+      addNotification(
+        userData.auth_id,
+        "Registrations Updated",
+        "System",
+        "success",
+        "Your registered subjects and arrangement have been saved successfully.",
+        "false"
+      )
+    } catch (err) {
+      console.error("Error saving registrations:", err)
+      addToast("Failed to save registrations.", "error")
+    } finally {
+      setIsSaving(false)
+      setIsRegisterDialogOpen(false)
+    }
+  }
+
+  const handleMoveSubject = async (index: number, direction: 'up' | 'down') => {
+    const newCourses = [...registrations.courses]
+    const targetIndex = direction === 'up' ? index - 1 : index + 1
+    
+    if (targetIndex < 0 || targetIndex >= newCourses.length) return
+    
+    // Swap elements
+    const temp = newCourses[index]
+    newCourses[index] = newCourses[targetIndex]
+    newCourses[targetIndex] = temp
+    
+    await handleSaveRegistrations(newCourses)
+  }
+
+  const handleRemoveSubject = async (subjectId: string) => {
+    const newCourses = registrations.courses.filter(id => id !== subjectId)
+    await handleSaveRegistrations(newCourses)
   }
 
   // Show loading while checking authentication or redirecting
@@ -1316,45 +1503,117 @@ export default function ProfilePage() {
 
               {/* Registered Subjects */}
               <Card className="bg-card border-border shadow-xl">
-                <CardHeader className="text-center pb-6">
-                  <CardTitle className="text-2xl font-outfit font-extrabold italic tracking-tight text-foreground flex items-center justify-center gap-3">
-                    <BookOpen className="w-6 h-6 text-primary" />
-                    Enrolled <span className="text-primary">Subjects</span>
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground font-outfit">
-                    {getCurrentTerm() === 'term1' ? 'Sector 1' : 'Sector 2'} modules • Authority Level {userData.current_level} • {userData.specialization}
-                  </CardDescription>
+                <CardHeader className="pb-6 border-b border-border/40">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <CardTitle className="text-2xl font-outfit font-extrabold italic tracking-tight text-foreground flex items-center gap-3">
+                        <BookOpen className="w-6 h-6 text-primary" />
+                        Dynamic Course <span className="text-primary">Registrations</span>
+                      </CardTitle>
+                      <CardDescription className="text-muted-foreground font-outfit">
+                        Select and arrange subjects from your department ({userData.specialization})
+                      </CardDescription>
+                    </div>
+                    
+                    <Button 
+                      onClick={() => {
+                        setTempSelectedCourses(registrations.courses || [])
+                        setSearchQuery("")
+                        setIsRegisterDialogOpen(true)
+                      }}
+                      className="rounded-full font-bold shadow-md bg-primary hover:bg-primary/95 transition-all text-xs self-start sm:self-center"
+                      size="sm"
+                    >
+                      <Plus className="w-4 h-4 mr-1.5" /> Modify Selections
+                    </Button>
+                  </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   {subjectsLoading ? (
                     <div className="flex justify-center py-12"><LoadingSpinner /></div>
                   ) : userSubjects.length === 0 ? (
-                    <div className="text-center py-12 text-muted-foreground font-outfit bg-muted/30 rounded-lg">
-                      <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50 text-muted-foreground" />
-                      <p className="text-lg font-bold mb-4">No subjects found for your level and department</p>
+                    <div className="text-center py-16 text-muted-foreground font-outfit bg-muted/10 rounded-2xl border-2 border-dashed border-border/60 p-6 flex flex-col items-center justify-center">
+                      <BookOpen className="w-16 h-16 mb-4 text-primary animate-pulse" />
+                      <h3 className="text-lg font-bold text-foreground mb-1">No Registered Subjects</h3>
+                      <p className="text-sm text-muted-foreground max-w-sm mb-6 text-center">
+                        You haven't registered any subjects for this term yet. Customize your learning path by selecting courses from your department.
+                      </p>
+                      <Button
+                        onClick={() => {
+                          setTempSelectedCourses(registrations.courses || [])
+                          setSearchQuery("")
+                          setIsRegisterDialogOpen(true)
+                        }}
+                        className="rounded-full font-bold px-6"
+                      >
+                        <Plus className="w-4 h-4 mr-2" /> Register Now
+                      </Button>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {userSubjects.map((subject: any, index: number) => (
+                      <AnimatePresence mode="popLayout">
+                        {userSubjects.map((subject: any, index: number) => (
                           <motion.div 
                             key={subject.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.05 }}
+                            layout
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
                             className="p-6 rounded-2xl bg-muted/30 border border-border hover:border-primary/40 hover:shadow-md transition-all duration-300 group relative overflow-hidden"
                           >
                             <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 transition-all group-hover:bg-primary/10" />
+                            
                             {/* Subject Header */}
                             <div className="mb-4 relative z-10 border-b border-border pb-3">
-                              <h3 className="text-foreground font-outfit font-bold text-lg mb-2 group-hover:text-primary transition-colors line-clamp-1">
-                                {subject.name}
-                              </h3>
+                              <div className="flex justify-between items-start gap-2 mb-2">
+                                <h3 className="text-foreground font-outfit font-bold text-lg group-hover:text-primary transition-colors line-clamp-1 flex-1">
+                                  <Link href={`/specialization/${userDepartmentKey}/${subject.level}/${subject.id}`} className="hover:underline">
+                                    {subject.name}
+                                  </Link>
+                                </h3>
+                                {/* Reordering & Removal Controls */}
+                                <div className="flex items-center gap-1 shrink-0 bg-background/80 backdrop-blur-sm p-1 rounded-full border border-border/50 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    onClick={() => handleMoveSubject(index, 'up')}
+                                    disabled={index === 0 || isSaving}
+                                    className="h-6 w-6 rounded-full hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:hover:bg-transparent"
+                                    title="Move Left/Up"
+                                  >
+                                    <ChevronUp className="h-3.5 w-3.5 -rotate-90" />
+                                  </Button>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    onClick={() => handleMoveSubject(index, 'down')}
+                                    disabled={index === userSubjects.length - 1 || isSaving}
+                                    className="h-6 w-6 rounded-full hover:bg-primary/10 hover:text-primary disabled:opacity-30 disabled:hover:bg-transparent"
+                                    title="Move Right/Down"
+                                  >
+                                    <ChevronDown className="h-3.5 w-3.5 -rotate-90" />
+                                  </Button>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    onClick={() => handleRemoveSubject(subject.id)}
+                                    disabled={isSaving}
+                                    className="h-6 w-6 rounded-full hover:bg-red-500/10 hover:text-red-500 text-muted-foreground"
+                                    title="Remove Subject"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </Button>
+                                </div>
+                              </div>
                               <div className="flex items-center justify-between">
                                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-outfit">{subject.code}</p>
                                 <div className="flex gap-2">
                                   <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-outfit font-bold">
                                     {subject.creditHours} CR
+                                  </span>
+                                  <span className="text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-outfit font-bold border border-border/50">
+                                    Lvl {subject.level} • {subject.term === 'term1' ? 'T1' : 'T2'}
                                   </span>
                                 </div>
                               </div>
@@ -1367,6 +1626,9 @@ export default function ProfilePage() {
                             
                             {/* Material Links */}
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 relative z-10">
+                              <Button asChild size="sm" variant="outline" className="h-9 rounded-md border text-primary font-outfit font-bold text-[11px] transition-all hover:bg-primary/10">
+                                <Link href={`/specialization/${userDepartmentKey}/${subject.level}/${subject.id}`}><GraduationCap className="w-3 h-3 mr-1" /> COURSE</Link>
+                              </Button>
                               {subject.materials.lectures && (Array.isArray(subject.materials.lectures) ? subject.materials.lectures.length > 0 : subject.materials.lectures.trim() !== '') && (
                                 <Button asChild size="sm" variant="default" className="h-9 rounded-md font-outfit font-bold text-[11px] transition-all">
                                   <Link href={createDriveLink(subject.materials.lectures)}><BookOpen className="w-3 h-3 mr-1" /> LECTURES</Link>
@@ -1379,16 +1641,179 @@ export default function ProfilePage() {
                               )}
                               {subject.materials.quizzes && subject.materials.quizzes.length > 0 && (
                                 <Button asChild size="sm" variant="outline" className="h-9 rounded-md border text-primary font-outfit font-bold text-[11px] transition-all hover:bg-primary/10">
-                                  <Link href={`/specialization/${userDepartmentKey}/${userData.current_level}/${subject.id}?tab=quizzes`}><Trophy className="w-3 h-3 mr-1" /> QUIZZES</Link>
+                                  <Link href={`/specialization/${userDepartmentKey}/${subject.level}/${subject.id}?tab=quizzes`}><Trophy className="w-3 h-3 mr-1" /> QUIZZES</Link>
                                 </Button>
                               )}
                             </div>
                           </motion.div>
                         ))}
-                      </div>
+                      </AnimatePresence>
+                    </div>
                   )}
                 </CardContent>
               </Card>
+
+              {/* Dynamic Course Registration Dialog */}
+              <Dialog open={isRegisterDialogOpen} onOpenChange={setIsRegisterDialogOpen}>
+                <DialogContent className="max-w-2xl bg-card border-border shadow-2xl p-6 overflow-hidden" data-lenis-prevent>
+                  {(() => {
+                    return (
+                      <>
+                        <DialogHeader>
+                          <DialogTitle className="text-2xl font-outfit font-extrabold italic tracking-tight text-foreground flex items-center gap-2">
+                            <BookOpen className="w-6 h-6 text-primary" />
+                            Select <span className="text-primary">Department Subjects</span>
+                          </DialogTitle>
+                          <DialogDescription className="text-muted-foreground font-outfit">
+                            Select courses from the {userData.specialization} department. You can select up to 8 courses in total.
+                          </DialogDescription>
+                        </DialogHeader>
+ 
+                        <div className="space-y-4 my-4">
+                          {/* Search input */}
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
+                            <Input
+                              placeholder="Search subjects by name or code..."
+                              value={searchQuery}
+                              onChange={(e) => setSearchQuery(e.target.value)}
+                              className="pl-9 bg-background border-border animate-none"
+                            />
+                          </div>
+ 
+                          {/* Subject list */}
+                          <div className="max-h-[350px] overflow-y-auto pr-1 space-y-4 custom-scrollbar" data-lenis-prevent>
+                            {(() => {
+                              const filtered = allDepartmentSubjects.filter(sub => 
+                                sub.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                sub.code.toLowerCase().includes(searchQuery.toLowerCase())
+                              );
+ 
+                              if (filtered.length === 0) {
+                                return (
+                                  <div className="text-center py-8 text-muted-foreground font-outfit bg-muted/20 rounded-lg">
+                                    No subjects found matching your search.
+                                  </div>
+                                );
+                              }
+ 
+                              // Group by level and term
+                              const groups: { [key: string]: any[] } = {};
+                              filtered.forEach(sub => {
+                                const groupKey = `Level ${sub.level} - ${sub.term === 'term1' ? 'Term 1' : 'Term 2'}`;
+                                if (!groups[groupKey]) groups[groupKey] = [];
+                                groups[groupKey].push(sub);
+                              });
+ 
+                              return Object.entries(groups).map(([groupTitle, subs]) => (
+                                <div key={groupTitle} className="space-y-2">
+                                  <h4 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-border/50 pb-1">
+                                    {groupTitle}
+                                  </h4>
+                                  <div className="grid grid-cols-1 gap-2">
+                                    {subs.map(sub => {
+                                      const isChecked = tempSelectedCourses.includes(sub.id);
+                                      const limitReached = tempSelectedCourses.length >= 8;
+                                      const isDisable = !isChecked && limitReached;
+ 
+                                      return (
+                                        <div 
+                                          key={sub.id} 
+                                          onClick={() => {
+                                            if (isDisable) {
+                                              addToast("You can select up to 8 courses in total!", "error");
+                                              return;
+                                            }
+                                            setTempSelectedCourses(prev => 
+                                              prev.includes(sub.id) 
+                                                ? prev.filter(id => id !== sub.id) 
+                                                : [...prev, sub.id]
+                                            );
+                                          }}
+                                          className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                                            isChecked 
+                                              ? 'border-primary/50 bg-primary/5' 
+                                              : isDisable 
+                                                ? 'border-border/20 bg-muted/5 opacity-50 cursor-not-allowed' 
+                                                : 'border-border/50 bg-muted/10 hover:bg-muted/45'
+                                          }`}
+                                        >
+                                          <Checkbox 
+                                            id={`sub-${sub.id}`} 
+                                            checked={isChecked}
+                                            disabled={isDisable}
+                                            onCheckedChange={() => {}} // handled by div click
+                                            className="mt-1 shrink-0"
+                                          />
+                                          <div className="space-y-0.5 flex-1">
+                                            <div className="flex items-center justify-between gap-2 w-full">
+                                              <div className="flex items-center gap-2">
+                                                <span className={`font-bold text-sm ${isDisable ? 'text-muted-foreground' : 'text-foreground'}`}>
+                                                  {sub.name}
+                                                </span>
+                                                <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">
+                                                  {sub.code}
+                                                </span>
+                                              </div>
+                                              <a 
+                                                href={`/specialization/${userDepartmentKey}/${sub.level}/${sub.id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="text-[11px] text-primary hover:underline font-bold font-outfit inline-flex items-center gap-1 hover:text-primary/80 shrink-0 ml-auto"
+                                                title="Open course page in new tab"
+                                              >
+                                                Course Page <GraduationCap className="size-3.5" />
+                                              </a>
+                                            </div>
+                                            <p className="text-xs text-muted-foreground line-clamp-1">{sub.description}</p>
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-[9px] uppercase tracking-wider font-bold bg-primary/10 text-primary px-1.5 py-0.5 rounded-full inline-block">
+                                                {sub.creditHours} Credits
+                                              </span>
+                                              {isDisable && (
+                                                <span className="text-[9px] text-red-500 font-bold">
+                                                  Limit of 8 reached
+                                                </span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              ));
+                            })()}
+                          </div>
+                        </div>
+ 
+                        <DialogFooter className="flex items-center justify-between border-t border-border pt-4 mt-4">
+                          <div className="text-xs text-muted-foreground font-outfit flex gap-4">
+                            <span>Total selected: <span className={`font-bold ${tempSelectedCourses.length === 8 ? 'text-primary' : 'text-foreground'}`}>{tempSelectedCourses.length}/8</span></span>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button 
+                              variant="outline" 
+                              onClick={() => setIsRegisterDialogOpen(false)}
+                              className="rounded-full px-5"
+                            >
+                              Cancel
+                            </Button>
+                            <Button 
+                              onClick={() => handleSaveRegistrations(tempSelectedCourses)}
+                              disabled={isSaving}
+                              className="rounded-full px-6"
+                            >
+                              {isSaving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="w-4 h-4 mr-2" />} Save Selections
+                            </Button>
+                          </div>
+                        </DialogFooter>
+                      </>
+                    );
+                  })()}
+                </DialogContent>
+              </Dialog>
 
               {/* Quiz Database Logs */}
               <Card className="bg-card border-border shadow-xl h-full mt-8">
