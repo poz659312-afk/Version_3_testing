@@ -19,7 +19,7 @@ export async function getServerStudentSession(): Promise<StudentUser | null> {
 
     const { data: userData, error: dbError } = await supabase
       .from('chameleons')
-      .select('auth_id, username, phone_number, specialization, age, current_level, is_admin, is_banned, created_at, profile_image, email, coins, inventory')
+      .select('auth_id, username, phone_number, specialization, age, current_level, is_admin, is_banned, created_at, profile_image, email, coins, inventory, Registrations')
       .eq('auth_id', user.id)
       .single();
 
@@ -40,7 +40,8 @@ export async function getServerStudentSession(): Promise<StudentUser | null> {
       profile_image: userData.profile_image,
       email: userData.email,
       coins: userData.coins || 0,
-      inventory: userData.inventory || []
+      inventory: userData.inventory || [],
+      Registrations: userData.Registrations || null
     };
   } catch (error) {
     console.error('Error getting server student session:', error);
