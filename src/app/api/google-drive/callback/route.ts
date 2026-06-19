@@ -4,6 +4,14 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import crypto from 'crypto'
 
 export async function GET(request: NextRequest) {
+  const getSafeRedirectUrl = (path: string): URL => {
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://chameleon-nu.vercel.app'
+    if (baseUrl.includes('chameleon-nu.tech')) {
+      baseUrl = 'https://chameleon-nu.vercel.app'
+    }
+    return new URL(path, baseUrl)
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const code = searchParams.get('code')
@@ -13,13 +21,13 @@ export async function GET(request: NextRequest) {
     // Handle OAuth errors
     if (error) {
       return NextResponse.redirect(
-        new URL(`/drive?error=${encodeURIComponent('OAuth authorization was denied')}`, request.url)
+        getSafeRedirectUrl(`/drive?error=${encodeURIComponent('OAuth authorization was denied')}`)
       )
     }
 
     if (!code) {
       return NextResponse.redirect(
-        new URL(`/drive?error=${encodeURIComponent('No authorization code received')}`, request.url)
+        getSafeRedirectUrl(`/drive?error=${encodeURIComponent('No authorization code received')}`)
       )
     }
 
@@ -28,7 +36,7 @@ export async function GET(request: NextRequest) {
     
     if (!state) {
       return NextResponse.redirect(
-        new URL(`/drive?error=${encodeURIComponent('Missing state parameter')}`, request.url)
+        getSafeRedirectUrl(`/drive?error=${encodeURIComponent('Missing state parameter')}`)
       )
     }
 
@@ -58,7 +66,7 @@ export async function GET(request: NextRequest) {
     } catch (error) {
       console.error('State verification failed:', error)
       return NextResponse.redirect(
-        new URL(`/drive?error=${encodeURIComponent('Invalid or expired state')}`, request.url)
+        getSafeRedirectUrl(`/drive?error=${encodeURIComponent('Invalid or expired state')}`)
       )
     }
 
@@ -94,7 +102,7 @@ export async function GET(request: NextRequest) {
     if (existingAdmin) {
       console.log(`🚨 OAUTH CALLBACK DEBUG - Google account ${userInfo.email} already associated with user ${existingAdmin.auth_id}, but trying to associate with user ${authId}`)
       return NextResponse.redirect(
-        new URL(`/drive?error=${encodeURIComponent('This Google account is already connected to another user. Each user must use their own Google account.')}`, request.url)
+        getSafeRedirectUrl(`/drive?error=${encodeURIComponent('This Google account is already connected to another user. Each user must use their own Google account.')}`)
       )
     }
 
@@ -114,7 +122,7 @@ export async function GET(request: NextRequest) {
     
     // Redirect back to drive page with success message
     return NextResponse.redirect(
-      new URL('/drive?success=Google Drive connected successfully', request.url)
+      getSafeRedirectUrl('/drive?success=Google Drive connected successfully')
     )
     
   } catch (error) {
@@ -122,7 +130,7 @@ export async function GET(request: NextRequest) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     
     return NextResponse.redirect(
-      new URL(`/drive?error=${encodeURIComponent(errorMessage)}`, request.url)
+      getSafeRedirectUrl(`/drive?error=${encodeURIComponent(errorMessage)}`)
     )
   }
 }

@@ -5,7 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getAuthUrl } from '@/lib/google-oauth'
 import crypto from 'crypto'
 
-export async function GET(request: NextRequest) {
+async function handleAuthRequest(request: NextRequest) {
   try {
     /* ------------------------------------------------------------------
      * 1) Create Supabase server client (cookie-based auth)
@@ -37,19 +37,27 @@ export async function GET(request: NextRequest) {
     }
 
     /* ------------------------------------------------------------------
-     * 3) Validate query param
+     * 3) Extract parameter based on method
      * ------------------------------------------------------------------ */
-    const { searchParams } = new URL(request.url)
-    const authIdParam = searchParams.get('authId')
+    let authId = ''
+    if (request.method === 'POST') {
+      try {
+        const body = await request.json()
+        authId = body.authId || ''
+      } catch (e) {
+        // Ignore
+      }
+    } else {
+      const { searchParams } = new URL(request.url)
+      authId = searchParams.get('authId') || ''
+    }
 
-    if (!authIdParam) {
+    if (!authId) {
       return NextResponse.json(
         { error: 'Invalid authId' },
         { status: 400 }
       )
     }
-
-    const authId = authIdParam
 
     /* ------------------------------------------------------------------
      * 4) Fetch user record using ADMIN client (server only)
@@ -69,8 +77,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Explicit type assertion for TypeScript
-    const verifiedUser = userData as { auth_id: string; is_admin: boolean }
+    const verifiedUser = userData as any
 
     /* ------------------------------------------------------------------
      * 5) Ownership check (CRITICAL)
@@ -102,11 +109,17 @@ export async function GET(request: NextRequest) {
     const state = `${payloadBase64}.${signature}`
 
     /* ------------------------------------------------------------------
-     * 7) Generate Google OAuth URL
+     * 7) Generate Google OAuth URL and return JSON (not redirect)
      * ------------------------------------------------------------------ */
     const authUrl = getAuthUrl(state, verifiedUser.is_admin, true)
 
-    return NextResponse.redirect(authUrl)
+    return NextResponse.json({
+      success: true,
+      authUrl,
+      data: {
+        authUrl
+      }
+    })
 
   } catch (error) {
     console.error('OAuth init error:', error)
@@ -115,6 +128,14 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
+}
+
+export async function GET(request: NextRequest) {
+  return handleAuthRequest(request)
+}
+
+export async function POST(request: NextRequest) {
+  return handleAuthRequest(request)
 }
 
 export const dynamic = 'force-dynamic';

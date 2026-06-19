@@ -3,10 +3,15 @@ import { google } from 'googleapis'
 import { createAdminClient } from './supabase/admin'
 import { updateAdminTokens } from './admin-operations'
 
+const sanitizeRedirectUri = (uri: string | undefined): string | undefined => {
+  if (!uri) return uri
+  return uri.replace(/(www\.)?chameleon-nu\.tech/g, 'chameleon-nu.vercel.app')
+}
+
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
+  sanitizeRedirectUri(process.env.GOOGLE_REDIRECT_URI)
 )
 
 /**
@@ -57,8 +62,8 @@ export async function refreshAccessToken(authId: string): Promise<string | null>
     const supabase = createAdminClient()
     
     // Get refresh token from admins table
-    const { data: adminData, error } = await supabase
-      .from('admins')
+    const { data: adminData, error } = await (supabase
+      .from('admins') as any)
       .select('refresh_token')
       .eq('auth_id', authId)
       .single()
@@ -107,8 +112,8 @@ export async function storeUserTokens(
   const supabase = createAdminClient()
 
   // First verify user is admin
-  const { data: user } = await supabase
-    .from('chameleons')
+  const { data: user } = await (supabase
+    .from('chameleons') as any)
     .select('is_admin')
     .eq('auth_id', authId)
     .single()
@@ -136,8 +141,8 @@ export async function storeUserTokens(
   }
 
   // Upsert into admins table
-  const { error } = await supabase
-    .from('admins')
+  const { error } = await (supabase
+    .from('admins') as any)
     .upsert(adminData, {
       onConflict: 'auth_id'
     })
@@ -158,8 +163,8 @@ export async function getUserTokens(authId: string) {
   const supabase = createAdminClient()
   
   // Get tokens from admins table
-  const { data, error } = await supabase
-    .from('admins')
+  const { data, error } = await (supabase
+    .from('admins') as any)
     .select('google_id, google_email, access_token, refresh_token, token_expiry, authorized')
     .eq('auth_id', authId)
     .single()
@@ -233,8 +238,8 @@ export async function revokeUserAccess(authId: string): Promise<boolean> {
     }
 
     // Clear tokens in admins table
-    const { error } = await supabase
-      .from('admins')
+    const { error } = await (supabase
+      .from('admins') as any)
       .update({
         access_token: null,
         refresh_token: null,

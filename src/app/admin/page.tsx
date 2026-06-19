@@ -1,42 +1,98 @@
-import { Metadata } from 'next';
-import TokenStatusMonitor from '@/components/TokenStatusMonitor';
+import { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import { getServerStudentSession } from '@/lib/auth-server'
+import { createAdminClient } from '@/lib/supabase/admin'
+import AdminDashboardClient from './AdminDashboardClient'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { ShieldAlert, ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Admin Dashboard - Token Management',
-  description: 'Monitor and manage Google Drive API tokens',
-};
+  title: 'Super Admin Management - Chameleon',
+  description: 'Configure and monitor system permissions and Google Drive sync access.',
+}
 
-export default function AdminPage() {
-  return (
-    <div className="container mx-auto py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-muted-foreground">
-            Monitor and manage system components including Google Drive API tokens.
-          </p>
-        </div>
+export default async function AdminPage() {
+  const session = await getServerStudentSession()
 
-        <div className="grid gap-6">
-          <TokenStatusMonitor />
-        </div>
+  // Guard: If not logged in or not a super admin, show Access Denied UI
+  if (!session || !session.is_super_admin || session.is_banned) {
+    return (
+      <div className="container mx-auto py-20 px-4 min-h-[80vh] flex items-center justify-center">
+        <div className="w-full max-w-md animate-notif-modal-enter">
+          <Card className="bg-card border-border shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-destructive" />
+            <CardHeader className="text-center pb-4">
+              <div className="flex justify-center mb-4">
+                <div className="w-14 h-14 rounded-full bg-destructive/10 flex items-center justify-center border border-destructive/20">
+                  <ShieldAlert className="w-7 h-7 text-destructive" />
+                </div>
+              </div>
+              <CardTitle className="text-xl font-bold">Access Denied</CardTitle>
+              <CardDescription className="text-muted-foreground text-xs mt-1">
+                You do not have the required permissions to view this page.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Alert className="bg-destructive/10 border-destructive/20 text-destructive-foreground text-sm">
+                <AlertDescription className="text-muted-foreground text-center">
+                  Only authenticated users with <strong>super admin privileges</strong> are authorized to access the System Admin Console.
+                </AlertDescription>
+              </Alert>
 
-        <div className="mt-8 p-4 bg-primary/10 border border-primary/20 rounded-lg">
-          <h3 className="font-semibold text-primary mb-2">Cron Job Setup Instructions</h3>
-          <div className="text-sm text-foreground/80 space-y-1">
-            <p><strong>1.</strong> Go to <a href="https://cron-job.org" target="_blank" rel="noopener noreferrer" className="underline">cron-job.org</a></p>
-            <p><strong>2.</strong> Create a new cron job with these settings:</p>
-            <ul className="ml-4 mt-2 space-y-1">
-              <li>• URL: <code className="bg-primary/20 px-1 rounded">https://your-app.vercel.app/api/cron/token-refresh</code></li>
-              <li>• Method: GET or POST</li>
-              <li>• Schedule: Every 30 minutes</li>
-              <li>• Headers: <code className="bg-primary/20 px-1 rounded">x-cron-secret: your-secret-key-here</code></li>
-            </ul>
-            <p><strong>3.</strong> Replace the URL with your actual Vercel domain</p>
-            <p><strong>4.</strong> Use the same secret key as your CRON_SECRET environment variable</p>
-          </div>
+              <div className="pt-2">
+                <Link href="/">
+                  <Button variant="outline" className="w-full border-border hover:bg-muted">
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back to Home
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
+    )
+  }
+
+  // Server-side pre-fetching of initial data
+  const supabase = createAdminClient()
+
+  // 1. Fetch Users (Page 1, Size 10, Sorted by created_at desc)
+  const { data: users, count: totalCount } = await supabase
+    .from('chameleons')
+    .select('auth_id, username, email, specialization, current_level, is_admin, is_super_admin, is_banned, created_at', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(0, 9)
+
+  // 2. Fetch Access Rules
+  const { data: rules } = await supabase
+    .from('drive_access_rules')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  // 3. Fetch Audit Logs
+  const { data: logs } = await supabase
+    .from('admin_audit_logs')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(100)
+
+  return (
+    <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <AdminDashboardClient
+        initialUsers={users || []}
+        initialTotalCount={totalCount || 0}
+        initialRules={rules || []}
+        initialLogs={logs || []}
+        adminAuthId={session.auth_id}
+      />
     </div>
-  );
+  )
 }
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0

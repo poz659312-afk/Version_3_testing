@@ -11,6 +11,7 @@ export interface StudentUser {
   created_at: string
   profile_image?: string
   email?: string
+  is_super_admin?: boolean
 }
 
 // Admin-specific data (from admins table)

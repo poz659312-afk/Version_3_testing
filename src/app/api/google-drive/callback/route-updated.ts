@@ -4,6 +4,14 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { authorizeAdmin } from '@/lib/admin-operations'
 
 export async function GET(request: NextRequest) {
+  const getSafeRedirectUrl = (path: string): URL => {
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://chameleon-nu.vercel.app'
+    if (baseUrl.includes('chameleon-nu.tech')) {
+      baseUrl = 'https://chameleon-nu.vercel.app'
+    }
+    return new URL(path, baseUrl)
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const code = searchParams.get('code')
@@ -13,13 +21,13 @@ export async function GET(request: NextRequest) {
     // Handle OAuth errors
     if (error) {
       return NextResponse.redirect(
-        new URL(`/drive?error=${encodeURIComponent('OAuth authorization was denied')}`, request.url)
+        getSafeRedirectUrl(`/drive?error=${encodeURIComponent('OAuth authorization was denied')}`)
       )
     }
 
     if (!code) {
       return NextResponse.redirect(
-        new URL(`/drive?error=${encodeURIComponent('No authorization code received')}`, request.url)
+        getSafeRedirectUrl(`/drive?error=${encodeURIComponent('No authorization code received')}`)
       )
     }
 
@@ -33,7 +41,7 @@ export async function GET(request: NextRequest) {
       isAdmin = parts.includes('admin')
     } else {
       return NextResponse.redirect(
-        new URL(`/drive?error=${encodeURIComponent('Invalid state parameter')}`, request.url)
+        getSafeRedirectUrl(`/drive?error=${encodeURIComponent('Invalid state parameter')}`)
       )
     }
 
@@ -70,7 +78,7 @@ export async function GET(request: NextRequest) {
     if (existingAdmin) {
       console.log(`🚨 OAUTH CALLBACK DEBUG - Google account already associated with user ${existingAdmin.user_id}`)
       return NextResponse.redirect(
-        new URL(`/drive?error=${encodeURIComponent('This Google account is already connected to another user. Each user must use their own Google account.')}`, request.url)
+        getSafeRedirectUrl(`/drive?error=${encodeURIComponent('This Google account is already connected to another user. Each user must use their own Google account.')}`)
       )
     }
 
@@ -83,7 +91,7 @@ export async function GET(request: NextRequest) {
 
     if (!user?.is_admin || user.is_banned) {
       return NextResponse.redirect(
-        new URL(`/drive?error=${encodeURIComponent('User is not authorized as an admin')}`, request.url)
+        getSafeRedirectUrl(`/drive?error=${encodeURIComponent('User is not authorized as an admin')}`)
       )
     }
 
@@ -104,7 +112,7 @@ export async function GET(request: NextRequest) {
 
     // Redirect back to drive page with success message
     return NextResponse.redirect(
-      new URL('/drive?success=Google Drive connected successfully', request.url)
+      getSafeRedirectUrl('/drive?success=Google Drive connected successfully')
     )
     
   } catch (error) {
@@ -112,7 +120,7 @@ export async function GET(request: NextRequest) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     
     return NextResponse.redirect(
-      new URL(`/drive?error=${encodeURIComponent(errorMessage)}`, request.url)
+      getSafeRedirectUrl(`/drive?error=${encodeURIComponent(errorMessage)}`)
     )
   }
 }

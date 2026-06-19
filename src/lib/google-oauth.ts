@@ -3,10 +3,15 @@ import { google } from 'googleapis'
 import { createAdminClient } from './supabase/admin'
 import { updateAdminTokens } from './admin-operations'
 
+const sanitizeRedirectUri = (uri: string | undefined): string | undefined => {
+  if (!uri) return uri
+  return uri.replace(/(www\.)?chameleon-nu\.tech/g, 'chameleon-nu.vercel.app')
+}
+
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_REDIRECT_URI
+  sanitizeRedirectUri(process.env.GOOGLE_REDIRECT_URI)
 )
 
 /**
@@ -67,8 +72,8 @@ export async function refreshAccessToken(authId: string): Promise<string | null>
     const supabase = createAdminClient()
     
     // Get refresh token from admins table
-    const { data: adminData, error } = await supabase
-      .from('admins')
+    const { data: adminData, error } = await (supabase
+      .from('admins') as any)
       .select('refresh_token')
       .eq('auth_id', authId)
       .single()
@@ -117,8 +122,8 @@ export async function storeUserTokens(
   const supabase = createAdminClient()
 
   // First verify user is admin
-  const { data: user } = await supabase
-    .from('chameleons')
+  const { data: user } = await (supabase
+    .from('chameleons') as any)
     .select('is_admin')
     .eq('auth_id', authId)
     .single()
@@ -146,8 +151,8 @@ export async function storeUserTokens(
   }
 
   // Upsert into admins table
-  const { error } = await supabase
-    .from('admins')
+  const { error } = await (supabase
+    .from('admins') as any)
     .upsert(adminData, {
       onConflict: 'auth_id'
     })
@@ -168,8 +173,8 @@ export async function getUserTokens(authId: string) {
   const supabase = createAdminClient()
   
   // Get tokens from admins table
-  const { data, error } = await supabase
-    .from('admins')
+  const { data, error } = await (supabase
+    .from('admins') as any)
     .select('google_id, google_email, access_token, refresh_token, token_expiry, authorized')
     .eq('auth_id', authId)
     .single()
@@ -241,8 +246,8 @@ export async function refreshAllAdminTokens(): Promise<{
     const supabase = createAdminClient()
     
     // Get all admins with refresh tokens
-    const { data: admins, error } = await supabase
-      .from('admins')
+    const { data: admins, error } = await (supabase
+      .from('admins') as any)
       .select('auth_id, google_email, refresh_token, token_expiry, authorized')
       .eq('authorized', true)
       .not('refresh_token', 'is', null)
@@ -399,9 +404,48 @@ export async function configureOAuthClientForUser(authId: string) {
   const client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    process.env.GOOGLE_REDIRECT_URI
+    sanitizeRedirectUri(process.env.GOOGLE_REDIRECT_URI)
   );
 
   client.setCredentials({ access_token: accessToken });
   return client;
+}
+
+/**
+ * Check validation status of all admin tokens in the database without performing any OAuth refreshes.
+ */
+export async function checkAllAdminTokensStatus(): Promise<{
+  isValid: boolean
+  totalCount: number
+  expiredCount: number
+  validCount: number
+}> {
+  const supabase = createAdminClient()
+  const { data: admins, error } = await (supabase
+    .from('admins') as any)
+    .select('auth_id, token_expiry, authorized')
+    .eq('authorized', true)
+    .not('refresh_token', 'is', null)
+
+  if (error || !admins || admins.length === 0) {
+    return { isValid: false, totalCount: 0, expiredCount: 0, validCount: 0 }
+  }
+
+  let expiredCount = 0
+  let validCount = 0
+
+  for (const admin of admins) {
+    if (isTokenExpired(admin.token_expiry)) {
+      expiredCount++
+    } else {
+      validCount++
+    }
+  }
+
+  return {
+    isValid: validCount > 0, // Deemed valid if at least one admin has a non-expired token
+    totalCount: admins.length,
+    expiredCount,
+    validCount
+  }
 }

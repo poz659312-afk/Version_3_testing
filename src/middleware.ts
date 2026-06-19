@@ -9,6 +9,12 @@ const BLOCKED_BOT_PATTERNS = /scraper|crawler|spider|curl|wget|python-requests|G
 const ALLOWED_BOTS = /googlebot|bingbot|yandexbot|duckduckbot|slurp|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegram/i
 
 export function middleware(request: NextRequest) {
+  const host = request.headers.get('host') || ''
+  if (host.includes('chameleon-nu.tech')) {
+    const targetUrl = new URL(request.nextUrl.pathname + request.nextUrl.search, 'https://chameleon-nu.vercel.app')
+    return NextResponse.redirect(targetUrl, 308)
+  }
+
   const { pathname } = request.nextUrl
   const userAgent = request.headers.get('user-agent') || ''
 

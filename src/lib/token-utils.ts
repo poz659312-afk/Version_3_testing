@@ -18,7 +18,7 @@ export interface RefreshResult {
 // Check token status by calling the API
 export async function checkTokenStatus(): Promise<TokenStatus> {
   try {
-    const response = await fetch('/api/cron/token-refresh', {
+    const response = await fetch('/api/cron/token-refresh?checkOnly=true', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

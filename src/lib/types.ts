@@ -12,6 +12,7 @@ export interface User {
   email?: string
   coins?: number
   inventory?: string[]
+  is_super_admin: boolean
 }
 
 export interface Quiz {

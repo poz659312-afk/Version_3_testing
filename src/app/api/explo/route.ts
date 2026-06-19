@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       method: "POST",
       headers: {
         "Authorization": `Bearer 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`,
-        "HTTP-Referer": "https://chameleon-nu.tech",
+        "HTTP-Referer": "https://chameleon-nu.vercel.app",
         "X-Title": "Explo AI",
         "Content-Type": "application/json",
       },

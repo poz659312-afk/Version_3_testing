@@ -138,7 +138,10 @@ export async function GET(request: NextRequest) {
     console.log(`✅ OAuth tokens stored successfully for user ${authId}`)
     
     // Redirect back to drive page with success message using proper base URL
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.chameleon-nu.tech'
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://chameleon-nu.vercel.app'
+    if (baseUrl.includes('chameleon-nu.tech')) {
+      baseUrl = 'https://chameleon-nu.vercel.app'
+    }
     console.log(`🔄 OAUTH CALLBACK DEBUG - Redirecting to: ${baseUrl}/drive?success=Google Drive connected successfully`)
     return NextResponse.redirect(
       new URL('/drive?success=Google Drive connected successfully', baseUrl)
@@ -149,7 +152,10 @@ export async function GET(request: NextRequest) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     
     // Use proper base URL for error redirect too
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.chameleon-nu.tech'
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://chameleon-nu.vercel.app'
+    if (baseUrl.includes('chameleon-nu.tech')) {
+      baseUrl = 'https://chameleon-nu.vercel.app'
+    }
     return NextResponse.redirect(
       new URL(`/drive?error=${encodeURIComponent(errorMessage)}`, baseUrl)
     )

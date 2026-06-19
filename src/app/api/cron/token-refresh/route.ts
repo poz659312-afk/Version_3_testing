@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { refreshAllAdminTokens } from '@/lib/google-oauth';
+import { refreshAllAdminTokens, checkAllAdminTokensStatus } from '@/lib/google-oauth';
 
 // Simple authentication using a secret key
 const CRON_SECRET = process.env.CRON_SECRET || 'your-secret-key-here';
@@ -37,6 +37,25 @@ export async function GET(request: NextRequest) {
         },
         { status: 401 }
       );
+    }
+
+    // Check if we only want to fetch status (without refreshing)
+    const url = new URL(request.url);
+    const checkOnly = url.searchParams.get('checkOnly') === 'true';
+
+    if (checkOnly) {
+      console.log('🔍 Authorized status check (no refresh)');
+      const status = await checkAllAdminTokensStatus();
+      return NextResponse.json({
+        success: status.isValid,
+        message: status.isValid 
+          ? 'Tokens in the database are currently valid.' 
+          : 'All tokens are expired or no authorized admins exist.',
+        refreshedCount: 0,
+        failedCount: status.expiredCount,
+        totalUsers: status.totalCount,
+        timestamp: new Date().toISOString()
+      });
     }
 
     console.log('✅ Authorized cron job started - refreshing all admin tokens');
