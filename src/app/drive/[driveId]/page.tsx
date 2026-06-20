@@ -34,6 +34,7 @@ import {
   Trash2,
   Sparkles,
   Lock,
+  ChevronRight
 } from "lucide-react";
 import {
   DropdownMenu,
