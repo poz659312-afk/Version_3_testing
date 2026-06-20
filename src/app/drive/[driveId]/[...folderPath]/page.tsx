@@ -1121,10 +1121,81 @@ export default function DrivePage() {
                         aria-label={isFolder ? `Open folder ${file.name}` : `View file ${file.name}`}
                       >
                         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                        
+                        {/* Actions Dropdown menu positioned at the top-right to reduce space */}
+                        <div onClick={(e) => e.stopPropagation()} className="absolute top-2 right-2 z-20">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger onClick={(e) => e.stopPropagation()}>
+                              <div className="h-8 w-8 flex items-center justify-center hover:bg-white/10 rounded-full cursor-pointer transition-colors">
+                                <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                              </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-md border-border">
+                              {!isFolder && (
+                                 <DropdownMenuItem 
+                                   onClick={() => {
+                                     setSelectedAIFile(file);
+                                     setAiModalOpen(true);
+                                   }}
+                                   className="text-indigo-400 focus:text-indigo-400 focus:bg-indigo-500/10 cursor-pointer"
+                                 >
+                                   <Sparkles className="w-4 h-4 mr-2" />
+                                   Summarize with AI
+                                 </DropdownMenuItem>
+                               )}
+                              <DropdownMenuItem onClick={() => handleDownload(file)} className="cursor-pointer">
+                                <Download className="w-4 h-4 mr-2" />
+                                Download
+                              </DropdownMenuItem>
+                              
+                              {isAdmin && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  {isFolder ? (
+                                    <>
+                                      <DropdownMenuItem 
+                                        onClick={() => setActiveRenameFolder(file)}
+                                        className="text-amber-400 focus:text-amber-400 focus:bg-amber-500/10 cursor-pointer"
+                                      >
+                                        <Edit className="w-4 h-4 mr-2" />
+                                        Rename Folder
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem 
+                                        onClick={() => setActiveDeleteFolder(file)}
+                                        className="text-red-400 focus:text-red-400 focus:bg-red-500/10 cursor-pointer"
+                                      >
+                                        <Trash2 className="w-4 h-4 mr-2" />
+                                        Delete Folder
+                                      </DropdownMenuItem>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <DropdownMenuItem 
+                                        onClick={() => setActiveRenameFile(file)}
+                                        className="text-amber-400 focus:text-amber-400 focus:bg-amber-500/10 cursor-pointer"
+                                      >
+                                        <Edit className="w-4 h-4 mr-2" />
+                                        Rename File
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem 
+                                        onClick={() => setActiveDeleteFile(file)}
+                                        className="text-red-400 focus:text-red-400 focus:bg-red-500/10 cursor-pointer"
+                                      >
+                                        <Trash2 className="w-4 h-4 mr-2" />
+                                        Delete File
+                                      </DropdownMenuItem>
+                                    </>
+                                  )}
+                                </>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+
                         <CardHeader className="pb-2 relative overflow-hidden">
-                          {/* Ownership Badge */}
+                          {/* Ownership Badge, shifted left to avoid overlapping the three-dots dropdown */}
                           {isCurrentUserOwner(file) && (
-                            <OwnershipBadge />
+                            <OwnershipBadge className="absolute -top-2 right-8 z-10" />
                           )}
                           
                           <div className="flex items-start gap-3">
@@ -1203,75 +1274,6 @@ export default function DrivePage() {
                               <Eye className="w-3 h-3 mr-2" />
                               {isFolder ? "Open" : isPDF ? "View PDF" : "View"}
                             </Button>
-                            
-                            <div onClick={(e) => e.stopPropagation()} className="relative z-20">
-                              <DropdownMenu>
-                                <DropdownMenuTrigger onClick={(e) => e.stopPropagation()}>
-                                  <div className="h-8 w-8 flex items-center justify-center hover:bg-white/10 rounded-full cursor-pointer transition-colors">
-                                    <MoreVertical className="w-4 h-4 text-muted-foreground" />
-                                  </div>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-md border-border">
-                                  {!isFolder && (
-                                     <DropdownMenuItem 
-                                       onClick={() => {
-                                         setSelectedAIFile(file);
-                                         setAiModalOpen(true);
-                                       }}
-                                       className="text-indigo-400 focus:text-indigo-400 focus:bg-indigo-500/10 cursor-pointer"
-                                     >
-                                       <Sparkles className="w-4 h-4 mr-2" />
-                                       Summarize with AI
-                                     </DropdownMenuItem>
-                                   )}
-                                  <DropdownMenuItem onClick={() => handleDownload(file)} className="cursor-pointer">
-                                    <Download className="w-4 h-4 mr-2" />
-                                    Download
-                                  </DropdownMenuItem>
-                                  
-                                  {isAdmin && (
-  <>
-    <DropdownMenuSeparator />
-    {isFolder ? (
-      <>
-        <DropdownMenuItem 
-          onClick={() => setActiveRenameFolder(file)}
-          className="text-amber-400 focus:text-amber-400 focus:bg-amber-500/10 cursor-pointer"
-        >
-          <Edit className="w-4 h-4 mr-2" />
-          Rename Folder
-        </DropdownMenuItem>
-        <DropdownMenuItem 
-          onClick={() => setActiveDeleteFolder(file)}
-          className="text-red-400 focus:text-red-400 focus:bg-red-500/10 cursor-pointer"
-        >
-          <Trash2 className="w-4 h-4 mr-2" />
-          Delete Folder
-        </DropdownMenuItem>
-      </>
-    ) : (
-      <>
-        <DropdownMenuItem 
-          onClick={() => setActiveRenameFile(file)}
-          className="text-amber-400 focus:text-amber-400 focus:bg-amber-500/10 cursor-pointer"
-        >
-          <Edit className="w-4 h-4 mr-2" />
-          Rename File
-        </DropdownMenuItem>
-        <DropdownMenuItem 
-          onClick={() => setActiveDeleteFile(file)}
-          className="text-red-400 focus:text-red-400 focus:bg-red-500/10 cursor-pointer"
-        >
-          <Trash2 className="w-4 h-4 mr-2" />
-          Delete File
-        </DropdownMenuItem>
-      </>
-    )}
-  </>
-)}
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
                           </div>
                         </CardContent>
                       </Card>
