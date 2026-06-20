@@ -6,6 +6,7 @@ const DISABLE_CACHE = false;
 const nextConfig = {
   // Production optimizations for security and performance
   productionBrowserSourceMaps: false,
+  optimizeFonts: false,
 
   experimental: {
     serverComponentsExternalPackages: ['pdf-parse'],

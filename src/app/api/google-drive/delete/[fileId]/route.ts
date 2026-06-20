@@ -90,7 +90,8 @@ export async function DELETE(
 
     // Delete file from Google Drive
     await drive.files.delete({
-      fileId: params.fileId
+      fileId: params.fileId,
+      supportsAllDrives: true
     })
     
     return NextResponse.json({

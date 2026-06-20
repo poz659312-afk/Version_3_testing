@@ -85,7 +85,8 @@ export async function POST(request: NextRequest) {
     // Create folder in Google Drive
     const response = await drive.files.create({
       requestBody: folderMetadata,
-      fields: 'id, name, mimeType, createdTime, modifiedTime, parents'
+      fields: 'id, name, mimeType, createdTime, modifiedTime, parents',
+      supportsAllDrives: true
     })
     
     return NextResponse.json({

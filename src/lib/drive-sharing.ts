@@ -67,7 +67,8 @@ export async function grantFolderAccess(drive: any, folderId: string, email: str
         role: 'reader', // View-only access
         type: 'user',
         emailAddress: email
-      }
+      },
+      supportsAllDrives: true
     })
     return { success: true, permissionId: response.data.id }
   } catch (error: any) {
@@ -87,7 +88,8 @@ export async function revokeFolderAccess(drive: any, folderId: string, email: st
     // 1. List current permissions on the folder to find the matching permissionId
     const response = await drive.permissions.list({
       fileId: folderId,
-      fields: 'permissions(id, emailAddress)'
+      fields: 'permissions(id, emailAddress)',
+      supportsAllDrives: true
     })
 
     const permissions = response.data.permissions || []
@@ -99,7 +101,8 @@ export async function revokeFolderAccess(drive: any, folderId: string, email: st
       // 2. Delete the permission
       await drive.permissions.delete({
         fileId: folderId,
-        permissionId: permission.id
+        permissionId: permission.id,
+        supportsAllDrives: true
       })
       console.log(`✅ Revoked permission ID ${permission.id} for ${email} on folder ${folderId}`)
       return { success: true }

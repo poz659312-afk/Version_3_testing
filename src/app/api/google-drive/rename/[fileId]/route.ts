@@ -103,7 +103,8 @@ export async function POST(
       requestBody: {
         name: newName.trim()
       },
-      fields: 'id, name, mimeType, size, modifiedTime, webViewLink, webContentLink'
+      fields: 'id, name, mimeType, size, modifiedTime, webViewLink, webContentLink',
+      supportsAllDrives: true
     })
     
     return NextResponse.json({

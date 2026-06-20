@@ -20,7 +20,8 @@ export async function GET(request: NextRequest) {
     if (type === 'info' && fileId) {
       const response = await drive.files.get({
         fileId: fileId,
-        fields: 'id, name, parents, mimeType, size, createdTime, modifiedTime, owners, webViewLink, webContentLink, thumbnailLink'
+        fields: 'id, name, parents, mimeType, size, createdTime, modifiedTime, owners, webViewLink, webContentLink, thumbnailLink',
+        supportsAllDrives: true
       })
       
       return NextResponse.json(response.data)
@@ -37,7 +38,9 @@ export async function GET(request: NextRequest) {
       pageSize: pageSize,
       pageToken: pageToken || undefined,
       fields: 'nextPageToken, files(id, name, mimeType, size, createdTime, modifiedTime, owners, webViewLink, webContentLink, thumbnailLink, parents)',
-      orderBy: 'folder,name'
+      orderBy: 'folder,name',
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true
     })
     
     return NextResponse.json({

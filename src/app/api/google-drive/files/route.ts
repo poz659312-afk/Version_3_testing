@@ -1,7 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getValidAccessToken } from '@/lib/google-oauth'
+import { getAdminDriveClient } from '@/lib/drive-sharing'
+import { isValidDriveId } from '@/lib/drive-mapping'
+
+// Recursive security check for non-admin folder/file access
+async function isFolderOrFileAccessAllowed(drive: any, targetId: string): Promise<boolean> {
+  // 1. If it's directly a whitelisted root folder, allow access
+  if (isValidDriveId(targetId)) return true
+
+  // 2. Otherwise, check parents recursively up to a limit (e.g. 5 levels) to see if they trace back to a whitelisted folder
+  let currentId = targetId
+  for (let depth = 0; depth < 5; depth++) {
+    try {
+      const response = await drive.files.get({
+        fileId: currentId,
+        fields: 'id, parents',
+        supportsAllDrives: true
+      })
+      const parents = response.data.parents
+      if (!parents || parents.length === 0) break
+
+      // Check if any parent is whitelisted
+      if (parents.some((p: string) => isValidDriveId(p))) {
+        return true
+      }
+
+      // Go to first parent
+      currentId = parents[0]
+    } catch (e) {
+      console.error(`Error checking parents for target ${targetId} at depth ${depth}:`, e)
+      break
+    }
+  }
+
+  return false
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -25,33 +59,51 @@ export async function GET(request: NextRequest) {
 
     const authId = authIdParam
 
-    // Get valid access token for the user (no authorization check for viewing)
-    const accessToken = await getValidAccessToken(authId)
-    if (!accessToken) {
+    // Configure Google Drive client using fallback admin client
+    let drive
+    try {
+      drive = await getAdminDriveClient(authId)
+    } catch (authError) {
+      console.error('Failed to configure drive client:', authError)
       return NextResponse.json(
         { 
-          error: 'Google Drive authentication required for your account. Please connect your Google Drive.',
+          error: 'Google Drive authentication required. Please connect your Google Drive or ensure an administrator has authorized access.',
           needsAuth: true 
         },
         { status: 401 }
       )
     }
 
-    // Configure OAuth2 client
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      process.env.GOOGLE_REDIRECT_URI
-    )
-    oauth2Client.setCredentials({ access_token: accessToken })
+    // Check if requesting user is admin
+    const { data: chameleon } = await supabase
+      .from('chameleons')
+      .select('is_admin')
+      .eq('auth_id', authId)
+      .single()
 
-    const drive = google.drive({ version: 'v3', auth: oauth2Client })
+    const isAdmin = chameleon?.is_admin || false
+
+    // Security check for non-admin users
+    if (!isAdmin) {
+      const targetId = folderId || fileId
+      if (targetId) {
+        const allowed = await isFolderOrFileAccessAllowed(drive, targetId)
+        if (!allowed) {
+          console.warn(`🔒 Security Block: Non-admin user ${authId} attempted to access unauthorized folder/file ${targetId}`)
+          return NextResponse.json(
+            { error: 'Access denied to this folder/file' },
+            { status: 403 }
+          )
+        }
+      }
+    }
 
     // Handle single file info request
     if (type === 'info' && fileId) {
       const response = await drive.files.get({
         fileId: fileId,
-        fields: 'id, name, parents, mimeType, size, createdTime, modifiedTime, owners, webViewLink, webContentLink, thumbnailLink'
+        fields: 'id, name, parents, mimeType, size, createdTime, modifiedTime, owners, webViewLink, webContentLink, thumbnailLink',
+        supportsAllDrives: true
       })
       
       return NextResponse.json(response.data)
@@ -68,7 +120,9 @@ export async function GET(request: NextRequest) {
       pageSize: pageSize,
       pageToken: pageToken || undefined,
       fields: 'nextPageToken, files(id, name, mimeType, size, createdTime, modifiedTime, owners, webViewLink, webContentLink, thumbnailLink, parents)',
-      orderBy: 'folder,name'
+      orderBy: 'folder,name',
+      supportsAllDrives: true,
+      includeItemsFromAllDrives: true
     })
     
     return NextResponse.json({
@@ -80,7 +134,7 @@ export async function GET(request: NextRequest) {
     console.error('Error listing Google Drive files:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     
-    if (errorMessage.includes('No access token found') || errorMessage.includes('invalid_grant')) {
+    if (errorMessage.includes('No access token found') || errorMessage.includes('invalid_grant') || errorMessage.includes('No authorized admin')) {
       return NextResponse.json(
         { error: 'Google Drive authentication required' },
         { status: 401 }
