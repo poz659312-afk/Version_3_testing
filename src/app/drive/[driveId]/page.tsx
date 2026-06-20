@@ -51,6 +51,10 @@ import {
   AdminControls,
   FileActions,
   FolderActions,
+  RenameFileDialog,
+  DeleteFileDialog,
+  RenameFolderDialog,
+  DeleteFolderDialog,
 } from "@/components/admin-controls";
 import { CreateActions } from "@/components/create-actions";
 import { AdminAuthWarningButton } from "@/components/admin-auth-warning-button";
@@ -233,6 +237,12 @@ export default function DriveRootPage() {
   const [sessionChecked, setSessionChecked] = useState(false);
   const [basicLoaded, setBasicLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  // Active action states
+  const [activeRenameFile, setActiveRenameFile] = useState<DriveFile | null>(null);
+  const [activeDeleteFile, setActiveDeleteFile] = useState<DriveFile | null>(null);
+  const [activeRenameFolder, setActiveRenameFolder] = useState<DriveFile | null>(null);
+  const [activeDeleteFolder, setActiveDeleteFolder] = useState<DriveFile | null>(null);
 
   // Hash resolution states
   const [notFound, setNotFound] = useState(false);
@@ -925,6 +935,7 @@ export default function DriveRootPage() {
                         const FileIcon = getFileIcon(file.mimeType);
                         const isFolder = file.mimeType.includes("folder");
                         const isImage = file.mimeType.includes("image");
+                        const isPDF = file.mimeType.includes("pdf");
 
                         if (viewMode === "list") {
                           return (
@@ -959,7 +970,7 @@ export default function DriveRootPage() {
                                         className="cursor-pointer"
                                       >
                                         <Eye className="w-4 h-4 mr-2" />
-                                        {isFolder ? "Open" : "View"}
+                                        {isFolder ? "Open" : isPDF ? "View PDF" : "View"}
                                       </DropdownMenuItem>
                                       {!isFolder && (
                                         <DropdownMenuItem 
@@ -981,25 +992,41 @@ export default function DriveRootPage() {
                                       {isAdmin && (
                                         <>
                                           <DropdownMenuSeparator />
-                                          <DropdownMenuItem className="focus:bg-transparent p-0">
-                                            <div className="w-full">
-                                              {isFolder ? (
-                                                <FolderActions
-                                                  folderId={file.id}
-                                                  folderName={file.name}
-                                                  onDeleted={refreshFiles}
-                                                  onRenamed={refreshFiles}
-                                                />
-                                              ) : (
-                                                <FileActions
-                                                  fileId={file.id}
-                                                  fileName={file.name}
-                                                  onDeleted={refreshFiles}
-                                                  onRenamed={refreshFiles}
-                                                />
-                                              )}
-                                            </div>
-                                          </DropdownMenuItem>
+                                          {isFolder ? (
+                                            <>
+                                              <DropdownMenuItem 
+                                                onClick={() => setActiveRenameFolder(file)}
+                                                className="text-amber-400 focus:text-amber-400 focus:bg-amber-500/10 cursor-pointer"
+                                              >
+                                                <Edit className="w-4 h-4 mr-2" />
+                                                Rename Folder
+                                              </DropdownMenuItem>
+                                              <DropdownMenuItem 
+                                                onClick={() => setActiveDeleteFolder(file)}
+                                                className="text-red-400 focus:text-red-400 focus:bg-red-500/10 cursor-pointer"
+                                              >
+                                                <Trash2 className="w-4 h-4 mr-2" />
+                                                Delete Folder
+                                              </DropdownMenuItem>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <DropdownMenuItem 
+                                                onClick={() => setActiveRenameFile(file)}
+                                                className="text-amber-400 focus:text-amber-400 focus:bg-amber-500/10 cursor-pointer"
+                                              >
+                                                <Edit className="w-4 h-4 mr-2" />
+                                                Rename File
+                                              </DropdownMenuItem>
+                                              <DropdownMenuItem 
+                                                onClick={() => setActiveDeleteFile(file)}
+                                                className="text-red-400 focus:text-red-400 focus:bg-red-500/10 cursor-pointer"
+                                              >
+                                                <Trash2 className="w-4 h-4 mr-2" />
+                                                Delete File
+                                              </DropdownMenuItem>
+                                            </>
+                                          )}
                                         </>
                                       )}
                                     </DropdownMenuContent>
@@ -1018,20 +1045,22 @@ export default function DriveRootPage() {
                             className={`relative bg-white/[0.03] border-border/50 backdrop-blur-md hover:bg-white/[0.08] hover:border-primary/30 hover:scale-[1.02] transition-all duration-300 group h-full cursor-pointer overflow-hidden ${
                               isFolder
                                 ? "hover:shadow-[0_0_30px_rgba(var(--blue-500),0.1)]"
-                                : "hover:shadow-[0_0_30px_rgba(var(--green-500),0.1)]"
+                                : "hover:shadow-[0_0_30px_rgba(var(--purple-500),0.1)]"
                             }`}
                             onClick={() => handleView(file)}
                           >
                             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                            <CardHeader className="pb-3 relative overflow-hidden">
+                            <CardHeader className="pb-2 relative overflow-hidden">
                               {/* Ownership Badge */}
                               {isCurrentUserOwner(file) && <OwnershipBadge />}
 
                               <div className="flex items-start gap-3 w-full">
                                 <div
-                                  className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center ${
+                                  className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-150 ${
                                     isFolder
                                       ? "bg-blue-500/20 text-blue-400 group-hover:bg-blue-500/30"
+                                      : isPDF
+                                      ? "bg-red-500/20 text-red-400"
                                       : isImage
                                       ? "bg-green-500/20 text-green-400"
                                       : "bg-purple-500/20 text-purple-400"
@@ -1039,12 +1068,13 @@ export default function DriveRootPage() {
                                 >
                                   {isImage && file.thumbnailLink ? (
                                     <img
-                                      src={file.thumbnailLink}
+                                      src={file.thumbnailLink.replace("=s220", "=s500") || "https://cdn-icons-png.flaticon.com/512/5676/5676033.png"}
                                       alt={file.name}
                                       className="w-full h-full object-cover rounded-lg"
+                                      loading="lazy"
                                     />
                                   ) : (
-                                    <FileIcon className="w-6 h-6" />
+                                    <FileIcon className="w-5 h-5" />
                                   )}
                                 </div>
                                 <div className="flex-1 min-w-0 max-w-full overflow-hidden">
@@ -1062,6 +1092,7 @@ export default function DriveRootPage() {
                                       title={file.name}
                                     >
                                       {file.name}
+                                      {isFolder && <ChevronRight className="inline w-4 h-4 ml-1 opacity-60" />}
                                     </CardTitle>
                                   </div>
                                   <div className="flex items-center gap-2 mt-1">
@@ -1084,21 +1115,23 @@ export default function DriveRootPage() {
                               </div>
                             </CardHeader>
 
-                            <CardContent className="pt-0 relative">
-                              <div className="space-y-2 text-xs text-muted-foreground mb-4">
+                            <CardContent className="pt-0 pb-3">
+                              <div className="space-y-1 text-xs text-muted-foreground mb-3">
                                 <div className="flex items-center gap-2">
-                                  <Calendar className="w-3 h-3 flex-shrink-0" />
-                                  <span className="truncate">
-                                    Modified: {formatDate(file.modifiedTime)}
-                                  </span>
+                                  <Calendar className="w-3 h-3" />
+                                  <span>Modified: {formatDate(file.modifiedTime)}</span>
                                 </div>
                                 {file.size && (
                                   <div className="flex items-center gap-2">
-                                    <FileText className="w-3 h-3 flex-shrink-0" />
-                                    <span className="truncate">
-                                      Size: {formatFileSize(file.size)}
-                                    </span>
+                                    <FileText className="w-3 h-3" />
+                                    <span>Size: {formatFileSize(file.size)}</span>
                                   </div>
+                                )}
+                                {file.owners?.[0] && (
+                                  <OwnerDisplay 
+                                    owner={file.owners[0]} 
+                                    getUsername={getUsername}
+                                  />
                                 )}
                               </div>
 
@@ -1110,10 +1143,10 @@ export default function DriveRootPage() {
                                     e.stopPropagation();
                                     handleView(file);
                                   }}
-                                  className="flex-1 bg-transparent border-border  hover:bg-muted text-xs hover:text-foreground/80"
+                                  className="flex-1 bg-transparent border-border  hover:bg-muted text-xs font-medium"
                                 >
                                   <Eye className="w-3 h-3 mr-1" />
-                                  {isFolder ? "Open" : "View"}
+                                  {isFolder ? "Open" : isPDF ? "View PDF" : "View"}
                                 </Button>
                                 {!isFolder && (
                                   <Button
@@ -1158,32 +1191,41 @@ export default function DriveRootPage() {
                                     {isAdmin && (
                                       <>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem 
-                                          className="cursor-pointer"
-                                          onClick={() => {
-                                            // Trigger the existing rename dialog in FileActions/FolderActions
-                                            // We'll modify those components to be controlled or handle their own triggers
-                                          }}
-                                        >
-                                          <div className="w-full">
-                                            {isFolder ? (
-                                              <FolderActions
-                                                folderId={file.id}
-                                                folderName={file.name}
-                                                onDeleted={refreshFiles}
-                                                onRenamed={refreshFiles}
-                                                // We'll update the component to support a custom trigger
-                                              />
-                                            ) : (
-                                              <FileActions
-                                                fileId={file.id}
-                                                fileName={file.name}
-                                                onDeleted={refreshFiles}
-                                                onRenamed={refreshFiles}
-                                              />
-                                            )}
-                                          </div>
-                                        </DropdownMenuItem>
+                                        {isFolder ? (
+                                          <>
+                                            <DropdownMenuItem 
+                                              onClick={() => setActiveRenameFolder(file)}
+                                              className="text-amber-400 focus:text-amber-400 focus:bg-amber-500/10 cursor-pointer"
+                                            >
+                                              <Edit className="w-4 h-4 mr-2" />
+                                              Rename Folder
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem 
+                                              onClick={() => setActiveDeleteFolder(file)}
+                                              className="text-red-400 focus:text-red-400 focus:bg-red-500/10 cursor-pointer"
+                                            >
+                                              <Trash2 className="w-4 h-4 mr-2" />
+                                              Delete Folder
+                                            </DropdownMenuItem>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <DropdownMenuItem 
+                                              onClick={() => setActiveRenameFile(file)}
+                                              className="text-amber-400 focus:text-amber-400 focus:bg-amber-500/10 cursor-pointer"
+                                            >
+                                              <Edit className="w-4 h-4 mr-2" />
+                                              Rename File
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem 
+                                              onClick={() => setActiveDeleteFile(file)}
+                                              className="text-red-400 focus:text-red-400 focus:bg-red-500/10 cursor-pointer"
+                                            >
+                                              <Trash2 className="w-4 h-4 mr-2" />
+                                              Delete File
+                                            </DropdownMenuItem>
+                                          </>
+                                        )}
                                       </>
                                     )}
                                   </DropdownMenuContent>
@@ -1222,12 +1264,64 @@ export default function DriveRootPage() {
       </div>
       <AdBanner dataAdSlot="8021269551" />
       {aiModalOpen && (
-        <AIModal
-          isOpen={aiModalOpen}
-          onClose={() => setAiModalOpen(false)}
-          file={selectedAIFile}
-        />
-      )}
+                                        <AIModal
+                                          isOpen={aiModalOpen}
+                                          onClose={() => setAiModalOpen(false)}
+                                          file={selectedAIFile}
+                                        />
+                                      )}
+
+                                      {activeRenameFile && (
+                                        <RenameFileDialog
+                                          isOpen={!!activeRenameFile}
+                                          fileId={activeRenameFile.id}
+                                          fileName={activeRenameFile.name}
+                                          onClose={() => setActiveRenameFile(null)}
+                                          onRenamed={() => {
+                                            refreshFiles();
+                                            setActiveRenameFile(null);
+                                          }}
+                                        />
+                                      )}
+
+                                      {activeDeleteFile && (
+                                        <DeleteFileDialog
+                                          isOpen={!!activeDeleteFile}
+                                          fileId={activeDeleteFile.id}
+                                          fileName={activeDeleteFile.name}
+                                          onClose={() => setActiveDeleteFile(null)}
+                                          onDeleted={() => {
+                                            refreshFiles();
+                                            setActiveDeleteFile(null);
+                                          }}
+                                        />
+                                      )}
+
+                                      {activeRenameFolder && (
+                                        <RenameFolderDialog
+                                          isOpen={!!activeRenameFolder}
+                                          folderId={activeRenameFolder.id}
+                                          folderName={activeRenameFolder.name}
+                                          onClose={() => setActiveRenameFolder(null)}
+                                          onRenamed={() => {
+                                            refreshFiles();
+                                            setActiveRenameFolder(null);
+                                          }}
+                                        />
+                                      )}
+
+                                      {activeDeleteFolder && (
+                                        <DeleteFolderDialog
+                                          isOpen={!!activeDeleteFolder}
+                                          folderId={activeDeleteFolder.id}
+                                          folderName={activeDeleteFolder.name}
+                                          onClose={() => setActiveDeleteFolder(null)}
+                                          onDeleted={() => {
+                                            refreshFiles();
+                                            setActiveDeleteFolder(null);
+                                          }}
+                                        />
+                                      )}
       {sessionChecked && !userSession && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-3xl bg-black/95 animate-in fade-in duration-300">
           <div className="bg-card/90 backdrop-blur-xl border border-border rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-[0_0_50px_rgba(0,0,0,0.8)] text-center relative overflow-hidden group">
