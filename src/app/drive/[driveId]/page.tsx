@@ -384,25 +384,17 @@ export default function DriveRootPage() {
       let response;
       let endpoint;
 
-      if (!isAdmin) {
-        // Try public API first
-        endpoint = `/api/drive/public-files?fileId=${encodeURIComponent(
-          actualDriveId
-        )}&type=info`;
-        response = await fetch(endpoint);
+      // Try public API first (works for whitelisted public course folders)
+      endpoint = `/api/drive/public-files?fileId=${encodeURIComponent(
+        actualDriveId
+      )}&type=info`;
+      response = await fetch(endpoint);
 
-        // If public API fails, fallback to authenticated API
-        if (!response.ok) {
-          console.log(
-            "Public API failed for drive info, trying authenticated API"
-          );
-          endpoint = `/api/google-drive/files?authId=${
-            userSession.auth_id
-          }&fileId=${encodeURIComponent(actualDriveId)}&type=info`;
-          response = await fetch(endpoint);
-        }
-      } else {
-        // Admin users use authenticated API directly
+      // If public API fails, fallback to authenticated API
+      if (!response.ok) {
+        console.log(
+          "Public API failed for drive info, trying authenticated API"
+        );
         endpoint = `/api/google-drive/files?authId=${
           userSession.auth_id
         }&fileId=${encodeURIComponent(actualDriveId)}&type=info`;
@@ -451,21 +443,15 @@ export default function DriveRootPage() {
         let response;
         let endpoint;
 
-        if (!isAdmin) {
-          // Try public API first
-          endpoint = `/api/drive/public-files?folderId=${actualDriveId}`;
-          response = await fetch(endpoint);
+        // Try public API first (works for whitelisted public course folders)
+        endpoint = `/api/drive/public-files?folderId=${actualDriveId}`;
+        response = await fetch(endpoint);
 
-          // If public API fails, fallback to authenticated API
-          if (!response.ok) {
-            console.log(
-              "Public API failed, trying authenticated API for non-admin user"
-            );
-            endpoint = `/api/google-drive/files?authId=${userSession.auth_id}&folderId=${actualDriveId}`;
-            response = await fetch(endpoint);
-          }
-        } else {
-          // Admin users use authenticated API directly
+        // If public API fails, fallback to authenticated API
+        if (!response.ok) {
+          console.log(
+            "Public API failed, trying authenticated API fallback"
+          );
           endpoint = `/api/google-drive/files?authId=${userSession.auth_id}&folderId=${actualDriveId}`;
           response = await fetch(endpoint);
         }

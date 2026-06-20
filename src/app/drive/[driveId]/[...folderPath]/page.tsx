@@ -347,31 +347,19 @@ export default function DrivePage() {
       let response
       let url
       
-      if (!isAdmin) {
-        // Try public API first
-        url = `/api/drive/public-files?fileId=${encodeURIComponent(folderId)}&type=info`;
-        response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-        });
-        
-        // If public API fails, fallback to authenticated API
-        if (!response.ok) {
-          console.log('Public API failed for folder info, trying authenticated API')
-          url = `/api/google-drive/files?authId=${userSession.auth_id}&fileId=${encodeURIComponent(folderId)}&type=info`;
-          response = await fetch(url, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
-          });
-        }
-      } else {
-        // Admin users use authenticated API directly
+      // Try public API first (works for whitelisted public course folders)
+      url = `/api/drive/public-files?fileId=${encodeURIComponent(folderId)}&type=info`;
+      response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      // If public API fails, fallback to authenticated API
+      if (!response.ok) {
+        console.log('Public API failed for folder info, trying authenticated API')
         url = `/api/google-drive/files?authId=${userSession.auth_id}&fileId=${encodeURIComponent(folderId)}&type=info`;
         response = await fetch(url, {
           method: 'GET',
@@ -424,25 +412,16 @@ export default function DrivePage() {
       let response
       let url
       
-      if (!isAdmin) {
-        // Try public API first
-        url = `/api/drive/public-files?folderId=${folderId}`;
-        if (pageToken) {
-          url += `&pageToken=${pageToken}`;
-        }
-        response = await fetch(url);
-        
-        // If public API fails, fallback to authenticated API
-        if (!response.ok) {
-          console.log('Public API failed for folder contents, trying authenticated API')
-          url = `/api/google-drive/files?authId=${userSession.auth_id}&folderId=${folderId}`;
-          if (pageToken) {
-            url += `&pageToken=${pageToken}`;
-          }
-          response = await fetch(url);
-        }
-      } else {
-        // Admin users use authenticated API directly
+      // Try public API first (works for whitelisted public course folders)
+      url = `/api/drive/public-files?folderId=${folderId}`;
+      if (pageToken) {
+        url += `&pageToken=${pageToken}`;
+      }
+      response = await fetch(url);
+      
+      // If public API fails, fallback to authenticated API
+      if (!response.ok) {
+        console.log('Public API failed for folder contents, trying authenticated API')
         url = `/api/google-drive/files?authId=${userSession.auth_id}&folderId=${folderId}`;
         if (pageToken) {
           url += `&pageToken=${pageToken}`;
