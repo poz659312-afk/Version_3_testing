@@ -186,18 +186,28 @@ export async function getUserTokens(authId: string) {
   return data
 }
 
-/**
- * Check if token is expired
- */
-export function isTokenExpired(expiryDate: string | null | undefined): boolean {
+export function isTokenExpired(expiryDate: string | Date | number | null | undefined): boolean {
   if (!expiryDate) return true
   
-  const expiry = new Date(expiryDate).getTime()
+  let expiry: number
+  if (expiryDate instanceof Date) {
+    expiry = expiryDate.getTime()
+  } else if (typeof expiryDate === 'number') {
+    expiry = expiryDate
+  } else {
+    expiry = new Date(expiryDate).getTime()
+  }
+
+  if (isNaN(expiry)) {
+    return true
+  }
+  
   const now = Date.now()
   const bufferTime = 5 * 60 * 1000 // 5 minutes buffer
   
   return expiry - now < bufferTime
 }
+
 
 /**
  * Get valid access token (refresh if needed)
@@ -443,7 +453,7 @@ export async function checkAllAdminTokensStatus(): Promise<{
   }
 
   return {
-    isValid: validCount > 0, // Deemed valid if at least one admin has a non-expired token
+    isValid: expiredCount === 0 && validCount > 0, // Deemed valid only if all authorized admins have non-expired tokens
     totalCount: admins.length,
     expiredCount,
     validCount

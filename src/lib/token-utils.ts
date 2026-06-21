@@ -4,6 +4,10 @@ export interface TokenStatus {
   expiresAt?: Date;
   needsRefresh: boolean;
   lastChecked: Date;
+  totalCount?: number;
+  expiredCount?: number;
+  validCount?: number;
+  message?: string;
 }
 
 export interface RefreshResult {
@@ -30,12 +34,16 @@ export async function checkTokenStatus(): Promise<TokenStatus> {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data: RefreshResult = await response.json();
+    const data = await response.json();
 
     return {
       isValid: data.success,
-      needsRefresh: false, // API call itself refreshes if needed
+      needsRefresh: data.failedCount > 0,
       lastChecked: new Date(data.timestamp),
+      totalCount: data.totalUsers,
+      expiredCount: data.failedCount,
+      validCount: data.totalUsers !== undefined && data.failedCount !== undefined ? data.totalUsers - data.failedCount : undefined,
+      message: data.message
     };
   } catch (error) {
     console.error('Error checking token status:', error);

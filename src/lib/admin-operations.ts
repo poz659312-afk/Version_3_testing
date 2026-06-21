@@ -2,6 +2,7 @@
 // Use this for all admin-related database operations after migration
 
 import { createServerClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { AdminData } from './auth-updated'
 
 /**
@@ -56,7 +57,7 @@ export async function getAdminData(authId: string): Promise<AdminData | null> {
     return null
   }
   
-  return data as AdminData
+  return data as any as AdminData
 }
 
 /**
@@ -71,11 +72,11 @@ export async function updateAdminTokens(
     authorized?: boolean
   }
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createServerClient()
+  const supabase = createAdminClient()
   
   // First ensure user is admin
-  const { data: user } = await supabase
-    .from('chameleons')
+  const { data: user } = await (supabase
+    .from('chameleons') as any)
     .select('is_admin')
     .eq('auth_id', authId)
     .single()
@@ -85,8 +86,8 @@ export async function updateAdminTokens(
   }
   
   // Update or insert admin record
-  const { error } = await supabase
-    .from('admins')
+  const { error } = await (supabase
+    .from('admins') as any)
     .upsert({
       auth_id: authId,
       ...tokens,
@@ -153,11 +154,11 @@ export async function authorizeAdmin(
     token_expiry?: string
   }
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createServerClient()
+  const supabase = createAdminClient()
   
   // Verify user is admin
-  const { data: user } = await supabase
-    .from('chameleons')
+  const { data: user } = await (supabase
+    .from('chameleons') as any)
     .select('is_admin')
     .eq('auth_id', authId)
     .single()
@@ -167,8 +168,8 @@ export async function authorizeAdmin(
   }
   
   // Insert or update admin record
-  const { error } = await supabase
-    .from('admins')
+  const { error } = await (supabase
+    .from('admins') as any)
     .upsert({
       auth_id: authId,
       google_id: googleData.google_id,
@@ -191,10 +192,10 @@ export async function authorizeAdmin(
  * Revoke admin authorization
  */
 export async function revokeAdminAccess(authId: string): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createServerClient()
+  const supabase = createAdminClient()
   
-  const { error } = await supabase
-    .from('admins')
+  const { error } = await (supabase
+    .from('admins') as any)
     .update({
       authorized: false,
       access_token: null,

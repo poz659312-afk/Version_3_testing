@@ -1,15 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { getAdminDriveClient } from '@/lib/drive-sharing'
+import { getAdminDriveClient, getUserAllowedFolderIds } from '@/lib/drive-sharing'
 import { isValidDriveId } from '@/lib/drive-mapping'
+import { DRIVE_ROOT_ID } from '@/lib/drive-tree-data'
 
 // Recursive security check for non-admin folder/file access
-async function isFolderOrFileAccessAllowed(drive: any, targetId: string): Promise<boolean> {
-  // 1. If it's directly a whitelisted root folder, allow access
+async function isFolderOrFileAccessAllowed(drive: any, targetId: string, authId: string): Promise<boolean> {
+  // 1. Get the allowed folders for this user (suggested or custom)
+  const allowedFolderIds = await getUserAllowedFolderIds(authId)
+
+  // 2. If user is allowed to access the root folder, they can access everything
+  if (allowedFolderIds.includes(DRIVE_ROOT_ID)) return true
+
+  // 3. Check if targetId is directly allowed
+  if (allowedFolderIds.includes(targetId)) return true
+
+  // 4. Check if targetId matches any statically whitelisted drive ID
   if (isValidDriveId(targetId)) return true
 
-  // 2. Otherwise, check parents recursively up to a limit (e.g. 5 levels) to see if they trace back to a whitelisted folder
+  // 5. Otherwise, check parents recursively up to a limit (e.g. 5 levels) to see if they trace back to an allowed folder
   let currentId = targetId
   for (let depth = 0; depth < 5; depth++) {
     try {
@@ -21,8 +31,8 @@ async function isFolderOrFileAccessAllowed(drive: any, targetId: string): Promis
       const parents = response.data.parents
       if (!parents || parents.length === 0) break
 
-      // Check if any parent is whitelisted
-      if (parents.some((p: string) => isValidDriveId(p))) {
+      // Check if any parent is allowed or whitelisted
+      if (parents.some((p: string) => allowedFolderIds.includes(p) || isValidDriveId(p))) {
         return true
       }
 
@@ -87,7 +97,7 @@ export async function GET(request: NextRequest) {
     if (!isAdmin) {
       const targetId = folderId || fileId
       if (targetId) {
-        const allowed = await isFolderOrFileAccessAllowed(drive, targetId)
+        const allowed = await isFolderOrFileAccessAllowed(drive, targetId, authId)
         if (!allowed) {
           console.warn(`🔒 Security Block: Non-admin user ${authId} attempted to access unauthorized folder/file ${targetId}`)
           return NextResponse.json(

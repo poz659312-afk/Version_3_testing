@@ -31,15 +31,20 @@ import {
   HelpCircle,
   ExternalLink,
   ChevronRight,
-  UserCheck
+  UserCheck,
+  Crown,
+  Calendar
 } from 'lucide-react'
 import { 
   updateUserProfile, 
   previewFolderChanges, 
   createAccessRule, 
   deleteAccessRule,
-  getAllUsers
+  getAllUsers,
+  syncUserCustomFolderAccess,
+  previewCustomFolderChanges
 } from './actions'
+import { DRIVE_TREE, DRIVE_ROOT_ID, getSuggestedFolderIds, mapSpecializationToDeptCode, getAllChildFolderIds } from '@/lib/drive-tree-data'
 import TokenStatusMonitor from '@/components/TokenStatusMonitor'
 
 const SPECIALIZATIONS = [
@@ -119,6 +124,305 @@ export default function AdminDashboardClient({
       }
     }
   }, [newRuleFolderUrl])
+
+  // Year Access States
+  const [selectedUser, setSelectedUser] = useState<any | null>(null)
+  const [customAccessType, setCustomAccessType] = useState<'suggested' | 'full' | 'custom' | 'none'>('suggested')
+  const [customYears, setCustomYears] = useState<string[]>([])
+  const [customDepts, setCustomDepts] = useState<string[]>([])
+  const [customFolders, setCustomFolders] = useState<string[]>([])
+  const [syncLoading, setSyncLoading] = useState(false)
+  const [syncPreview, setSyncPreview] = useState<{
+    foldersToGrant: Array<{ id: string; name: string }>
+    foldersToRevoke: Array<{ id: string; name: string }>
+  }>({ foldersToGrant: [], foldersToRevoke: [] })
+  const [showSyncConfirm, setShowSyncConfirm] = useState(false)
+
+  // Student Search States (for Year Access tab selector)
+  const [studentSearch, setStudentSearch] = useState('')
+  const [studentOptions, setStudentOptions] = useState<any[]>(initialUsers)
+  const [isSearchingStudents, setIsSearchingStudents] = useState(false)
+
+  // Debounced search for student selector in Year Access tab
+  useEffect(() => {
+    const term = studentSearch.trim()
+    if (term === '') {
+      setStudentOptions(users)
+      return
+    }
+    const timer = setTimeout(async () => {
+      setIsSearchingStudents(true)
+      try {
+        const res = await getAllUsers({
+          page: 1,
+          pageSize: 50,
+          search: term,
+          specialization: 'ALL',
+          level: 'ALL'
+        })
+        setStudentOptions(res.users)
+      } catch (err) {
+        console.error('Failed to search students in access tab:', err)
+      } finally {
+        setIsSearchingStudents(false)
+      }
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [studentSearch, users])
+
+  const displayStudents = [...studentOptions]
+  if (selectedUser && !displayStudents.some(u => u.auth_id === selectedUser.auth_id)) {
+    displayStudents.unshift(selectedUser)
+  }
+
+  const handleUserSelect = (userId: string) => {
+    if (userId === 'none') {
+      setSelectedUser(null)
+      return
+    }
+    const user = displayStudents.find(u => u.auth_id === userId)
+    if (!user) {
+      setSelectedUser(null)
+      return
+    }
+
+    setSelectedUser(user)
+
+    // Load their existing rules from rules state
+    const userSpecificRules = rules.filter(r => r.specialization === `user:${user.auth_id}`)
+    
+    if (userSpecificRules.length > 0) {
+      const folderIds = userSpecificRules.map(r => r.folder_id)
+      if (folderIds.includes('none')) {
+        setCustomAccessType('none')
+        setCustomYears([])
+        setCustomDepts([])
+        setCustomFolders([])
+      } else if (folderIds.includes(DRIVE_ROOT_ID)) {
+        setCustomAccessType('full')
+        setCustomYears([])
+        setCustomDepts([])
+        setCustomFolders([DRIVE_ROOT_ID])
+      } else {
+        setCustomAccessType('custom')
+        setCustomFolders(folderIds)
+        
+        // Infer active years and departments to pre-fill standard options if possible
+        const activeYears: string[] = []
+        const activeDepts: string[] = []
+        
+        // Year detection
+        for (let y = 1; y <= 4; y++) {
+          const yearNode = DRIVE_TREE.children?.find(c => c.name === `YEAR ${y}`)
+          if (yearNode) {
+            const yearFolderIds = getAllChildFolderIds(yearNode)
+            if (yearFolderIds.every(id => folderIds.includes(id))) {
+              activeYears.push(`year${y}`)
+            }
+          }
+        }
+        
+        // Department detection
+        const depts = ['general', 'cyber', 'ai', 'business', 'media']
+        for (const dept of depts) {
+          let matchesAll = true
+          let hasDept = false
+          const checkDept = (node: any) => {
+            if (node.type === 'department' && node.name.toLowerCase() === dept) {
+              hasDept = true
+              if (!folderIds.includes(node.id)) {
+                matchesAll = false
+              }
+            }
+            if (node.children) {
+              node.children.forEach(checkDept)
+            }
+          }
+          DRIVE_TREE.children?.forEach(checkDept)
+          if (hasDept && matchesAll) {
+            activeDepts.push(dept)
+          }
+        }
+        
+        setCustomYears(activeYears)
+        setCustomDepts(activeDepts)
+      }
+    } else {
+      setCustomAccessType('suggested')
+      setCustomYears([])
+      setCustomDepts([])
+      setCustomFolders(getSuggestedFolderIds(user.current_level, user.specialization))
+    }
+  }
+
+  const suggestedFolderIds = selectedUser
+    ? getSuggestedFolderIds(selectedUser.current_level, selectedUser.specialization)
+    : []
+
+  const isFolderSelected = (folderId: string): boolean => {
+    if (customAccessType === 'full') {
+      return true
+    }
+    if (customAccessType === 'suggested') {
+      return suggestedFolderIds.includes(folderId)
+    }
+    return customFolders.includes(folderId)
+  }
+
+  const handleFolderToggle = (folderId: string) => {
+    if (customAccessType !== 'custom') return
+    
+    setCustomFolders(prev => {
+      if (prev.includes(folderId)) {
+        return prev.filter(id => id !== folderId)
+      } else {
+        return [...prev, folderId]
+      }
+    })
+  }
+
+  const handleYearToggle = (yearStr: string) => {
+    if (customAccessType !== 'custom') return
+    const levelNum = parseInt(yearStr.replace('year', ''))
+    const yearNode = DRIVE_TREE.children?.find(c => c.name === `YEAR ${levelNum}`)
+    if (!yearNode) return
+
+    const yearFolderIds = getAllChildFolderIds(yearNode)
+    const isAdding = !customYears.includes(yearStr)
+
+    setCustomYears(prev => 
+      isAdding ? [...prev, yearStr] : prev.filter(y => y !== yearStr)
+    )
+
+    setCustomFolders(prev => {
+      if (isAdding) {
+        const newSet = new Set([...prev, ...yearFolderIds])
+        return Array.from(newSet)
+      } else {
+        return prev.filter(id => !yearFolderIds.includes(id))
+      }
+    })
+  }
+
+  const handleDeptToggle = (deptStr: string) => {
+    if (customAccessType !== 'custom') return
+    const isAdding = !customDepts.includes(deptStr)
+
+    setCustomDepts(prev => 
+      isAdding ? [...prev, deptStr] : prev.filter(d => d !== deptStr)
+    )
+
+    const deptFolderIds: string[] = []
+    const collectDeptFolders = (node: any) => {
+      if (node.type === 'department' && node.name.toLowerCase() === deptStr.toLowerCase()) {
+        deptFolderIds.push(...getAllChildFolderIds(node))
+      }
+      if (node.children) {
+        node.children.forEach(collectDeptFolders)
+      }
+    }
+    DRIVE_TREE.children?.forEach(collectDeptFolders)
+
+    setCustomFolders(prev => {
+      if (isAdding) {
+        const newSet = new Set([...prev, ...deptFolderIds])
+        return Array.from(newSet)
+      } else {
+        return prev.filter(id => !deptFolderIds.includes(id))
+      }
+    })
+  }
+
+  const handleCustomSaveClick = async () => {
+    if (!selectedUser) return
+    
+    setPreviewLoading(true)
+    try {
+      const preview = await previewCustomFolderChanges(selectedUser.auth_id, {
+        type: customAccessType,
+        years: customYears,
+        departments: customDepts,
+        customFolders: customFolders
+      })
+      setSyncPreview(preview)
+      setShowSyncConfirm(true)
+    } catch (err: any) {
+      toast.error(`Failed to preview changes: ${err.message}`)
+    } finally {
+      setPreviewLoading(false)
+    }
+  }
+
+  const executeCustomSync = () => {
+    if (!selectedUser) return
+    
+    setSyncLoading(true)
+    startTransition(async () => {
+      try {
+        const res = await syncUserCustomFolderAccess(selectedUser.auth_id, {
+          type: customAccessType,
+          years: customYears,
+          departments: customDepts,
+          customFolders: customFolders
+        })
+
+        if (res.success) {
+          toast.success('Folder access updated successfully')
+          if (res.driveSyncResult) {
+            const { granted, revoked, errors } = res.driveSyncResult
+            if (errors && errors.length > 0) {
+              toast.warning(`Drive permission issues: ${errors.join(', ')}`)
+            } else if (granted.length > 0 || revoked.length > 0) {
+              toast.success(`Drive synced: +${granted.length} folders, -${revoked.length} folders`)
+            }
+          }
+          
+          if (customAccessType === 'suggested') {
+            setRules(rules.filter(r => r.specialization !== `user:${selectedUser.auth_id}`))
+          } else if (customAccessType === 'none') {
+            const revokedRule = {
+              id: Math.random().toString(),
+              specialization: `user:${selectedUser.auth_id}`,
+              current_level: null,
+              folder_id: 'none',
+              folder_name: 'Access Revoked',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }
+            setRules([
+              ...rules.filter(r => r.specialization !== `user:${selectedUser.auth_id}`),
+              revokedRule
+            ])
+          } else {
+            const { findFolderNameById, DRIVE_TREE } = require('@/lib/drive-tree-data')
+            const newRules = customFolders.map(folderId => ({
+              id: Math.random().toString(),
+              specialization: `user:${selectedUser.auth_id}`,
+              current_level: null,
+              folder_id: folderId,
+              folder_name: findFolderNameById(DRIVE_TREE, folderId) || folderId,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }))
+            
+            setRules([
+              ...rules.filter(r => r.specialization !== `user:${selectedUser.auth_id}`),
+              ...newRules
+            ])
+          }
+          
+          router.refresh()
+        } else {
+          toast.error(res.error || 'Failed to update folder access')
+        }
+      } catch (err: any) {
+        toast.error(err.message || 'An unexpected error occurred')
+      } finally {
+        setSyncLoading(false)
+        setShowSyncConfirm(false)
+      }
+    })
+  }
 
   // Debounce search input and reset page to 1
   useEffect(() => {
@@ -303,10 +607,61 @@ export default function AdminDashboardClient({
     }
   }
 
+  const renderTreeNodes = (node: any, depth = 0) => {
+    const isSelected = isFolderSelected(node.id)
+    const isSuggested = suggestedFolderIds.includes(node.id)
+    const paddingLeft = `${depth * 1.25 + 0.5}rem`
+    
+    return (
+      <div key={node.id} className="space-y-1">
+        <div 
+          className={`flex items-center justify-between p-2 rounded-lg hover:bg-muted/40 transition-colors ${
+            isSuggested ? 'bg-primary/5 border border-primary/20' : ''
+          } ${isSelected && customAccessType === 'custom' ? 'bg-secondary/10' : ''}`}
+          style={{ paddingLeft }}
+        >
+          <div className="flex items-center gap-2">
+            <input 
+              type="checkbox"
+              id={`folder-${node.id}`}
+              checked={isSelected}
+              disabled={customAccessType !== 'custom'}
+              onChange={() => handleFolderToggle(node.id)}
+              className="rounded border-border text-primary focus:ring-primary h-4 w-4 bg-muted/20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+            <label htmlFor={`folder-${node.id}`} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+              {node.type === 'root' && <FolderLock className="w-4 h-4 text-yellow-500 font-bold" />}
+              {node.type === 'year' && <Crown className="w-4 h-4 text-indigo-400 font-bold animate-pulse" />}
+              {node.type === 'term' && <Calendar className="w-4 h-4 text-purple-400" />}
+              {node.type === 'department' && (
+                <Badge variant="outline" className="text-[9px] py-0 h-4 px-1.5 font-bold border-indigo-500/20 bg-indigo-500/5 text-indigo-400">
+                  {node.name}
+                </Badge>
+              )}
+              {node.type === 'subject' && <FileCode className="w-4 h-4 text-green-400" />}
+              <span className="truncate max-w-[150px] md:max-w-xs text-foreground/90">{node.name}</span>
+            </label>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {isSuggested && (
+              <Badge className="text-[8px] h-3.5 py-0 px-1 bg-primary/20 text-primary border-primary/30 font-semibold">
+                Suggested
+              </Badge>
+            )}
+            <span className="text-[9px] text-muted-foreground font-mono hidden md:inline">
+              {node.id.substring(0, 8)}
+            </span>
+          </div>
+        </div>
+        {node.children && node.children.map((child: any) => renderTreeNodes(child, depth + 1))}
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-8 premium-container">
       {/* Top Banner / Hero */}
-      <div className="relative p-6 rounded-2xl bg-gradient-to-r from-neutral-900 via-zinc-950 to-neutral-950 border border-neutral-800 shadow-2xl overflow-hidden">
+      <div className="relative p-6 rounded-2xl bg-gradient-to-br from-card to-muted border border-border shadow-lg overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -339,7 +694,7 @@ export default function AdminDashboardClient({
           </TabsTrigger>
           <TabsTrigger value="rules" className="flex items-center gap-2 rounded-lg py-2">
             <FolderLock className="w-4 h-4" />
-            <span>Folder Rules</span>
+            <span>Year Access</span>
           </TabsTrigger>
           <TabsTrigger value="tokens" className="flex items-center gap-2 rounded-lg py-2">
             <RefreshCw className="w-4 h-4" />
@@ -597,165 +952,342 @@ export default function AdminDashboardClient({
           </Card>
         </TabsContent>
 
-        {/* Tab 2: Folder Access Rules */}
-        <TabsContent value="rules" className="space-y-6">
+        {/* Tab 2: Year Access Console */}
+        <TabsContent value="rules" className="space-y-6 animate-notif-modal-enter">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            {/* Create Access Rule Form */}
-            <Card className="lg:col-span-1 bg-card border-border shadow-md h-fit">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FolderPlus className="w-5 h-5 text-primary" />
-                  Create Rule
+            {/* Student Selection & Settings Panel */}
+            <Card className="lg:col-span-1 bg-card border-border shadow-lg h-fit">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <UserCog className="w-5 h-5 text-primary" />
+                  Select Student Access
                 </CardTitle>
-                <CardDescription>
-                  Map specializations or levels to Google Drive folders.
+                <CardDescription className="text-muted-foreground text-xs mt-1">
+                  Manage year levels, departments, or custom folders for specific students.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <form onSubmit={handleAddRule} className="space-y-4">
-                  {/* Specialization Selection */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold text-muted-foreground">Specialization</label>
-                    <Select value={newRuleSpec} onValueChange={setNewRuleSpec}>
-                      <SelectTrigger className="bg-muted/10 border-border">
-                        <SelectValue placeholder="Select Specialization" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ALL">All Specializations</SelectItem>
-                        {SPECIALIZATIONS.map(s => (
-                          <SelectItem key={s} value={s}>{s}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Level Selection */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold text-muted-foreground">Academic Level</label>
-                    <Select value={newRuleLevel} onValueChange={setNewRuleLevel}>
-                      <SelectTrigger className="bg-muted/10 border-border">
-                        <SelectValue placeholder="Select Level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ALL">All Levels</SelectItem>
-                        {LEVELS.map(l => (
-                          <SelectItem key={l} value={String(l)}>Level {l}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Folder Name */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold text-muted-foreground">Folder Name</label>
-                    <Input
-                      placeholder="e.g. Data Science Level 2 Lectures"
-                      value={newRuleFolderName}
-                      onChange={(e) => setNewRuleFolderName(e.target.value)}
-                      className="bg-muted/10 border-border"
-                    />
-                  </div>
-
-                  {/* Folder URL or ID */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold text-muted-foreground">Google Drive Folder ID or Link</label>
-                    <Input
-                      placeholder="Paste folder link or ID..."
-                      value={newRuleFolderUrl}
-                      onChange={(e) => setNewRuleFolderUrl(e.target.value)}
-                      className="bg-muted/10 border-border"
-                    />
-                    <p className="text-[10px] text-muted-foreground">
-                      Pasting a Google Drive folder link will automatically parse out the folder ID.
-                    </p>
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-gradient-to-r from-primary to-secondary text-primary-foreground font-semibold py-2.5 rounded-lg border-0 shadow-lg hover:brightness-110 active:scale-95 transition-all"
-                    disabled={isCreatingRule}
-                  >
-                    {isCreatingRule ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Adding Rule...
-                      </>
-                    ) : (
-                      <>
-                        <FolderPlus className="w-4 h-4 mr-2" />
-                        Add Access Rule
-                      </>
+              <CardContent className="space-y-6">
+                
+                {/* Search Student Input */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-muted-foreground flex items-center justify-between">
+                    <span>Search Student</span>
+                    {isSearchingStudents && (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
                     )}
-                  </Button>
-                </form>
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                    <Input
+                      placeholder="Type username or email to search..."
+                      value={studentSearch}
+                      onChange={(e) => setStudentSearch(e.target.value)}
+                      className="pl-8 h-9 bg-muted/10 border-border text-sm focus-visible:ring-1"
+                    />
+                  </div>
+                </div>
+
+                {/* User Search & Selection List */}
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-muted-foreground">Select Student</label>
+                  <div className="border border-border rounded-xl bg-muted/5 overflow-hidden shadow-inner">
+                    <div className="max-h-[220px] overflow-y-auto divide-y divide-border/50" data-lenis-prevent="true">
+                      {displayStudents.length === 0 ? (
+                        <div className="p-4 text-center text-xs text-muted-foreground">
+                          No students found
+                        </div>
+                      ) : (
+                        displayStudents.map(u => {
+                          const isSelected = selectedUser?.auth_id === u.auth_id
+                          return (
+                            <button
+                              key={u.auth_id}
+                              type="button"
+                              onClick={() => handleUserSelect(u.auth_id)}
+                              className={`w-full text-left p-3 flex items-center justify-between hover:bg-muted/40 transition-all text-xs border-l-2 ${
+                                isSelected 
+                                  ? 'bg-primary/5 border-l-primary font-semibold' 
+                                  : 'border-l-transparent'
+                              }`}
+                            >
+                              <div className="space-y-0.5 min-w-0 pr-2">
+                                <div className="text-foreground truncate font-medium">
+                                  {u.username || 'No Username'}
+                                </div>
+                                <div className="text-muted-foreground truncate font-mono text-[10px] opacity-75">
+                                  {u.email}
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                                {u.current_level && (
+                                  <Badge variant="secondary" className="text-[9px] px-1 h-3.5 bg-neutral-800 text-neutral-300 font-bold">
+                                    L{u.current_level}
+                                  </Badge>
+                                )}
+                                {u.specialization && (
+                                  <span className="text-[9px] text-primary/80 font-bold uppercase tracking-wider">
+                                    {mapSpecializationToDeptCode(u.specialization)}
+                                  </span>
+                                )}
+                              </div>
+                            </button>
+                          )
+                        })
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {selectedUser ? (
+                  <div className="space-y-6 animate-notif-modal-enter">
+                    {/* Selected Student Details Card */}
+                    <div className="p-3.5 rounded-xl bg-muted/40 border border-border space-y-3.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground font-semibold">User Profile:</span>
+                        <Badge className="bg-primary/20 text-primary border-primary/30 text-[10px]">
+                          Student
+                        </Badge>
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <div className="text-sm font-bold text-foreground">
+                          {selectedUser.username || 'No Username'}
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate font-mono text-[11px]">
+                          {selectedUser.email}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 border-t border-border/40 pt-3">
+                        <div className="space-y-0.5">
+                          <div className="text-[10px] text-muted-foreground font-semibold">Suggested Year:</div>
+                          <Badge variant="secondary" className="text-xs">
+                            Year {selectedUser.current_level || 'N/A'}
+                          </Badge>
+                        </div>
+                        <div className="space-y-0.5">
+                          <div className="text-[10px] text-muted-foreground font-semibold">Specialization:</div>
+                          <Badge variant="outline" className="text-xs text-primary border-primary/20 bg-primary/5 truncate max-w-full">
+                            {selectedUser.specialization || 'Unassigned'}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Access Scope Type Selector */}
+                    <div className="space-y-3">
+                      <label className="text-xs font-semibold text-muted-foreground">Access Configuration</label>
+                      <div className="grid grid-cols-1 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCustomAccessType('suggested')
+                            setCustomYears([])
+                            setCustomDepts([])
+                            setCustomFolders(suggestedFolderIds)
+                          }}
+                          className={`flex items-start text-left p-3 rounded-xl border text-sm transition-all ${
+                            customAccessType === 'suggested'
+                              ? 'border-primary bg-primary/5 text-foreground shadow-md shadow-primary/5'
+                              : 'border-border bg-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground'
+                          }`}
+                        >
+                          <div className="flex-1">
+                            <div className="font-bold flex items-center gap-1">
+                              <span>Suggested Access</span>
+                              <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-[8px] h-3.5 py-0 px-1 font-semibold">
+                                Recommended
+                              </Badge>
+                            </div>
+                            <div className="text-xs opacity-75 mt-0.5 text-[11px]">
+                              Matches their level (Year {selectedUser.current_level || 'N/A'}) & department.
+                            </div>
+                          </div>
+                        </button>
+ 
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCustomAccessType('full')
+                            setCustomYears([])
+                            setCustomDepts([])
+                            setCustomFolders([DRIVE_ROOT_ID])
+                          }}
+                          className={`flex items-start text-left p-3 rounded-xl border text-sm transition-all ${
+                            customAccessType === 'full'
+                              ? 'border-primary bg-primary/5 text-foreground shadow-md shadow-primary/5'
+                              : 'border-border bg-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground'
+                          }`}
+                        >
+                          <div className="flex-1">
+                            <div className="font-bold flex items-center gap-1">
+                              <span>Full Access</span>
+                            </div>
+                            <div className="text-xs opacity-75 mt-0.5 text-[11px]">
+                              Access to the main site root folder and all years.
+                            </div>
+                          </div>
+                        </button>
+ 
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCustomAccessType('custom')
+                            if (customFolders.length === 0 || (customFolders.length === 1 && customFolders[0] === DRIVE_ROOT_ID)) {
+                              setCustomFolders(suggestedFolderIds)
+                            }
+                          }}
+                          className={`flex items-start text-left p-3 rounded-xl border text-sm transition-all ${
+                            customAccessType === 'custom'
+                              ? 'border-primary bg-primary/5 text-foreground shadow-md shadow-primary/5'
+                              : 'border-border bg-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground'
+                          }`}
+                        >
+                          <div className="flex-1">
+                            <div className="font-bold flex items-center gap-1">
+                              <span>Custom Access</span>
+                            </div>
+                            <div className="text-xs opacity-75 mt-0.5 text-[11px]">
+                              Select specific year cohorts, departments, or individual folders.
+                            </div>
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCustomAccessType('none')
+                            setCustomYears([])
+                            setCustomDepts([])
+                            setCustomFolders([])
+                          }}
+                          className={`flex items-start text-left p-3 rounded-xl border text-sm transition-all ${
+                            customAccessType === 'none'
+                              ? 'border-red-500 bg-red-500/5 text-foreground shadow-md shadow-red-500/5'
+                              : 'border-border bg-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground'
+                          }`}
+                        >
+                          <div className="flex-1">
+                            <div className="font-bold flex items-center gap-1">
+                              <span>Revoke All Access</span>
+                              <Badge className="bg-red-500/20 text-red-400 border-red-500/30 text-[8px] h-3.5 py-0 px-1 font-semibold">
+                                Revoked
+                              </Badge>
+                            </div>
+                            <div className="text-xs opacity-75 mt-0.5 text-[11px]">
+                              Revoke all folder permissions on Google Drive for this user.
+                            </div>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
+                    <Button 
+                      onClick={handleCustomSaveClick}
+                      disabled={previewLoading || syncLoading}
+                      className="w-full bg-gradient-to-r from-primary to-secondary text-primary-foreground font-semibold py-2.5 rounded-xl border-0 shadow-lg hover:brightness-110 active:scale-95 transition-all"
+                    >
+                      {previewLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Calculating Changes...
+                        </>
+                      ) : (
+                        <>
+                          <RefreshCw className="w-4 h-4 mr-2" />
+                          Save and Sync Drive
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="p-8 text-center border border-dashed border-border rounded-2xl bg-muted/10">
+                    <UserCog className="w-8 h-8 text-muted-foreground opacity-40 mx-auto mb-2" />
+                    <div className="text-sm font-semibold text-muted-foreground">No Student Selected</div>
+                    <div className="text-xs text-muted-foreground/60 mt-1">Select a student from the dropdown to check or customize their Drive access.</div>
+                  </div>
+                )}
+
               </CardContent>
             </Card>
 
-            {/* Access Rules Table */}
-            <Card className="lg:col-span-2 bg-card border-border shadow-md">
-              <CardHeader>
-                <CardTitle>Folder Access Rules</CardTitle>
-                <CardDescription>
-                  Current folders matched to student configurations.
+            {/* Folder Tree Selector & Details Panel */}
+            <Card className="lg:col-span-2 bg-card border-border shadow-lg">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <FolderLock className="w-5 h-5 text-primary" />
+                  Drive Folder Selection
+                </CardTitle>
+                <CardDescription className="text-muted-foreground text-xs mt-1">
+                  Check folders to customize access rules. Standard layouts can be checked using year/dept buttons.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="rounded-lg border border-border overflow-hidden">
-                  <Table>
-                    <TableHeader className="bg-muted/40">
-                      <TableRow>
-                        <TableHead>Target Criteria</TableHead>
-                        <TableHead>Folder Details</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {rules.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={3} className="text-center py-10 text-muted-foreground">
-                            No access rules configured yet.
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        rules.map((r) => (
-                          <TableRow key={r.id} className="hover:bg-muted/10 transition-colors">
-                            <TableCell className="space-y-1">
-                              <div className="flex flex-wrap gap-1.5">
-                                {r.specialization ? (
-                                  <Badge variant="outline" className="border-primary/20 text-primary">
-                                    {r.specialization}
-                                  </Badge>
-                                ) : (
-                                  <Badge variant="outline" className="opacity-40">Any Specialization</Badge>
-                                )}
-                                {r.current_level ? (
-                                  <Badge variant="secondary">Level {r.current_level}</Badge>
-                                ) : (
-                                  <Badge variant="secondary" className="opacity-40">Any Level</Badge>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell className="space-y-1 max-w-[250px]">
-                              <div className="font-semibold text-sm truncate">{r.folder_name}</div>
-                              <div className="text-xs text-muted-foreground font-mono truncate">{r.folder_id}</div>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button
-                                onClick={() => handleDeleteRule(r.id, r.folder_name)}
-                                variant="destructive"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
+              <CardContent className="space-y-6">
+                
+                {/* Year & Dept Quick Toggles (Enabled only in Custom mode) */}
+                <div className="space-y-4 p-4 rounded-2xl bg-muted/20 border border-border/80">
+                  <div className="text-xs font-bold text-muted-foreground tracking-wider uppercase mb-1">Quick Select Presets</div>
+                  
+                  {/* Years select buttons */}
+                  <div className="space-y-2">
+                    <div className="text-[10px] font-bold text-muted-foreground/80 uppercase">Year Cohorts:</div>
+                    <div className="flex flex-wrap gap-2">
+                      {[1, 2, 3, 4].map(y => {
+                        const yearKey = `year${y}`
+                        const isActive = customYears.includes(yearKey) && customAccessType === 'custom'
+                        return (
+                          <Button
+                            key={y}
+                            type="button"
+                            variant={isActive ? "default" : "outline"}
+                            size="sm"
+                            disabled={customAccessType !== 'custom'}
+                            onClick={() => handleYearToggle(yearKey)}
+                            className="text-xs rounded-lg font-medium px-3.5 h-8 border-border"
+                          >
+                            <Crown className="w-3.5 h-3.5 mr-1" />
+                            Year {y}
+                          </Button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Departments select buttons */}
+                  <div className="space-y-2 border-t border-border/40 pt-3 mt-1">
+                    <div className="text-[10px] font-bold text-muted-foreground/80 uppercase">Departments (Across All Years):</div>
+                    <div className="flex flex-wrap gap-2">
+                      {['general', 'cyber', 'ai', 'business', 'media'].map(d => {
+                        const isActive = customDepts.includes(d) && customAccessType === 'custom'
+                        return (
+                          <Button
+                            key={d}
+                            type="button"
+                            variant={isActive ? "default" : "outline"}
+                            size="sm"
+                            disabled={customAccessType !== 'custom'}
+                            onClick={() => handleDeptToggle(d)}
+                            className="text-xs rounded-lg font-medium px-3 py-1 h-8 uppercase border-border"
+                          >
+                            {d}
+                          </Button>
+                        )
+                      })}
+                    </div>
+                  </div>
                 </div>
+
+                {/* Tree Scroll Area */}
+                <div className="space-y-2 border border-border rounded-2xl p-4 bg-muted/5 max-h-[500px] overflow-y-auto" data-lenis-prevent="true">
+                  <div className="text-xs font-semibold text-muted-foreground/60 mb-2 border-b border-border/50 pb-2">
+                    Google Drive Tree Hierarchy
+                  </div>
+                  <div className="space-y-2">
+                    {renderTreeNodes(DRIVE_TREE)}
+                  </div>
+                </div>
+
               </CardContent>
             </Card>
 
@@ -1046,6 +1578,87 @@ export default function AdminDashboardClient({
               className="bg-primary text-primary-foreground font-semibold px-5"
             >
               {isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Syncing Permissions...
+                </>
+              ) : (
+                'Confirm & Apply'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Custom Folder Sync Confirmation Dialog */}
+      <Dialog open={showSyncConfirm} onOpenChange={setShowSyncConfirm}>
+        <DialogContent className="max-w-md bg-card border-border shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-foreground">
+              <AlertTriangle className="w-5 h-5 text-yellow-500" />
+              Confirm Drive Sync Access
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground text-xs mt-1">
+              Google Drive permissions will be synced for this student.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 my-2 border-y border-border py-4">
+            <div className="space-y-3">
+              {/* Revocations */}
+              <div>
+                <div className="text-xs text-red-400 font-semibold mb-1 flex items-center gap-1">
+                  <span>Revoking Folder Access ({syncPreview.foldersToRevoke.length})</span>
+                </div>
+                {syncPreview.foldersToRevoke.length === 0 ? (
+                  <div className="text-xs text-muted-foreground italic pl-3">No folder access will be revoked.</div>
+                ) : (
+                  <div className="bg-red-500/5 border border-red-500/10 rounded-lg p-2 max-h-[100px] overflow-y-auto space-y-1">
+                    {syncPreview.foldersToRevoke.map(f => (
+                      <div key={f.id} className="text-xs flex items-center gap-1.5 text-red-300 font-mono">
+                        <ChevronRight className="w-3 h-3 flex-shrink-0" />
+                        <span className="truncate">{f.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Grants */}
+              <div>
+                <div className="text-xs text-green-400 font-semibold mb-1 flex items-center gap-1">
+                  <span>Granting Folder Access ({syncPreview.foldersToGrant.length})</span>
+                </div>
+                {syncPreview.foldersToGrant.length === 0 ? (
+                  <div className="text-xs text-muted-foreground italic pl-3">No folder access will be granted.</div>
+                ) : (
+                  <div className="bg-green-500/5 border border-green-500/10 rounded-lg p-2 max-h-[100px] overflow-y-auto space-y-1">
+                    {syncPreview.foldersToGrant.map(f => (
+                      <div key={f.id} className="text-xs flex items-center gap-1.5 text-green-300 font-mono">
+                        <ChevronRight className="w-3 h-3 flex-shrink-0" />
+                        <span className="truncate">{f.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="text-xs text-muted-foreground border-t border-border pt-3">
+              Apply Year/Department customization changes for <strong className="text-foreground">{selectedUser?.username}</strong>?
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowSyncConfirm(false)} className="border-border">
+              Cancel
+            </Button>
+            <Button 
+              onClick={executeCustomSync} 
+              disabled={syncLoading}
+              className="bg-primary text-primary-foreground font-semibold px-5"
+            >
+              {syncLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Syncing Permissions...

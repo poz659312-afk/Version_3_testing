@@ -14,8 +14,7 @@ async function populateIfNeeded() {
   _populated = true
   
   try {
-    const { getDepartmentData } = await import('./department-data-accessor')
-    const departmentData = getDepartmentData()
+    const { departmentData } = await import('./department-data')
     
     for (const department of Object.values(departmentData)) {
       for (const level of Object.values((department as any).levels)) {

@@ -89,6 +89,30 @@ export default function TokenStatusMonitor() {
           </div>
         )}
 
+        {tokenStatus && tokenStatus.totalCount !== undefined && (
+          <div className="text-xs text-muted-foreground space-y-1.5 bg-muted/40 p-3 rounded-lg border border-border/50">
+            <div className="flex justify-between">
+              <span>Total Admins with Drive:</span>
+              <span className="font-semibold text-foreground">{tokenStatus.totalCount}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Valid Tokens:</span>
+              <span className="font-semibold text-green-600 dark:text-green-400">{tokenStatus.validCount ?? 0}</span>
+            </div>
+            <div className="flex justify-between text-muted-foreground">
+              <span>Expired/Invalid Tokens:</span>
+              <span className={`font-semibold ${tokenStatus.expiredCount && tokenStatus.expiredCount > 0 ? 'text-destructive font-bold animate-pulse' : 'text-foreground'}`}>
+                {tokenStatus.expiredCount ?? 0}
+              </span>
+            </div>
+            {tokenStatus.message && (
+              <div className="pt-2 mt-1.5 border-t border-border/40 text-[11px] leading-relaxed text-muted-foreground italic">
+                💡 {tokenStatus.message}
+              </div>
+            )}
+          </div>
+        )}
+
         {lastRefreshResult && (
           <div className={`p-3 rounded-md text-sm ${
             lastRefreshResult.success

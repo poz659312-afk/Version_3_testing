@@ -46,11 +46,21 @@ export async function GET(request: NextRequest) {
     if (checkOnly) {
       console.log('🔍 Authorized status check (no refresh)');
       const status = await checkAllAdminTokensStatus();
+      
+      let message = '';
+      if (status.totalCount === 0) {
+        message = 'No authorized admins exist.';
+      } else if (status.expiredCount === 0) {
+        message = 'All admin tokens in the database are currently valid.';
+      } else if (status.validCount === 0) {
+        message = 'All admin tokens in the database are expired.';
+      } else {
+        message = `${status.validCount} admin tokens are valid, but ${status.expiredCount} are expired and need attention.`;
+      }
+
       return NextResponse.json({
         success: status.isValid,
-        message: status.isValid 
-          ? 'Tokens in the database are currently valid.' 
-          : 'All tokens are expired or no authorized admins exist.',
+        message,
         refreshedCount: 0,
         failedCount: status.expiredCount,
         totalUsers: status.totalCount,
