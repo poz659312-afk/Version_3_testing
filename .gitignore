@@ -36,3 +36,34 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+intensive.html
+magic_of_the_faculty_of_computer_and_data_science_tree.pdf
+public/drive-tree.html
+public/quizzes/AdvancedDB/AdvDB_Lect1-Introduction.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect10-query_optimization2.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect2-Transaction-1.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect3-Transaction2.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect3-concurrency.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect4-Lock.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect5-Modeling.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect6_Recovery.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect1-Introduction.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect10-query_optimization2.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect2-Transaction-1.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect3-Transaction2.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect3-concurrency.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect4-Lock.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect5-Modeling.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect6_Recovery.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect8 - NoSQL.pdf
+public/quizzes/AdvancedDB/AdvDB_Lect9-query_optimization.pdf
+public/quizzes/Survey/Lec06.pdf
+public/quizzes/Survey/Lec07.pdf
+public/quizzes/Survey/Lec08.pdf
+public/quizzes/computing-intensive-statistical-methods/CISM_001.json
+public/quizzes/computing-intensive-statistical-methods/CISM_002.json
+public/quizzes/computing-intensive-statistical-methods/CISM_003.json
+public/quizzes/computing-intensive-statistical-methods/CISM_004.json
+public/quizzes/computing-intensive-statistical-methods/CISM_005.json
+push-changes.ps1
+push-changes.sh
