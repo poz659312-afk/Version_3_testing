@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from 'sonner'
+import { motion } from 'framer-motion'
 import { 
   Shield, 
   Search, 
@@ -75,6 +76,7 @@ export default function AdminDashboardClient({
 }: AdminDashboardClientProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const [activeTab, setActiveTab] = useState('users')
   
   // Data States
   const [users, setUsers] = useState(initialUsers)
@@ -686,29 +688,78 @@ export default function AdminDashboardClient({
       </div>
 
       {/* Tabs System */}
-      <Tabs defaultValue="users" className="w-full">
-        <TabsList className="grid grid-cols-2 md:grid-cols-4 bg-muted/80 p-1 rounded-xl border border-border max-w-2xl mb-6">
-          <TabsTrigger value="users" className="flex items-center gap-2 rounded-lg py-2">
-            <UserCog className="w-4 h-4" />
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="relative grid grid-cols-2 md:grid-cols-4 h-auto bg-black/5 dark:bg-white/5 backdrop-blur-md p-1.5 rounded-xl border border-black/10 dark:border-white/10 max-w-2xl mb-8">
+          <TabsTrigger 
+            value="users" 
+            className="relative flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground data-[state=active]:text-white focus-visible:outline-none select-none cursor-pointer bg-transparent data-[state=active]:!bg-transparent data-[state=active]:!shadow-none"
+          >
+            {activeTab === 'users' && (
+              <motion.div
+                layoutId="active-admin-tab"
+                className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg -z-10 shadow-lg shadow-primary/30"
+                transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+              />
+            )}
+            <UserCog className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'users' ? 'scale-110 rotate-3' : 'hover:scale-110'}`} />
             <span>User Directory</span>
           </TabsTrigger>
-          <TabsTrigger value="rules" className="flex items-center gap-2 rounded-lg py-2">
-            <FolderLock className="w-4 h-4" />
+          
+          <TabsTrigger 
+            value="rules" 
+            className="relative flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground data-[state=active]:text-white focus-visible:outline-none select-none cursor-pointer bg-transparent data-[state=active]:!bg-transparent data-[state=active]:!shadow-none"
+          >
+            {activeTab === 'rules' && (
+              <motion.div
+                layoutId="active-admin-tab"
+                className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg -z-10 shadow-lg shadow-primary/30"
+                transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+              />
+            )}
+            <FolderLock className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'rules' ? 'scale-110 -rotate-3' : 'hover:scale-110'}`} />
             <span>Year Access</span>
           </TabsTrigger>
-          <TabsTrigger value="tokens" className="flex items-center gap-2 rounded-lg py-2">
-            <RefreshCw className="w-4 h-4" />
+          
+          <TabsTrigger 
+            value="tokens" 
+            className="relative flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground data-[state=active]:text-white focus-visible:outline-none select-none cursor-pointer bg-transparent data-[state=active]:!bg-transparent data-[state=active]:!shadow-none"
+          >
+            {activeTab === 'tokens' && (
+              <motion.div
+                layoutId="active-admin-tab"
+                className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg -z-10 shadow-lg shadow-primary/30"
+                transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+              />
+            )}
+            <RefreshCw className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'tokens' ? 'scale-110 rotate-12' : 'hover:scale-110'}`} />
             <span>Token Monitor</span>
           </TabsTrigger>
-          <TabsTrigger value="logs" className="flex items-center gap-2 rounded-lg py-2">
-            <History className="w-4 h-4" />
+          
+          <TabsTrigger 
+            value="logs" 
+            className="relative flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground data-[state=active]:text-white focus-visible:outline-none select-none cursor-pointer bg-transparent data-[state=active]:!bg-transparent data-[state=active]:!shadow-none"
+          >
+            {activeTab === 'logs' && (
+              <motion.div
+                layoutId="active-admin-tab"
+                className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg -z-10 shadow-lg shadow-primary/30"
+                transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+              />
+            )}
+            <History className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'logs' ? 'scale-110 -rotate-6' : 'hover:scale-110'}`} />
             <span>Audit Logs</span>
           </TabsTrigger>
         </TabsList>
 
         {/* Tab 1: User Directory */}
-        <TabsContent value="users" className="space-y-6">
-          <Card className="bg-card border-border shadow-md">
+        <TabsContent value="users" className="mt-0 focus-visible:outline-none">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="space-y-6"
+          >
+            <Card className="bg-card border-border shadow-md">
             <CardHeader className="pb-4">
               <CardTitle>User Directory</CardTitle>
               <CardDescription>
@@ -950,11 +1001,18 @@ export default function AdminDashboardClient({
 
             </CardContent>
           </Card>
+          </motion.div>
         </TabsContent>
 
         {/* Tab 2: Year Access Console */}
-        <TabsContent value="rules" className="space-y-6 animate-notif-modal-enter">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <TabsContent value="rules" className="mt-0 focus-visible:outline-none">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="space-y-6"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             {/* Student Selection & Settings Panel */}
             <Card className="lg:col-span-1 bg-card border-border shadow-lg h-fit">
@@ -1292,11 +1350,18 @@ export default function AdminDashboardClient({
             </Card>
 
           </div>
+          </motion.div>
         </TabsContent>
 
         {/* Tab 3: Token Status Monitor */}
-        <TabsContent value="tokens" className="space-y-6">
-          <Card className="bg-card border-border shadow-md">
+        <TabsContent value="tokens" className="mt-0 focus-visible:outline-none">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="space-y-6"
+          >
+            <Card className="bg-card border-border shadow-md">
             <CardHeader>
               <CardTitle>Google Drive API Token Status</CardTitle>
               <CardDescription>
@@ -1307,11 +1372,18 @@ export default function AdminDashboardClient({
               <TokenStatusMonitor />
             </CardContent>
           </Card>
+          </motion.div>
         </TabsContent>
 
         {/* Tab 4: Audit Logs */}
-        <TabsContent value="logs" className="space-y-6">
-          <Card className="bg-card border-border shadow-md">
+        <TabsContent value="logs" className="mt-0 focus-visible:outline-none">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="space-y-6"
+          >
+            <Card className="bg-card border-border shadow-md">
             <CardHeader>
               <CardTitle>Administrative Audit Logs</CardTitle>
               <CardDescription>
@@ -1397,6 +1469,7 @@ export default function AdminDashboardClient({
               </div>
             </CardContent>
           </Card>
+          </motion.div>
         </TabsContent>
       </Tabs>
 

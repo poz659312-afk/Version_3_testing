@@ -1,0 +1,262 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choice",
+    "question": "What is the primary advantage of empirical likelihood methods?",
+    "options": [
+      "A) They require strict parametric assumptions about the data distribution.",
+      "B) They are non-parametric and do not assume a specific distributional form.",
+      "C) They are computationally simpler than bootstrap methods.",
+      "D) They only work for normally distributed data."
+    ],
+    "answer": "B) They are non-parametric and do not assume a specific distributional form.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choice",
+    "question": "The empirical likelihood ratio $R(\\mu)$ is defined as:",
+    "options": [
+      "A) The ratio of the likelihood under $H_0$ to the likelihood under $H_a$.",
+      "B) The product of probabilities $\\prod_{i=1}^n n P_i$ under constraints.",
+      "C) The variance of the sample mean.",
+      "D) The bias-corrected estimator of $\\mu$."
+    ],
+    "answer": "B) The product of probabilities $\\prod_{i=1}^n n P_i$ under constraints.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choice",
+    "question": "The MELE (Maximum Empirical Likelihood Estimator) assigns:",
+    "options": [
+      "A) Equal weight $\\frac{1}{n}$ to each observation.",
+      "B) Higher weights to outliers.",
+      "C) Weights based on the normal distribution.",
+      "D) Zero weight to extreme values."
+    ],
+    "answer": "A) Equal weight $\\frac{1}{n}$ to each observation.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choice",
+    "question": "The LRT statistic $\\lambda$ for testing $H_0: \\theta \\in \\Theta_0$ vs $H_a: \\theta \\in \\Theta_a$ is:",
+    "options": [
+      "A) $\\lambda = \\frac{\\max_{\\theta \\in \\Theta_0} L(\\theta)}{\\max L(\\theta)}$",
+      "B) $\\lambda = \\frac{Variance under H_0}{Variance under H_a}$",
+      "C) $\\lambda = \\frac{Bias under H_0}{Bias under H_a}$",
+      "D) $\\lambda = \\frac{Mean under H_0}{Mean under H_a}$"
+    ],
+    "answer": "A) $\\lambda = \\frac{\\max_{\\theta \\in \\Theta_0} L(\\theta)}{\\max L(\\theta)}$",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choice",
+    "question": "For testing $H_0: \\mu = 10$ vs $H_a: \\mu \\ne 10$ in a normal distribution, the LRT statistic simplifies to:",
+    "options": [
+      "A) $\\lambda = e^{-\\frac{n}{4}(\\bar{X}-10)^2}$",
+      "B) $\\lambda = \\frac{\\bar{X}}{10}$",
+      "C) $\\lambda = \\frac{S^2}{\\sigma^2}$",
+      "D) $\\lambda = \\frac{n}{\\sum X_i}$"
+    ],
+    "answer": "A) $\\lambda = e^{-\\frac{n}{4}(\\bar{X}-10)^2}$",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choice",
+    "question": "In LRT, reject $H_0$ if:",
+    "options": [
+      "A) $\\lambda \\ge C$",
+      "B) $\\lambda \\le C$, where $C$ is chosen such that $P(\\lambda < C \\mid H_0) = \\alpha$.",
+      "C) $\\lambda = 1$",
+      "D) $\\lambda$ is normally distributed."
+    ],
+    "answer": "B) $\\lambda \\le C$, where $C$ is chosen such that $P(\\lambda < C \\mid H_0) = \\alpha$.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choice",
+    "question": "For testing $H_0: \\lambda = 1$ vs $H_a: \\lambda \\ne 1$ in an exponential distribution, the LRT statistic is:",
+    "options": [
+      "A) $\\lambda = (\\bar{X})^n e^{-n\\bar{X}+n}$",
+      "B) $\\lambda = \\frac{1}{\\bar{X}}$",
+      "C) $\\lambda = \\frac{n}{\\sum X_i}$",
+      "D) $\\lambda = e^{-\\sum X_i}$"
+    ],
+    "answer": "A) $\\lambda = (\\bar{X})^n e^{-n\\bar{X}+n}$",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choice",
+    "question": "For large samples, under $H_0$, the LRT statistic follows which asymptotic distribution?",
+    "options": [
+      "A) $-2 \\log \\lambda \\sim \\chi^2_{1}$",
+      "B) \\lambda \\sim N(0, 1)",
+      "C) \\log \\lambda \\sim Exp(1)",
+      "D) \\lambda \\sim Uniform(0, 1)"
+    ],
+    "answer": "A) $-2 \\log \\lambda \\sim \\chi^2_{1}$",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choice",
+    "question": "A Type I error occurs when:",
+    "options": [
+      "A) We reject $H_0$ when it is true.",
+      "B) We fail to reject $H_0$ when it is false.",
+      "C) The test statistic is normally distributed.",
+      "D) The sample size is too small."
+    ],
+    "answer": "A) We reject $H_0$ when it is true.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choice",
+    "question": "Empirical likelihood ratio tests (ELRT) are preferred over parametric tests when:",
+    "options": [
+      "A) The data distribution is unknown or non-normal.",
+      "B) The sample size is very large.",
+      "C) The variance is known.",
+      "D) The mean is zero."
+    ],
+    "answer": "A) The data distribution is unknown or non-normal.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choice",
+    "question": "In the normal distribution LRT example, the term $\\sum (X_i - 10)^2$ simplifies to:",
+    "options": [
+      "A) $\\sum (X_i - \\bar{X})^2 + n(\\bar{X}-10)^2$",
+      "B) $\\sum X_i^2 - 10 \\sum X_i$",
+      "C) $n\\bar{X}^2 - 20 \\sum X_i$",
+      "D) $\\sum (X_i - \\mu)^2$"
+    ],
+    "answer": "A) $\\sum (X_i - \\bar{X})^2 + n(\\bar{X}-10)^2$",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choice",
+    "question": "For the exponential LRT, reject $H_0$ if:",
+    "options": [
+      "A) $(\\bar{X})^n e^{-n\\bar{X}+n} \\le C$",
+      "B) \\bar{X} > 1",
+      "C) \\sum X_i < n",
+      "D) \\lambda \\sim Exp(1)"
+    ],
+    "answer": "A) $(\\bar{X})^n e^{-n\\bar{X}+n} \\le C$",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choice",
+    "question": "The empirical likelihood optimization problem involves:",
+    "options": [
+      "A) Maximizing $\\prod_{i=1}^n P_i$ under constraints $\\sum P_i = 1$ and $\\sum P_i X_i = \\mu$.",
+      "B) Minimizing the variance of the sample mean.",
+      "C) Fitting a normal distribution to the data.",
+      "D) Calculating the bootstrap standard error."
+    ],
+    "answer": "A) Maximizing $\\prod_{i=1}^n P_i$ under constraints $\\sum P_i = 1$ and $\\sum P_i X_i = \\mu$.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choice",
+    "question": "For a two-sided test $H_0: \\mu = \\mu_0$ vs $H_a: \\mu \\ne \\mu_0$, reject $H_0$ if:",
+    "options": [
+      "A) The test statistic $T_c > t_{\\alpha/2}$ or $T_c < -t_{\\alpha/2}$.",
+      "B) The p-value is greater than $\\alpha$.",
+      "C) The sample mean equals $\\mu_0$.",
+      "D) The likelihood ratio $\\lambda = 1$."
+    ],
+    "answer": "A) The test statistic $T_c > t_{\\alpha/2}$ or $T_c < -t_{\\alpha/2}$.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choice",
+    "question": "The LRT for the normal mean is equivalent to the Z-test because:",
+    "options": [
+      "A) Both rely on the statistic $\\frac{|\\bar{X} - \\mu_0|}{\\sigma / \\sqrt{n}}$.",
+      "B) Both assume exponential distribution.",
+      "C) Both require bootstrap resampling.",
+      "D) Both are non-parametric."
+    ],
+    "answer": "A) Both rely on the statistic $\\frac{|\\bar{X} - \\mu_0|}{\\sigma / \\sqrt{n}}$.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choice",
+    "question": "If $X_1, X_2, ..., X_n$ constitute a random sample from $N(\\mu, \\sigma^2)$, what is the distribution of $\\bar{X}$ when $n \\ge 30$ or $\\sigma$ is known?",
+    "options": [
+      "A) $t_{n-1}$",
+      "B) $N(\\mu, \\frac{\\sigma^2}{n})$",
+      "C) $\\chi^2_{n-1}$",
+      "D) $F_{n-1, n-1}$"
+    ],
+    "answer": "B) $N(\\mu, \\frac{\\sigma^2}{n})$",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choice",
+    "question": "When $n < 30$ and $\\sigma$ is unknown, which statistic follows a $t$-distribution with $n-1$ degrees of freedom?",
+    "options": [
+      "A) $Z = \\frac{\\bar{X} - \\mu}{\\sigma / \\sqrt{n}}$",
+      "B) $T = \\frac{\\bar{X} - \\mu}{S / \\sqrt{n}}$",
+      "C) $U = \\frac{(n-1)S^2}{\\sigma^2}$",
+      "D) $F = \\frac{S^2_1 \\sigma^2_2}{S^2_2 \\sigma^2_1}$"
+    ],
+    "answer": "B) $T = \\frac{\\bar{X} - \\mu}{S / \\sqrt{n}}$",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choice",
+    "question": "The Central Limit Theorem (CLT) states that for a large sample size ($n \\ge 30$) from any population, the sampling distribution of $\\bar{X}$ is approximately:",
+    "options": [
+      "A) $N(\\mu, \\frac{\\sigma^2}{n})$",
+      "B) $t_{n-1}$",
+      "C) $\\chi^2_{n-1}$",
+      "D) Uniform"
+    ],
+    "answer": "A) $N(\\mu, \\frac{\\sigma^2}{n})$",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choice",
+    "question": "What happens to the width of a confidence interval as the sample size $n$ increases?",
+    "options": [
+      "A) Increases",
+      "B) Decreases",
+      "C) Remains unchanged",
+      "D) Depends on $\\alpha$"
+    ],
+    "answer": "B) Decreases",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choice",
+    "question": "For a 95% confidence interval of $\\mu$ when $n \\ge 30$, the critical value is:",
+    "options": [
+      "A) $t_{\\alpha/2, n-1}$",
+      "B) $Z_{\\alpha/2}$",
+      "C) $\\chi^2_{\\alpha/2, n-1}$",
+      "D) $F_{\\alpha/2, n-1, n-1}$"
+    ],
+    "answer": "B) $Z_{\\alpha/2}$",
+    "image": null
+  }
+]

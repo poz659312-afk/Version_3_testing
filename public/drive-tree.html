@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Drive Structure Mapper</title>
+  
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Google Identity Services (GIS) Client for OAuth Popup -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --bg-gradient: radial-gradient(circle at 50% 50%, #161e33 0%, #0b0f19 100%);
+      --card-bg: rgba(22, 30, 49, 0.4);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover-border: rgba(255, 255, 255, 0.15);
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      
+      --accent-color: #10b981; /* Emerald */
+      --accent-glow: rgba(16, 185, 129, 0.15);
+      --accent-hover: #34d399;
+      
+      --blue-accent: #3b82f6;
+      --blue-glow: rgba(59, 130, 246, 0.15);
+      --blue-hover: #60a5fa;
+
+      --danger-color: #ef4444;
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      background-image: var(--bg-gradient);
+      color: var(--text-primary);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* Ambient background glows */
+    .glow-container {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-1 {
+      position: absolute;
+      top: -10%;
+      right: -10%;
+      width: 50vw;
+      height: 50vh;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+      filter: blur(80px);
+    }
+    .glow-2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 50vw;
+      height: 50vh;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+      filter: blur(80px);
+    }
+
+    /* Header Styling */
+    header {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1.25rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(11, 15, 25, 0.7);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.025em;
+      background: linear-gradient(135deg, #ffffff 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-icon {
+      color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 12px;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    /* Main Content Wrapper */
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 2rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Common Card Styling (Glassmorphism) */
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 1.75rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: var(--transition);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .glass-card:hover {
+      border-color: var(--card-hover-border);
+    }
+
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-desc {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Form and Inputs */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper input, .input-wrapper select {
+      width: 100%;
+      background: rgba(9, 12, 20, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 0.85rem 1rem;
+      padding-left: 2.75rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+
+    .input-wrapper input:focus, .input-wrapper select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 12px var(--accent-glow);
+      background: rgba(9, 12, 20, 0.9);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .input-wrapper input:focus + .input-icon,
+    .input-wrapper select:focus + .input-icon {
+      color: var(--accent-color);
+    }
+
+    /* Tab navigation for auth methods */
+    .auth-tabs {
+      display: flex;
+      background: rgba(9, 12, 20, 0.4);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 0.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .auth-tab {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .auth-tab.active {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .auth-tab:hover:not(.active) {
+      color: var(--text-primary);
+    }
+
+    .auth-content {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .auth-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .help-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+      display: block;
+      line-height: 1.3;
+    }
+
+    .help-text a {
+      color: var(--blue-accent);
+      text-decoration: none;
+    }
+
+    .help-text a:hover {
+      text-decoration: underline;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent-color) 0%, #059669 100%);
+      color: #0b0f19;
+      border: none;
+      border-radius: 12px;
+      padding: 0.9rem 1.5rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: var(--transition);
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px var(--accent-glow);
+      filter: brightness(1.1);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      background: var(--card-border);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      filter: none;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-primary);
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--card-hover-border);
+      box-shadow: none;
+      color: #fff;
+    }
+
+    .oauth-btn {
+      background: linear-gradient(135deg, var(--blue-accent) 0%, #2563eb 100%);
+      color: #fff;
+      box-shadow: 0 4px 15px var(--blue-glow);
+    }
+
+    .oauth-btn:hover {
+      box-shadow: 0 8px 25px var(--blue-glow);
+    }
+
+    .auth-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 50px;
+      margin-top: 0.75rem;
+      width: fit-content;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .auth-status-badge.connected {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    /* Logs Area */
+    .log-panel {
+      margin-top: 1.5rem;
+      background: rgba(9, 12, 20, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1rem;
+      max-height: 200px;
+      overflow-y: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      scroll-behavior: smooth;
+    }
+
+    .log-entry {
+      margin-bottom: 0.35rem;
+      border-left: 2px solid var(--text-muted);
+      padding-left: 0.5rem;
+      animation: logSlide 0.2s ease-out;
+    }
+
+    .log-entry.info { border-left-color: var(--blue-accent); color: #93c5fd; }
+    .log-entry.success { border-left-color: var(--accent-color); color: #6ee7b7; }
+    .log-entry.error { border-left-color: var(--danger-color); color: #fca5a5; }
+
+    @keyframes logSlide {
+      from { opacity: 0; transform: translateX(-4px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Tree Panel Toolbar */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .search-filter {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .tree-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .action-icon-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .action-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      border-color: var(--card-hover-border);
+    }
+
+    /* Interactive Tree Visuals */
+    .tree-container {
+      background: rgba(9, 12, 20, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      padding: 1.5rem;
+      min-height: 400px;
+      max-height: 70vh;
+      overflow: auto;
+      position: relative;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--text-muted);
+      height: 350px;
+      gap: 1rem;
+    }
+
+    .empty-state i {
+      opacity: 0.4;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .tree-root-ul {
+      list-style: none;
+      padding-left: 0;
+      position: relative;
+    }
+
+    .tree-root-ul ul {
+      list-style: none;
+      padding-left: 1.75rem;
+      position: relative;
+    }
+
+    /* Connecting vertical lines */
+    .tree-root-ul ul::before {
+      content: '';
+      position: absolute;
+      left: 0.65rem;
+      top: 0;
+      bottom: 0.85rem;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+    }
+
+    .tree-node {
+      position: relative;
+      margin: 0.35rem 0;
+    }
+
+    /* Horizontal branch guides */
+    .tree-node::before {
+      content: '';
+      position: absolute;
+      left: -1.1rem;
+      top: 0.85rem;
+      width: 0.85rem;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+    }
+
+    .tree-root-ul > .tree-node::before {
+      display: none; /* No branch line for absolute root */
+    }
+
+    .node-row {
+      display: flex;
+      align-items: center;
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+      transition: var(--transition);
+      cursor: pointer;
+      width: fit-content;
+      max-width: 100%;
+      user-select: none;
+    }
+
+    .node-row:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .node-row.active {
+      background: rgba(16, 185, 129, 0.08);
+      border-left: 2px solid var(--accent-color);
+      padding-left: calc(0.75rem - 2px);
+    }
+
+    .node-chevron {
+      margin-right: 0.35rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+
+    .node-chevron:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+    }
+
+    .node-chevron.expanded {
+      transform: rotate(90deg);
+    }
+
+    .node-icon {
+      color: #fbbf24; /* Amber folder */
+      margin-right: 0.5rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .node-name {
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 320px;
+    }
+
+    .node-link-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.15rem 0.4rem;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 6px;
+      color: #60a5fa;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 0.75rem;
+      text-decoration: none;
+      transition: var(--transition);
+      opacity: 0;
+      transform: translateX(-4px);
+    }
+
+    .node-row:hover .node-link-badge {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .node-link-badge:hover {
+      background: var(--blue-accent);
+      color: #fff;
+      border-color: var(--blue-accent);
+    }
+
+    .node-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-left: 0.75rem;
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .node-row:hover .node-actions {
+      opacity: 1;
+    }
+
+    .node-action-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .node-action-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+    }
+
+    /* Subtree collapsible styling */
+    .subtree {
+      display: block;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .subtree.collapsed {
+      display: none;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #10b981;
+      color: #0b0f19;
+      padding: 0.85rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 100;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: var(--transition);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Loader */
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Modal dialog */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 7, 12, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-container {
+      background: #111827;
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      max-width: 600px;
+      width: 90%;
+      padding: 1.75rem;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      transform: scale(0.95);
+      transition: var(--transition);
+    }
+
+    .modal-overlay.open .modal-container {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-body textarea {
+      width: 100%;
+      height: 250px;
+      background: #090c14;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1rem;
+      color: var(--text-primary);
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      resize: vertical;
+    }
+
+    .modal-body textarea:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Glow -->
+  <div class="glow-container">
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">
+        <i data-lucide="network" style="width: 20px; height: 20px;"></i>
+      </div>
+      <span>DriveTree Mapper</span>
+    </div>
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <a href="https://github.com" target="_blank" class="action-icon-btn" style="text-decoration: none;">
+        <i data-lucide="github" style="width: 18px; height: 18px;"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content Grid -->
+  <main>
+    <!-- Left Configuration Panel -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <div class="glass-card">
+        <h2>
+          <i data-lucide="settings" style="width: 20px; height: 20px; color: var(--accent-color);"></i>
+          Configuration
+        </h2>
+        <p class="card-desc">Configure your Google Drive connection settings</p>
+
+        <!-- Google Drive link input -->
+        <div class="form-group">
+          <label for="drive-url">Google Drive Folder Link / ID</label>
+          <div class="input-wrapper">
+            <input type="text" id="drive-url" placeholder="Paste link or folder ID..." value="">
+            <div class="input-icon">
+              <i data-lucide="link" style="width: 16px; height: 16px;"></i>
+            </div>
+          </div>
+          <span class="help-text">Supports URLs matching <code>drive.google.com/drive/folders/...</code></span>
+        </div>
+
+        <!-- Authentication settings tabs -->
+        <div class="form-group">
+          <label>Authentication Method</label>
+          <div class="auth-tabs">
+            <button class="auth-tab active" onclick="switchAuthTab('google')">Google OAuth</button>
+            <button class="auth-tab" onclick="switchAuthTab('token')">Access Token</button>
+            <button class="auth-tab" onclick="switchAuthTab('key')">API Key</button>
+          </div>
+
+          <!-- OAuth Tab Content -->
+          <div id="auth-google" class="auth-content active">
+            <div class="form-group">
+              <label for="client-id">OAuth Client ID</label>
+              <div class="input-wrapper">
+                <input type="text" id="client-id" placeholder="Enter your Client ID...">
+                <div class="input-icon">
+                  <i data-lucide="key" style="width: 16px; height: 16px;"></i>
+                </div>
+              </div>
+              <span class="help-text">Get an OAuth Client ID from the <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a>. Ensure <code>http://localhost</code> or the current host is authorized.</span>
+            </div>
+            <button class="btn oauth-btn" id="google-login-btn" onclick="initiateGoogleLogin()">
+              <i data-lucide="log-in" style="width: 16px; height: 16px;"></i>
+              Authenticate with Google
+            </button>
+          </div>
+
+          <!-- Direct Access Token Tab Content -->
+          <div id="auth-token" class="auth-content">
+            <div class="form-group">
+              <label for="access-token">Google OAuth Access Token</label>
+              <div class="input-wrapper">
+                <input type="password" id="access-token" placeholder="paste accessToken...">
+                <div class="input-icon">
+                  <i data-lucide="lock" style="width: 16px; height: 16px;"></i>
+                </div>
+              </div>
+              <span class="help-text">Directly paste an OAuth access token. You can generate one with the <a href="https://developers.google.com/oauthplayground/" target="_blank">Google OAuth Playground</a> (Scope: Drive Metadata Readonly).</span>
+            </div>
+          </div>
+
+          <!-- API Key Tab Content (Public Folders Only) -->
+          <div id="auth-key" class="auth-content">
+            <div class="form-group">
+              <label for="api-key">Developer API Key</label>
+              <div class="input-wrapper">
+                <input type="password" id="api-key" placeholder="Enter API Key...">
+                <div class="input-icon">
+                  <i data-lucide="shield-alert" style="width: 16px; height: 16px;"></i>
+                </div>
+              </div>
+              <span class="help-text">Only works for folders shared as <strong>"Anyone with the link can view"</strong>. Get one from Google Cloud Console.</span>
+            </div>
+          </div>
+
+          <div id="auth-status" class="auth-status-badge">
+            <i data-lucide="info" style="width: 12px; height: 12px;"></i>
+            <span>Not Connected</span>
+          </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--card-border); margin: 1.5rem 0;">
+
+        <!-- Scan Mode and Depth Settings -->
+        <div class="form-group">
+          <label for="scan-mode">Scan Method</label>
+          <div class="input-wrapper">
+            <select id="scan-mode" onchange="toggleScanModeHelp()">
+              <option value="full">Recursive Scan (Full Tree)</option>
+              <option value="lazy" selected>Lazy Scan (Dynamic Expand)</option>
+            </select>
+            <div class="input-icon">
+              <i data-lucide="layers" style="width: 16px; height: 16px;"></i>
+            </div>
+          </div>
+          <span id="scan-mode-help" class="help-text">Lazy Scan loads subdirectories on click. Faster, lower API usage.</span>
+        </div>
+
+        <div class="form-group" id="depth-group">
+          <label for="scan-depth">Max Scan Depth</label>
+          <div class="input-wrapper">
+            <select id="scan-depth">
+              <option value="2">2 Levels</option>
+              <option value="3" selected>3 Levels</option>
+              <option value="5">5 Levels</option>
+              <option value="10">10 Levels</option>
+              <option value="999">Unlimited</option>
+            </select>
+            <div class="input-icon">
+              <i data-lucide="git-commit" style="width: 16px; height: 16px;"></i>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn" id="scan-btn" onclick="startDriveMapping()">
+          <i data-lucide="play" style="width: 16px; height: 16px;"></i>
+          Map Drive Structure
+        </button>
+      </div>
+
+      <!-- Live Logs Panel -->
+      <div class="glass-card" style="padding: 1.25rem;">
+        <h3 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.35rem;">
+          <i data-lucide="terminal" style="width: 16px; height: 16px; color: var(--accent-color);"></i>
+          Live Scan Logger
+        </h3>
+        <div class="log-panel" id="logger-panel">
+          <div class="log-entry">Waiting for user execution...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Tree Viewer Panel -->
+    <div class="glass-card" style="display: flex; flex-direction: column;">
+      <div class="toolbar">
+        <div>
+          <h2>
+            <i data-lucide="folder-tree" style="width: 20px; height: 20px; color: var(--accent-color);"></i>
+            Drive Folder Hierarchy
+          </h2>
+          <p class="card-desc" style="margin-bottom: 0;" id="folder-stats-text">No drive mapped yet</p>
+        </div>
+
+        <div class="tree-actions">
+          <div class="input-wrapper search-filter">
+            <input type="text" id="tree-search" placeholder="Search folders..." oninput="filterTreeNodes()" style="padding: 0.5rem 1rem; padding-left: 2.25rem; font-size: 0.8rem; border-radius: 8px;">
+            <div class="input-icon" style="left: 0.75rem;">
+              <i data-lucide="search" style="width: 14px; height: 14px;"></i>
+            </div>
+          </div>
+
+          <button class="action-icon-btn" onclick="expandAllNodes()" title="Expand All">
+            <i data-lucide="unfold-horizontal" style="width: 16px; height: 16px;"></i>
+          </button>
+          <button class="action-icon-btn" onclick="collapseAllNodes()" title="Collapse All">
+            <i data-lucide="fold-horizontal" style="width: 16px; height: 16px;"></i>
+          </button>
+          <button class="action-icon-btn" onclick="openExportModal('markdown')" title="Export as Markdown">
+            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i>
+          </button>
+          <button class="action-icon-btn" onclick="openExportModal('text')" title="Export as Text Outline">
+            <i data-lucide="share-2" style="width: 16px; height: 16px;"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tree container rendering root -->
+      <div class="tree-container" id="tree-content-area">
+        <div class="empty-state" id="empty-state">
+          <i data-lucide="folder-search" style="width: 48px; height: 48px; color: var(--text-muted);"></i>
+          <div>
+            <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem;">No Structure Generated</p>
+            <p style="font-size: 0.8rem; max-width: 300px;">Enter a Google Drive folder link on the left panel and click 'Map Drive Structure' to build a visual tree.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Export Dialog Modal -->
+  <div class="modal-overlay" id="export-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 id="modal-title" style="font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.25rem;">Export Folder Structure</h3>
+        <button class="action-icon-btn" onclick="closeExportModal()">
+          <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <textarea id="export-textarea" readonly></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeExportModal()" style="width: auto;">Close</button>
+        <button class="btn" onclick="copyExportText()" style="width: auto;">
+          <i data-lucide="copy" style="width: 16px; height: 16px;"></i>
+          Copy to Clipboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Copied Toast -->
+  <div class="toast" id="toast-notify">
+    <i data-lucide="check-circle" style="width: 16px; height: 16px;"></i>
+    <span id="toast-message">Copied successfully!</span>
+  </div>
+
+  <script>
+    // Global State management
+    let activeAuthMethod = 'google';
+    let gapiToken = null;
+    let driveTreeRootNode = null;
+    let clientAccessToken = '';
+    let totalFoldersMapped = 0;
+    let nodeMap = new Map(); // Fast lookup by Drive ID
+
+    // Initialize Lucide Icons
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      
+      // Load saved configuration from localStorage if exists
+      if (localStorage.getItem('clientId')) {
+        document.getElementById('client-id').value = localStorage.getItem('clientId');
+      }
+      if (localStorage.getItem('driveUrl')) {
+        document.getElementById('drive-url').value = localStorage.getItem('driveUrl');
+      }
+      
+      // Setup text logger
+      log('System ready. Enter folder and choose authorization method.', 'info');
+    });
+
+    // Logger util
+    function log(message, type = 'default') {
+      const logger = document.getElementById('logger-panel');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      
+      const time = new Date().toLocaleTimeString();
+      entry.innerHTML = `[${time}] ${message}`;
+      
+      logger.appendChild(entry);
+      logger.scrollTop = logger.scrollHeight;
+    }
+
+    // Switch between Authentication Methods
+    function switchAuthTab(method) {
+      activeAuthMethod = method;
+      
+      // Update tab active classes
+      const tabs = document.querySelectorAll('.auth-tab');
+      tabs.forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Update form contents
+      const contents = document.querySelectorAll('.auth-content');
+      contents.forEach(c => c.classList.remove('active'));
+      document.getElementById(`auth-${method}`).classList.add('active');
+      
+      log(`Switched authorization method to: ${method.toUpperCase()}`, 'info');
+      updateAuthBadgeStatus();
+    }
+
+    // Toggle help explanation for scan modes
+    function toggleScanModeHelp() {
+      const mode = document.getElementById('scan-mode').value;
+      const helpSpan = document.getElementById('scan-mode-help');
+      const depthGroup = document.getElementById('depth-group');
+      
+      if (mode === 'lazy') {
+        helpSpan.innerText = 'Lazy Scan loads subdirectories on click. Faster, lower API usage.';
+        depthGroup.style.display = 'none';
+      } else {
+        helpSpan.innerText = 'Full Scan scans subdirectories recursively up to the depth limit.';
+        depthGroup.style.display = 'block';
+      }
+    }
+    // Set initial display of depth based on scan mode
+    toggleScanModeHelp();
+
+    // Regular expressions to extract Folder ID
+    function extractFolderId(inputStr) {
+      const trimmed = inputStr.trim();
+      if (!trimmed) return null;
+      
+      // Standard Google Drive Folder URL pattern
+      const driveUrlPatterns = [
+        /folders\/([a-zA-Z0-9-_]{25,})/,
+        /id=([a-zA-Z0-9-_]{25,})/
+      ];
+      
+      for (const pattern of driveUrlPatterns) {
+        const match = trimmed.match(pattern);
+        if (match && match[1]) {
+          return match[1];
+        }
+      }
+      
+      // Fallback: If it's a solid code block that looks like a drive ID, return it
+      const idPattern = /^[a-zA-Z0-9-_]{25,50}$/;
+      if (idPattern.test(trimmed)) {
+        return trimmed;
+      }
+      
+      return null;
+    }
+
+    // Update active connection badge
+    function updateAuthBadgeStatus() {
+      const badge = document.getElementById('auth-status');
+      const badgeText = badge.querySelector('span');
+      const badgeIcon = badge.querySelector('i');
+      
+      let isConnected = false;
+      let label = 'Not Connected';
+      
+      if (activeAuthMethod === 'google') {
+        if (clientAccessToken) {
+          isConnected = true;
+          label = 'OAuth Authorized';
+        }
+      } else if (activeAuthMethod === 'token') {
+        const tokenVal = document.getElementById('access-token').value.trim();
+        if (tokenVal) {
+          isConnected = true;
+          label = 'Token Loaded';
+        }
+      } else if (activeAuthMethod === 'key') {
+        const keyVal = document.getElementById('api-key').value.trim();
+        if (keyVal) {
+          isConnected = true;
+          label = 'API Key Loaded';
+        }
+      }
+      
+      if (isConnected) {
+        badge.className = 'auth-status-badge connected';
+        badgeText.innerText = label;
+      } else {
+        badge.className = 'auth-status-badge';
+        badgeText.innerText = label;
+      }
+    }
+
+    // Event listener to update badge on token inputs
+    document.getElementById('access-token').addEventListener('input', updateAuthBadgeStatus);
+    document.getElementById('api-key').addEventListener('input', updateAuthBadgeStatus);
+
+    // Google Identity Services login setup
+    let tokenClient;
+    function initiateGoogleLogin() {
+      const clientId = document.getElementById('client-id').value.trim();
+      if (!clientId) {
+        log('Error: Please enter a Google OAuth Client ID first.', 'error');
+        alert('Please enter a Google OAuth Client ID.');
+        return;
+      }
+      
+      localStorage.setItem('clientId', clientId);
+      log('Initializing Google Identity token client...', 'info');
+      
+      try {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: clientId,
+          scope: 'https://www.googleapis.com/auth/drive.metadata.readonly',
+          callback: (tokenResponse) => {
+            if (tokenResponse && tokenResponse.access_token) {
+              clientAccessToken = tokenResponse.access_token;
+              log('Successfully authenticated via OAuth!', 'success');
+              updateAuthBadgeStatus();
+              showToast('Google login successful!');
+            } else {
+              log('OAuth Login failed or cancelled.', 'error');
+            }
+          },
+        });
+        
+        tokenClient.requestAccessToken();
+      } catch (err) {
+        log('Error initializing Google token client: ' + err.message, 'error');
+        alert('Authentication failed to initialize. Ensure your Client ID is valid and GIS script is loaded.');
+      }
+    }
+
+    // Helper: Build authorization parameters
+    function getAuthParams() {
+      if (activeAuthMethod === 'google') {
+        if (!clientAccessToken) {
+          throw new Error('Please authorize Google OAuth by clicking "Authenticate with Google"');
+        }
+        return { token: clientAccessToken };
+      } else if (activeAuthMethod === 'token') {
+        const tokenVal = document.getElementById('access-token').value.trim();
+        if (!tokenVal) {
+          throw new Error('Please paste a Google Drive OAuth Access Token');
+        }
+        return { token: tokenVal };
+      } else if (activeAuthMethod === 'key') {
+        const keyVal = document.getElementById('api-key').value.trim();
+        if (!keyVal) {
+          throw new Error('Please enter a Developer API Key');
+        }
+        return { key: keyVal };
+      }
+      throw new Error('Unknown authentication method');
+    }
+
+    // Google Drive Fetcher helper
+    async function apiFetchFolders(parentId, auth) {
+      let folders = [];
+      let pageToken = null;
+      
+      do {
+        // Query to search for folders that are not trashed and have the parent
+        let query = `'${parentId}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed = false`;
+        let url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=files(id,name,webViewLink,parents),nextPageToken&pageSize=100`;
+        
+        const headers = {};
+        if (auth.token) {
+          headers['Authorization'] = `Bearer ${auth.token}`;
+        } else if (auth.key) {
+          url += `&key=${auth.key}`;
+        }
+        
+        const response = await fetch(url, { headers });
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          const errMsg = errData.error?.message || `HTTP ${response.status} ${response.statusText}`;
+          throw new Error(errMsg);
+        }
+        
+        const data = await response.json();
+        if (data.files) {
+          folders = folders.concat(data.files);
+        }
+        pageToken = data.nextPageToken;
+      } while (pageToken);
+      
+      return folders;
+    }
+
+    // Fetch single folder info (e.g. for root)
+    async function apiFetchFolderInfo(folderId, auth) {
+      let url = `https://www.googleapis.com/drive/v3/files/${folderId}?fields=id,name,webViewLink,parents`;
+      
+      const headers = {};
+      if (auth.token) {
+        headers['Authorization'] = `Bearer ${auth.token}`;
+      } else if (auth.key) {
+        url += `&key=${auth.key}`;
+      }
+      
+      const response = await fetch(url, { headers });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        const errMsg = errData.error?.message || `HTTP ${response.status} ${response.statusText}`;
+        throw new Error(errMsg);
+      }
+      
+      return await response.json();
+    }
+
+    // Tree Node class representing elements
+    class FolderNode {
+      constructor(id, name, link, parentId = null) {
+        this.id = id;
+        this.name = name;
+        this.link = link;
+        this.parentId = parentId;
+        this.children = [];
+        
+        this.isLoaded = false;
+        this.isExpanded = false;
+        this.isLoading = false;
+        
+        // Element references
+        this.elRow = null;
+        this.elChildrenUl = null;
+        this.elChevron = null;
+      }
+    }
+
+    // Main mapping function
+    async function startDriveMapping() {
+      const driveUrl = document.getElementById('drive-url').value.trim();
+      const folderId = extractFolderId(driveUrl);
+      
+      if (!folderId) {
+        log('Error: Invalid Google Drive Link or ID format.', 'error');
+        alert('Invalid Drive folder link/ID. Paste a full folders URL or standard 25+ char folder ID.');
+        return;
+      }
+
+      // Save input link
+      localStorage.setItem('driveUrl', driveUrl);
+      
+      // Gather auth parameters
+      let auth;
+      try {
+        auth = getAuthParams();
+      } catch (err) {
+        log(`Auth Error: ${err.message}`, 'error');
+        alert(err.message);
+        return;
+      }
+      
+      const scanMode = document.getElementById('scan-mode').value;
+      const maxDepth = parseInt(document.getElementById('scan-depth').value, 10);
+      
+      // Update UI state for processing
+      const scanBtn = document.getElementById('scan-btn');
+      scanBtn.disabled = true;
+      scanBtn.innerHTML = `<i data-lucide="refresh-cw" class="spinner" style="width: 16px; height: 16px;"></i> Mapping...`;
+      lucide.createIcons({attrs: {class: ['spinner']}});
+      
+      log(`Starting scan of folder: ${folderId} (Mode: ${scanMode})`, 'info');
+      
+      // Reset state
+      totalFoldersMapped = 0;
+      nodeMap.clear();
+      document.getElementById('tree-content-area').innerHTML = '';
+      
+      try {
+        // 1. Fetch Root Folder Info
+        log('Fetching root folder metadata...', 'info');
+        const rootInfo = await apiFetchFolderInfo(folderId, auth);
+        
+        const rootNode = new FolderNode(rootInfo.id, rootInfo.name, rootInfo.webViewLink || `https://drive.google.com/drive/folders/${rootInfo.id}`);
+        rootNode.isExpanded = true;
+        rootNode.isLoaded = true;
+        
+        driveTreeRootNode = rootNode;
+        nodeMap.set(rootNode.id, rootNode);
+        totalFoldersMapped = 1;
+        
+        // Render tree skeleton
+        const treeArea = document.getElementById('tree-content-area');
+        const rootUl = document.createElement('ul');
+        rootUl.className = 'tree-root-ul';
+        treeArea.appendChild(rootUl);
+        
+        // Render root item
+        renderNode(rootNode, rootUl);
+        
+        // 2. Perform scan depending on mode
+        if (scanMode === 'full') {
+          log('Commencing full recursive scan of directories...', 'info');
+          await scanRecursive(rootNode, 1, maxDepth, auth);
+          log(`Scan completed. Discovered ${totalFoldersMapped} folders.`, 'success');
+        } else {
+          // Lazy Mode: Just load first layer initially
+          log('Lazy Mapping mode: Loading root subfolders...', 'info');
+          await loadNodeChildren(rootNode, auth);
+          log('Root folders mapped. Click on chevrons to load nested folders.', 'success');
+        }
+        
+        // Update stats
+        document.getElementById('folder-stats-text').innerText = `Mapped ${totalFoldersMapped} directory nodes in total`;
+        
+      } catch (err) {
+        log(`Mapping Failed: ${err.message}`, 'error');
+        alert(`Failed to retrieve drive structure: ${err.message}\n\nEnsure client permissions are valid, the folder is accessible, and the link matches the authorization type.`);
+        
+        // Render empty state
+        const treeArea = document.getElementById('tree-content-area');
+        treeArea.innerHTML = `
+          <div class="empty-state">
+            <i data-lucide="alert-triangle" style="width: 48px; height: 48px; color: var(--danger-color);"></i>
+            <div>
+              <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem; color: var(--danger-color);">Scan Failed</p>
+              <p style="font-size: 0.8rem; max-width: 350px;">${err.message}</p>
+            </div>
+          </div>
+        `;
+        lucide.createIcons();
+      } finally {
+        // Reset action button
+        scanBtn.disabled = false;
+        scanBtn.innerHTML = `<i data-lucide="play" style="width: 16px; height: 16px;"></i> Map Drive Structure`;
+        lucide.createIcons();
+      }
+    }
+
+    // Full recursive scan function
+    async function scanRecursive(parentNode, currentDepth, maxDepth, auth) {
+      if (currentDepth >= maxDepth) {
+        log(`Reached max scan depth limit (${maxDepth}) at folder: ${parentNode.name}`, 'info');
+        return;
+      }
+      
+      try {
+        log(`Scanning folder: ${parentNode.name} (depth ${currentDepth})`, 'info');
+        const subfolders = await apiFetchFolders(parentNode.id, auth);
+        
+        if (subfolders.length === 0) return;
+        
+        parentNode.isLoaded = true;
+        parentNode.isExpanded = true;
+        
+        // Ensure UI displays expanded state
+        if (parentNode.elChevron) {
+          parentNode.elChevron.classList.add('expanded');
+        }
+        if (parentNode.elChildrenUl) {
+          parentNode.elChildrenUl.classList.remove('subtree', 'collapsed');
+          parentNode.elChildrenUl.classList.add('subtree');
+        }
+        
+        for (const f of subfolders) {
+          const childNode = new FolderNode(f.id, f.name, f.webViewLink || `https://drive.google.com/drive/folders/${f.id}`, parentNode.id);
+          parentNode.children.push(childNode);
+          nodeMap.set(childNode.id, childNode);
+          totalFoldersMapped++;
+          
+          // Render child node in parent's ul
+          renderNode(childNode, parentNode.elChildrenUl);
+          
+          // Recursive call
+          await scanRecursive(childNode, currentDepth + 1, maxDepth, auth);
+        }
+      } catch (err) {
+        log(`Error scanning ${parentNode.name}: ${err.message}`, 'error');
+      }
+    }
+
+    // Lazy load children for a specific folder node
+    async function loadNodeChildren(node, auth) {
+      if (node.isLoaded || node.isLoading) return;
+      
+      node.isLoading = true;
+      log(`Lazy loading folders inside: ${node.name}...`, 'info');
+      
+      // Update chevron to loading indicator
+      if (node.elChevron) {
+        node.elChevron.innerHTML = `<i data-lucide="refresh-cw" class="spinner" style="width: 12px; height: 12px;"></i>`;
+        lucide.createIcons({attrs: {class: ['spinner']}});
+      }
+      
+      try {
+        const subfolders = await apiFetchFolders(node.id, auth);
+        node.isLoaded = true;
+        
+        if (subfolders.length > 0) {
+          subfolders.forEach(f => {
+            const child = new FolderNode(f.id, f.name, f.webViewLink || `https://drive.google.com/drive/folders/${f.id}`, node.id);
+            node.children.push(child);
+            nodeMap.set(child.id, child);
+            totalFoldersMapped++;
+            
+            renderNode(child, node.elChildrenUl);
+          });
+          
+          log(`Loaded ${subfolders.length} subfolders in: ${node.name}`, 'success');
+          document.getElementById('folder-stats-text').innerText = `Mapped ${totalFoldersMapped} directory nodes in total`;
+        } else {
+          log(`Folder is empty of subdirectories: ${node.name}`, 'info');
+        }
+        
+        // Refresh chevron visual
+        updateNodeChevronUI(node);
+      } catch (err) {
+        log(`Failed to expand folder ${node.name}: ${err.message}`, 'error');
+        alert(`Failed to fetch subfolders: ${err.message}`);
+        updateNodeChevronUI(node);
+      } finally {
+        node.isLoading = false;
+      }
+    }
+
+    // Render tree node to HTML
+    function renderNode(node, containerUl) {
+      const li = document.createElement('li');
+      li.className = 'tree-node';
+      li.id = `node-li-${node.id}`;
+      
+      const row = document.createElement('div');
+      row.className = 'node-row';
+      row.id = `node-row-${node.id}`;
+      
+      // Chevron indicator
+      const chevron = document.createElement('div');
+      chevron.className = 'node-chevron';
+      chevron.innerHTML = `<i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>`;
+      chevron.onclick = (e) => {
+        e.stopPropagation();
+        toggleNodeCollapse(node);
+      };
+      
+      // Folder Icon
+      const icon = document.createElement('div');
+      icon.className = 'node-icon';
+      icon.innerHTML = `<i data-lucide="folder" style="width: 16px; height: 16px; fill: rgba(251, 191, 36, 0.2);"></i>`;
+      
+      // Folder Name
+      const name = document.createElement('span');
+      name.className = 'node-name';
+      name.innerText = node.name;
+      name.title = node.name;
+      
+      // Link Badge (opens original Google Drive folder)
+      const linkBadge = document.createElement('a');
+      linkBadge.className = 'node-link-badge';
+      linkBadge.href = node.link;
+      linkBadge.target = '_blank';
+      linkBadge.title = "View Folder on Google Drive";
+      linkBadge.innerHTML = `<i data-lucide="external-link" style="width: 10px; height: 10px; margin-right: 2px;"></i> Drive`;
+      
+      // Actions container
+      const actions = document.createElement('div');
+      actions.className = 'node-actions';
+      
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'node-action-btn';
+      copyBtn.title = "Copy Folder Link";
+      copyBtn.innerHTML = `<i data-lucide="copy" style="width: 12px; height: 12px;"></i>`;
+      copyBtn.onclick = (e) => {
+        e.stopPropagation();
+        copyTextToClipboard(node.link, 'Copied folder link!');
+      };
+
+      const copyIdBtn = document.createElement('button');
+      copyIdBtn.className = 'node-action-btn';
+      copyIdBtn.title = "Copy Folder ID";
+      copyIdBtn.innerHTML = `<i data-lucide="hash" style="width: 12px; height: 12px;"></i>`;
+      copyIdBtn.onclick = (e) => {
+        e.stopPropagation();
+        copyTextToClipboard(node.id, 'Copied folder ID!');
+      };
+      
+      actions.appendChild(copyBtn);
+      actions.appendChild(copyIdBtn);
+      
+      row.appendChild(chevron);
+      row.appendChild(icon);
+      row.appendChild(name);
+      row.appendChild(linkBadge);
+      row.appendChild(actions);
+      li.appendChild(row);
+      
+      // Children container
+      const childUl = document.createElement('ul');
+      childUl.className = 'subtree collapsed';
+      li.appendChild(childUl);
+      
+      // Attach references
+      node.elRow = row;
+      node.elChildrenUl = childUl;
+      node.elChevron = chevron;
+      
+      // Click row selects and expands/shrinks
+      row.onclick = () => {
+        document.querySelectorAll('.node-row').forEach(r => r.classList.remove('active'));
+        row.classList.add('active');
+        toggleNodeCollapse(node);
+      };
+      
+      containerUl.appendChild(li);
+      
+      // Update chevron display
+      updateNodeChevronUI(node);
+      
+      // Re-create icons for new elements
+      lucide.createIcons({node: li});
+    }
+
+    // Toggle collapse / expand node
+    async function toggleNodeCollapse(node) {
+      if (node.isLoading) return;
+      
+      // Lazy load if not loaded yet
+      if (!node.isLoaded) {
+        let auth;
+        try {
+          auth = getAuthParams();
+        } catch (e) {
+          alert('Auth token expired or not set. Please reconfigure authentication.');
+          return;
+        }
+        await loadNodeChildren(node, auth);
+      }
+      
+      node.isExpanded = !node.isExpanded;
+      
+      if (node.isExpanded) {
+        node.elChildrenUl.classList.remove('collapsed');
+        node.elChevron.classList.add('expanded');
+      } else {
+        node.elChildrenUl.classList.add('collapsed');
+        node.elChevron.classList.remove('expanded');
+      }
+      
+      updateNodeChevronUI(node);
+    }
+
+    // UI helper: Chevron styling based on node children and state
+    function updateNodeChevronUI(node) {
+      if (!node.elChevron) return;
+      
+      if (!node.isLoaded) {
+        node.elChevron.style.visibility = 'visible';
+        node.elChevron.innerHTML = `<i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>`;
+      } else if (node.children.length === 0) {
+        node.elChevron.style.visibility = 'hidden';
+      } else {
+        node.elChevron.style.visibility = 'visible';
+        node.elChevron.innerHTML = `<i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>`;
+        
+        if (node.isExpanded) {
+          node.elChevron.classList.add('expanded');
+        } else {
+          node.elChevron.classList.remove('expanded');
+        }
+      }
+      lucide.createIcons({node: node.elChevron});
+    }
+
+    // Toggle expand/collapse of ALL nodes recursively
+    function expandAllNodes() {
+      if (!driveTreeRootNode) return;
+      log('Expanding all mapped nodes...', 'info');
+      
+      function recurseExpand(node) {
+        if (node.children.length > 0 && node.elChildrenUl) {
+          node.isExpanded = true;
+          node.elChildrenUl.classList.remove('collapsed');
+          if (node.elChevron) node.elChevron.classList.add('expanded');
+          
+          node.children.forEach(recurseExpand);
+        }
+      }
+      
+      recurseExpand(driveTreeRootNode);
+      log('All nodes expanded.', 'success');
+    }
+
+    function collapseAllNodes() {
+      if (!driveTreeRootNode) return;
+      log('Collapsing all nodes...', 'info');
+      
+      function recurseCollapse(node) {
+        if (node.children.length > 0 && node.elChildrenUl) {
+          node.isExpanded = false;
+          node.elChildrenUl.classList.add('collapsed');
+          if (node.elChevron) node.elChevron.classList.remove('expanded');
+          
+          node.children.forEach(recurseCollapse);
+        }
+      }
+      
+      // Collapse everything except the root node
+      driveTreeRootNode.children.forEach(recurseCollapse);
+      log('All sub-nodes collapsed.', 'success');
+    }
+
+    // Filter nodes in the tree based on text search
+    function filterTreeNodes() {
+      const searchVal = document.getElementById('tree-search').value.toLowerCase().trim();
+      
+      if (!driveTreeRootNode) return;
+      
+      function checkMatch(node) {
+        const matchesName = node.name.toLowerCase().includes(searchVal);
+        let hasMatchingChild = false;
+        
+        // Process children
+        node.children.forEach(child => {
+          const childMatches = checkMatch(child);
+          if (childMatches) hasMatchingChild = true;
+        });
+        
+        const nodeLi = document.getElementById(`node-li-${node.id}`);
+        if (!nodeLi) return false;
+        
+        if (searchVal === '') {
+          // Reset visibility
+          nodeLi.style.display = 'block';
+          if (node.elChildrenUl) {
+            if (node.isExpanded) {
+              node.elChildrenUl.classList.remove('collapsed');
+            } else {
+              node.elChildrenUl.classList.add('collapsed');
+            }
+          }
+          return true;
+        }
+        
+        if (matchesName || hasMatchingChild) {
+          nodeLi.style.display = 'block';
+          // If a child matches, we must expand this parent to show it
+          if (hasMatchingChild && node.elChildrenUl) {
+            node.elChildrenUl.classList.remove('collapsed');
+            if (node.elChevron) node.elChevron.classList.add('expanded');
+          }
+          return true;
+        } else {
+          nodeLi.style.display = 'none';
+          return false;
+        }
+      }
+      
+      checkMatch(driveTreeRootNode);
+    }
+
+    // Export formats generators
+    function generateMarkdownOutline() {
+      if (!driveTreeRootNode) return '';
+      
+      let markdown = '';
+      
+      function formatMarkdown(node, indentLevel = 0) {
+        const spaces = '  '.repeat(indentLevel);
+        markdown += `${spaces}- [${node.name}](${node.link})\n`;
+        node.children.forEach(child => formatMarkdown(child, indentLevel + 1));
+      }
+      
+      formatMarkdown(driveTreeRootNode, 0);
+      return markdown;
+    }
+
+    function generateTextOutline() {
+      if (!driveTreeRootNode) return '';
+      
+      let output = '';
+      
+      function formatText(node, indentLevel = 0) {
+        const spaces = '  '.repeat(indentLevel);
+        output += `${spaces}└── ${node.name} [ Link: ${node.link} ]\n`;
+        node.children.forEach(child => formatText(child, indentLevel + 1));
+      }
+      
+      output += `${driveTreeRootNode.name} [ Root Link: ${driveTreeRootNode.link} ]\n`;
+      driveTreeRootNode.children.forEach(child => formatText(child, 0));
+      return output;
+    }
+
+    // Modal Control
+    function openExportModal(format) {
+      if (!driveTreeRootNode) {
+        alert('Please map a drive structure first!');
+        return;
+      }
+      
+      const modal = document.getElementById('export-modal');
+      const title = document.getElementById('modal-title');
+      const textarea = document.getElementById('export-textarea');
+      
+      let text = '';
+      if (format === 'markdown') {
+        title.innerText = 'Export as Markdown Outline';
+        text = generateMarkdownOutline();
+      } else {
+        title.innerText = 'Export as Text Directory Tree';
+        text = generateTextOutline();
+      }
+      
+      textarea.value = text;
+      modal.classList.add('open');
+    }
+
+    function closeExportModal() {
+      document.getElementById('export-modal').classList.remove('open');
+    }
+
+    function copyExportText() {
+      const textarea = document.getElementById('export-textarea');
+      textarea.select();
+      document.execCommand('copy');
+      showToast('Copied structure to clipboard!');
+      closeExportModal();
+    }
+
+    // Clipboard util helper
+    function copyTextToClipboard(text, message) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(message);
+      }).catch(err => {
+        log('Failed to copy: ' + err, 'error');
+      });
+    }
+
+    // Toast show helper
+    function showToast(message) {
+      const toast = document.getElementById('toast-notify');
+      document.getElementById('toast-message').innerText = message;
+      
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

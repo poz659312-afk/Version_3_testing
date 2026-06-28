@@ -6,24 +6,14 @@ const CRON_SECRET = process.env.CRON_SECRET || 'your-secret-key-here';
 
 export async function GET(request: NextRequest) {
   try {
-    // Debug: Log all headers received
-    console.log('=== CRON REQUEST DEBUG ===');
-    console.log('All headers:', Object.fromEntries(request.headers.entries()));
-    console.log('CRON_SECRET env var:', process.env.CRON_SECRET ? 'SET' : 'NOT SET');
-    console.log('CRON_SECRET value:', process.env.CRON_SECRET);
+
 
     // Basic authentication check
     const authHeader = request.headers.get('authorization');
     const providedSecret = request.headers.get('x-cron-secret') || authHeader?.replace('Bearer ', '');
 
-    console.log('Authorization header:', authHeader);
-    console.log('x-cron-secret header:', request.headers.get('x-cron-secret'));
-    console.log('Provided secret:', providedSecret);
-
     if (!providedSecret || providedSecret !== CRON_SECRET) {
-      console.log('❌ Unauthorized cron job attempt');
-      console.log('Expected secret:', CRON_SECRET);
-      console.log('Provided secret:', providedSecret);
+
       return NextResponse.json(
         {
           success: false,

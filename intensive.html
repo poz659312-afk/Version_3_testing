@@ -1,0 +1,3986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Computing Intensive Statistical Methods - MCQs</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- MathJax for LaTeX -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      --bg-primary: #0b0f19;
+      --bg-secondary: #151b2c;
+      --bg-tertiary: #1f293d;
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --primary: #8b5cf6;
+      --primary-hover: #7c3aed;
+      --accent: #10b981;
+      --accent-error: #ef4444;
+      --border: #374151;
+      --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+      --font-title: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    .light-theme {
+      --bg-primary: #f9fafb;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f3f4f6;
+      --text-primary: #111827;
+      --text-secondary: #4b5563;
+      --primary: #6d28d9;
+      --primary-hover: #5b21b6;
+      --accent: #059669;
+      --accent-error: #dc2626;
+      --border: #e5e7eb;
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      display: flex;
+    }
+
+    /* Mobile Header */
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      padding: 0 1.25rem;
+      z-index: 100;
+      box-shadow: var(--card-shadow);
+    }
+
+    .menu-toggle-btn {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+    }
+
+    .menu-toggle-btn:hover {
+      background-color: var(--bg-tertiary);
+    }
+
+    .mobile-header-title {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-left: 0.75rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Sidebar Navigation Drawer */
+    .sidebar {
+      width: 280px;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background-color: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow-y: auto;
+      z-index: 120;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar h2 {
+      font-family: var(--font-title);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .sidebar-link {
+      display: block;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .sidebar-link:hover, .sidebar-link.active {
+      background-color: var(--bg-tertiary);
+      color: var(--text-primary);
+      padding-left: 1.25rem;
+    }
+
+    .sidebar-link.active {
+      border-left: 4px solid var(--primary);
+    }
+
+    /* Sidebar Overlay for Mobile */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 110;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Main Content Area */
+    .main-container {
+      margin-left: 280px;
+      flex: 1;
+      padding: 3rem 4rem;
+      max-width: 1000px;
+      width: 100%;
+    }
+
+    header {
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: var(--card-shadow);
+      justify-content: center;
+    }
+
+    .btn:hover {
+      background-color: var(--bg-tertiary);
+      border-color: var(--primary);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    h1 {
+      font-family: var(--font-title);
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    /* Quiz Section */
+    .quiz-section {
+      margin-bottom: 4rem;
+      scroll-margin-top: 5rem;
+    }
+
+    .quiz-title {
+      font-family: var(--font-title);
+      font-size: 1.8rem;
+      margin-bottom: 2rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    /* Context Group Container */
+    .context-group {
+      position: relative;
+      margin-bottom: 2.5rem;
+      border-left: 3px dashed var(--border);
+      padding-left: 1.5rem;
+    }
+
+    /* Sticky Context Box */
+    .context-box {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 20px;
+      background-color: var(--bg-secondary);
+      border: 2px solid var(--primary);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--card-shadow);
+      z-index: 10;
+    }
+
+    .context-box-title {
+      font-family: var(--font-title);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .context-box-content {
+      font-size: 1rem;
+      color: var(--text-primary);
+      white-space: pre-line;
+      overflow-x: auto;
+    }
+
+    /* Question Card */
+    .question-card {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--card-shadow);
+      page-break-inside: avoid;
+    }
+
+    .question-header {
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+    }
+
+    .question-text {
+      margin-bottom: 1.5rem;
+      font-size: 1.05rem;
+      white-space: pre-line;
+      overflow-x: auto;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .option-item {
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      background-color: var(--bg-primary);
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .option-item:hover {
+      border-color: var(--primary);
+      background-color: var(--bg-tertiary);
+    }
+
+    /* Answer States */
+    .option-item.correct {
+      background-color: rgba(16, 185, 129, 0.15) !important;
+      border-color: var(--accent) !important;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .option-item.incorrect {
+      background-color: rgba(239, 68, 68, 0.15) !important;
+      border-color: var(--accent-error) !important;
+      color: var(--text-primary);
+    }
+
+    .answer-key-section {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      margin-bottom: 4rem;
+      box-shadow: var(--card-shadow);
+      scroll-margin-top: 5rem;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .answer-group h4 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-family: var(--font-title);
+    }
+
+    .answer-group ul {
+      list-style: none;
+    }
+
+    .answer-group li {
+      font-size: 0.9rem;
+      padding: 0.25rem 0;
+      color: var(--text-secondary);
+    }
+
+    .answer-group li strong {
+      color: var(--text-primary);
+    }
+
+    /* Media Queries for Tablet/Mobile */
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-280px); /* Hide drawer offscreen */
+      }
+      
+      .sidebar.open {
+        transform: translateX(0); /* Slide drawer in */
+      }
+
+      .sidebar-overlay {
+        display: block;
+      }
+
+      .mobile-header {
+        display: flex;
+      }
+
+      .main-container {
+        margin-left: 0;
+        padding: 5.5rem 1.25rem 3rem 1.25rem; /* Extra top padding for mobile header */
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      .subtitle {
+        font-size: 0.95rem;
+      }
+
+      .quiz-title {
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .context-group {
+        padding-left: 0.75rem;
+      }
+
+      .context-box {
+        top: 75px;
+        padding: 1.25rem;
+      }
+
+      .question-card {
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .option-item {
+        padding: 0.85rem 1rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        display: block !important;
+      }
+
+      .sidebar, .mobile-header, .sidebar-overlay, .controls, .btn {
+        display: none !important;
+      }
+
+      .main-container {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+
+      .context-group {
+        border-left: none !important;
+        padding-left: 0 !important;
+      }
+
+      .context-box {
+        position: static !important;
+        background-color: #ffffff !important;
+        border: 2px solid #000000 !important;
+        box-shadow: none !important;
+        margin-bottom: 1.5rem !important;
+        padding: 1rem !important;
+      }
+
+      .question-card {
+        background-color: #ffffff !important;
+        border: 1px solid #cccccc !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+        margin-bottom: 1.5rem !important;
+        padding: 1.2rem !important;
+      }
+
+      .option-item {
+        background-color: #ffffff !important;
+        border: 1px solid #dddddd !important;
+        color: #000000 !important;
+      }
+
+      h1 {
+        background: none !important;
+        -webkit-text-fill-color: initial !important;
+        color: #000000 !important;
+      }
+
+      .quiz-title {
+        border-bottom: 2px solid #000000 !important;
+        color: #000000 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Header Bar -->
+  <div class="mobile-header">
+    <button class="menu-toggle-btn" id="menu-toggle">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+    <div class="mobile-header-title">CISM MCQs</div>
+  </div>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Sidebar / Navigation Drawer -->
+  <div class="sidebar" id="sidebar">
+    <h2>CISM MCQs</h2>
+    <ul class="sidebar-menu">
+      <li><a href="#quiz1" class="sidebar-link active">Quiz 1: Simulation</a></li>
+      <li><a href="#quiz2" class="sidebar-link">Quiz 2: Jackknife</a></li>
+      <li><a href="#quiz3" class="sidebar-link">Quiz 3: eCDF & Plug-in</a></li>
+      <li><a href="#quiz4" class="sidebar-link">Quiz 4: MLE & EM</a></li>
+      <li><a href="#quiz5" class="sidebar-link">Quiz 5: LRT</a></li>
+      <li><a href="#answers" class="sidebar-link">Answer Key</a></li>
+    </ul>
+    
+    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+      <button class="btn btn-primary" onclick="window.print()">
+        Print / Save to PDF
+      </button>
+      <button class="btn" id="theme-toggle">
+        Theme Toggle
+      </button>
+      <button class="btn" id="answers-toggle">
+        Show All Answers
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <div class="main-container">
+    <header>
+      <h1>Computing Intensive Statistical Methods</h1>
+      <p class="subtitle">Complete Collection of 100 Multiple Choice Questions with Explanatory Answers</p>
+    </header>
+
+    <div id="quizzes-container">
+
+    <section id="quiz1" class="quiz-section">
+      <h2 class="quiz-title">Quiz 1: Simulation and Bootstrap Methods</h2>
+      <div class="questions-list">
+  <div class="context-group">
+        <div class="context-box">
+          <div class="context-box-title">Simulation Dataset (Questions 1-3)</div>
+          <div class="context-box-content">Suppose you are studying a population where the values follow a known distribution $F$ (e.g., Normal distribution). You want to understand the sampling distribution of the sample mean by using simulation. The process is repeated $B = 3$ times. Below are the generated samples and corresponding sample means:
+- $x^{(1)} = [3, 4, 5, 6]$, Sample Mean $\bar{x}^{(1)} = 4.5$
+- $x^{(2)} = [5, 5, 5, 5]$, Sample Mean $\bar{x}^{(2)} = 5.0$
+- $x^{(3)} = [2, 6, 6, 6]$, Sample Mean $\bar{x}^{(3)} = 5.0$</div>
+        </div>
+      
+    <div class="question-card" id="q-card-1">
+      <div class="question-header">Question 1</div>
+      <div class="question-text">What is the average of the simulated sample means?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 1)">
+        A) 4.67
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 1)">
+        B) 4.83
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 1)">
+        C) 5.00
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 1)">
+        D) 4.50
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-2">
+      <div class="question-header">Question 2</div>
+      <div class="question-text">Using the simulation results in Question 1, what is the estimated variance of the sample mean based on the simulations?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 2)">
+        A) 0.07
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 2)">
+        B) 0.083
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 2)">
+        C) 0.09
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 2)">
+        D) 0.11
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-3">
+      <div class="question-header">Question 3</div>
+      <div class="question-text">Using the simulation results in Question 1, what is the standard error (SE) of the sample mean from these simulations?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 3)">
+        A) 0.25
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 3)">
+        B) 0.29
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 3)">
+        C) 0.33
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 3)">
+        D) 0.35
+      </div>
+    
+      </div>
+    </div>
+  </div><!-- /.context-group -->
+    <div class="question-card" id="q-card-4">
+      <div class="question-header">Question 4</div>
+      <div class="question-text">Which of the following best describes the purpose of this simulation process?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 4)">
+        A) Estimate the bias of a statistic
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 4)">
+        B) Estimate the sample mean from a known population
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 4)">
+        C) Estimate the sampling distribution of a statistic
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 4)">
+        D) Generate confidence intervals using empirical data
+      </div>
+    
+      </div>
+    </div>
+  <div class="context-group">
+        <div class="context-box">
+          <div class="context-box-title">Bootstrap Resampling Dataset (Questions 5-15)</div>
+          <div class="context-box-content">Given original sample: $x = [2, 4, 6, 8]$. Three bootstrap samples are drawn with replacement, and the sample mean and sample variance are calculated as follows:
+- $x_{*}^{(1)} = [2, 2, 4, 8]$, Mean $\bar{x}_{*} = 4.0$, Variance $s_*^2 = 8$
+- $x_{*}^{(2)} = [4, 4, 6, 6]$, Mean $\bar{x}_{*} = 5.0$, Variance $s_*^2 = 1.33$
+- $x_{*}^{(3)} = [6, 6, 8, 8]$, Mean $\bar{x}_{*} = 7.0$, Variance $s_*^2 = 1.33$</div>
+        </div>
+      
+    <div class="question-card" id="q-card-5">
+      <div class="question-header">Question 5</div>
+      <div class="question-text">What is the sample mean of the original data?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 5)">
+        A) 4
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 5)">
+        B) 5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 5)">
+        C) 6
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 5)">
+        D) 7
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-6">
+      <div class="question-header">Question 6</div>
+      <div class="question-text">Using the dataset in Question 5, what is the sample variance of the original data?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 6)">
+        A) 6.25
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 6)">
+        B) 6.67
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 6)">
+        C) 7.00
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 6)">
+        D) 5.50
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-7">
+      <div class="question-header">Question 7</div>
+      <div class="question-text">Using the dataset in Question 5, what is the average of the bootstrap means?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 7)">
+        A) 4.33
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 7)">
+        B) 5.00
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 7)">
+        C) 5.33
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 7)">
+        D) 6.00
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-8">
+      <div class="question-header">Question 8</div>
+      <div class="question-text">Using the dataset in Question 5, what is the standard error of the sample mean using bootstrap means?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 8)">
+        A) 1.25
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 8)">
+        B) 1.33
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 8)">
+        C) 1.53
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 8)">
+        D) 1.67
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-9">
+      <div class="question-header">Question 9</div>
+      <div class="question-text">Using the dataset in Question 5, what is the average of the bootstrap variances?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 9)">
+        A) 3.00
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 9)">
+        B) 3.55
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 9)">
+        C) 3.67
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 9)">
+        D) 4.00
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-10">
+      <div class="question-header">Question 10</div>
+      <div class="question-text">Using the dataset in Question 5, estimate the variance of the sample variance using bootstrap variances.</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 10)">
+        A) 10
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 10)">
+        B) 14.83
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 10)">
+        C) 8
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 10)">
+        D) 6
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-11">
+      <div class="question-header">Question 11</div>
+      <div class="question-text">Using the dataset in Question 5, what is the estimated standard error of the sample variance?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 11)">
+        A) 2.44
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 11)">
+        B) 3.00
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 11)">
+        C) 3.85
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 11)">
+        D) 4.00
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-12">
+      <div class="question-header">Question 12</div>
+      <div class="question-text">Using the dataset in Question 5, what is the estimated bias of the sample mean using bootstrap?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 12)">
+        A) -0.33
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 12)">
+        B) 0.00
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 12)">
+        C) 0.33
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 12)">
+        D) 1.00
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-13">
+      <div class="question-header">Question 13</div>
+      <div class="question-text">Using the dataset in Question 5, what is the z-based 95% confidence interval using the original sample mean?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 13)">
+        A) (2.33, 8.33)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 13)">
+        B) (2.00, 8.00)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 13)">
+        C) (1.67, 8.33)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 13)">
+        D) (2.50, 7.50)
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-14">
+      <div class="question-header">Question 14</div>
+      <div class="question-text">Using the dataset in Question 5, what is the z-based 95% confidence interval using the bootstrap mean (bias-corrected)?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 14)">
+        A) (2.00, 8.00)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 14)">
+        B) (2.33, 7.67)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 14)">
+        C) (2.33, 8.33)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 14)">
+        D) (2.50, 7.50)
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-15">
+      <div class="question-header">Question 15</div>
+      <div class="question-text">Using the dataset in Question 5, what is the percentile-based 95% confidence interval using bootstrap means?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 15)">
+        A) (4.0, 7.0)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 15)">
+        B) (3.0, 8.0)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 15)">
+        C) (4.5, 6.5)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 15)">
+        D) (3.5, 7.5)
+      </div>
+    
+      </div>
+    </div>
+  </div><!-- /.context-group -->
+    <div class="question-card" id="q-card-16">
+      <div class="question-header">Question 16</div>
+      <div class="question-text">What is the primary goal of the bootstrap method?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 16)">
+        A) To estimate population parameters by resampling from the true distribution
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 16)">
+        B) To approximate the sampling distribution of a statistic using empirical data
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 16)">
+        C) To reduce the sample size for computational efficiency
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 16)">
+        D) To replace traditional statistical inference methods
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-17">
+      <div class="question-header">Question 17</div>
+      <div class="question-text">In bootstrap resampling, data points are drawn:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 17)">
+        A) Without replacement from the original sample
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 17)">
+        B) With replacement from the population
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 17)">
+        C) With replacement from the original sample
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 17)">
+        D) Without replacement from the population
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-18">
+      <div class="question-header">Question 18</div>
+      <div class="question-text">A bootstrap replicate is defined as:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 18)">
+        A) The original sample mean
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 18)">
+        B) A statistic calculated on a bootstrap resample
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 18)">
+        C) The true population parameter
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 18)">
+        D) The standard error of the population
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-19">
+      <div class="question-header">Question 19</div>
+      <div class="question-text">How is the bootstrap standard error of an estimator $\hat{\theta}$ calculated?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 19)">
+        A) By taking the standard deviation of the original sample
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 19)">
+        B) By computing the standard deviation of bootstrap replicates $\hat{\theta}^*_1, \hat{\theta}^*_2, \dots, \hat{\theta}^*_B$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 19)">
+        C) By using the population variance divided by $\sqrt{n}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 19)">
+        D) By averaging the theoretical standard errors
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-20">
+      <div class="question-header">Question 20</div>
+      <div class="question-text">The bootstrap method is particularly useful when:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 20)">
+        A) The sample size is very large and normally distributed
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 20)">
+        B) The sampling distribution is unknown or difficult to derive
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 20)">
+        C) The population variance is known
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 20)">
+        D) The data is perfectly representative of the population
+      </div>
+    
+      </div>
+    </div>
+  
+      </div>
+    </section>
+  
+    <section id="quiz2" class="quiz-section">
+      <h2 class="quiz-title">Quiz 2: Jackknife Resampling and Estimation</h2>
+      <div class="questions-list">
+  <div class="context-group">
+        <div class="context-box">
+          <div class="context-box-title">Jackknife Resampling Dataset (Questions 1-14)</div>
+          <div class="context-box-content">Given original sample: $X = \{11, 22, 33\}$. We perform Jackknife estimation. The removed observations and remaining samples are:
+- Remove 11, Remaining $[22, 33]$, LOO Mean $\bar{x}_{(1)} = 27.5$
+- Remove 22, Remaining $[11, 33]$, LOO Mean $\bar{x}_{(2)} = 22.0$
+- Remove 33, Remaining $[11, 22]$, LOO Mean $\bar{x}_{(3)} = 16.5$</div>
+        </div>
+      
+    <div class="question-card" id="q-card-21">
+      <div class="question-header">Question 1</div>
+      <div class="question-text">What is the full sample mean of the original data?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 21)">
+        A) 20.0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 21)">
+        B) 22.0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 21)">
+        C) 24.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 21)">
+        D) 25.0
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-22">
+      <div class="question-header">Question 2</div>
+      <div class="question-text">Using the dataset in Question 1, what is the leave-one-out (LOO) mean when observation 11 is removed?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 22)">
+        A) 27.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 22)">
+        B) 22.0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 22)">
+        C) 16.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 22)">
+        D) 24.0
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-23">
+      <div class="question-header">Question 3</div>
+      <div class="question-text">Using the dataset in Question 1, what is the Jackknife estimate of the mean using the 3 leave-one-out means?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 23)">
+        A) 22.0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 23)">
+        B) 24.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 23)">
+        C) 25.0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 23)">
+        D) 23.3
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-24">
+      <div class="question-header">Question 4</div>
+      <div class="question-text">Using the dataset in Question 1, what is the full Jackknife bias correction term for the sample mean?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 24)">
+        A) -2.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 24)">
+        B) 0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 24)">
+        C) 2.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 24)">
+        D) 5
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-25">
+      <div class="question-header">Question 5</div>
+      <div class="question-text">Using the dataset in Question 1, what is the bias-corrected Jackknife estimate of the mean?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 25)">
+        A) 20.0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 25)">
+        B) 22.0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 25)">
+        C) 24.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 25)">
+        D) 25.0
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-26">
+      <div class="question-header">Question 6</div>
+      <div class="question-text">Using the dataset in Question 1, what is the Jackknife SE estimate of the sample mean?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 26)">
+        A) 5.25
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 26)">
+        B) 6.35
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 26)">
+        C) 4.65
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 26)">
+        D) 3.33
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-27">
+      <div class="question-header">Question 7</div>
+      <div class="question-text">Using the dataset in Question 1, what is the 95% confidence interval for the population mean using the Jackknife sample means?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 27)">
+        A) (16.0, 28.0)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 27)">
+        B) (9.554, 34.446)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 27)">
+        C) (11.0, 33.0)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 27)">
+        D) (12.5, 32.5)
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-28">
+      <div class="question-header">Question 8</div>
+      <div class="question-text">Using the dataset in Question 1, what is the variance ($\sigma^2$) of the original data?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 28)">
+        A) 60.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 28)">
+        B) 80.67
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 28)">
+        C) 121.0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 28)">
+        D) 30.25
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-29">
+      <div class="question-header">Question 9</div>
+      <div class="question-text">Using the dataset in Question 1, what is the leave-one-out variance when observation 22 is removed?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 29)">
+        A) 30.25
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 29)">
+        B) 121.0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 29)">
+        C) 60.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 29)">
+        D) 81.0
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-30">
+      <div class="question-header">Question 10</div>
+      <div class="question-text">Using the dataset in Question 1, what is the Jackknife estimate of the variance $\sigma^2$ (average of leave-one-out variances)?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 30)">
+        A) 81.0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 30)">
+        B) 60.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 30)">
+        C) 121.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 30)">
+        D) 30.25
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-31">
+      <div class="question-header">Question 11</div>
+      <div class="question-text">Using the dataset in Question 1, what is the Jackknife bias correction term for the variance $\sigma^2$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 31)">
+        A) 20.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 31)">
+        B) -40.33
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 31)">
+        C) 0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 31)">
+        D) 40.5
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-32">
+      <div class="question-header">Question 12</div>
+      <div class="question-text">Using the dataset in Question 1, what is the bias-corrected Jackknife estimate of the variance $\sigma^2$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 32)">
+        A) 60.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 32)">
+        B) 121.0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 32)">
+        C) 81.0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 32)">
+        D) 30.25
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-33">
+      <div class="question-header">Question 13</div>
+      <div class="question-text">Using the dataset in Question 1, what is the standard error (SE) of the Jackknife estimate of $\sigma^2$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 33)">
+        A) 20.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 33)">
+        B) 60.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 33)">
+        C) 40.5
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 33)">
+        D) 25.0
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-34">
+      <div class="question-header">Question 14</div>
+      <div class="question-text">Using the dataset in Question 1, what is the z-based 95% confidence interval for $\sigma^2$ using the Jackknife method?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 34)">
+        A) (60.5, 121.5)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 34)">
+        B) (2.42, 239.58)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 34)">
+        C) (81.0, 162.0)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 34)">
+        D) (30.25, 121.0)
+      </div>
+    
+      </div>
+    </div>
+  </div><!-- /.context-group -->
+    <div class="question-card" id="q-card-35">
+      <div class="question-header">Question 15</div>
+      <div class="question-text">What is the primary purpose of the jackknife resampling method?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 35)">
+        A) To increase the sample size for better accuracy
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 35)">
+        B) To estimate bias and standard error of an estimator by systematically leaving out observations
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 35)">
+        C) To replace bootstrapping in all statistical analyses
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 35)">
+        D) To ensure all data points are normally distributed
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-36">
+      <div class="question-header">Question 16</div>
+      <div class="question-text">In jackknife resampling, each pseudo-sample is created by:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 36)">
+        A) Sampling with replacement from the original data
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 36)">
+        B) Removing one observation at a time from the original dataset
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 36)">
+        C) Adding Gaussian noise to the original data
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 36)">
+        D) Randomly shuffling all observations
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-37">
+      <div class="question-header">Question 17</div>
+      <div class="question-text">The jackknife estimate of bias for an estimator $\hat{\theta}$ is given by:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 37)">
+        A) $(n-1)(\hat{\theta}_{(\cdot)} - \hat{\theta})$, where $\hat{\theta}_{(\cdot)}$ is the mean of jackknife replicates
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 37)">
+        B) $\hat{\theta} - \theta$, where $\theta$ is the true population parameter
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 37)">
+        C) The variance of jackknife replicates
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 37)">
+        D) The standard error of the original sample
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-38">
+      <div class="question-header">Question 18</div>
+      <div class="question-text">How is the standard error of a jackknife estimator calculated?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 38)">
+        A) $\sqrt{\frac{1}{n} \sum_{j=1}^n (\hat{\theta}_{(-j)} - \hat{\theta})^2}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 38)">
+        B) $\sqrt{\frac{n-1}{n} \sum_{j=1}^n (\hat{\theta}_{(-j)} - \hat{\theta}_{(\cdot)})^2}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 38)">
+        C) The standard deviation of the original sample
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 38)">
+        D) The mean squared error of the estimator
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-39">
+      <div class="question-header">Question 19</div>
+      <div class="question-text">Which of the following is true about the jackknife compared to the bootstrap?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 39)">
+        A) Jackknife is more computationally intensive.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 39)">
+        B) Jackknife performs better for non-smooth statistics like the median.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 39)">
+        C) Jackknife SE is typically larger than bootstrap SE.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 39)">
+        D) Jackknife requires storing full resample matrices.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-40">
+      <div class="question-header">Question 20</div>
+      <div class="question-text">The jackknife method performs poorly for which of the following statistics?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 40)">
+        A) Linear statistics like the mean
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 40)">
+        B) Non-smooth or non-linear statistics (e.g., median, correlation)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 40)">
+        C) Large sample sizes
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 40)">
+        D) Normally distributed data
+      </div>
+    
+      </div>
+    </div>
+  
+      </div>
+    </section>
+  
+    <section id="quiz3" class="quiz-section">
+      <h2 class="quiz-title">Quiz 3: Empirical Distribution Function & Plug-in Principle</h2>
+      <div class="questions-list">
+  
+    <div class="question-card" id="q-card-41">
+      <div class="question-header">Question 1</div>
+      <div class="question-text">What is the primary purpose of an empirical distribution function (eCDF)?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 41)">
+        A) To estimate the probability density function (PDF) of a population.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 41)">
+        B) To estimate the cumulative distribution function (CDF) of a population.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 41)">
+        C) To calculate the mean of a sample.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 41)">
+        D) To determine the variance of a sample.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-42">
+      <div class="question-header">Question 2</div>
+      <div class="question-text">How is the empirical distribution function $\hat{F}_n(x)$ formally defined?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 42)">
+        A) $\hat{F}_n(x) = \frac{1}{n} \sum_{i=1}^n X_i$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 42)">
+        B) $\hat{F}_n(x) = \frac{1}{n} \sum_{i=1}^n I(X_i \le x)$, where $I$ is an indicator function.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 42)">
+        C) $\hat{F}_n(x) = \frac{1}{n} \sum_{i=1}^n (X_i - \bar{X})^2$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 42)">
+        D) $\hat{F}_n(x) = \frac{1}{n} \sum_{i=1}^n F(X_i)$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-43">
+      <div class="question-header">Question 3</div>
+      <div class="question-text">Given the sample data $x_1 = 3, x_2 = 2, x_3 = 5, x_4 = 2$, what is the value of $\hat{F}_4(4)$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 43)">
+        A) 0.25
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 43)">
+        B) 0.50
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 43)">
+        C) 0.75
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 43)">
+        D) 1.00
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-44">
+      <div class="question-header">Question 4</div>
+      <div class="question-text">For the sorted data $1.3, 1.7, 2.1, 2.5, 3.4$, what is $\hat{F}_5(2.1)$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 44)">
+        A) 0.2
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 44)">
+        B) 0.4
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 44)">
+        C) 0.6
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 44)">
+        D) 0.8
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-45">
+      <div class="question-header">Question 5</div>
+      <div class="question-text">Which of the following statements about the empirical distribution function (eCDF) is true?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 45)">
+        A) It is a smooth curve for continuous distributions.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 45)">
+        B) It is a step function that jumps by $\frac{1}{n}$ at each observed data point.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 45)">
+        C) It is always a straight line.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 45)">
+        D) It is only applicable to discrete distributions.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-46">
+      <div class="question-header">Question 6</div>
+      <div class="question-text">What happens to the eCDF $\hat{F}_n(x)$ as the sample size $n$ increases?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 46)">
+        A) It becomes less accurate.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 46)">
+        B) It converges to the true CDF $F(x)$.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 46)">
+        C) It becomes a biased estimator.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 46)">
+        D) It diverges from the true CDF.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-47">
+      <div class="question-header">Question 7</div>
+      <div class="question-text">What is the expected value of the eCDF $\hat{F}_n(x)$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 47)">
+        A) 0
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 47)">
+        B) $F(x)$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 47)">
+        C) 1
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 47)">
+        D) $\frac{1}{2}$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-48">
+      <div class="question-header">Question 8</div>
+      <div class="question-text">What is the variance of the eCDF $\hat{F}_n(x)$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 48)">
+        A) $\frac{F(x)(1-F(x))}{n}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 48)">
+        B) $\frac{1}{n}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 48)">
+        C) $F(x)$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 48)">
+        D) $1 - F(x)$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-49">
+      <div class="question-header">Question 9</div>
+      <div class="question-text">Why is $\hat{F}_n(x)$ considered an unbiased estimator of $F(x)$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 49)">
+        A) Because its variance decreases with $n$.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 49)">
+        B) Because its expected value equals $F(x)$.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 49)">
+        C) Because it is always consistent.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 49)">
+        D) Because it is a step function.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-50">
+      <div class="question-header">Question 10</div>
+      <div class="question-text">For a uniform distribution $F$ on $[0, 2]$, what is $E(\hat{F}_n(0.8))$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 50)">
+        A) 0.2
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 50)">
+        B) 0.4
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 50)">
+        C) 0.6
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 50)">
+        D) 0.8
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-51">
+      <div class="question-header">Question 11</div>
+      <div class="question-text">What does the MSE (Mean Squared Error) of an unbiased estimator reduce to?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 51)">
+        A) Bias squared.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 51)">
+        B) Variance.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 51)">
+        C) Standard deviation.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 51)">
+        D) Zero.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-52">
+      <div class="question-header">Question 12</div>
+      <div class="question-text">Which of the following is a property of the eCDF $\hat{F}_n(x)$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 52)">
+        A) It is biased for small samples.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 52)">
+        B) It is inconsistent.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 52)">
+        C) It is consistent and unbiased.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 52)">
+        D) It only works for normal distributions.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-53">
+      <div class="question-header">Question 13</div>
+      <div class="question-text">For a Bernoulli trial with success probability $P$, what is the variance of $Y_i = I(X_i \le x)$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 53)">
+        A) $P(1 - P)$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 53)">
+        B) $P^2$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 53)">
+        C) $1 - P$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 53)">
+        D) $P$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-54">
+      <div class="question-header">Question 14</div>
+      <div class="question-text">If $\hat{F}_n(x)$ is an unbiased estimator of $F(x)$, what is its MSE?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 54)">
+        A) $\frac{F(x)}{n}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 54)">
+        B) $\frac{1-F(x)}{n}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 54)">
+        C) $\frac{F(x)(1-F(x))}{n}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 54)">
+        D) $F(x)^2$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-55">
+      <div class="question-header">Question 15</div>
+      <div class="question-text">What does the Glivenko-Cantelli theorem state about $\hat{F}_n(x)$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 55)">
+        A) It converges uniformly to $F(x)$ as $n \to \infty$.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 55)">
+        B) It is only valid for discrete distributions.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 55)">
+        C) It is biased for large $n$.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 55)">
+        D) It cannot estimate $F(x)$ accurately.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-56">
+      <div class="question-header">Question 16</div>
+      <div class="question-text">What is the plug-in estimator for the population mean $\mu$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 56)">
+        A) $\frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 56)">
+        B) $\bar{x} = \frac{1}{n} \sum_{i=1}^n x_i$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 56)">
+        C) $\frac{1}{n-1} \sum_{i=1}^n x_i$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 56)">
+        D) $\int x dF(x)$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-57">
+      <div class="question-header">Question 17</div>
+      <div class="question-text">For large $n$, the asymptotic distribution of $\sqrt{n}(\hat{F}_n(x) - F(x))$ is:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 57)">
+        A) $N(0, 1)$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 57)">
+        B) $N(0, F(x)(1 - F(x)))$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 57)">
+        C) $N(F(x), 1)$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 57)">
+        D) $N(0, \frac{1}{n})$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-58">
+      <div class="question-header">Question 18</div>
+      <div class="question-text">The Dvoretzky-Kiefer-Wolfowitz (DKW) inequality provides:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 58)">
+        A) A confidence interval for the mean
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 58)">
+        B) A bound on the probability of large deviations between $\hat{F}_n(x)$ and $F(x)$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 58)">
+        C) The exact value of $F(x)$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 58)">
+        D) The bias of $\hat{F}_n(x)$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-59">
+      <div class="question-header">Question 19</div>
+      <div class="question-text">The plug-in estimator for variance $\sigma^2$ is defined as:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 59)">
+        A) $\frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 59)">
+        B) $\frac{1}{n-1} \sum_{i=1}^n (x_i - \bar{x})^2$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 59)">
+        C) $\frac{1}{n} \sum_{i=1}^n x_i^2$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 59)">
+        D) $\bar{x}^2$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-60">
+      <div class="question-header">Question 20</div>
+      <div class="question-text">The plug-in variance estimator $\hat{\sigma}^2$ is:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 60)">
+        A) Unbiased and consistent
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 60)">
+        B) Biased but consistent
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 60)">
+        C) Unbiased but inconsistent
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 60)">
+        D) Neither unbiased nor consistent
+      </div>
+    
+      </div>
+    </div>
+  
+      </div>
+    </section>
+  
+    <section id="quiz4" class="quiz-section">
+      <h2 class="quiz-title">Quiz 4: Parameter Estimation (MME, MLE) & EM Algorithm</h2>
+      <div class="questions-list">
+  
+    <div class="question-card" id="q-card-61">
+      <div class="question-header">Question 1</div>
+      <div class="question-text">In Method of Moments Estimation (MME), how are population moments related to sample moments?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 61)">
+        A) Population moments are set equal to sample moments to solve for parameters.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 61)">
+        B) Sample moments are always larger than population moments.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 61)">
+        C) Population moments are ignored in favor of theoretical values.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 61)">
+        D) Only the first moment is used for estimation.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-62">
+      <div class="question-header">Question 2</div>
+      <div class="question-text">For a Poisson distribution with parameter $\lambda$, what is the MME estimator?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 62)">
+        A) \hat{\lambda} = \frac{1}{\bar{X}}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 62)">
+        B) \hat{\lambda} = \bar{X}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 62)">
+        C) \hat{\lambda} = s^2
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 62)">
+        D) \hat{\lambda} = \sum X_i
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-63">
+      <div class="question-header">Question 3</div>
+      <div class="question-text">For an exponential distribution with parameter $\lambda$, what is the MME estimator?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 63)">
+        A) \hat{\lambda} = \bar{X}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 63)">
+        B) \hat{\lambda} = \frac{1}{\bar{X}}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 63)">
+        C) \hat{\lambda} = s^2
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 63)">
+        D) \hat{\lambda} = \sqrt{\bar{X}}
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-64">
+      <div class="question-header">Question 4</div>
+      <div class="question-text">The likelihood function in Maximum Likelihood Estimation (MLE) represents:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 64)">
+        A) The probability of observing the sample data given a parameter value.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 64)">
+        B) The cumulative distribution function of the data.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 64)">
+        C) The variance of the sample.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 64)">
+        D) The bias of the estimator.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-65">
+      <div class="question-header">Question 5</div>
+      <div class="question-text">For a Poisson distribution, what is the MLE estimator for $\lambda$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 65)">
+        A) \hat{\lambda} = \frac{1}{\bar{X}}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 65)">
+        B) \hat{\lambda} = \bar{X}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 65)">
+        C) \hat{\lambda} = \sum X_i
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 65)">
+        D) \hat{\lambda} = s^2
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-66">
+      <div class="question-header">Question 6</div>
+      <div class="question-text">For an exponential distribution, what is the MLE estimator for $\lambda$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 66)">
+        A) \hat{\lambda} = \bar{X}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 66)">
+        B) \hat{\lambda} = \frac{1}{\bar{X}}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 66)">
+        C) \hat{\lambda} = \sqrt{\bar{X}}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 66)">
+        D) \hat{\lambda} = \frac{n}{\sum X_i}
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-67">
+      <div class="question-header">Question 7</div>
+      <div class="question-text">For a geometric distribution with parameter $p$, both MME and MLE yield which estimator?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 67)">
+        A) \hat{p} = \frac{1}{\bar{X}}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 67)">
+        B) \hat{p} = \bar{X}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 67)">
+        C) \hat{p} = s^2
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 67)">
+        D) \hat{p} = \frac{n}{\sum X_i}
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-68">
+      <div class="question-header">Question 8</div>
+      <div class="question-text">The invariance property of MLE states that:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 68)">
+        A) MLE estimators are always unbiased.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 68)">
+        B) If \hat{\theta} is the MLE of \theta, then g(\hat{\theta}) is the MLE of g(\theta) for one-to-one g.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 68)">
+        C) MLE estimators are invariant under data transformations.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 68)">
+        D) MLE requires no differentiation steps.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-69">
+      <div class="question-header">Question 9</div>
+      <div class="question-text">The log-likelihood function is used in MLE because:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 69)">
+        A) It simplifies differentiation and avoids products of probabilities.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 69)">
+        B) It guarantees unbiased estimators.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 69)">
+        C) It is always convex.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 69)">
+        D) It eliminates the need for parameter estimation.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-70">
+      <div class="question-header">Question 10</div>
+      <div class="question-text">A 95% confidence interval for $\theta$ using the log-likelihood curve includes values where:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 70)">
+        A) The log-likelihood is within 1.92 units of the maximum.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 70)">
+        B) The log-likelihood equals zero.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 70)">
+        C) The likelihood function is symmetric.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 70)">
+        D) The data is normally distributed.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-71">
+      <div class="question-header">Question 11</div>
+      <div class="question-text">Which step is NOT part of deriving an MLE estimator?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 71)">
+        A) Write the joint likelihood function.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 71)">
+        B) Take the logarithm of the likelihood.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 71)">
+        C) Differentiate the log-likelihood with respect to the parameter.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 71)">
+        D) Set the population moments equal to sample moments.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-72">
+      <div class="question-header">Question 12</div>
+      <div class="question-text">For a geometric distribution, the MME estimator for $p$ is derived by equating:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 72)">
+        A) $E(X) = \bar{X}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 72)">
+        B) $E(X^2) = \frac{1}{n} \sum X_i^2$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 72)">
+        C) $V(X) = s^2$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 72)">
+        D) The CDF to the empirical distribution.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-73">
+      <div class="question-header">Question 13</div>
+      <div class="question-text">The MME estimator $\hat{\lambda} = \bar{X}$ for a Poisson distribution is:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 73)">
+        A) Biased
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 73)">
+        B) Unbiased
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 73)">
+        C) Consistent but biased
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 73)">
+        D) Only unbiased for large $n$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-74">
+      <div class="question-header">Question 14</div>
+      <div class="question-text">For a normal distribution, the MLE of $\sigma^2$ is:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 74)">
+        A) \hat{\sigma}^2 = \frac{1}{n} \sum(X_i - \bar{X})^2
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 74)">
+        B) \hat{\sigma}^2 = \frac{1}{n-1} \sum(X_i - \bar{X})^2
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 74)">
+        C) \hat{\sigma}^2 = \bar{X}^2
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 74)">
+        D) \hat{\sigma}^2 = S^2
+      </div>
+    
+      </div>
+    </div>
+  <div class="context-group">
+        <div class="context-box">
+          <div class="context-box-title">EM Algorithm Coin Toss Table (Questions 15-19)</div>
+          <div class="context-box-content">You are given coin toss data from 5 trials with unknown coins A and B. Complete the EM algorithm table and answer the following question:
+- Trial 1: 5H, 5T, $P(A) = 0.45$, $P(B) = 0.55$, $L(H)\|_A = 2.25$, $L(T)\|_A = 2.25$, $L(H)\|_B = 2.75$, $L(T)\|_B = 2.75$
+- Trial 2: 9H, 1T, $P(A) = 0.80$, $P(B) = 0.20$, $L(H)\|_A = 7.2$, $L(T)\|_A = 0.8$, $L(H)\|_B = 1.8$, $L(T)\|_B = 0.2$
+- Trial 3: 8H, 2T, $P(A) = 0.73$, $P(B) = 0.27$, $L(H)\|_A = 5.84$, $L(T)\|_A = 1.46$, $L(H)\|_B = 2.16$, $L(T)\|_B = 0.54$</div>
+        </div>
+      
+    <div class="question-card" id="q-card-75">
+      <div class="question-header">Question 15</div>
+      <div class="question-text">How is $L(H)\|_A = 5.84$ calculated for Trial 3?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 75)">
+        A) 0.73 * 8
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 75)">
+        B) 0.27 * 8
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 75)">
+        C) 8 / 10
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 75)">
+        D) (0.73)^8
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-76">
+      <div class="question-header">Question 16</div>
+      <div class="question-text">In the EM coin toss setup described in Question 15, what does $\sum L(T)\|_B = 8.44$ represent?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 76)">
+        A) Total expected tails for Coin B across all trials
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 76)">
+        B) Total tosses with Coin B
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 76)">
+        C) Variance of Coin B
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 76)">
+        D) Probability of tails for Coin A
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-77">
+      <div class="question-header">Question 17</div>
+      <div class="question-text">In the EM coin toss setup described in Question 15, why is $\hat{P}_A$ calculated as $0.71$ in the M-step?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 77)">
+        A) \frac{21.24}{21.24 + 8.56}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 77)">
+        B) \frac{8.56}{21.24 + 8.56}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 77)">
+        C) \frac{21.24}{30}
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 77)">
+        D) \frac{5}{10}
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-78">
+      <div class="question-header">Question 18</div>
+      <div class="question-text">In the EM coin toss setup described in Question 15, if Trial 4's $P(A) = 0.35$ and the Toss Result is 4H, 6T, what is $L(T)\|_A$?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 78)">
+        A) 0.35 * 6 = 2.1
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 78)">
+        B) 0.65 * 6 = 3.9
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 78)">
+        C) 6 / 10 = 0.6
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 78)">
+        D) 0.5 * 6 = 3.0
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-79">
+      <div class="question-header">Question 19</div>
+      <div class="question-text">In the EM coin toss setup described in Question 15, the final M-step output $\hat{P}_B = 0.58$ suggests:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 79)">
+        A) Coin B is fair
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 79)">
+        B) Coin B is biased toward heads
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 79)">
+        C) Coin B is biased toward tails
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 79)">
+        D) The algorithm failed
+      </div>
+    
+      </div>
+    </div>
+  </div><!-- /.context-group -->
+    <div class="question-card" id="q-card-80">
+      <div class="question-header">Question 20</div>
+      <div class="question-text">Which algorithm is mentioned in the lecture for statistical inference?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 80)">
+        A) K-means clustering
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 80)">
+        B) Expectation Maximization (EM)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 80)">
+        C) Principal Component Analysis (PCA)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 80)">
+        D) Support Vector Machines (SVM)
+      </div>
+    
+      </div>
+    </div>
+  
+      </div>
+    </section>
+  
+    <section id="quiz5" class="quiz-section">
+      <h2 class="quiz-title">Quiz 5: Hypothesis Testing & Likelihood Ratio Tests (LRT)</h2>
+      <div class="questions-list">
+  
+    <div class="question-card" id="q-card-81">
+      <div class="question-header">Question 1</div>
+      <div class="question-text">What is the primary advantage of empirical likelihood methods?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 81)">
+        A) They require strict parametric assumptions about the data distribution.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 81)">
+        B) They are non-parametric and do not assume a specific distributional form.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 81)">
+        C) They are computationally simpler than bootstrap methods.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 81)">
+        D) They only work for normally distributed data.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-82">
+      <div class="question-header">Question 2</div>
+      <div class="question-text">The empirical likelihood ratio $R(\mu)$ is defined as:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 82)">
+        A) The ratio of the likelihood under $H_0$ to the likelihood under $H_a$.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 82)">
+        B) The product of probabilities $\prod_{i=1}^n n P_i$ under constraints.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 82)">
+        C) The variance of the sample mean.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 82)">
+        D) The bias-corrected estimator of $\mu$.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-83">
+      <div class="question-header">Question 3</div>
+      <div class="question-text">The MELE (Maximum Empirical Likelihood Estimator) assigns:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 83)">
+        A) Equal weight $\frac{1}{n}$ to each observation.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 83)">
+        B) Higher weights to outliers.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 83)">
+        C) Weights based on the normal distribution.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 83)">
+        D) Zero weight to extreme values.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-84">
+      <div class="question-header">Question 4</div>
+      <div class="question-text">The LRT statistic $\lambda$ for testing $H_0: \theta \in \Theta_0$ vs $H_a: \theta \in \Theta_a$ is:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 84)">
+        A) $\lambda = \frac{\max_{\theta \in \Theta_0} L(\theta)}{\max L(\theta)}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 84)">
+        B) $\lambda = \frac{Variance under H_0}{Variance under H_a}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 84)">
+        C) $\lambda = \frac{Bias under H_0}{Bias under H_a}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 84)">
+        D) $\lambda = \frac{Mean under H_0}{Mean under H_a}$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-85">
+      <div class="question-header">Question 5</div>
+      <div class="question-text">For testing $H_0: \mu = 10$ vs $H_a: \mu \ne 10$ in a normal distribution, the LRT statistic simplifies to:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 85)">
+        A) $\lambda = e^{-\frac{n}{4}(\bar{X}-10)^2}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 85)">
+        B) $\lambda = \frac{\bar{X}}{10}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 85)">
+        C) $\lambda = \frac{S^2}{\sigma^2}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 85)">
+        D) $\lambda = \frac{n}{\sum X_i}$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-86">
+      <div class="question-header">Question 6</div>
+      <div class="question-text">In LRT, reject $H_0$ if:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 86)">
+        A) $\lambda \ge C$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 86)">
+        B) $\lambda \le C$, where $C$ is chosen such that $P(\lambda < C \mid H_0) = \alpha$.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 86)">
+        C) $\lambda = 1$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 86)">
+        D) $\lambda$ is normally distributed.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-87">
+      <div class="question-header">Question 7</div>
+      <div class="question-text">For testing $H_0: \lambda = 1$ vs $H_a: \lambda \ne 1$ in an exponential distribution, the LRT statistic is:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 87)">
+        A) $\lambda = (\bar{X})^n e^{-n\bar{X}+n}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 87)">
+        B) $\lambda = \frac{1}{\bar{X}}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 87)">
+        C) $\lambda = \frac{n}{\sum X_i}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 87)">
+        D) $\lambda = e^{-\sum X_i}$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-88">
+      <div class="question-header">Question 8</div>
+      <div class="question-text">For large samples, under $H_0$, the LRT statistic follows which asymptotic distribution?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 88)">
+        A) $-2 \log \lambda \sim \chi^2_{1}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 88)">
+        B) \lambda \sim N(0, 1)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 88)">
+        C) \log \lambda \sim Exp(1)
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 88)">
+        D) \lambda \sim Uniform(0, 1)
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-89">
+      <div class="question-header">Question 9</div>
+      <div class="question-text">A Type I error occurs when:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 89)">
+        A) We reject $H_0$ when it is true.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 89)">
+        B) We fail to reject $H_0$ when it is false.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 89)">
+        C) The test statistic is normally distributed.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 89)">
+        D) The sample size is too small.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-90">
+      <div class="question-header">Question 10</div>
+      <div class="question-text">Empirical likelihood ratio tests (ELRT) are preferred over parametric tests when:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 90)">
+        A) The data distribution is unknown or non-normal.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 90)">
+        B) The sample size is very large.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 90)">
+        C) The variance is known.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 90)">
+        D) The mean is zero.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-91">
+      <div class="question-header">Question 11</div>
+      <div class="question-text">In the normal distribution LRT example, the term $\sum (X_i - 10)^2$ simplifies to:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 91)">
+        A) $\sum (X_i - \bar{X})^2 + n(\bar{X}-10)^2$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 91)">
+        B) $\sum X_i^2 - 10 \sum X_i$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 91)">
+        C) $n\bar{X}^2 - 20 \sum X_i$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 91)">
+        D) $\sum (X_i - \mu)^2$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-92">
+      <div class="question-header">Question 12</div>
+      <div class="question-text">For the exponential LRT, reject $H_0$ if:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 92)">
+        A) $(\bar{X})^n e^{-n\bar{X}+n} \le C$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 92)">
+        B) \bar{X} > 1
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 92)">
+        C) \sum X_i < n
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 92)">
+        D) \lambda \sim Exp(1)
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-93">
+      <div class="question-header">Question 13</div>
+      <div class="question-text">The empirical likelihood optimization problem involves:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 93)">
+        A) Maximizing $\prod_{i=1}^n P_i$ under constraints $\sum P_i = 1$ and $\sum P_i X_i = \mu$.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 93)">
+        B) Minimizing the variance of the sample mean.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 93)">
+        C) Fitting a normal distribution to the data.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 93)">
+        D) Calculating the bootstrap standard error.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-94">
+      <div class="question-header">Question 14</div>
+      <div class="question-text">For a two-sided test $H_0: \mu = \mu_0$ vs $H_a: \mu \ne \mu_0$, reject $H_0$ if:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 94)">
+        A) The test statistic $T_c > t_{\alpha/2}$ or $T_c < -t_{\alpha/2}$.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 94)">
+        B) The p-value is greater than $\alpha$.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 94)">
+        C) The sample mean equals $\mu_0$.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 94)">
+        D) The likelihood ratio $\lambda = 1$.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-95">
+      <div class="question-header">Question 15</div>
+      <div class="question-text">The LRT for the normal mean is equivalent to the Z-test because:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 95)">
+        A) Both rely on the statistic $\frac{|\bar{X} - \mu_0|}{\sigma / \sqrt{n}}$.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 95)">
+        B) Both assume exponential distribution.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 95)">
+        C) Both require bootstrap resampling.
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 95)">
+        D) Both are non-parametric.
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-96">
+      <div class="question-header">Question 16</div>
+      <div class="question-text">If $X_1, X_2, ..., X_n$ constitute a random sample from $N(\mu, \sigma^2)$, what is the distribution of $\bar{X}$ when $n \ge 30$ or $\sigma$ is known?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 96)">
+        A) $t_{n-1}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 96)">
+        B) $N(\mu, \frac{\sigma^2}{n})$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 96)">
+        C) $\chi^2_{n-1}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 96)">
+        D) $F_{n-1, n-1}$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-97">
+      <div class="question-header">Question 17</div>
+      <div class="question-text">When $n < 30$ and $\sigma$ is unknown, which statistic follows a $t$-distribution with $n-1$ degrees of freedom?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 97)">
+        A) $Z = \frac{\bar{X} - \mu}{\sigma / \sqrt{n}}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 97)">
+        B) $T = \frac{\bar{X} - \mu}{S / \sqrt{n}}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 97)">
+        C) $U = \frac{(n-1)S^2}{\sigma^2}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 97)">
+        D) $F = \frac{S^2_1 \sigma^2_2}{S^2_2 \sigma^2_1}$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-98">
+      <div class="question-header">Question 18</div>
+      <div class="question-text">The Central Limit Theorem (CLT) states that for a large sample size ($n \ge 30$) from any population, the sampling distribution of $\bar{X}$ is approximately:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 98)">
+        A) $N(\mu, \frac{\sigma^2}{n})$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 98)">
+        B) $t_{n-1}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 98)">
+        C) $\chi^2_{n-1}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 98)">
+        D) Uniform
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-99">
+      <div class="question-header">Question 19</div>
+      <div class="question-text">What happens to the width of a confidence interval as the sample size $n$ increases?</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 99)">
+        A) Increases
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 99)">
+        B) Decreases
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 99)">
+        C) Remains unchanged
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 99)">
+        D) Depends on $\alpha$
+      </div>
+    
+      </div>
+    </div>
+  
+    <div class="question-card" id="q-card-100">
+      <div class="question-header">Question 20</div>
+      <div class="question-text">For a 95% confidence interval of $\mu$ when $n \ge 30$, the critical value is:</div>
+      <div class="options-list">
+  
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 100)">
+        A) $t_{\alpha/2, n-1}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="true" 
+           onclick="checkOption(this, 100)">
+        B) $Z_{\alpha/2}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 100)">
+        C) $\chi^2_{\alpha/2, n-1}$
+      </div>
+    
+      <div class="option-item" 
+           data-correct="false" 
+           onclick="checkOption(this, 100)">
+        D) $F_{\alpha/2, n-1, n-1}$
+      </div>
+    
+      </div>
+    </div>
+  
+      </div>
+    </section>
+  
+    </div>
+    <section id="answers" class="answer-key-section">
+      <h2 class="quiz-title">Answer Key</h2>
+      <div class="answer-grid">
+        
+    <div class="answer-group">
+      <h4>Quiz 1</h4>
+      <ul>
+  <li>Question 1: <strong>B) 4.83</strong></li><li>Question 2: <strong>B) 0.083</strong></li><li>Question 3: <strong>B) 0.29</strong></li><li>Question 4: <strong>C) Estimate the sampling distribution of a statistic</strong></li><li>Question 5: <strong>B) 5</strong></li><li>Question 6: <strong>B) 6.67</strong></li><li>Question 7: <strong>C) 5.33</strong></li><li>Question 8: <strong>C) 1.53</strong></li><li>Question 9: <strong>B) 3.55</strong></li><li>Question 10: <strong>B) 14.83</strong></li><li>Question 11: <strong>C) 3.85</strong></li><li>Question 12: <strong>C) 0.33</strong></li><li>Question 13: <strong>B) (2.00, 8.00)</strong></li><li>Question 14: <strong>C) (2.33, 8.33)</strong></li><li>Question 15: <strong>A) (4.0, 7.0)</strong></li><li>Question 16: <strong>B) To approximate the sampling distribution of a statistic using empirical data</strong></li><li>Question 17: <strong>C) With replacement from the original sample</strong></li><li>Question 18: <strong>B) A statistic calculated on a bootstrap resample</strong></li><li>Question 19: <strong>B) By computing the standard deviation of bootstrap replicates $\hat{\theta}^*_1, \hat{\theta}^*_2, \dots, \hat{\theta}^*_B$</strong></li><li>Question 20: <strong>B) The sampling distribution is unknown or difficult to derive</strong></li>
+      </ul>
+    </div>
+  
+    <div class="answer-group">
+      <h4>Quiz 2</h4>
+      <ul>
+  <li>Question 1: <strong>B) 22.0</strong></li><li>Question 2: <strong>A) 27.5</strong></li><li>Question 3: <strong>A) 22.0</strong></li><li>Question 4: <strong>B) 0</strong></li><li>Question 5: <strong>B) 22.0</strong></li><li>Question 6: <strong>B) 6.35</strong></li><li>Question 7: <strong>B) (9.554, 34.446)</strong></li><li>Question 8: <strong>B) 80.67</strong></li><li>Question 9: <strong>B) 121.0</strong></li><li>Question 10: <strong>B) 60.5</strong></li><li>Question 11: <strong>B) -40.33</strong></li><li>Question 12: <strong>B) 121.0</strong></li><li>Question 13: <strong>B) 60.5</strong></li><li>Question 14: <strong>B) (2.42, 239.58)</strong></li><li>Question 15: <strong>B) To estimate bias and standard error of an estimator by systematically leaving out observations</strong></li><li>Question 16: <strong>B) Removing one observation at a time from the original dataset</strong></li><li>Question 17: <strong>A) $(n-1)(\hat{\theta}_{(\cdot)} - \hat{\theta})$, where $\hat{\theta}_{(\cdot)}$ is the mean of jackknife replicates</strong></li><li>Question 18: <strong>B) $\sqrt{\frac{n-1}{n} \sum_{j=1}^n (\hat{\theta}_{(-j)} - \hat{\theta}_{(\cdot)})^2}$</strong></li><li>Question 19: <strong>C) Jackknife SE is typically larger than bootstrap SE.</strong></li><li>Question 20: <strong>B) Non-smooth or non-linear statistics (e.g., median, correlation)</strong></li>
+      </ul>
+    </div>
+  
+    <div class="answer-group">
+      <h4>Quiz 3</h4>
+      <ul>
+  <li>Question 1: <strong>B) To estimate the cumulative distribution function (CDF) of a population.</strong></li><li>Question 2: <strong>B) $\hat{F}_n(x) = \frac{1}{n} \sum_{i=1}^n I(X_i \le x)$, where $I$ is an indicator function.</strong></li><li>Question 3: <strong>C) 0.75</strong></li><li>Question 4: <strong>C) 0.6</strong></li><li>Question 5: <strong>B) It is a step function that jumps by $\frac{1}{n}$ at each observed data point.</strong></li><li>Question 6: <strong>B) It converges to the true CDF $F(x)$.</strong></li><li>Question 7: <strong>B) $F(x)$</strong></li><li>Question 8: <strong>A) $\frac{F(x)(1-F(x))}{n}$</strong></li><li>Question 9: <strong>B) Because its expected value equals $F(x)$.</strong></li><li>Question 10: <strong>B) 0.4</strong></li><li>Question 11: <strong>B) Variance.</strong></li><li>Question 12: <strong>C) It is consistent and unbiased.</strong></li><li>Question 13: <strong>A) $P(1 - P)$</strong></li><li>Question 14: <strong>C) $\frac{F(x)(1-F(x))}{n}$</strong></li><li>Question 15: <strong>A) It converges uniformly to $F(x)$ as $n \to \infty$.</strong></li><li>Question 16: <strong>B) $\bar{x} = \frac{1}{n} \sum_{i=1}^n x_i$</strong></li><li>Question 17: <strong>B) $N(0, F(x)(1 - F(x)))$</strong></li><li>Question 18: <strong>B) A bound on the probability of large deviations between $\hat{F}_n(x)$ and $F(x)$</strong></li><li>Question 19: <strong>A) $\frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2$</strong></li><li>Question 20: <strong>B) Biased but consistent</strong></li>
+      </ul>
+    </div>
+  
+    <div class="answer-group">
+      <h4>Quiz 4</h4>
+      <ul>
+  <li>Question 1: <strong>A) Population moments are set equal to sample moments to solve for parameters.</strong></li><li>Question 2: <strong>B) \hat{\lambda} = \bar{X}</strong></li><li>Question 3: <strong>B) \hat{\lambda} = \frac{1}{\bar{X}}</strong></li><li>Question 4: <strong>A) The probability of observing the sample data given a parameter value.</strong></li><li>Question 5: <strong>B) \hat{\lambda} = \bar{X}</strong></li><li>Question 6: <strong>D) \hat{\lambda} = \frac{n}{\sum X_i}</strong></li><li>Question 7: <strong>A) \hat{p} = \frac{1}{\bar{X}}</strong></li><li>Question 8: <strong>B) If \hat{\theta} is the MLE of \theta, then g(\hat{\theta}) is the MLE of g(\theta) for one-to-one g.</strong></li><li>Question 9: <strong>A) It simplifies differentiation and avoids products of probabilities.</strong></li><li>Question 10: <strong>A) The log-likelihood is within 1.92 units of the maximum.</strong></li><li>Question 11: <strong>D) Set the population moments equal to sample moments.</strong></li><li>Question 12: <strong>A) $E(X) = \bar{X}$</strong></li><li>Question 13: <strong>B) Unbiased</strong></li><li>Question 14: <strong>A) \hat{\sigma}^2 = \frac{1}{n} \sum(X_i - \bar{X})^2</strong></li><li>Question 15: <strong>A) 0.73 * 8</strong></li><li>Question 16: <strong>A) Total expected tails for Coin B across all trials</strong></li><li>Question 17: <strong>A) \frac{21.24}{21.24 + 8.56}</strong></li><li>Question 18: <strong>A) 0.35 * 6 = 2.1</strong></li><li>Question 19: <strong>B) Coin B is biased toward heads</strong></li><li>Question 20: <strong>B) Expectation Maximization (EM)</strong></li>
+      </ul>
+    </div>
+  
+    <div class="answer-group">
+      <h4>Quiz 5</h4>
+      <ul>
+  <li>Question 1: <strong>B) They are non-parametric and do not assume a specific distributional form.</strong></li><li>Question 2: <strong>B) The product of probabilities $\prod_{i=1}^n n P_i$ under constraints.</strong></li><li>Question 3: <strong>A) Equal weight $\frac{1}{n}$ to each observation.</strong></li><li>Question 4: <strong>A) $\lambda = \frac{\max_{\theta \in \Theta_0} L(\theta)}{\max L(\theta)}$</strong></li><li>Question 5: <strong>A) $\lambda = e^{-\frac{n}{4}(\bar{X}-10)^2}$</strong></li><li>Question 6: <strong>B) $\lambda \le C$, where $C$ is chosen such that $P(\lambda < C \mid H_0) = \alpha$.</strong></li><li>Question 7: <strong>A) $\lambda = (\bar{X})^n e^{-n\bar{X}+n}$</strong></li><li>Question 8: <strong>A) $-2 \log \lambda \sim \chi^2_{1}$</strong></li><li>Question 9: <strong>A) We reject $H_0$ when it is true.</strong></li><li>Question 10: <strong>A) The data distribution is unknown or non-normal.</strong></li><li>Question 11: <strong>A) $\sum (X_i - \bar{X})^2 + n(\bar{X}-10)^2$</strong></li><li>Question 12: <strong>A) $(\bar{X})^n e^{-n\bar{X}+n} \le C$</strong></li><li>Question 13: <strong>A) Maximizing $\prod_{i=1}^n P_i$ under constraints $\sum P_i = 1$ and $\sum P_i X_i = \mu$.</strong></li><li>Question 14: <strong>A) The test statistic $T_c > t_{\alpha/2}$ or $T_c < -t_{\alpha/2}$.</strong></li><li>Question 15: <strong>A) Both rely on the statistic $\frac{|\bar{X} - \mu_0|}{\sigma / \sqrt{n}}$.</strong></li><li>Question 16: <strong>B) $N(\mu, \frac{\sigma^2}{n})$</strong></li><li>Question 17: <strong>B) $T = \frac{\bar{X} - \mu}{S / \sqrt{n}}$</strong></li><li>Question 18: <strong>A) $N(\mu, \frac{\sigma^2}{n})$</strong></li><li>Question 19: <strong>B) Decreases</strong></li><li>Question 20: <strong>B) $Z_{\alpha/2}$</strong></li>
+      </ul>
+    </div>
+  
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Theme Toggle
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+    });
+
+    // Mobile Sidebar Drawer Functionality
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const menuToggle = document.getElementById('menu-toggle');
+    
+    function openSidebar() {
+      sidebar.classList.add('open');
+      overlay.classList.add('active');
+    }
+    
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    }
+
+    menuToggle.addEventListener('click', openSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    // Check individual option
+    function checkOption(optionElement, questionIdx) {
+      const card = optionElement.parentElement;
+      
+      // If already solved, do nothing
+      if (card.querySelector('.correct') || card.querySelector('.incorrect')) {
+        return;
+      }
+      
+      const isCorrect = optionElement.getAttribute('data-correct') === 'true';
+      if (isCorrect) {
+        optionElement.classList.add('correct');
+      } else {
+        optionElement.classList.add('incorrect');
+        // highlight correct one
+        const options = card.querySelectorAll('.option-item');
+        options.forEach(opt => {
+          if (opt.getAttribute('data-correct') === 'true') {
+            opt.classList.add('correct');
+          }
+        });
+      }
+    }
+
+    // Toggle Show/Hide all answers
+    let answersShown = false;
+    const answersToggleBtn = document.getElementById('answers-toggle');
+    answersToggleBtn.addEventListener('click', () => {
+      answersShown = !answersShown;
+      const options = document.querySelectorAll('.option-item');
+      
+      options.forEach(opt => {
+        const isCorrect = opt.getAttribute('data-correct') === 'true';
+        if (answersShown) {
+          if (isCorrect) {
+            opt.classList.add('correct');
+          }
+        } else {
+          opt.classList.remove('correct', 'incorrect');
+        }
+      });
+      
+      answersToggleBtn.innerText = answersShown ? 'Hide All Answers' : 'Show All Answers';
+    });
+
+    // Update active link in sidebar on scroll & Close sidebar on click (mobile)
+    const sections = document.querySelectorAll('.quiz-section, .answer-key-section');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+          closeSidebar();
+        }
+      });
+    });
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (window.scrollY >= sectionTop - 120) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      sidebarLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

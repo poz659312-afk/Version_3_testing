@@ -1,0 +1,262 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choice",
+    "question": "In Method of Moments Estimation (MME), how are population moments related to sample moments?",
+    "options": [
+      "A) Population moments are set equal to sample moments to solve for parameters.",
+      "B) Sample moments are always larger than population moments.",
+      "C) Population moments are ignored in favor of theoretical values.",
+      "D) Only the first moment is used for estimation."
+    ],
+    "answer": "A) Population moments are set equal to sample moments to solve for parameters.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choice",
+    "question": "For a Poisson distribution with parameter $\\lambda$, what is the MME estimator?",
+    "options": [
+      "A) \\hat{\\lambda} = \\frac{1}{\\bar{X}}",
+      "B) \\hat{\\lambda} = \\bar{X}",
+      "C) \\hat{\\lambda} = s^2",
+      "D) \\hat{\\lambda} = \\sum X_i"
+    ],
+    "answer": "B) \\hat{\\lambda} = \\bar{X}",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choice",
+    "question": "For an exponential distribution with parameter $\\lambda$, what is the MME estimator?",
+    "options": [
+      "A) \\hat{\\lambda} = \\bar{X}",
+      "B) \\hat{\\lambda} = \\frac{1}{\\bar{X}}",
+      "C) \\hat{\\lambda} = s^2",
+      "D) \\hat{\\lambda} = \\sqrt{\\bar{X}}"
+    ],
+    "answer": "B) \\hat{\\lambda} = \\frac{1}{\\bar{X}}",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choice",
+    "question": "The likelihood function in Maximum Likelihood Estimation (MLE) represents:",
+    "options": [
+      "A) The probability of observing the sample data given a parameter value.",
+      "B) The cumulative distribution function of the data.",
+      "C) The variance of the sample.",
+      "D) The bias of the estimator."
+    ],
+    "answer": "A) The probability of observing the sample data given a parameter value.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choice",
+    "question": "For a Poisson distribution, what is the MLE estimator for $\\lambda$?",
+    "options": [
+      "A) \\hat{\\lambda} = \\frac{1}{\\bar{X}}",
+      "B) \\hat{\\lambda} = \\bar{X}",
+      "C) \\hat{\\lambda} = \\sum X_i",
+      "D) \\hat{\\lambda} = s^2"
+    ],
+    "answer": "B) \\hat{\\lambda} = \\bar{X}",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choice",
+    "question": "For an exponential distribution, what is the MLE estimator for $\\lambda$?",
+    "options": [
+      "A) \\hat{\\lambda} = \\bar{X}",
+      "B) \\hat{\\lambda} = \\frac{1}{\\bar{X}}",
+      "C) \\hat{\\lambda} = \\sqrt{\\bar{X}}",
+      "D) \\hat{\\lambda} = \\frac{n}{\\sum X_i}"
+    ],
+    "answer": "D) \\hat{\\lambda} = \\frac{n}{\\sum X_i}",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choice",
+    "question": "For a geometric distribution with parameter $p$, both MME and MLE yield which estimator?",
+    "options": [
+      "A) \\hat{p} = \\frac{1}{\\bar{X}}",
+      "B) \\hat{p} = \\bar{X}",
+      "C) \\hat{p} = s^2",
+      "D) \\hat{p} = \\frac{n}{\\sum X_i}"
+    ],
+    "answer": "A) \\hat{p} = \\frac{1}{\\bar{X}}",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choice",
+    "question": "The invariance property of MLE states that:",
+    "options": [
+      "A) MLE estimators are always unbiased.",
+      "B) If \\hat{\\theta} is the MLE of \\theta, then g(\\hat{\\theta}) is the MLE of g(\\theta) for one-to-one g.",
+      "C) MLE estimators are invariant under data transformations.",
+      "D) MLE requires no differentiation steps."
+    ],
+    "answer": "B) If \\hat{\\theta} is the MLE of \\theta, then g(\\hat{\\theta}) is the MLE of g(\\theta) for one-to-one g.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choice",
+    "question": "The log-likelihood function is used in MLE because:",
+    "options": [
+      "A) It simplifies differentiation and avoids products of probabilities.",
+      "B) It guarantees unbiased estimators.",
+      "C) It is always convex.",
+      "D) It eliminates the need for parameter estimation."
+    ],
+    "answer": "A) It simplifies differentiation and avoids products of probabilities.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choice",
+    "question": "A 95% confidence interval for $\\theta$ using the log-likelihood curve includes values where:",
+    "options": [
+      "A) The log-likelihood is within 1.92 units of the maximum.",
+      "B) The log-likelihood equals zero.",
+      "C) The likelihood function is symmetric.",
+      "D) The data is normally distributed."
+    ],
+    "answer": "A) The log-likelihood is within 1.92 units of the maximum.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choice",
+    "question": "Which step is NOT part of deriving an MLE estimator?",
+    "options": [
+      "A) Write the joint likelihood function.",
+      "B) Take the logarithm of the likelihood.",
+      "C) Differentiate the log-likelihood with respect to the parameter.",
+      "D) Set the population moments equal to sample moments."
+    ],
+    "answer": "D) Set the population moments equal to sample moments.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choice",
+    "question": "For a geometric distribution, the MME estimator for $p$ is derived by equating:",
+    "options": [
+      "A) $E(X) = \\bar{X}$",
+      "B) $E(X^2) = \\frac{1}{n} \\sum X_i^2$",
+      "C) $V(X) = s^2$",
+      "D) The CDF to the empirical distribution."
+    ],
+    "answer": "A) $E(X) = \\bar{X}$",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choice",
+    "question": "The MME estimator $\\hat{\\lambda} = \\bar{X}$ for a Poisson distribution is:",
+    "options": [
+      "A) Biased",
+      "B) Unbiased",
+      "C) Consistent but biased",
+      "D) Only unbiased for large $n$"
+    ],
+    "answer": "B) Unbiased",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choice",
+    "question": "For a normal distribution, the MLE of $\\sigma^2$ is:",
+    "options": [
+      "A) \\hat{\\sigma}^2 = \\frac{1}{n} \\sum(X_i - \\bar{X})^2",
+      "B) \\hat{\\sigma}^2 = \\frac{1}{n-1} \\sum(X_i - \\bar{X})^2",
+      "C) \\hat{\\sigma}^2 = \\bar{X}^2",
+      "D) \\hat{\\sigma}^2 = S^2"
+    ],
+    "answer": "A) \\hat{\\sigma}^2 = \\frac{1}{n} \\sum(X_i - \\bar{X})^2",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choice",
+    "question": "You are given coin toss data from 5 trials with unknown coins A and B. Complete the EM algorithm table and answer the following question:\n- Trial 1: 5H, 5T, $P(A) = 0.45$, $P(B) = 0.55$, $L(H)\\|_A = 2.25$, $L(T)\\|_A = 2.25$, $L(H)\\|_B = 2.75$, $L(T)\\|_B = 2.75$\n- Trial 2: 9H, 1T, $P(A) = 0.80$, $P(B) = 0.20$, $L(H)\\|_A = 7.2$, $L(T)\\|_A = 0.8$, $L(H)\\|_B = 1.8$, $L(T)\\|_B = 0.2$\n- Trial 3: 8H, 2T, $P(A) = 0.73$, $P(B) = 0.27$, $L(H)\\|_A = 5.84$, $L(T)\\|_A = 1.46$, $L(H)\\|_B = 2.16$, $L(T)\\|_B = 0.54$\n\nHow is $L(H)\\|_A = 5.84$ calculated for Trial 3?",
+    "options": [
+      "A) 0.73 * 8",
+      "B) 0.27 * 8",
+      "C) 8 / 10",
+      "D) (0.73)^8"
+    ],
+    "answer": "A) 0.73 * 8",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choice",
+    "question": "In the EM coin toss setup described in Question 15, what does $\\sum L(T)\\|_B = 8.44$ represent?",
+    "options": [
+      "A) Total expected tails for Coin B across all trials",
+      "B) Total tosses with Coin B",
+      "C) Variance of Coin B",
+      "D) Probability of tails for Coin A"
+    ],
+    "answer": "A) Total expected tails for Coin B across all trials",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choice",
+    "question": "In the EM coin toss setup described in Question 15, why is $\\hat{P}_A$ calculated as $0.71$ in the M-step?",
+    "options": [
+      "A) \\frac{21.24}{21.24 + 8.56}",
+      "B) \\frac{8.56}{21.24 + 8.56}",
+      "C) \\frac{21.24}{30}",
+      "D) \\frac{5}{10}"
+    ],
+    "answer": "A) \\frac{21.24}{21.24 + 8.56}",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choice",
+    "question": "In the EM coin toss setup described in Question 15, if Trial 4's $P(A) = 0.35$ and the Toss Result is 4H, 6T, what is $L(T)\\|_A$?",
+    "options": [
+      "A) 0.35 * 6 = 2.1",
+      "B) 0.65 * 6 = 3.9",
+      "C) 6 / 10 = 0.6",
+      "D) 0.5 * 6 = 3.0"
+    ],
+    "answer": "A) 0.35 * 6 = 2.1",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choice",
+    "question": "In the EM coin toss setup described in Question 15, the final M-step output $\\hat{P}_B = 0.58$ suggests:",
+    "options": [
+      "A) Coin B is fair",
+      "B) Coin B is biased toward heads",
+      "C) Coin B is biased toward tails",
+      "D) The algorithm failed"
+    ],
+    "answer": "B) Coin B is biased toward heads",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choice",
+    "question": "Which algorithm is mentioned in the lecture for statistical inference?",
+    "options": [
+      "A) K-means clustering",
+      "B) Expectation Maximization (EM)",
+      "C) Principal Component Analysis (PCA)",
+      "D) Support Vector Machines (SVM)"
+    ],
+    "answer": "B) Expectation Maximization (EM)",
+    "image": null
+  }
+]

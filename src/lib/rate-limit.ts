@@ -57,6 +57,11 @@ const VIOLATION_PENALTIES = {
   3: 5 * 60 * 1000,  // 5 minutes block after 3rd violation
   4: 15 * 60 * 1000, // 15 minutes block after 4th violation
   5: 60 * 60 * 1000, // 1 hour block after 5th+ violations
+  6: 24 * 60 * 60 * 1000, // 24 hour block after 6th+ violations
+  7: 3 * 24 * 60 * 60 * 1000, // 3 days block after 7th+ violations
+  8: 7 * 24 * 60 * 60 * 1000, // 1 week block after 8th+ violations
+  9: 30 * 24 * 60 * 60 * 1000, // 1 month block after 9th+ violations
+  10: 90 * 24 * 60 * 60 * 1000, // 3 months block after 10th+ violations
 }
 
 export interface RateLimitResult {

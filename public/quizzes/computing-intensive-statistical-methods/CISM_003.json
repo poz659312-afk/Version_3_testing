@@ -1,0 +1,262 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choice",
+    "question": "What is the primary purpose of an empirical distribution function (eCDF)?",
+    "options": [
+      "A) To estimate the probability density function (PDF) of a population.",
+      "B) To estimate the cumulative distribution function (CDF) of a population.",
+      "C) To calculate the mean of a sample.",
+      "D) To determine the variance of a sample."
+    ],
+    "answer": "B) To estimate the cumulative distribution function (CDF) of a population.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choice",
+    "question": "How is the empirical distribution function $\\hat{F}_n(x)$ formally defined?",
+    "options": [
+      "A) $\\hat{F}_n(x) = \\frac{1}{n} \\sum_{i=1}^n X_i$",
+      "B) $\\hat{F}_n(x) = \\frac{1}{n} \\sum_{i=1}^n I(X_i \\le x)$, where $I$ is an indicator function.",
+      "C) $\\hat{F}_n(x) = \\frac{1}{n} \\sum_{i=1}^n (X_i - \\bar{X})^2$",
+      "D) $\\hat{F}_n(x) = \\frac{1}{n} \\sum_{i=1}^n F(X_i)$"
+    ],
+    "answer": "B) $\\hat{F}_n(x) = \\frac{1}{n} \\sum_{i=1}^n I(X_i \\le x)$, where $I$ is an indicator function.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choice",
+    "question": "Given the sample data $x_1 = 3, x_2 = 2, x_3 = 5, x_4 = 2$, what is the value of $\\hat{F}_4(4)$?",
+    "options": [
+      "A) 0.25",
+      "B) 0.50",
+      "C) 0.75",
+      "D) 1.00"
+    ],
+    "answer": "C) 0.75",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choice",
+    "question": "For the sorted data $1.3, 1.7, 2.1, 2.5, 3.4$, what is $\\hat{F}_5(2.1)$?",
+    "options": [
+      "A) 0.2",
+      "B) 0.4",
+      "C) 0.6",
+      "D) 0.8"
+    ],
+    "answer": "C) 0.6",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choice",
+    "question": "Which of the following statements about the empirical distribution function (eCDF) is true?",
+    "options": [
+      "A) It is a smooth curve for continuous distributions.",
+      "B) It is a step function that jumps by $\\frac{1}{n}$ at each observed data point.",
+      "C) It is always a straight line.",
+      "D) It is only applicable to discrete distributions."
+    ],
+    "answer": "B) It is a step function that jumps by $\\frac{1}{n}$ at each observed data point.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choice",
+    "question": "What happens to the eCDF $\\hat{F}_n(x)$ as the sample size $n$ increases?",
+    "options": [
+      "A) It becomes less accurate.",
+      "B) It converges to the true CDF $F(x)$.",
+      "C) It becomes a biased estimator.",
+      "D) It diverges from the true CDF."
+    ],
+    "answer": "B) It converges to the true CDF $F(x)$.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choice",
+    "question": "What is the expected value of the eCDF $\\hat{F}_n(x)$?",
+    "options": [
+      "A) 0",
+      "B) $F(x)$",
+      "C) 1",
+      "D) $\\frac{1}{2}$"
+    ],
+    "answer": "B) $F(x)$",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choice",
+    "question": "What is the variance of the eCDF $\\hat{F}_n(x)$?",
+    "options": [
+      "A) $\\frac{F(x)(1-F(x))}{n}$",
+      "B) $\\frac{1}{n}$",
+      "C) $F(x)$",
+      "D) $1 - F(x)$"
+    ],
+    "answer": "A) $\\frac{F(x)(1-F(x))}{n}$",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choice",
+    "question": "Why is $\\hat{F}_n(x)$ considered an unbiased estimator of $F(x)$?",
+    "options": [
+      "A) Because its variance decreases with $n$.",
+      "B) Because its expected value equals $F(x)$.",
+      "C) Because it is always consistent.",
+      "D) Because it is a step function."
+    ],
+    "answer": "B) Because its expected value equals $F(x)$.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choice",
+    "question": "For a uniform distribution $F$ on $[0, 2]$, what is $E(\\hat{F}_n(0.8))$?",
+    "options": [
+      "A) 0.2",
+      "B) 0.4",
+      "C) 0.6",
+      "D) 0.8"
+    ],
+    "answer": "B) 0.4",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choice",
+    "question": "What does the MSE (Mean Squared Error) of an unbiased estimator reduce to?",
+    "options": [
+      "A) Bias squared.",
+      "B) Variance.",
+      "C) Standard deviation.",
+      "D) Zero."
+    ],
+    "answer": "B) Variance.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choice",
+    "question": "Which of the following is a property of the eCDF $\\hat{F}_n(x)$?",
+    "options": [
+      "A) It is biased for small samples.",
+      "B) It is inconsistent.",
+      "C) It is consistent and unbiased.",
+      "D) It only works for normal distributions."
+    ],
+    "answer": "C) It is consistent and unbiased.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choice",
+    "question": "For a Bernoulli trial with success probability $P$, what is the variance of $Y_i = I(X_i \\le x)$?",
+    "options": [
+      "A) $P(1 - P)$",
+      "B) $P^2$",
+      "C) $1 - P$",
+      "D) $P$"
+    ],
+    "answer": "A) $P(1 - P)$",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choice",
+    "question": "If $\\hat{F}_n(x)$ is an unbiased estimator of $F(x)$, what is its MSE?",
+    "options": [
+      "A) $\\frac{F(x)}{n}$",
+      "B) $\\frac{1-F(x)}{n}$",
+      "C) $\\frac{F(x)(1-F(x))}{n}$",
+      "D) $F(x)^2$"
+    ],
+    "answer": "C) $\\frac{F(x)(1-F(x))}{n}$",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choice",
+    "question": "What does the Glivenko-Cantelli theorem state about $\\hat{F}_n(x)$?",
+    "options": [
+      "A) It converges uniformly to $F(x)$ as $n \\to \\infty$.",
+      "B) It is only valid for discrete distributions.",
+      "C) It is biased for large $n$.",
+      "D) It cannot estimate $F(x)$ accurately."
+    ],
+    "answer": "A) It converges uniformly to $F(x)$ as $n \\to \\infty$.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choice",
+    "question": "What is the plug-in estimator for the population mean $\\mu$?",
+    "options": [
+      "A) $\\frac{1}{n} \\sum_{i=1}^n (x_i - \\bar{x})^2$",
+      "B) $\\bar{x} = \\frac{1}{n} \\sum_{i=1}^n x_i$",
+      "C) $\\frac{1}{n-1} \\sum_{i=1}^n x_i$",
+      "D) $\\int x dF(x)$"
+    ],
+    "answer": "B) $\\bar{x} = \\frac{1}{n} \\sum_{i=1}^n x_i$",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choice",
+    "question": "For large $n$, the asymptotic distribution of $\\sqrt{n}(\\hat{F}_n(x) - F(x))$ is:",
+    "options": [
+      "A) $N(0, 1)$",
+      "B) $N(0, F(x)(1 - F(x)))$",
+      "C) $N(F(x), 1)$",
+      "D) $N(0, \\frac{1}{n})$"
+    ],
+    "answer": "B) $N(0, F(x)(1 - F(x)))$",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choice",
+    "question": "The Dvoretzky-Kiefer-Wolfowitz (DKW) inequality provides:",
+    "options": [
+      "A) A confidence interval for the mean",
+      "B) A bound on the probability of large deviations between $\\hat{F}_n(x)$ and $F(x)$",
+      "C) The exact value of $F(x)$",
+      "D) The bias of $\\hat{F}_n(x)$"
+    ],
+    "answer": "B) A bound on the probability of large deviations between $\\hat{F}_n(x)$ and $F(x)$",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choice",
+    "question": "The plug-in estimator for variance $\\sigma^2$ is defined as:",
+    "options": [
+      "A) $\\frac{1}{n} \\sum_{i=1}^n (x_i - \\bar{x})^2$",
+      "B) $\\frac{1}{n-1} \\sum_{i=1}^n (x_i - \\bar{x})^2$",
+      "C) $\\frac{1}{n} \\sum_{i=1}^n x_i^2$",
+      "D) $\\bar{x}^2$"
+    ],
+    "answer": "A) $\\frac{1}{n} \\sum_{i=1}^n (x_i - \\bar{x})^2$",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choice",
+    "question": "The plug-in variance estimator $\\hat{\\sigma}^2$ is:",
+    "options": [
+      "A) Unbiased and consistent",
+      "B) Biased but consistent",
+      "C) Unbiased but inconsistent",
+      "D) Neither unbiased nor consistent"
+    ],
+    "answer": "B) Biased but consistent",
+    "image": null
+  }
+]
