@@ -1249,6 +1249,14 @@ export default function ProfilePage() {
                   <div className="space-y-1">
                     <h3 className="font-outfit font-extrabold text-2xl text-foreground">{userData.username}</h3>
                     <p className="text-sm text-muted-foreground font-outfit">Identity synchronizer active</p>
+                    {userData.is_super_admin && (
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-500/10 text-red-500 border border-red-500/20">
+                          <Shield className="w-3 h-3 animate-pulse text-red-500" />
+                          Super Admin Mode
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 
@@ -1257,6 +1265,14 @@ export default function ProfilePage() {
                     <Coins className="w-4 h-4" />
                     <span>{userData.coins?.toLocaleString() || 0} Coins</span>
                   </div>
+                  {userData.is_super_admin && (
+                    <Button asChild className="rounded-full shadow-md font-outfit bg-gradient-to-r from-primary to-secondary text-primary-foreground font-bold hover:brightness-105 active:scale-95 transition-all">
+                      <Link href="/admin">
+                        <Shield className="w-4 h-4 mr-2" />
+                        Admin Console
+                      </Link>
+                    </Button>
+                  )}
                   <Button 
                     onClick={handleLogout}
                     variant="destructive"

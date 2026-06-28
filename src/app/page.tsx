@@ -47,6 +47,7 @@ const pacifico = Pacifico({
 })
 
 export default function HomePage() {
+  const [user, setUser] = useState<any>(null)
   const [username, setUsername] = useState<string>("")
   const [userLevel, setUserLevel] = useState<number>(1)
 
@@ -54,6 +55,7 @@ export default function HomePage() {
     const loadSession = async () => {
       const session = await getStudentSession()
       if (session) {
+        setUser(session)
         setUsername(session.username)
         setUserLevel(session.current_level || 1)
       }
@@ -590,6 +592,14 @@ export default function HomePage() {
                   <li><Link href="/specialization" className="hover:text-foreground transition-colors">Specializations</Link></li>
                   <li><Link href="/youtube" className="hover:text-foreground transition-colors">YouTube</Link></li>
                   <li><Link href="/store" className="hover:text-foreground transition-colors">Store</Link></li>
+                  {user?.is_super_admin && (
+                    <li>
+                      <Link href="/admin" className="text-red-500 font-bold hover:text-red-400 transition-colors flex items-center gap-1.5">
+                        <Shield className="w-3.5 h-3.5 animate-pulse" />
+                        Admin Console
+                      </Link>
+                    </li>
+                  )}
                 </ul>
               </div>
               <div>
