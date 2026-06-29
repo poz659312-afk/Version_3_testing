@@ -1,0 +1,282 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "An image processing application receives 10,000 high-resolution photos and applies the exact same grayscale filter to every single one simultaneously across 50 processors. What model of parallelism is being demonstrated here?",
+    "options": [
+      "A) Data Parallelism",
+      "B) Task Parallelism",
+      "C) Pipeline Parallelism",
+      "D) Sequential Processing"
+    ],
+    "answer": "A) Data Parallelism",
+    "explanation": "The same operation is distributed across different subsets of a large dataset to be processed concurrently.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "A weather forecasting system runs three different models at the same time: one for wind speed, one for humidity, and one for temperature. Each model is a distinct program. What type of parallelism is this?",
+    "options": [
+      "A) Service Mesh",
+      "B) Data Parallelism",
+      "C) Task Parallelism",
+      "D) Pipeline Parallelism"
+    ],
+    "answer": "C) Task Parallelism",
+    "explanation": "Different tasks or functions are being executed simultaneously across various computing resources.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "A developer needs to process a massive dataset of 500 terabytes of historical logs once a month. The priority is low cost and fault tolerance, rather than sub-second response times. Which framework is most appropriate?",
+    "options": [
+      "A) AWS Lambda",
+      "B) Service Mesh",
+      "C) Hadoop MapReduce",
+      "D) Apache Spark"
+    ],
+    "answer": "C) Hadoop MapReduce",
+    "explanation": "Its disk-based batch processing and HDFS storage make it a cost-effective and reliable choice for massive, non-time-critical historical data.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "A startup has a backend function that is only triggered once a day for 30 seconds to generate a report. Which cloud model would be the most cost-effective for them?",
+    "options": [
+      "A) Dedicated On-premises Servers",
+      "B) Function-as-a-Service",
+      "C) Persistent Virtual Machines",
+      "D) Managed Hadoop Clusters"
+    ],
+    "answer": "B) Function-as-a-Service",
+    "explanation": "Serverless/FaaS is ideal for sporadic, short-lived tasks because you only pay for the execution time, rather than paying for a server to sit idle for 23 hours and 59 minutes.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "A machine learning engineer needs to run an iterative training algorithm where the same data is accessed repeatedly. Why would they choose Apache Spark over Hadoop MapReduce?",
+    "options": [
+      "A) Spark uses HDFS for storage.",
+      "B) Spark processes data in-memory.",
+      "C) Hadoop does not support machine learning.",
+      "D) Spark is only compatible with cloud storage."
+    ],
+    "answer": "B) Spark processes data in-memory.",
+    "explanation": "By keeping data in RAM (via RDDs), Spark avoids the high cost of writing to and reading from the disk between every iteration.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "A company wants to encrypt all traffic between their 50 microservices and monitor which service is calling which, but they don't want to rewrite any of their application code to do it. What should they implement?",
+    "options": [
+      "A) Kubernetes",
+      "B) A Service Mesh",
+      "C) A new API Gateway",
+      "D) Task Parallelism"
+    ],
+    "answer": "B) A Service Mesh",
+    "explanation": "Service meshes like Linkerd or Istio provide security and observability at the platform layer using sidecar proxies.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "In a service mesh architecture, where are the network proxies that handle communication between microservices typically located?",
+    "options": [
+      "A) Inside the centralized Control Plane",
+      "B) On a single hardware firewall at the network edge",
+      "C) Compiled directly into the application binary",
+      "D) As sidecar alongside application code"
+    ],
+    "answer": "D) As sidecar alongside application code",
+    "explanation": "Proxies are deployed in the same scheduling unit (like a pod) as the service to handle its networking transparently.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "A financial system needs to process stock market data as it arrives, calculating moving averages every millisecond. Which Spark feature is best suited for this?",
+    "options": [
+      "A) Spark MLlib",
+      "B) Spark SQL",
+      "C) Spark GraphX",
+      "D) Spark Streaming"
+    ],
+    "answer": "D) Spark Streaming",
+    "explanation": "This component enables scalable, high-throughput, fault-tolerant stream processing of live data streams.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "What is the primary role of YARN (Yet Another Resource Negotiator) within a Hadoop cluster?",
+    "options": [
+      "A) Encrypting data-in-transit",
+      "B) Running SQL queries on big data",
+      "C) Storing files across multiple disks",
+      "D) Scheduling tasks"
+    ],
+    "answer": "D) Scheduling tasks",
+    "explanation": "YARN acts as the operating system for the cluster, managing how CPU and memory are distributed to jobs.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "A developer needs to aggregate the total number of 'Likes' for every video on a platform from billions of raw activity records. Which phase of MapReduce will produce the final total per video?",
+    "options": [
+      "A) Map Phase",
+      "B) Reduce Phase",
+      "C) Ingestion Phase",
+      "D) Containerization Phase"
+    ],
+    "answer": "B) Reduce Phase",
+    "explanation": "The reduce phase takes the intermediate pairs and aggregates them to produce the final result.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "In Hadoop, which component is responsible for resource management and scheduling?",
+    "options": [
+      "A) HDFS",
+      "B) YARN",
+      "C) MapReduce",
+      "D) Spark"
+    ],
+    "answer": "B) YARN",
+    "explanation": "YARN (Yet Another Resource Negotiator) is the cluster management layer of Hadoop.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "A developer wants to deploy applications in portable environments with all dependencies included. What is the best solution?",
+    "options": [
+      "A) Kubernetes",
+      "B) Docker",
+      "C) Spark",
+      "D) Hadoop"
+    ],
+    "answer": "B) Docker",
+    "explanation": "Docker allows developers to package applications into containers that include everything needed to run, ensuring portability.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "A social media company needs to process billions of posts every night to generate daily analytics reports. The system does not require real-time processing and can run in batch mode. Which technology is most suitable?",
+    "options": [
+      "A) Apache Spark Streaming",
+      "B) Hadoop MapReduce",
+      "C) AWS Lambda",
+      "D) Kubernetes"
+    ],
+    "answer": "B) Hadoop MapReduce",
+    "explanation": "MapReduce is designed for high-throughput batch processing where real-time latency is not a priority.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "What happens in the 'Reduce' phase of a MapReduce job?",
+    "options": [
+      "A) The raw input data is split into chunks.",
+      "B) Data is filtered and converted into key-value pairs.",
+      "C) Processed data is aggregated",
+      "D) Data is stored permanently in the HDFS."
+    ],
+    "answer": "C) Processed data is aggregated",
+    "explanation": "The Map phase handles initial processing/filtering, while the Reduce phase aggregates those intermediate results into a summary or final output.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "Why are Resilient Distributed Datasets (RDDs) in Spark considered 'Resilient'?",
+    "options": [
+      "A) They are encrypted so hackers cannot read them.",
+      "B) They can automatically reconstruct lost data.",
+      "C) They are stored on physical tapes for long-term backup.",
+      "D) They prevent any errors from occurring in the code."
+    ],
+    "answer": "B) They can automatically reconstruct lost data",
+    "explanation": "RDDs are fault-tolerant because they track the 'lineage' (history) of how they were created. If a node fails, Spark uses this history to recompute the missing data.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "A developer needs to handle 'backpressure' where a data producer is faster than the data consumer. Which technology acts as a buffer between them?",
+    "options": [
+      "A) Kubernetes Orchestrator",
+      "B) Kafka",
+      "C) Docker Container",
+      "D) Apache Spark MLlib"
+    ],
+    "answer": "B) Kafka",
+    "explanation": "Message queues like Kafka or RabbitMQ act as buffers that store events asynchronously, allowing the consumer to process them at its own pace without crashing.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "A 'Cloud-Native' application usually utilizes a CI/CD pipeline. What does this achieve?",
+    "options": [
+      "A) It replaces the need for a service mesh.",
+      "B) It automates the testing and deployment.",
+      "C) It provides a way to store large binary files.",
+      "D) It increases the physical speed of the internet connection."
+    ],
+    "answer": "B) It automates the testing and deployment",
+    "explanation": "Continuous Integration/Continuous Deployment (CI/CD) is a key cloud-native principle that automates the delivery of software, allowing for frequent and reliable updates.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "In the context of the service mesh, what is a 'sidecar'?",
+    "options": [
+      "A) A backup server located in a different country.",
+      "B) A helper application that runs next to the main application container.",
+      "C) A specialized hard drive used for storing log files.",
+      "D) A mobile version of a desktop application."
+    ],
+    "answer": "B) A helper application that runs in its own container",
+    "explanation": "The sidecar pattern involves deploying a proxy (like Linkerd) alongside every instance of a service to handle its networking, security, and telemetry.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "What is the primary function of the HDFS (Hadoop Distributed File System)?",
+    "options": [
+      "A) To manage CPU resources across the cluster.",
+      "B) To provide high-performance in-memory caching.",
+      "C) To store massive datasets across multiple commodity hardware nodes.",
+      "D) To execute SQL queries on real-time data streams."
+    ],
+    "answer": "C) To store massive datasets across multiple commodity hardware nodes.",
+    "explanation": "HDFS is the storage layer of Hadoop, designed to hold very large files across many machines with built-in redundancy.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "A company has hundreds of Docker containers running and needs to automate their deployment, scaling, and management. Which tool is the industry standard for this?",
+    "options": [
+      "A) Apache Spark",
+      "B) Kubernetes",
+      "C) HDFS",
+      "D) MapReduce"
+    ],
+    "answer": "B) Kubernetes",
+    "explanation": "Kubernetes is an orchestration platform used to manage the lifecycle of containerized applications at scale.",
+    "image": null
+  }
+]

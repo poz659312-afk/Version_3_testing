@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "While typical distributed storage systems might struggle with providing immediate accuracy across all nodes due to the CAP theorem, which cloud storage service specifically highlights a 'strong consistency model' as one of its core features?",
+    "options": [
+      "A) Amazon S3",
+      "B) Azure Blob Storage",
+      "C) Google Cloud Storage",
+      "D) Ceph"
+    ],
+    "answer": "C) Google Cloud Storage",
+    "explanation": "Google Cloud Storage features a strong consistency model, differentiating it from systems that might only guarantee eventual consistency.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "How does Ceph avoid the performance bottlenecks associated with relying on a central metadata server?",
+    "options": [
+      "A) By utilizing the CRUSH algorithm for data placement.",
+      "B) By leveraging Apache Beam SDK for serverless processing.",
+      "C) By restricting storage strictly to object formats.",
+      "D) By implementing a Master-Slave replication strategy."
+    ],
+    "answer": "A) By utilizing the CRUSH algorithm for data placement.",
+    "explanation": "Ceph uses the CRUSH (Controlled Replication Under Scalable Hashing) algorithm for data placement, which eliminates the need for a central metadata server.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "Which replication strategy is specifically designed to balance the trade-off between consistency and availability by requiring a specific number of nodes to agree before an operation is complete?",
+    "options": [
+      "A) Master-Slave Replication",
+      "B) Multi-Master Replication",
+      "C) Synchronous Replication",
+      "D) Quorum-Based Replication"
+    ],
+    "answer": "D) Quorum-Based Replication",
+    "explanation": "Quorum-Based Replication requires read and write operations to get agreement from a quorum of nodes, balancing consistency and availability.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "A database administrator is comparing NoSQL architectures. Which database is fundamentally designed as a decentralized, wide-column store utilizing a peer-to-peer architecture?",
+    "options": [
+      "A) Amazon DynamoDB",
+      "B) Apache Cassandra",
+      "C) MongoDB Atlas",
+      "D) Snowflake"
+    ],
+    "answer": "B) Apache Cassandra",
+    "explanation": "Apache Cassandra is a decentralized, wide-column store that uses a peer-to-peer architecture and supports eventual consistency.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "When differentiating between disaster recovery strategies, what defines a 'Warm Standby' setup compared to a 'Hot Standby'?",
+    "options": [
+      "A) Warm Standby relies on delayed recovery using periodically updated backups, while Hot Standby uses tape storage.",
+      "B) Warm Standby involves a partially active infrastructure that can be quickly scaled, whereas Hot Standby is fully active and redundant.",
+      "C) Warm Standby implies completely disconnected offline servers, while Hot Standby is partially active.",
+      "D) Warm Standby requires synchronous replication, while Hot Standby only supports asynchronous replication."
+    ],
+    "answer": "B) Warm Standby involves a partially active infrastructure that can be quickly scaled, whereas Hot Standby is fully active and redundant.",
+    "explanation": "Warm Standby is a partially active infrastructure that can be quickly scaled, while Hot Standby systems are fully active and redundant across regions.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "To prevent irreversible damage from malicious ransomware attacks where files are encrypted by an attacker, which specific storage security mechanism should be implemented?",
+    "options": [
+      "A) Cross-region replication",
+      "B) Cold Standby disaster recovery",
+      "C) Immutable Storage",
+      "D) TLS Encryption in transit"
+    ],
+    "answer": "C) Immutable Storage",
+    "explanation": "Immutable Storage prevents data from being altered or deleted, serving as a critical mechanism to prevent irreversible damage from ransomware attacks.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "A university research team is building an on-premise cloud. They require a single platform that can simultaneously provide object, block, and file system storage with self-healing capabilities. Which system is the best fit?",
+    "options": [
+      "A) Hadoop Distributed File System (HDFS)",
+      "B) Lustre",
+      "C) Ceph",
+      "D) Amazon S3"
+    ],
+    "answer": "C) Ceph",
+    "explanation": "Ceph is a unified, distributed storage system providing object, block, and file system storage in a single platform with self-healing capabilities.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "A global gaming enterprise needs a cloud database to power their real-time leaderboards. The system must support key-value models, guarantee ACID transactions, and deliver single-digit millisecond latency. Which service meets all these requirements?",
+    "options": [
+      "A) MongoDB Atlas",
+      "B) Apache Cassandra",
+      "C) Amazon DynamoDB",
+      "D) Google BigQuery"
+    ],
+    "answer": "C) Amazon DynamoDB",
+    "explanation": "Amazon DynamoDB is a managed NoSQL database that supports key-value models, ACID transactions, and single-digit millisecond latency.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "An enterprise is analyzing years of historical log data. They want to use commodity hardware to run MapReduce batch processing jobs overnight. Which distributed file system is structurally designed to divide these large files into blocks and process them in this manner?",
+    "options": [
+      "A) HDFS",
+      "B) Ceph",
+      "C) Azure Blob Storage",
+      "D) Google Cloud Dataflow"
+    ],
+    "answer": "A) HDFS",
+    "explanation": "HDFS runs on commodity hardware, divides large files into blocks, and is optimized for batch processing with MapReduce.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "A startup's web application relies on a flexible, JSON-like document structure. They want a fully managed service that takes care of horizontal scaling via sharding and handles automated backups across multiple regions. Which NoSQL database should they choose?",
+    "options": [
+      "A) Apache Cassandra",
+      "B) MongoDB Atlas",
+      "C) Amazon DynamoDB",
+      "D) Redis"
+    ],
+    "answer": "B) MongoDB Atlas",
+    "explanation": "MongoDB Atlas is a fully managed, document-oriented NoSQL database with a JSON-like schema that supports sharding for horizontal scaling and multi-region deployments.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "A marketing agency needs to run SQL-like analytical queries on massive datasets in real-time. They want a completely serverless solution that easily integrates the query results with their existing Machine Learning models. Which data warehouse fits this scenario?",
+    "options": [
+      "A) Google BigQuery",
+      "B) Amazon DynamoDB",
+      "C) HDFS",
+      "D) Apache Kafka"
+    ],
+    "answer": "A) Google BigQuery",
+    "explanation": "Google BigQuery is a serverless, highly scalable data warehouse that allows SQL-like queries, supports real-time analytics, and integrates with ML models.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "A national weather laboratory is deploying a new supercomputer to run intensive climate simulations. They require a POSIX-compliant distributed file system capable of delivering critical throughput and high performance. Which system is the industry standard for this environment?",
+    "options": [
+      "A) Ceph",
+      "B) Azure Blob Storage",
+      "C) Lustre",
+      "D) MongoDB Atlas"
+    ],
+    "answer": "C) Lustre",
+    "explanation": "Lustre is a high-performance distributed file system that supports POSIX compliance and is widely deployed in supercomputing environments and scientific computing.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "A social media platform allows users to post updates. They accept that when a user posts an update, it might take a few moments for users in other countries to see it, prioritizing system availability over immediate global accuracy. Which consistency model are they relying on?",
+    "options": [
+      "A) Strong Consistency",
+      "B) Eventual Consistency",
+      "C) Causal Consistency",
+      "D) Synchronous Consistency"
+    ],
+    "answer": "B) Eventual Consistency",
+    "explanation": "Eventual Consistency implies that updates will eventually propagate through the system, but immediate consistency is not guaranteed across all nodes.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "A hospital network needs to archive decades of patient X-rays and binary records. To manage costs, they want an object storage solution that allows them to categorize older, rarely accessed records into a highly cost-effective storage tier. Which Microsoft service is designed for this?",
+    "options": [
+      "A) Azure Blob Storage",
+      "B) Azure Event Hubs",
+      "C) Snowflake",
+      "D) Amazon S3"
+    ],
+    "answer": "A) Azure Blob Storage",
+    "explanation": "Azure Blob Storage is Microsoft's object storage for unstructured data and specifically features hot, cool, and archive access tiers for cost-effectiveness.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "A global banking application cannot tolerate any data loss or downtime during a regional outage. They require an infrastructure strategy where identical, redundant systems are running and fully active across multiple geographic regions simultaneously. What disaster recovery strategy is this?",
+    "options": [
+      "A) Cold Standby",
+      "B) Warm Standby",
+      "C) Hot Standby",
+      "D) Asynchronous Replication"
+    ],
+    "answer": "C) Hot Standby",
+    "explanation": "Hot Standby is defined as having fully active and redundant systems across regions, which is required for zero-downtime, fully active disaster recovery.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "A data engineering team needs to write a unified data processing pipeline using the Apache Beam SDK. They want a serverless service capable of handling both real-time stream data and historical batch data. Which cloud service provides this environment?",
+    "options": [
+      "A) Amazon Kinesis",
+      "B) Azure Event Hubs",
+      "C) Apache Cassandra",
+      "D) Google Cloud Dataflow"
+    ],
+    "answer": "D) Google Cloud Dataflow",
+    "explanation": "Google Cloud Dataflow is a serverless data processing service for stream and batch data that utilizes the Apache Beam SDK.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "A collaborative global application allows users in North America and Asia to write data to their local database nodes at the exact same time. Because writes happen in multiple locations simultaneously, the system must utilize conflict resolution protocols. What replication strategy does this require?",
+    "options": [
+      "A) Master-Slave Replication",
+      "B) Synchronous Replication",
+      "C) Quorum-Based Replication",
+      "D) Multi-Master Replication"
+    ],
+    "answer": "D) Multi-Master Replication",
+    "explanation": "Multi-Master Replication allows multiple nodes to handle write operations simultaneously, which inherently requires conflict resolution mechanisms to manage overlapping edits.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "Which consistency model introduces a strict dependency constraint where a clear cause-and-effect link between two data operations mandates that every single node observes them in the exact same chronological sequence?",
+    "options": [
+      "A) Strong Consistency",
+      "B) Eventual Consistency",
+      "C) Causal Consistency",
+      "D) Quorum Consistency"
+    ],
+    "answer": "C) Causal Consistency",
+    "explanation": "Causal consistency explicitly ensures that causally related updates are seen by all nodes in the same chronological order, preventing logical sequence errors.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "If an engineering team values zero data loss above all else during a localized storage failure and can tolerate higher application write latencies, which replication approach should they implement?",
+    "options": [
+      "A) Asynchronous Replication",
+      "B) Synchronous Replication",
+      "C) Eventual Replication",
+      "D) Masterless Peer-to-Peer Replication"
+    ],
+    "answer": "B) Synchronous Replication",
+    "explanation": "Synchronous replication ensures data consistency across nodes before confirming an operation to the user, protecting against data loss at the cost of increased network latency.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "A financial auditing platform requires that once an entry is committed, any subsequent query by any user anywhere in the world must immediately reflect that change. Which consistency model is required?",
+    "options": [
+      "A) Causal Consistency",
+      "B) Eventual Consistency",
+      "C) Strong Consistency",
+      "D) Tunable Consistency"
+    ],
+    "answer": "C) Strong Consistency",
+    "explanation": "Strong consistency guarantees that all users see the exact same data at the exact same time, regardless of their location or the node they access.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "A data warehouse engineer wants to run complex analytical SQL-like queries on massive, multi-terabyte datasets without provisioning or managing a single virtual server. Which service matches this serverless profile?",
+    "options": [
+      "A) Amazon Redshift",
+      "B) Apache Cassandra",
+      "C) Google BigQuery",
+      "D) MongoDB Atlas"
+    ],
+    "answer": "C) Google BigQuery",
+    "explanation": "Google BigQuery is a serverless, highly scalable data warehouse designed specifically to enable the execution of SQL-like queries on massive datasets without requiring cluster management.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "A retail enterprise is deploying an inventory tracking system across multiple global distribution centers. They want a database that allows every single center to write locally to its own database node to prevent slow cross-region connections. Which replication strategy must their database support?",
+    "options": [
+      "A) Master-Slave Replication",
+      "B) Multi-Master Replication",
+      "C) Synchronous-Only Replication",
+      "D) Cold Standby Replication"
+    ],
+    "answer": "B) Multi-Master Replication",
+    "explanation": "Multi-Master replication allows multiple distinct nodes to independently handle write operations, effectively distributing write capabilities across various global endpoints.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "A developers' forum uses a database where immediate synchronization across worldwide nodes is too slow. They choose a model where updates propagate over time, meaning users might temporarily see slightly older content. What is this model?",
+    "options": [
+      "A) Strong Consistency",
+      "B) Eventual Consistency",
+      "C) Causal Consistency",
+      "D) Synchronous Consistency"
+    ],
+    "answer": "B) Eventual Consistency",
+    "explanation": "Eventual consistency means updates propagate through the system incrementally over time, meaning immediate synchronization across all nodes is not guaranteed upon a write.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "An application needs to write log files rapidly to the nearest database node. The architecture prioritizes low-latency writes over absolute historical certainty, accepting a slight risk of losing data if a node fails. Which replication type fits this priority?",
+    "options": [
+      "A) Synchronous Replication",
+      "B) Asynchronous Replication",
+      "C) Strong Consistency Replication",
+      "D) Quorum-Based Write Verification"
+    ],
+    "answer": "B) Asynchronous Replication",
+    "explanation": "Asynchronous replication offers low-latency write actions by confirming writes before waiting for other nodes to copy the data, though this introduces a slight risk of data loss if a primary node fails before propagation.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "An application updates a specific user profile on Node A. If Node B and Node C are updated later in the background while the system continues to accept new requests, which specific pair of architectural terms applies to this setup?",
+    "options": [
+      "A) Strong Consistency and Synchronous Replication",
+      "B) Eventual Consistency and Asynchronous Replication",
+      "C) Causal Consistency and Master-Slave Locking",
+      "D) Quorum Consistency and Multi-Master Blocking"
+    ],
+    "answer": "B) Eventual Consistency and Asynchronous Replication",
+    "explanation": "Background propagation maps directly to asynchronous replication, resulting in an eventual consistency model where nodes synchronize over time rather than instantaneously.",
+    "image": null
+  }
+]

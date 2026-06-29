@@ -1,0 +1,327 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "A DevOps engineer has administrative privileges (RBAC) to manage EC2 instances. However, when they attempt to terminate an instance tagged Environment: Production, the action is denied because their request originates from an untrusted public IP address rather than the corporate VPN. Which security model is actively overriding their role?",
+    "options": [
+      "A) Federated Identity Management",
+      "B) Single Sign-On (SSO)",
+      "C) Attribute-Based Access Control (ABAC)",
+      "D) Cloud Workload Protection Platform (CWPP)"
+    ],
+    "answer": "C) Attribute-Based Access Control (ABAC)",
+    "explanation": "ABAC makes authorization decisions based on attributes such as IP address, device type, location, resource tags, and time. Even though the user has the required role, the request is denied because the source IP does not satisfy the defined attributes."
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "A large enterprise acquires a smaller startup. To avoid forcing the startup's employees to create and memorize entirely new active directory credentials for the enterprise's cloud portal, the architects link the two identity systems together. What technology enables this seamless access?",
+    "options": [
+      "A) Single Sign-On (SSO)",
+      "B) Multi-Factor Authentication (MFA)",
+      "C) Customer-Managed Keys (CMK)",
+      "D) Data Loss Prevention (DLP)"
+    ],
+    "answer": "A) Single Sign-On (SSO)",
+    "explanation": "SSO allows users to authenticate once and access multiple systems without maintaining separate credentials. When combined with federated identity, users from one organization can securely access resources in another using their existing accounts."
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "An organization uses a fully managed SaaS database to store customer profiles. A database administrator accidentally runs a script that deletes 10,000 profiles. Under the Shared Responsibility Model, who is legally and operationally responsible for recovering this data?",
+    "options": [
+      "A) The Cloud Service Provider (CSP), because they manage the SaaS application layer.",
+      "B) The Customer, because they retain responsibility for data and access management.",
+      "C) The Cloud Service Provider (CSP), because they are responsible for hypervisor availability.",
+      "D) Both share responsibility through the implementation of a Cloud Access Security Broker (CASB)."
+    ],
+    "answer": "B) The Customer, because they retain responsibility for data and access management.",
+    "explanation": "Even in SaaS environments, customers remain responsible for their data, user actions, permissions, and recovery planning. The provider manages the infrastructure and service availability, not accidental customer data deletion."
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "A financial firm heavily utilizes AES-256 for data at rest. However, their Chief Information Security Officer requires a cryptographic setup where, if the company deletes their encryption keys, the cloud provider cannot decrypt the data under any circumstances. Which encryption architecture satisfies this?",
+    "options": [
+      "A) Provider-managed default encryption",
+      "B) Perfect Forward Secrecy via TLS",
+      "C) Public Key Infrastructure (PKI) Certificates",
+      "D) Customer-Managed Keys (CMK)"
+    ],
+    "answer": "D) Customer-Managed Keys (CMK)",
+    "explanation": "Customer-Managed Keys give the organization direct control over encryption keys. If the keys are deleted or revoked, the encrypted data becomes inaccessible, including to the cloud provider."
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "Two internal microservices exist within the exact same private Virtual Private Cloud (VPC) subnet. Despite their proximity behind the corporate firewall, Microservice A explicitly challenges Microservice B to provide a mutual TLS certificate before allowing communication. Which security philosophy is being demonstrated?",
+    "options": [
+      "A) The 'Castle and Moat' model",
+      "B) Perimeter Intrusion Detection",
+      "C) Zero Trust ('Never Trust, Always Verify')",
+      "D) Role-Based Access Control (RBAC)"
+    ],
+    "answer": "C) Zero Trust ('Never Trust, Always Verify')",
+    "explanation": "Zero Trust assumes no entity is trusted by default, even inside the same network. Mutual authentication is required before communication is permitted."
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "A disgruntled lead developer decides to sabotage their employer by copying proprietary source code to a personal external drive before resigning. Based on the cloud security threats, what specific threat category does this represent?",
+    "options": [
+      "A) Insider Threat",
+      "B) Advanced Persistent Threat (APT)",
+      "C) Misconfiguration",
+      "D) Account Hijacking"
+    ],
+    "answer": "A) Insider Threat",
+    "explanation": "An insider threat originates from an authorized individual within the organization who abuses legitimate access to harm the company or steal sensitive information."
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "During a threat modeling session, an engineer points out that a low-level customer support account could potentially exploit an insecure API endpoint to execute root-level commands on the underlying database. Which STRIDE category perfectly describes this vector?",
+    "options": [
+      "A) Information Disclosure",
+      "B) Elevation of Privilege",
+      "C) Repudiation",
+      "D) Tampering with Data"
+    ],
+    "answer": "B) Elevation of Privilege",
+    "explanation": "Elevation of Privilege occurs when a user gains permissions beyond their intended authorization level, such as escalating from a support account to administrative control."
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "An exploit is discovered that requires an attacker to physically infiltrate a heavily guarded hyperscale data center, bypass biometric locks, and splice into an active fiber-optic cable. When applying the DREAD framework, which specific variable will drag the overall risk score down drastically?",
+    "options": [
+      "A) Damage Potential",
+      "B) Affected Users",
+      "C) Reproducibility",
+      "D) Exploitability"
+    ],
+    "answer": "D) Exploitability",
+    "explanation": "Exploitability measures how difficult an attack is to perform. Since this attack requires extraordinary resources and physical access, the exploitability score would be very low."
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "A security analyst finds a vulnerability that allows unauthenticated access to an S3 bucket. However, the bucket only contains publicly available, open-source marketing images intended for anyone to download. In the DREAD framework, which score must be rated as 'Low'?",
+    "options": [
+      "A) Discoverability",
+      "B) Exploitability",
+      "C) Damage Potential",
+      "D) Reproducibility"
+    ],
+    "answer": "C) Damage Potential",
+    "explanation": "Although the vulnerability exists, the exposed data is already intended for public access. Therefore, the potential damage resulting from exploitation is minimal."
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "In Step 7 of the PASTA framework (Risk Analysis and Mitigation), a Chief Information Security Officer decides NOT to implement a fix for a discovered vulnerability, choosing instead to purchase cyber insurance. Why is this a valid outcome of the PASTA methodology?",
+    "options": [
+      "A) Because PASTA focuses on evaluating mitigation costs against acceptable residual business risk.",
+      "B) Because Step 7 mandates moving workloads to a different cloud provider if flaws are found.",
+      "C) Because threat modeling requires that all vulnerabilities must be ignored if they aren't zero-days.",
+      "D) Because Step 7 relies on Dynamic Application Security Testing to virtually patch the flaw."
+    ],
+    "answer": "A) Because PASTA focuses on evaluating mitigation costs against acceptable residual business risk.",
+    "explanation": "PASTA is a risk-centric framework that considers business impact and mitigation costs. Risk acceptance or risk transfer through insurance can be valid decisions."
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "An attacker executes a Distributed Denial of Service (DDoS) attack that overwhelms a cloud application's load balancers, causing the site to go offline for legitimate users. According to the STRIDE framework, what core security property has been violated?",
+    "options": [
+      "A) Integrity",
+      "B) Availability",
+      "C) Confidentiality",
+      "D) Authorization"
+    ],
+    "answer": "B) Availability",
+    "explanation": "DDoS attacks prevent legitimate users from accessing services, directly violating the availability aspect of the CIA triad."
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "A cloud security team wants to prevent developers from accidentally hardcoding AWS access keys and database passwords directly into their GitHub repositories. Which DevSecOps testing methodology must be integrated into the CI/CD pipeline to catch this before the code is compiled?",
+    "options": [
+      "A) Dynamic Application Security Testing (DAST)",
+      "B) Container Security Scanning",
+      "C) Software Composition Analysis (SCA)",
+      "D) Static Application Security Testing (SAST)"
+    ],
+    "answer": "D) Static Application Security Testing (SAST)",
+    "explanation": "SAST analyzes source code before execution and can identify hardcoded credentials, insecure coding practices, and other vulnerabilities early in development."
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "A production environment features a running, compiled web application. The security team utilizes an automated scanner that mimics an attacker by sending malformed HTTP requests, SQL injection payloads, and cross-site scripting attacks against the live web forms. What type of testing is this?",
+    "options": [
+      "A) Static Application Security Testing (SAST)",
+      "B) Software Composition Analysis (SCA)",
+      "C) Dynamic Application Security Testing (DAST)",
+      "D) Cloud Security Posture Management (CSPM)"
+    ],
+    "answer": "C) Dynamic Application Security Testing (DAST)",
+    "explanation": "DAST evaluates a running application from the outside, simulating real-world attacks to discover exploitable vulnerabilities."
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "An enterprise wants to ensure that its entire AWS infrastructure remains compliant with the CIS Foundations Benchmark. They need a tool that continuously monitors the environment and issues alerts when security configurations drift. Which tool is required?",
+    "options": [
+      "A) Cloud Security Posture Management (CSPM)",
+      "B) Cloud Workload Protection Platform (CWPP)",
+      "C) Web Application Firewall (WAF)",
+      "D) Cloud Access Security Broker (CASB)"
+    ],
+    "answer": "A) Cloud Security Posture Management (CSPM)",
+    "explanation": "CSPM continuously evaluates cloud configurations, detects misconfigurations, and monitors compliance against standards such as CIS benchmarks."
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "While CSPM secures the infrastructure configuration, a security team also needs to protect the internal runtime execution of their Docker containers, looking for anomalous processes or malware executing inside the container itself. Which specific tool handles this workload-level security?",
+    "options": [
+      "A) Cloud Access Security Broker (CASB)",
+      "B) Cloud Workload Protection Platform (CWPP)",
+      "C) Data Loss Prevention (DLP)",
+      "D) Identity and Access Management (IAM)"
+    ],
+    "answer": "B) Cloud Workload Protection Platform (CWPP)",
+    "explanation": "CWPP focuses on securing workloads such as VMs, containers, and serverless functions by monitoring runtime behavior and detecting threats."
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "A corporate IT department discovers that employees are bypassing corporate storage and uploading sensitive company documents to their personal Google Drive and Dropbox accounts. They deploy a tool that sits between the users and the web to monitor and block these unauthorized SaaS interactions. What tool was deployed?",
+    "options": [
+      "A) Intrusion Detection System (IDS)",
+      "B) Web Application Firewall (WAF)",
+      "C) Static Application Security Testing (SAST)",
+      "D) Cloud Access Security Broker (CASB)"
+    ],
+    "answer": "D) Cloud Access Security Broker (CASB)",
+    "explanation": "CASBs provide visibility and policy enforcement between users and cloud applications, helping prevent unauthorized use of SaaS platforms."
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "A global bank has security logs generating terabytes of data daily from AWS CloudTrail, Azure Monitor, on-premises firewalls, and endpoint antivirus software. To detect a coordinated attack, they need a platform to ingest, aggregate, and correlate all these disparate logs. Which platform provides this centralized threat detection?",
+    "options": [
+      "A) DAST",
+      "B) WAF",
+      "C) SIEM (Security Information and Event Management)",
+      "D) CSPM"
+    ],
+    "answer": "C) SIEM (Security Information and Event Management)",
+    "explanation": "SIEM platforms aggregate logs from multiple sources, correlate events, and provide centralized monitoring and threat detection capabilities."
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "A cloud application is facing a barrage of SQL injection attempts and Cross-Site Scripting (XSS) payloads targeting its public-facing login URL. Which specific security tool acts as a reverse proxy to inspect incoming HTTP/HTTPS traffic and block these malicious payloads before they hit the web server?",
+    "options": [
+      "A) Web Application Firewall (WAF)",
+      "B) CloudTrail",
+      "C) Software Composition Analysis (SCA)",
+      "D) Virtual Private Cloud (VPC)"
+    ],
+    "answer": "A) Web Application Firewall (WAF)",
+    "explanation": "A WAF inspects HTTP and HTTPS traffic and blocks common web attacks such as SQL injection, XSS, and other application-layer threats."
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "During the 'Detection and Analysis' phase of Incident Response, a security team relies heavily on an AI-driven tool that establishes a baseline of normal API activity and flags behavioral anomalies. Which AWS service exemplifies this?",
+    "options": [
+      "A) AWS CloudTrail",
+      "B) Amazon GuardDuty",
+      "C) AWS Key Management Service (KMS)",
+      "D) Amazon S3"
+    ],
+    "answer": "B) Amazon GuardDuty",
+    "explanation": "Amazon GuardDuty uses machine learning, threat intelligence, and anomaly detection to identify suspicious activity within AWS environments."
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "A critical security alert reveals an attacker has successfully compromised a container in the payment processing subnet. The incident response team immediately updates the NACLs to isolate that subnet from the rest of the network. Which IR phase is this?",
+    "options": [
+      "A) Preparation",
+      "B) Eradication and Recovery",
+      "C) Post-Incident Review",
+      "D) Containment"
+    ],
+    "answer": "D) Containment",
+    "explanation": "Containment focuses on limiting the spread and impact of an incident while preserving systems for further investigation."
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "An attacker gains access to a cloud environment by purchasing leaked passwords on the dark web and using a botnet to test them against cloud login portals until they find an account lacking MFA. What specific threat is this?",
+    "options": [
+      "A) Zero-Day Exploit",
+      "B) Malicious Insider",
+      "C) Account Hijacking",
+      "D) Tampering with Data"
+    ],
+    "answer": "C) Account Hijacking",
+    "explanation": "Account hijacking occurs when attackers gain unauthorized access to legitimate user accounts, often using stolen credentials and credential-stuffing techniques."
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "A DevSecOps team utilizes a 'Shift Left' philosophy. As part of this, they scan the underlying OS packages of their Docker images for known vulnerabilities before pushing them to production. Which specific security process are they performing?",
+    "options": [
+      "A) Container Security Scanning",
+      "B) Cloud Access Security Brokering (CASB)",
+      "C) Dynamic Application Security Testing (DAST)",
+      "D) Attribute-Based Access Control (ABAC)"
+    ],
+    "answer": "A) Container Security Scanning",
+    "explanation": "Container security scanning identifies known vulnerabilities in container images, operating system packages, and dependencies before deployment."
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "A global e-commerce platform migrates its payment processing systems to the cloud. To avoid massive financial penalties and losing the ability to process payments, their architecture must strictly protect cardholder data. Which regulatory framework dictates these requirements?",
+    "options": [
+      "A) GDPR",
+      "B) PCI-DSS",
+      "C) HIPAA",
+      "D) SOC 2"
+    ],
+    "answer": "B) PCI-DSS",
+    "explanation": "PCI-DSS is the industry standard governing the security of payment card data and applies to organizations that store, process, or transmit cardholder information."
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "A newly hired Chief Information Security Officer introduces a threat modeling framework that explicitly maps technical vulnerabilities to financial loss, business impact, and critical asset degradation. Which framework was introduced?",
+    "options": [
+      "A) STRIDE",
+      "B) The Shared Responsibility Model",
+      "C) DREAD",
+      "D) PASTA"
+    ],
+    "answer": "D) PASTA",
+    "explanation": "PASTA (Process for Attack Simulation and Threat Analysis) is a business-centric threat modeling framework that links technical threats directly to organizational risks and business objectives."
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "A cybersecurity analyst is analyzing threats based on the specific security properties they violate. If an attacker leverages a flaw to upgrade their standard user account to an administrative account, what STRIDE category does this fall under, and what property is violated?",
+    "options": [
+      "A) Information Disclosure; violates Confidentiality",
+      "B) Spoofing Identity; violates Authentication",
+      "C) Elevation of Privilege; violates Authorization",
+      "D) Tampering with Data; violates Integrity"
+    ],
+    "answer": "C) Elevation of Privilege; violates Authorization",
+    "explanation": "Elevation of Privilege occurs when an attacker gains permissions beyond those originally granted. By escalating from a standard user account to an administrator account, the attacker violates the authorization controls that determine what actions a user is allowed to perform."
+  }
+]

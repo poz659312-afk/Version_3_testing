@@ -1,0 +1,782 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "Which performance metric is explicitly used to measure the number of read and write operations a storage volume can execute every second?",
+    "options": [
+      "A) IOPS",
+      "B) Disk Latency",
+      "C) Throughput",
+      "D) Packet Loss"
+    ],
+    "answer": "A) IOPS",
+    "explanation": "IOPS is the standard storage metric used to quantify how many read and write operations a disk or storage system can handle in a single second."
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "A DevOps engineer has administrative privileges (RBAC) to manage EC2 instances. However, when they attempt to terminate an instance tagged Environment: Production, the action is denied because their request originates from an untrusted public IP address rather than the corporate VPN. Which security model is actively overriding their role?",
+    "options": [
+      "A) Federated Identity Management",
+      "B) Single Sign-On (SSO)",
+      "C) Attribute-Based Access Control (ABAC)",
+      "D) Cloud Workload Protection Platform (CWPP)"
+    ],
+    "answer": "C) Attribute-Based Access Control (ABAC)",
+    "explanation": "ABAC makes authorization decisions based on attributes such as IP address, device type, location, resource tags, and time. Even though the user has the required role, the request is denied because the source IP does not satisfy the defined attributes."
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "A healthcare organization moves to an IaaS cloud model and assumes the provider will secure the application-level firewalls and OS patches. According to the Shared Responsibility Model, who is actually responsible for these tasks?",
+    "options": [
+      "A) The Customer",
+      "B) The Cloud Service Provider",
+      "C) Both share it equally via the CASB tool.",
+      "D) Cannot tell"
+    ],
+    "answer": "A) The Customer",
+    "explanation": "In IaaS, the provider secures the underlying infrastructure, while the customer is responsible for the operating system, applications, and related security controls."
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "While typical distributed storage systems might struggle with providing immediate accuracy across all nodes due to the CAP theorem, which cloud storage service specifically highlights a 'strong consistency model' as one of its core features?",
+    "options": [
+      "A) Amazon S3",
+      "B) Azure Blob Storage",
+      "C) Google Cloud Storage",
+      "D) Ceph"
+    ],
+    "answer": "C) Google Cloud Storage",
+    "explanation": "Google Cloud Storage features a strong consistency model, differentiating it from systems that might only guarantee eventual consistency."
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "In the context of Cloud Architecture Layers, where would a 'Hypervisor' or a 'Container' be categorized?",
+    "options": [
+      "A) Platform Layer",
+      "B) Virtualization Layer",
+      "C) Infrastructure Layer",
+      "D) Application Layer"
+    ],
+    "answer": "B) Virtualization Layer",
+    "explanation": "This layer is specifically responsible for abstracting physical hardware into virtual machines or isolated containers."
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "An image processing application receives 10,000 high-resolution photos and applies the exact same grayscale filter to every single one simultaneously across 50 processors. What model of parallelism is being demonstrated here?",
+    "options": [
+      "A) Data Parallelism",
+      "B) Task Parallelism",
+      "C) Pipeline Parallelism",
+      "D) Sequential Processing"
+    ],
+    "answer": "A) Data Parallelism",
+    "explanation": "The same operation is distributed across different subsets of a large dataset to be processed concurrently."
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "When evaluating the health and efficiency of a cloud network, which three specific metrics provide the most comprehensive overview of network performance?",
+    "options": [
+      "A) Latency, throughput, and packet loss",
+      "B) IOPS, disk latency, and throughput",
+      "C) CPU utilization, memory usage, and response time",
+      "D) Request rates, error rates, and transaction times"
+    ],
+    "answer": "A) Latency, throughput, and packet loss",
+    "explanation": "Network performance is primarily assessed by tracking latency (delay), throughput (data transfer rate), and packet loss (data dropped in transit)."
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "An organization uses a fully managed SaaS database to store customer profiles. A database administrator accidentally runs a script that deletes 10,000 profiles. Under the Shared Responsibility Model, who is legally and operationally responsible for recovering this data?",
+    "options": [
+      "A) The Cloud Service Provider (CSP), because they manage the SaaS application layer.",
+      "B) The Customer, because they retain responsibility for data and access management.",
+      "C) The Cloud Service Provider (CSP), because they are responsible for hypervisor availability.",
+      "D) Both share responsibility through the implementation of a Cloud Access Security Broker (CASB)."
+    ],
+    "answer": "B) The Customer, because they retain responsibility for data and access management.",
+    "explanation": "Even in SaaS environments, customers remain responsible for their data, user actions, permissions, and recovery planning. The provider manages the infrastructure and service availability, not accidental customer data deletion."
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "A security architect wants to implement access controls that restrict database access based on the user's geographical location, the time of day, and the type of device they are using. Which specific IAM approach should be utilized?",
+    "options": [
+      "A) Role-Based Access Control (RBAC)",
+      "B) Federated Identity",
+      "C) Attribute-Based Access Control (ABAC)",
+      "D) Multi-Factor Authentication (MFA)"
+    ],
+    "answer": "C) Attribute-Based Access Control (ABAC)",
+    "explanation": "ABAC uses attributes such as location, device type, time, and user context to decide access."
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "A database administrator is comparing NoSQL architectures. Which database is fundamentally designed as a decentralized, wide-column store utilizing a peer-to-peer architecture?",
+    "options": [
+      "A) Amazon DynamoDB",
+      "B) Apache Cassandra",
+      "C) MongoDB Atlas",
+      "D) Snowflake"
+    ],
+    "answer": "B) Apache Cassandra",
+    "explanation": "Apache Cassandra is a decentralized, wide-column store that uses a peer-to-peer architecture and supports eventual consistency."
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "If a system administrator wants to define their entire cloud network, including VPCs and subnets, using a 'declarative' configuration file that ensures the desired state matches the actual state, which tool is described in the text?",
+    "options": [
+      "A) Terraform",
+      "B) Kubernetes",
+      "C) Docker",
+      "D) AWS CloudWatch"
+    ],
+    "answer": "A) Terraform",
+    "explanation": "Terraform allows operators to declare a desired state for resources like a VPC and automatically updates the system to match that state."
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "A developer needs to process a massive dataset of 500 terabytes of historical logs once a month. The priority is low cost and fault tolerance, rather than sub-second response times. Which framework is most appropriate?",
+    "options": [
+      "A) AWS Lambda",
+      "B) Service Mesh",
+      "C) Hadoop MapReduce",
+      "D) Apache Spark"
+    ],
+    "answer": "C) Hadoop MapReduce",
+    "explanation": "Its disk-based batch processing and HDFS storage make it a cost-effective and reliable choice for massive, non-time-critical historical data."
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "In complex, modern architectures where a single user request might travel through dozens of independent services, which monitoring technique is essential for identifying slow code paths?",
+    "options": [
+      "A) Distributed tracing",
+      "B) Synthetic monitoring",
+      "C) Vertical Scaling",
+      "D) Storage Tiering"
+    ],
+    "answer": "A) Distributed tracing",
+    "explanation": "Distributed tracing tracks a request as it moves through various microservices, allowing engineers to pinpoint exactly which service is causing a bottleneck."
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "A financial firm heavily utilizes AES-256 for data at rest. However, their Chief Information Security Officer requires a cryptographic setup where, if the company deletes their encryption keys, the cloud provider cannot decrypt the data under any circumstances. Which encryption architecture satisfies this?",
+    "options": [
+      "A) Provider-managed default encryption",
+      "B) Perfect Forward Secrecy via TLS",
+      "C) Public Key Infrastructure (PKI) Certificates",
+      "D) Customer-Managed Keys (CMK)"
+    ],
+    "answer": "D) Customer-Managed Keys (CMK)",
+    "explanation": "Customer-Managed Keys give the organization direct control over encryption keys. If the keys are deleted or revoked, the encrypted data becomes inaccessible, including to the cloud provider."
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "During a threat modeling exercise using STRIDE, an engineer discovers that an attacker could intercept and alter data while it is in transit between the web client and the server. Which specific threat does this represent, and what security property does it violate?",
+    "options": [
+      "A) Spoofing Identity; violates Authentication",
+      "B) Tampering with Data; violates Integrity",
+      "C) Repudiation; violates Non-repudiation",
+      "D) Information Disclosure; violates Confidentiality"
+    ],
+    "answer": "B) Tampering with Data; violates Integrity",
+    "explanation": "Intercepting and changing data in transit is tampering, and the affected security property is integrity."
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "To prevent irreversible damage from malicious ransomware attacks where files are encrypted by an attacker, which specific storage security mechanism should be implemented?",
+    "options": [
+      "A) Cross-region replication",
+      "B) Cold Standby disaster recovery",
+      "C) Immutable Storage",
+      "D) TLS Encryption in transit"
+    ],
+    "answer": "C) Immutable Storage",
+    "explanation": "Immutable Storage prevents data from being altered or deleted, serving as a critical mechanism to prevent irreversible damage from ransomware attacks."
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "A data science team is choosing a cloud provider for a project that relies heavily on 'TensorFlow' for deep learning and 'BigQuery' for petabyte-scale analytics. Which provider's core expertise aligns with these specific tools?",
+    "options": [
+      "A) AWS",
+      "B) Fog Computing",
+      "C) GCP",
+      "D) Azure"
+    ],
+    "answer": "C) GCP",
+    "explanation": "GCP leverages Google's expertise in big data and machine learning, specifically offering BigQuery and TensorFlow."
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "A company wants to encrypt all traffic between their 50 microservices and monitor which service is calling which, but they don't want to rewrite any of their application code to do it. What should they implement?",
+    "options": [
+      "A) Kubernetes",
+      "B) A Service Mesh",
+      "C) A new API Gateway",
+      "D) Task Parallelism"
+    ],
+    "answer": "B) A Service Mesh",
+    "explanation": "Service meshes like Linkerd or Istio provide security and observability at the platform layer using sidecar proxies."
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "What auto-scaling mechanism dynamically adjusts cloud resources to ensure that a specific metric is consistently met?",
+    "options": [
+      "A) Step Scaling",
+      "B) Target Tracking Scaling",
+      "C) Predictive scaling",
+      "D) Scheduled scaling"
+    ],
+    "answer": "B) Target Tracking Scaling",
+    "explanation": "Target Tracking Scaling adds or removes capacity as needed to keep a specified metric at or near a defined target value."
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "A disgruntled lead developer decides to sabotage their employer by copying proprietary source code to a personal external drive before resigning. Based on the cloud security threats, what specific threat category does this represent?",
+    "options": [
+      "A) Insider Threat",
+      "B) Advanced Persistent Threat (APT)",
+      "C) Misconfiguration",
+      "D) Account Hijacking"
+    ],
+    "answer": "A) Insider Threat",
+    "explanation": "An insider threat originates from an authorized individual within the organization who abuses legitimate access to harm the company or steal sensitive information."
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "A malicious user manages to delete a critical database and simultaneously wipes the system logs so that the action cannot be traced back to them. Under the STRIDE framework, which specific threat type allows the attacker to deny performing the action?",
+    "options": [
+      "A) Elevation of Privilege",
+      "B) Denial of Service",
+      "C) Spoofing Identity",
+      "D) Repudiation"
+    ],
+    "answer": "D) Repudiation",
+    "explanation": "Repudiation is the ability to deny an action when evidence or logs are missing or altered."
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "A global gaming enterprise needs a cloud database to power their real-time leaderboards. The system must support key-value models, guarantee ACID transactions, and deliver single-digit millisecond latency. Which service meets all these requirements?",
+    "options": [
+      "A) MongoDB Atlas",
+      "B) Apache Cassandra",
+      "C) Amazon DynamoDB",
+      "D) Google BigQuery"
+    ],
+    "answer": "C) Amazon DynamoDB",
+    "explanation": "Amazon DynamoDB is a managed NoSQL database that supports key-value models, ACID transactions, and single-digit millisecond latency."
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "A company is experiencing high latency in their smart factory where loT sensors must make split-second decisions to stop a machine if a fault is detected. Why would they choose 'Edge Computing' over a centralized 'Cloud' data center?",
+    "options": [
+      "A) To bring computation closer to the devices.",
+      "B) To ensure multi-tenancy and shared infrastructure costs.",
+      "C) To allow the application to run on any host operating system.",
+      "D) To take advantage of S3 storage and RDS databases."
+    ],
+    "answer": "A) To bring computation closer to the devices.",
+    "explanation": "Edge computing processes data at or near the source, which is critical for real-time analytics and reducing bandwidth usage."
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "A financial system needs to process stock market data as it arrives, calculating moving averages every millisecond. Which Spark feature is best suited for this?",
+    "options": [
+      "A) Spark MLlib",
+      "B) Spark SQL",
+      "C) Spark GraphX",
+      "D) Spark Streaming"
+    ],
+    "answer": "D) Spark Streaming",
+    "explanation": "This component enables scalable, high-throughput, fault-tolerant stream processing of live data streams."
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "If auto-scaling thresholds are configured poorly, a system might rapidly and continuously add and remove instances without stabilizing. What is this detrimental behavior known as?",
+    "options": [
+      "A) Overprovisioning",
+      "B) Thrashing",
+      "C) Cold starting",
+      "D) Asynchronous processing"
+    ],
+    "answer": "B) Thrashing",
+    "explanation": "Thrashing occurs when scaling thresholds are too tight, causing the auto-scaler to constantly cycle between scaling up and scaling down in an unstable loop."
+  },
+  {
+    "numb": 26,
+    "type": "Multiple Choices",
+    "question": "In Step 7 of the PASTA framework (Risk Analysis and Mitigation), a Chief Information Security Officer decides NOT to implement a fix for a discovered vulnerability, choosing instead to purchase cyber insurance. Why is this a valid outcome of the PASTA methodology?",
+    "options": [
+      "A) Because PASTA focuses on evaluating mitigation costs against acceptable residual business risk.",
+      "B) Because Step 7 mandates moving workloads to a different cloud provider if flaws are found.",
+      "C) Because threat modeling requires that all vulnerabilities must be ignored if they aren't zero-days.",
+      "D) Because Step 7 relies on Dynamic Application Security Testing to virtually patch the flaw."
+    ],
+    "answer": "A) Because PASTA focuses on evaluating mitigation costs against acceptable residual business risk.",
+    "explanation": "PASTA is a risk-centric framework that considers business impact and mitigation costs. Risk acceptance or risk transfer through insurance can be valid decisions."
+  },
+  {
+    "numb": 27,
+    "type": "Multiple Choices",
+    "question": "An organization is deploying the PASTA threat modeling methodology. Before looking at any servers, architecture, or code, what must the team do in Step 1?",
+    "options": [
+      "A) Define the Technical Scope and Architecture",
+      "B) Define the Business Objectives and Critical Assets",
+      "C) Dismantle the application to trace data lifecycles",
+      "D) Validate theoretical threats as practical attack paths"
+    ],
+    "answer": "B) Define the Business Objectives and Critical Assets",
+    "explanation": "PASTA starts with business objectives and critical assets so the technical analysis stays aligned with business risk."
+  },
+  {
+    "numb": 28,
+    "type": "Multiple Choices",
+    "question": "A marketing agency needs to run SQL-like analytical queries on massive datasets in real-time. They want a completely serverless solution that easily integrates the query results with their existing Machine Learning models. Which data warehouse fits this scenario?",
+    "options": [
+      "A) Google BigQuery",
+      "B) Amazon DynamoDB",
+      "C) HDFS",
+      "D) Apache Kafka"
+    ],
+    "answer": "A) Google BigQuery",
+    "explanation": "Google BigQuery is a serverless, highly scalable data warehouse that allows SQL-like queries, supports real-time analytics, and integrates with ML models."
+  },
+  {
+    "numb": 29,
+    "type": "Multiple Choices",
+    "question": "When managing cloud costs, a company discovers they have allocated 16 virtual CPUs to an application that only ever uses 10% of its processing power. What is this specific resource management challenge called?",
+    "options": [
+      "A) Dynamic Workloads",
+      "B) Under-provisioning",
+      "C) Multi-tenancy",
+      "D) Over-provisioning"
+    ],
+    "answer": "D) Over-provisioning",
+    "explanation": "Over-provisioning is the act of allocating more resources than necessary, which leads to wasted money and inefficient resource use."
+  },
+  {
+    "numb": 30,
+    "type": "Multiple Choices",
+    "question": "What is the primary role of YARN (Yet Another Resource Negotiator) within a Hadoop cluster?",
+    "options": [
+      "A) Encrypting data-in-transit",
+      "B) Running SQL queries on big data",
+      "C) Storing files across multiple disks",
+      "D) Scheduling tasks"
+    ],
+    "answer": "D) Scheduling tasks",
+    "explanation": "YARN acts as the operating system for the cluster, managing how CPU and memory are distributed to jobs."
+  },
+  {
+    "numb": 31,
+    "type": "Multiple Choices",
+    "question": "To evaluate the raw Input/Output (I/O) performance of a newly provisioned cloud block storage volume, which benchmarking tool is most appropriate?",
+    "options": [
+      "A) Apache JMeter",
+      "B) fio",
+      "C) YCSB",
+      "D) Iperf"
+    ],
+    "answer": "B) fio",
+    "explanation": "fio (Flexible I/O Tester) is an industry-standard tool used specifically for benchmarking and testing disk I/O performance."
+  },
+  {
+    "numb": 32,
+    "type": "Multiple Choices",
+    "question": "A cloud security team wants to prevent developers from accidentally hardcoding AWS access keys and database passwords directly into their GitHub repositories. Which DevSecOps testing methodology must be integrated into the CI/CD pipeline to catch this before the code is compiled?",
+    "options": [
+      "A) Dynamic Application Security Testing (DAST)",
+      "B) Container Security Scanning",
+      "C) Software Composition Analysis (SCA)",
+      "D) Static Application Security Testing (SAST)"
+    ],
+    "answer": "D) Static Application Security Testing (SAST)",
+    "explanation": "SAST analyzes source code before execution and can identify hardcoded credentials, insecure coding practices, and other vulnerabilities early in development."
+  },
+  {
+    "numb": 33,
+    "type": "Multiple Choices",
+    "question": "A cloud administrator needs to investigate an incident where an unauthorized EC2 instance was launched. They need to know exactly which user initiated the action. Which specific cloud security tool would help him?",
+    "options": [
+      "A) Web Application Firewall (WAF)",
+      "B) AWS GuardDuty",
+      "C) CloudTrail / Audit Logs",
+      "D) Cloud Security Posture Management (CSPM)"
+    ],
+    "answer": "C) CloudTrail / Audit Logs",
+    "explanation": "CloudTrail and audit logs record who did what in the cloud, which is ideal for tracing EC2 actions to a specific user."
+  },
+  {
+    "numb": 34,
+    "type": "Multiple Choices",
+    "question": "A social media platform allows users to post updates. They accept that when a user posts an update, it might take a few moments for users in other countries to see it, prioritizing system availability over immediate global accuracy. Which consistency model are they relying on?",
+    "options": [
+      "A) Strong Consistency",
+      "B) Eventual Consistency",
+      "C) Causal Consistency",
+      "D) Synchronous Consistency"
+    ],
+    "answer": "B) Eventual Consistency",
+    "explanation": "Eventual Consistency implies that updates will eventually propagate through the system, but immediate consistency is not guaranteed across all nodes."
+  },
+  {
+    "numb": 35,
+    "type": "Multiple Choices",
+    "question": "In cloud architecture, which component acts as the software that enables different applications to communicate and manage data between the front-end and back-end?",
+    "options": [
+      "A) Edge Location",
+      "B) Firewall",
+      "C) Middleware",
+      "D) Hypervisor"
+    ],
+    "answer": "C) Middleware",
+    "explanation": "Middleware is the essential software layer that bridges the gap between disparate applications and manages data flow between them."
+  },
+  {
+    "numb": 36,
+    "type": "Multiple Choices",
+    "question": "A developer wants to deploy applications in portable environments with all dependencies included. What is the best solution?",
+    "options": [
+      "A) Kubernetes",
+      "B) Docker",
+      "C) Spark",
+      "D) Hadoop"
+    ],
+    "answer": "B) Docker",
+    "explanation": "Docker allows developers to package applications into containers that include everything needed to run, ensuring portability."
+  },
+  {
+    "numb": 37,
+    "type": "Multiple Choices",
+    "question": "To implement asynchronous processing and decouple backend application components so they don't block one another, which pair of technologies is standard?",
+    "options": [
+      "A) Kafka and RabbitMQ",
+      "B) Grafana and Datadog",
+      "C) Redis and Memcached",
+      "D) Terraform and Ansible"
+    ],
+    "answer": "A) Kafka and RabbitMQ",
+    "explanation": "Kafka and RabbitMQ are standard message broker systems used to implement asynchronous processing and decouple services via message queues."
+  },
+  {
+    "numb": 38,
+    "type": "Multiple Choices",
+    "question": "A corporate IT department discovers that employees are bypassing corporate storage and uploading sensitive company documents to their personal Google Drive and Dropbox accounts. They deploy a tool that sits between the users and the web to monitor and block these unauthorized SaaS interactions. What tool was deployed?",
+    "options": [
+      "A) Intrusion Detection System (IDS)",
+      "B) Web Application Firewall (WAF)",
+      "C) Static Application Security Testing (SAST)",
+      "D) Cloud Access Security Broker (CASB)"
+    ],
+    "answer": "D) Cloud Access Security Broker (CASB)",
+    "explanation": "CASBs provide visibility and policy enforcement between users and cloud applications, helping prevent unauthorized use of SaaS platforms."
+  },
+  {
+    "numb": 39,
+    "type": "Multiple Choices",
+    "question": "During a massive surge in web traffic, an application relying on cloud auto-scaling successfully absorbs traditional network flooding. However, the servers crash because the traffic consists of highly complex HTTP requests that exhaust the application's processing power. What specific type of threat is this?",
+    "options": [
+      "A) IoT Hijacking",
+      "B) Advanced Persistent Threat (APT)",
+      "C) Application-layer (Layer 7) DDoS",
+      "D) Elevation of Privilege"
+    ],
+    "answer": "C) Application-layer (Layer 7) DDoS",
+    "explanation": "Complex HTTP requests that overwhelm application resources are characteristic of a Layer 7 DDoS attack."
+  },
+  {
+    "numb": 40,
+    "type": "Multiple Choices",
+    "question": "A data engineering team needs to write a unified data processing pipeline using the Apache Beam SDK. They want a serverless service capable of handling both real-time stream data and historical batch data. Which cloud service provides this environment?",
+    "options": [
+      "A) Amazon Kinesis",
+      "B) Azure Event Hubs",
+      "C) Apache Cassandra",
+      "D) Google Cloud Dataflow"
+    ],
+    "answer": "D) Google Cloud Dataflow",
+    "explanation": "Google Cloud Dataflow is a serverless data processing service for stream and batch data that utilizes the Apache Beam SDK."
+  },
+  {
+    "numb": 41,
+    "type": "Multiple Choices",
+    "question": "A developer wants to ensure that their cloud environment is 'repeatable' and 'consistent'. They decide to use Terraform to provision their resources. Which benefit of Terraform directly addresses this goal?",
+    "options": [
+      "A) Automatic image recognition without ML experience.",
+      "B) Real-time cost monitoring using Cost Explorer.",
+      "C) Version control and repeatability.",
+      "D) Increasing the physical energy efficiency of data centers."
+    ],
+    "answer": "C) Version control and repeatability.",
+    "explanation": "By using code to define infrastructure, changes can be tracked in version control, ensuring every deployment is identical and repeatable."
+  },
+  {
+    "numb": 42,
+    "type": "Multiple Choices",
+    "question": "Why are Resilient Distributed Datasets (RDDs) in Spark considered 'Resilient'?",
+    "options": [
+      "A) They are encrypted so hackers cannot read them.",
+      "B) They can automatically reconstruct lost data.",
+      "C) They are stored on physical tapes for long-term backup.",
+      "D) They prevent any errors from occurring in the code."
+    ],
+    "answer": "B) They can automatically reconstruct lost data using a lineage of transformations.",
+    "explanation": "RDDs are fault-tolerant because they track the 'lineage' (history) of how they were created. If a node fails, Spark uses this history to recompute the missing data."
+  },
+  {
+    "numb": 43,
+    "type": "Multiple Choices",
+    "question": "In serverless compute architectures, performance tuning heavily focuses on reducing the initial latency that occurs when a function is invoked after a period of inactivity. What is this latency issue called?",
+    "options": [
+      "A) Thrashing",
+      "B) Packet loss",
+      "C) Cold starts",
+      "D) Network bottlenecking"
+    ],
+    "answer": "C) Cold starts",
+    "explanation": "Cold starts happen in serverless environments when a function has to initialize a new execution environment before it can begin processing the request."
+  },
+  {
+    "numb": 44,
+    "type": "Multiple Choices",
+    "question": "A cloud application is facing a barrage of SQL injection attempts and Cross-Site Scripting (XSS) payloads targeting its public-facing login URL. Which specific security tool acts as a reverse proxy to inspect incoming HTTP/HTTPS traffic and block these malicious payloads before they hit the web server?",
+    "options": [
+      "A) Web Application Firewall (WAF)",
+      "B) CloudTrail",
+      "C) Software Composition Analysis (SCA)",
+      "D) Virtual Private Cloud (VPC)"
+    ],
+    "answer": "A) Web Application Firewall (WAF)",
+    "explanation": "A WAF inspects HTTP and HTTPS traffic and blocks common web attacks such as SQL injection, XSS, and other application-layer threats."
+  },
+  {
+    "numb": 45,
+    "type": "Multiple Choices",
+    "question": "A financial company wants to encrypt sensitive data stored in AWS S3 and Azure Storage but requires absolute control over the encryption process independently of the cloud provider's default keys. Which encryption model should they employ?",
+    "options": [
+      "A) TLS/SSL Certificate Management",
+      "B) Bring-Your-Own-Key (BYOK)",
+      "C) Static Application Security Testing (SAST)",
+      "D) Federated Identity Management"
+    ],
+    "answer": "B) Bring-Your-Own-Key (BYOK)",
+    "explanation": "BYOK gives the customer control over the encryption keys instead of relying on cloud-provider default keys."
+  },
+  {
+    "numb": 46,
+    "type": "Multiple Choices",
+    "question": "If an engineering team values zero data loss above all else during a localized storage failure and can tolerate higher application write latencies, which replication approach should they implement?",
+    "options": [
+      "A) Asynchronous Replication",
+      "B) Synchronous Replication",
+      "C) Eventual Replication",
+      "D) Masterless Peer-to-Peer Replication"
+    ],
+    "answer": "B) Synchronous Replication",
+    "explanation": "Synchronous replication ensures data consistency across nodes before confirming an operation to the user, protecting against data loss at the cost of increased network latency."
+  },
+  {
+    "numb": 47,
+    "type": "Multiple Choices",
+    "question": "A developer needs to run a snippet of code in response to an event (like a file being uploaded) without managing any underlying servers. Which services from AWS and Azure are 'serverless' examples of this?",
+    "options": [
+      "A) AWS VPC and Azure Virtual Network",
+      "B) AWS EC2 and Azure Virtual Machines",
+      "C) AWS Lambda and Azure Functions",
+      "D) AWS S3 and Azure Blob Storage"
+    ],
+    "answer": "C) AWS Lambda and Azure Functions",
+    "explanation": "Both Lambda and Functions are serverless compute services that execute code in response to triggers without requiring server management."
+  },
+  {
+    "numb": 48,
+    "type": "Multiple Choices",
+    "question": "A 'Cloud-Native' application usually utilizes a CI/CD pipeline. What does this achieve?",
+    "options": [
+      "A) It replaces the need for a service mesh.",
+      "B) It automates the testing and deployment.",
+      "C) It provides a way to store large binary files.",
+      "D) It increases the physical speed of the internet connection."
+    ],
+    "answer": "B) It automates the testing and deployment of code updates.",
+    "explanation": "Continuous Integration/Continuous Deployment (CI/CD) is a key cloud-native principle that automates the delivery of software, allowing for frequent and reliable updates."
+  },
+  {
+    "numb": 49,
+    "type": "Multiple Choices",
+    "question": "A retail company runs a flash sale every Friday exactly at 8:00 PM, resulting in a massive, predictable traffic spike. Which auto-scaling strategy is most efficient to handle this specific scenario without relying on reactive metric alarms that might scale too slowly?",
+    "options": [
+      "A) Step Scaling",
+      "B) Target Tracking Scaling",
+      "C) Scheduled scaling",
+      "D) Vertical Scaling"
+    ],
+    "answer": "C) Scheduled scaling",
+    "explanation": "Scheduled scaling allows administrators to pre-provision resources based on known, predictable usage patterns, ensuring the capacity is already available the second the 8:00 PM spike hits."
+  },
+  {
+    "numb": 50,
+    "type": "Multiple Choices",
+    "question": "A critical security alert reveals an attacker has successfully compromised a container in the payment processing subnet. The incident response team immediately updates the NACLs to isolate that subnet from the rest of the network. Which IR phase is this?",
+    "options": [
+      "A) Preparation",
+      "B) Eradication and Recovery",
+      "C) Post-Incident Review",
+      "D) Containment"
+    ],
+    "answer": "D) Containment",
+    "explanation": "Containment focuses on limiting the spread and impact of an incident while preserving systems for further investigation."
+  },
+  {
+    "numb": 51,
+    "type": "Multiple Choices",
+    "question": "A developer wants to integrate security directly into the CI/CD pipeline. They deploy a tool to test the running application for vulnerabilities dynamically in a staging environment. Which DevSecOps testing type is this?",
+    "options": [
+      "A) Static Application Security Testing (SAST)",
+      "B) Software Composition Analysis (SCA)",
+      "C) Dynamic Application Security Testing (DAST)",
+      "D) Container Security"
+    ],
+    "answer": "C) Dynamic Application Security Testing (DAST)",
+    "explanation": "DAST evaluates the application while it is running, which is why it fits staging and runtime testing."
+  },
+  {
+    "numb": 52,
+    "type": "Multiple Choices",
+    "question": "A data warehouse engineer wants to run complex analytical SQL-like queries on massive, multi-terabyte datasets without provisioning or managing a single virtual server. Which service matches this serverless profile?",
+    "options": [
+      "A) Amazon Redshift",
+      "B) Apache Cassandra",
+      "C) Google BigQuery",
+      "D) MongoDB Atlas"
+    ],
+    "answer": "C) Google BigQuery",
+    "explanation": "Google BigQuery is a serverless, highly scalable data warehouse designed specifically to enable the execution of SQL-like queries on massive datasets without requiring cluster management."
+  },
+  {
+    "numb": 53,
+    "type": "Multiple Choices",
+    "question": "In 'Data Center' design, what is the specific focus of providers who are increasingly using renewable energy and efficient hardware?",
+    "options": [
+      "A) Sustainability",
+      "B) Multi-tenancy",
+      "C) Redundancy",
+      "D) Global Infrastructure"
+    ],
+    "answer": "A) Sustainability",
+    "explanation": "Sustainability efforts focus on reducing the environmental impact of massive data centers through green energy and efficient design."
+  },
+  {
+    "numb": 54,
+    "type": "Multiple Choices",
+    "question": "What is the primary function of the HDFS (Hadoop Distributed File System)?",
+    "options": [
+      "A) To manage CPU resources across the cluster.",
+      "B) To provide high-performance in-memory caching.",
+      "C) To store massive datasets across multiple commodity hardware nodes.",
+      "D) To execute SQL queries on real-time data streams."
+    ],
+    "answer": "C) To store massive datasets across multiple commodity hardware nodes.",
+    "explanation": "HDFS is the storage layer of Hadoop, designed to hold very large files across many machines with built-in redundancy."
+  },
+  {
+    "numb": 55,
+    "type": "Multiple Choices",
+    "question": "A DevOps team is diagnosing a web application performance issue. Users report the site feels \"sluggish.\" The server's CPU and memory utilization are entirely normal, but the team discovers the application is experiencing unusually high \"transaction times\" and spike in \"error rates.\" Which category of cloud performance metrics are they currently analyzing?",
+    "options": [
+      "A) Compute Metrics",
+      "B) Network Metrics",
+      "C) Storage Metrics",
+      "D) Application Metrics"
+    ],
+    "answer": "D) Application Metrics",
+    "explanation": "Request rates, error rates, and transaction times fall under \"Application Metrics,\" which measure the actual software performance rather than the underlying hardware or network."
+  },
+  {
+    "numb": 56,
+    "type": "Multiple Choices",
+    "question": "A cybersecurity analyst is analyzing threats based on the specific security properties they violate. If an attacker leverages a flaw to upgrade their standard user account to an administrative account, what STRIDE category does this fall under, and what property is violated?",
+    "options": [
+      "A) Information Disclosure; violates Confidentiality",
+      "B) Spoofing Identity; violates Authentication",
+      "C) Elevation of Privilege; violates Authorization",
+      "D) Tampering with Data; violates Integrity"
+    ],
+    "answer": "C) Elevation of Privilege; violates Authorization",
+    "explanation": "Elevation of Privilege occurs when an attacker gains permissions beyond those originally granted. By escalating from a standard user account to an administrator account, the attacker violates the authorization controls that determine what actions a user is allowed to perform."
+  },
+  {
+    "numb": 57,
+    "type": "Multiple Choices",
+    "question": "An enterprise needs a centralized logging solution to aggregate data from AWS CloudTrail, VPC Flow Logs, and Azure Monitor, enabling holistic threat detection across multiple clouds. Which type of platform provides this centralized integration?",
+    "options": [
+      "A) SIEM (Security Information and Event Management)",
+      "B) CASB (Cloud Access Security Broker)",
+      "C) WAF (Web Application Firewall)",
+      "D) IDPS (Intrusion Detection and Prevention System)"
+    ],
+    "answer": "A) SIEM (Security Information and Event Management)",
+    "explanation": "A SIEM centralizes and correlates logs from multiple sources for monitoring, detection, and investigation."
+  },
+  {
+    "numb": 58,
+    "type": "Multiple Choices",
+    "question": "An application updates a specific user profile on Node A. If Node B and Node C are updated later in the background while the system continues to accept new requests, which specific pair of architectural terms applies to this setup?",
+    "options": [
+      "A) Strong Consistency and Synchronous Replication",
+      "B) Eventual Consistency and Asynchronous Replication",
+      "C) Causal Consistency and Master-Slave Locking",
+      "D) Quorum Consistency and Multi-Master Blocking"
+    ],
+    "answer": "B) Eventual Consistency and Asynchronous Replication",
+    "explanation": "Background propagation maps directly to asynchronous replication, resulting in an eventual consistency model where nodes synchronize over time rather than instantaneously."
+  },
+  {
+    "numb": 59,
+    "type": "Multiple Choices",
+    "question": "Which of the following describes the 'Application Layer' of cloud computing architecture?",
+    "options": [
+      "A) The layer containing SaaS applications and cloud-native services.",
+      "B) The communication channels connecting front-end and back-end components.",
+      "C) The physical servers and networking cables in a data center.",
+      "D) The layer where hypervisors manage virtual machines."
+    ],
+    "answer": "A) The layer containing SaaS applications and cloud-native services.",
+    "explanation": "The Application Layer is the top layer where end-user software and high-level services reside."
+  },
+  {
+    "numb": 60,
+    "type": "Multiple Choices",
+    "question": "A company has hundreds of Docker containers running and needs to automate their deployment, scaling, and management. Which tool is the industry standard for this?",
+    "options": [
+      "A) Apache Spark",
+      "B) Kubernetes",
+      "C) HDFS",
+      "D) MapReduce"
+    ],
+    "answer": "B) Kubernetes",
+    "explanation": "Kubernetes is an orchestration platform used to manage the lifecycle of containerized applications at scale."
+  }
+]

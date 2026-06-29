@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "A company wants to analyze a large amount of raw data to extract useful insights for decision making. Which field mainly focuses on this task?",
+    "options": [
+      "A) Software Engineering",
+      "B) Data Science",
+      "C) Computer Networks",
+      "D) Cyber Security"
+    ],
+    "answer": "B) Data Science",
+    "explanation": "Data science deals with analyzing large amounts of data to extract useful insights and support decision making.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "Which type of data analysis describes what happened in the past using historical data?",
+    "options": [
+      "A) Descriptive Analysis",
+      "B) Diagnostic Analysis",
+      "C) Predictive Analysis",
+      "D) Prescriptive Analysis"
+    ],
+    "answer": "A) Descriptive Analysis",
+    "explanation": "Descriptive analysis summarizes historical data to understand what happened in the past.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "Which type of analysis focuses on identifying the reasons behind a particular event?",
+    "options": [
+      "A) Descriptive Analysis",
+      "B) Diagnostic Analysis",
+      "C) Predictive Analysis",
+      "D) Prescriptive Analysis"
+    ],
+    "answer": "B) Diagnostic Analysis",
+    "explanation": "Diagnostic analysis is used to determine why something happened by analyzing patterns and relationships in data.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "Which type of analysis is mainly used to forecast future trends or outcomes?",
+    "options": [
+      "A) Prescriptive Analysis",
+      "B) Descriptive Analysis",
+      "C) Predictive Analysis",
+      "D) Diagnostic Analysis"
+    ],
+    "answer": "C) Predictive Analysis",
+    "explanation": "Predictive analysis uses historical data and statistical techniques to forecast future outcomes.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "Which type of analysis suggests the best action to take based on previous analyses?",
+    "options": [
+      "A) Prescriptive Analysis",
+      "B) Predictive Analysis",
+      "C) Diagnostic Analysis",
+      "D) Descriptive Analysis"
+    ],
+    "answer": "A) Prescriptive Analysis",
+    "explanation": "Prescriptive analysis combines insights from other analysis types to recommend the best course of action.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "Which phase of the Data Analytic Lifecycle involves understanding the business problem and collecting initial data?",
+    "options": [
+      "A) Data Discovery",
+      "B) Data Preparation",
+      "C) Model Planning",
+      "D) Model Building"
+    ],
+    "answer": "A) Data Discovery",
+    "explanation": "Data discovery focuses on understanding the problem and gathering relevant data for analysis.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "Which phase focuses on cleaning and transforming raw data into a usable format?",
+    "options": [
+      "A) Model Planning",
+      "B) Data Preparation",
+      "C) Data Discovery",
+      "D) Operationalization"
+    ],
+    "answer": "B) Data Preparation",
+    "explanation": "Data preparation involves cleaning, transforming, and organizing raw data before analysis.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "During which phase are analytical techniques selected and planned?",
+    "options": [
+      "A) Model Planning",
+      "B) Data Discovery",
+      "C) Model Building",
+      "D) Communication of Results"
+    ],
+    "answer": "A) Model Planning",
+    "explanation": "Model planning involves selecting suitable analytical techniques and planning how models will be built.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "Which phase of the Data Analytic Lifecycle involves building and testing the analytical model?",
+    "options": [
+      "A) Data Preparation",
+      "B) Model Planning",
+      "C) Model Building",
+      "D) Operationalization"
+    ],
+    "answer": "C) Model Building",
+    "explanation": "Model building focuses on developing and testing analytical models using prepared datasets.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "Which phase focuses on presenting results and evaluating project success?",
+    "options": [
+      "A) Communication of Results",
+      "B) Data Discovery",
+      "C) Model Planning",
+      "D) Data Preparation"
+    ],
+    "answer": "A) Communication of Results",
+    "explanation": "This phase summarizes findings and evaluates whether the project objectives were achieved.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "Which phase involves deploying the final model in a real environment?",
+    "options": [
+      "A) Data Preparation",
+      "B) Operationalization",
+      "C) Model Planning",
+      "D) Data Discovery"
+    ],
+    "answer": "B) Operationalization",
+    "explanation": "Operationalization involves implementing the model and running it in a real-time environment.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "Which job role mainly extracts data and interprets it to analyze business problems?",
+    "options": [
+      "A) Data Engineer",
+      "B) Data Analyst",
+      "C) Database Administrator",
+      "D) Data Architect"
+    ],
+    "answer": "B) Data Analyst",
+    "explanation": "A Data Analyst extracts data and interprets it to understand business problems and outcomes.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "Which professional works with large and complex datasets using machine learning techniques?",
+    "options": [
+      "A) Data Scientist",
+      "B) Data Analyst",
+      "C) Database Administrator",
+      "D) Data Engineer"
+    ],
+    "answer": "A) Data Scientist",
+    "explanation": "Data Scientists analyze large and complex datasets using advanced techniques such as machine learning.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "Which role prepares and manages data so it can be used by analysts and scientists?",
+    "options": [
+      "A) Data Architect",
+      "B) Data Engineer",
+      "C) Data Analyst",
+      "D) Database Administrator"
+    ],
+    "answer": "B) Data Engineer",
+    "explanation": "A Data Engineer prepares and manages data infrastructure for analysis.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "Which role manages database access rights and ensures backup and recovery?",
+    "options": [
+      "A) Database Administrator",
+      "B) Data Engineer",
+      "C) Data Scientist",
+      "D) Data Architect"
+    ],
+    "answer": "A) Database Administrator",
+    "explanation": "Database Administrators manage databases, access permissions, and backup systems.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Which role designs the overall data structure and architecture of a data system?",
+    "options": [
+      "A) Data Architect",
+      "B) Data Analyst",
+      "C) Data Engineer",
+      "D) Database Administrator"
+    ],
+    "answer": "A) Data Architect",
+    "explanation": "Data Architects design the structure and organization of data systems.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "Which role manages analytics projects and ensures report quality?",
+    "options": [
+      "A) Data Architect",
+      "B) Data Engineer",
+      "C) Analytics Manager",
+      "D) Database Administrator"
+    ],
+    "answer": "C) Analytics Manager",
+    "explanation": "Analytics Managers supervise analytics operations and ensure the quality of reports.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "Which analysis type answers the question 'What will happen in the future?'",
+    "options": [
+      "A) Diagnostic Analysis",
+      "B) Predictive Analysis",
+      "C) Descriptive Analysis",
+      "D) Prescriptive Analysis"
+    ],
+    "answer": "B) Predictive Analysis",
+    "explanation": "Predictive analysis forecasts future outcomes using historical data.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "Which analysis type answers the question 'Why did it happen?'",
+    "options": [
+      "A) Diagnostic Analysis",
+      "B) Predictive Analysis",
+      "C) Descriptive Analysis",
+      "D) Prescriptive Analysis"
+    ],
+    "answer": "A) Diagnostic Analysis",
+    "explanation": "Diagnostic analysis investigates the reasons behind past events.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "Which analysis type summarizes data using charts, dashboards, and reports?",
+    "options": [
+      "A) Prescriptive Analysis",
+      "B) Diagnostic Analysis",
+      "C) Descriptive Analysis",
+      "D) Predictive Analysis"
+    ],
+    "answer": "C) Descriptive Analysis",
+    "explanation": "Descriptive analysis summarizes data using visualization tools and reports.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "Which analysis type recommends actions based on insights from data?",
+    "options": [
+      "A) Predictive Analysis",
+      "B) Prescriptive Analysis",
+      "C) Descriptive Analysis",
+      "D) Diagnostic Analysis"
+    ],
+    "answer": "B) Prescriptive Analysis",
+    "explanation": "Prescriptive analysis suggests actions to achieve desired outcomes.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "Which lifecycle phase focuses on exploring business trends and understanding the domain?",
+    "options": [
+      "A) Data Discovery",
+      "B) Model Building",
+      "C) Data Preparation",
+      "D) Operationalization"
+    ],
+    "answer": "A) Data Discovery",
+    "explanation": "During data discovery, stakeholders study the business domain and available data.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "Which lifecycle phase focuses on selecting statistical and machine learning techniques?",
+    "options": [
+      "A) Model Planning",
+      "B) Data Preparation",
+      "C) Data Discovery",
+      "D) Communication of Results"
+    ],
+    "answer": "A) Model Planning",
+    "explanation": "Model planning identifies the analytical techniques required for building the model.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "Which lifecycle phase involves training and testing datasets?",
+    "options": [
+      "A) Data Discovery",
+      "B) Model Building",
+      "C) Operationalization",
+      "D) Data Preparation"
+    ],
+    "answer": "B) Model Building",
+    "explanation": "Model building involves training and testing models using prepared datasets.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "Which lifecycle phase produces the final report and documentation?",
+    "options": [
+      "A) Data Preparation",
+      "B) Operationalization",
+      "C) Model Planning",
+      "D) Data Discovery"
+    ],
+    "answer": "B) Operationalization",
+    "explanation": "Operationalization includes preparing the final report and documentation for the project.",
+    "image": null
+  }
+]

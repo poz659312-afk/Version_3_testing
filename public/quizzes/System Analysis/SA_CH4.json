@@ -1,0 +1,282 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "In Entity-Relationship (ER) modeling, an $\\text{entity}$ is best defined as:",
+    "options": [
+      "A) A line connecting two tables in a database",
+      "B) A person, place, or thing about which data is collected, usually named with a singular noun",
+      "C) A calculated value derived from other data fields",
+      "D) A relationship between two attributes"
+    ],
+    "answer": "B) A person, place, or thing about which data is collected, usually named with a singular noun",
+    "explanation": "Entities are the real-world objects about which we store data. They are always represented with singular nouns (EMPLOYEE, DEPARTMENT, PRODUCT) — not plural. They become tables in a relational database, with each instance becoming a row.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "An attribute that $\\text{cannot be divided}$ into further sub-parts (e.g., Age) is called a:",
+    "options": [
+      "A) Composite attribute",
+      "B) Multi-valued attribute",
+      "C) Derived attribute",
+      "D) Simple attribute"
+    ],
+    "answer": "D) Simple attribute",
+    "explanation": "A simple (or atomic) attribute cannot be broken down further — it holds a single, indivisible value. Examples: Age, Employee ID, ISBN. A composite attribute like 'Name' can be divided into First Name, Middle Name, and Last Name.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "An employee's 'Full Name' (which can be divided into First Name, Middle Name, and Last Name) is an example of a $\\text{composite attribute}$ because:",
+    "options": [
+      "A) It can hold multiple values simultaneously",
+      "B) It is calculated from other stored attributes",
+      "C) It can be meaningfully divided into component sub-parts",
+      "D) It cannot have a null value in the database"
+    ],
+    "answer": "C) It can be meaningfully divided into component sub-parts",
+    "explanation": "Composite attributes can be subdivided into smaller atomic attributes that still carry meaningful information. Name → First Name + Middle Name + Last Name is the classic example. This is important because you may need to query or sort by individual components.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "A person who has multiple phone numbers (home, work, mobile) demonstrates which type of attribute?",
+    "options": [
+      "A) Derived attribute",
+      "B) Simple attribute",
+      "C) Composite attribute",
+      "D) Multi-valued attribute"
+    ],
+    "answer": "D) Multi-valued attribute",
+    "explanation": "A multi-valued attribute can hold more than one value for a single entity instance. Phone numbers, email addresses, and colors of a product are common examples. In database implementation, multi-valued attributes typically require a separate table.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "An employee's 'Age' is calculated automatically from their stored 'Date of Birth'. Age is therefore a:",
+    "options": [
+      "A) Multi-valued attribute",
+      "B) Composite attribute",
+      "C) Derived attribute",
+      "D) Simple attribute"
+    ],
+    "answer": "C) Derived attribute",
+    "explanation": "Derived attributes are computed from other stored attributes rather than stored directly. Age = Current Date - Birth Date. Other examples include: Total_Order_Amount derived from unit prices and quantities, or Years_of_Service derived from Hire_Date.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "A $\\text{Use Case Diagram}$ is described as a logical model that:",
+    "options": [
+      "A) Shows the detailed physical database structure",
+      "B) Describes WHAT a system does from the user's perspective, without specifying HOW it does it",
+      "C) Documents the exact algorithms used in each system function",
+      "D) Shows the network topology of the system's infrastructure"
+    ],
+    "answer": "B) Describes WHAT a system does from the user's perspective, without specifying HOW it does it",
+    "explanation": "Use Case diagrams are logical, not physical. They capture what the system must do (functional requirements) from the perspective of users (actors), without describing how the system accomplishes it technically. This makes them excellent for communicating requirements with non-technical stakeholders.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "In a Use Case Diagram, an $\\text{Actor}$ is represented as:",
+    "options": [
+      "A) An oval",
+      "B) A rectangle",
+      "C) A stick figure",
+      "D) A diamond"
+    ],
+    "answer": "C) A stick figure",
+    "explanation": "Actors in UML Use Case Diagrams are represented as stick figures (person shapes). An actor is any external entity — person, organization, or external system — that interacts with the system being modeled. Use cases themselves are represented as ovals.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "In a Use Case Diagram, a $\\text{Use Case}$ (a sequence of actions providing value to an actor) is represented as:",
+    "options": [
+      "A) A rectangle",
+      "B) A stick figure",
+      "C) A diamond",
+      "D) An oval"
+    ],
+    "answer": "D) An oval",
+    "explanation": "Use Cases are drawn as ovals/ellipses in UML. Each oval contains the name of a specific system function or feature from the user's perspective (e.g., 'Login', 'Generate Invoice', 'View Items'). Actors are connected to use cases with association lines.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "The $\\text{<<include>>}$ relationship in a Use Case Diagram means:",
+    "options": [
+      "A) A use case optionally extends another with additional behavior",
+      "B) A use case MUST include/contain the behavior of another use case (shared, mandatory behavior)",
+      "C) One use case is a specialized version of another",
+      "D) An actor communicates with a specific use case"
+    ],
+    "answer": "B) A use case MUST include/contain the behavior of another use case (shared, mandatory behavior)",
+    "explanation": "<<include>> represents mandatory inclusion — the base use case always triggers the included use case. Example: 'Generate Invoice' always includes 'Login' (you must authenticate first). Use this when behavior is shared across multiple use cases and always required.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "The $\\text{<<extend>>}$ relationship in a Use Case Diagram handles:",
+    "options": [
+      "A) Mandatory, always-occurring shared behavior between use cases",
+      "B) The actor's primary communication with the system",
+      "C) Optional behavior or exceptions that may occur in a base use case",
+      "D) Inheritance between use case types"
+    ],
+    "answer": "C) Optional behavior or exceptions that may occur in a base use case",
+    "explanation": "<<extend>> adds optional or conditional behavior. The extending use case only executes under certain conditions. Example: 'Make Purchase' may optionally trigger 'Apply Discount Code'. The extension point is triggered by a specific condition, not always.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "What is the relationship type called when one use case is a simplified or specialized form of another?",
+    "options": [
+      "A) <<include>>",
+      "B) <<extend>>",
+      "C) Generalization",
+      "D) Communicates"
+    ],
+    "answer": "C) Generalization",
+    "explanation": "Generalization (inheritance) in use case diagrams means one use case is a more specific version of a general use case. It's similar to inheritance in OOP. Example: 'Pay by Credit Card' and 'Pay by PayPal' are both generalizations of the more general 'Make Payment' use case.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "In the Inventory System example, 'Login' is an $\\text{<<include>>}$ relationship with 'Generate Invoice'. This means:",
+    "options": [
+      "A) A user can optionally skip the login before generating an invoice",
+      "B) Login is an extension that only happens when an error occurs",
+      "C) Every time 'Generate Invoice' is performed, 'Login' MUST be performed first",
+      "D) Login is a generalization of 'Generate Invoice'"
+    ],
+    "answer": "C) Every time 'Generate Invoice' is performed, 'Login' MUST be performed first",
+    "explanation": "<<include>> indicates mandatory, always-triggered behavior. In this system, you cannot generate an invoice without first logging in — it's a security prerequisite. The Login use case is a required sub-step that must be completed before the main use case can proceed.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "What is $\\text{UML (Unified Modeling Language)}$?",
+    "options": [
+      "A) A programming language used to build web applications",
+      "B) A standardized, graphical language used to specify, visualize, and document software artifacts",
+      "C) A database query language for retrieving structured data",
+      "D) A project management framework for organizing SDLC phases"
+    ],
+    "answer": "B) A standardized, graphical language used to specify, visualize, and document software artifacts",
+    "explanation": "UML is the standard modeling language for Object-Oriented systems. It provides a set of graphical notations (diagrams) to specify, visualize, construct, and document system artifacts. Use Case diagrams, Class diagrams, Sequence diagrams, and Activity diagrams are all part of UML.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "In the Web Customer example, 'Checkout' is an $\\text{<<include>>}$ relationship within 'Make Purchase'. What does this imply?",
+    "options": [
+      "A) Checkout is an optional step that customers may skip",
+      "B) Checkout only occurs when the customer encounters an error during purchase",
+      "C) Checkout MUST always be performed as part of making a purchase",
+      "D) Checkout is a separate use case with no connection to Make Purchase"
+    ],
+    "answer": "C) Checkout MUST always be performed as part of making a purchase",
+    "explanation": "Since Checkout uses <<include>> with Make Purchase, it is always triggered — you cannot complete a purchase without going through checkout. This is proper <<include>> usage: the behavior is mandatory, not optional, and is factored out to avoid repetition.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "A use case diagram shows that a 'Teacher' actor is connected to 'Update Marks'. What type of relationship is the simple line connecting the Teacher to the 'Update Marks' oval?",
+    "options": [
+      "A) <<include>>",
+      "B) <<extend>>",
+      "C) Generalization",
+      "D) Association (Communicates)"
+    ],
+    "answer": "D) Association (Communicates)",
+    "explanation": "A plain line between an actor and a use case represents an Association, also called a 'Communicates' relationship. It simply shows that the actor interacts with (initiates or participates in) that use case. No special stereotype is needed.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Why are entity names in E-R diagrams typically written as $\\text{singular nouns}$?",
+    "options": [
+      "A) Plural nouns are reserved for relationship names",
+      "B) Each rectangle represents a single specific person, not a group",
+      "C) An entity type represents the general concept/type, and each instance in the table is one occurrence",
+      "D) It is only a stylistic convention with no practical significance"
+    ],
+    "answer": "C) An entity type represents the general concept/type, and each instance in the table is one occurrence",
+    "explanation": "EMPLOYEE (singular) represents the entity type — the concept. The actual data would have many instances (rows), but the entity name itself refers to the type, not all instances. This helps avoid confusion between the type definition and its many instances.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "Which of the four attribute types would 'Total Bill Amount' (calculated from item prices × quantities) fall under?",
+    "options": [
+      "A) Simple attribute",
+      "B) Derived attribute",
+      "C) Multi-valued attribute",
+      "D) Composite attribute"
+    ],
+    "answer": "B) Derived attribute",
+    "explanation": "Total Bill Amount is derived/calculated from other data (item prices and quantities) and is not stored independently. Derived attributes are shown with a dashed ellipse in E-R diagrams, distinguishing them from stored (simple) attributes shown with solid ellipses.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "A 'Many-to-Many (M:N)' relationship between Students and Courses in an E-R diagram indicates:",
+    "options": [
+      "A) One student can take exactly one course and one course can have exactly one student",
+      "B) Each student takes many courses, and each course has many students enrolled",
+      "C) Many students share one course, but each student takes only one course",
+      "D) Courses can exist without any students enrolled"
+    ],
+    "answer": "B) Each student takes many courses, and each course has many students enrolled",
+    "explanation": "M:N means both sides of the relationship have 'many'. A student enrolls in multiple courses; each course has multiple students. In database implementation, M:N relationships require an intermediary junction table (e.g., ENROLLMENT) with foreign keys from both entities.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "Use Case diagrams are said to view the system from the perspective of:",
+    "options": [
+      "A) The database administrator's data storage needs",
+      "B) The network engineer's infrastructure requirements",
+      "C) User requirements — what users need the system to do",
+      "D) The programmer's implementation challenges"
+    ],
+    "answer": "C) User requirements — what users need the system to do",
+    "explanation": "Use Case diagrams are user-centered — they capture the system's functionality from the perspective of those who will use it (actors). This makes them excellent communication tools between analysts and non-technical stakeholders, as they focus on WHAT the system does, not HOW.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "When should an analyst use $\\text{<<extend>>}$ instead of $\\text{<<include>>}$?",
+    "options": [
+      "A) When the added behavior is mandatory and always occurs",
+      "B) When the added behavior is optional or only occurs under specific conditions",
+      "C) When two actors share interaction with the same use case",
+      "D) When one use case completely replaces another"
+    ],
+    "answer": "B) When the added behavior is optional or only occurs under specific conditions",
+    "explanation": "<<extend>> is for conditional/optional behavior. Use <<include>> when behavior is always required (mandatory). Use <<extend>> when something may or may not happen depending on a condition. Example: 'Book Flight' may <<extend>> into 'Add Meal Preference' — only if the customer wants to.",
+    "image": null
+  }
+]

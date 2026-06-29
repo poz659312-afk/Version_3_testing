@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "What is a 'Conceptual Data Model'?",
+    "options": [
+      "A schema that specifies disk block layouts and indexes",
+      "A high-level model describing schema structures independently of implementation",
+      "A logical query tree translating SQL queries to algebra",
+      "A star schema fact table definition on column store"
+    ],
+    "answer": "A high-level model describing schema structures independently of implementation",
+    "explanation": "Conceptual data models (like the ER model) present a high-level view of database structures (entities, attributes, relationships) that focuses on user semantics rather than physical storage details.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "In the ER model, what is the difference between an Entity Type and an Entity Set?",
+    "options": [
+      "Entity Type is attributes; Entity Set is database table",
+      "Entity Type defines structure; Entity Set is the current instance collection",
+      "Entity Type represents weak; Entity Set represents strong entities",
+      "There is no difference; they are identical database concepts"
+    ],
+    "answer": "Entity Type defines structure; Entity Set is the current instance collection",
+    "explanation": "An Entity Type defines the schema/structure for a group of similar entities. An Entity Set (or extension) is the actual collection of entity instances present in the database at a given moment.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "What type of attribute is composed of multiple basic attributes (e.g., Address composed of Street, City, State, Zip)?",
+    "options": [
+      "Simple (atomic) attribute type",
+      "Composite attribute type",
+      "Multivalued attribute type",
+      "Derived attribute type"
+    ],
+    "answer": "Composite attribute type",
+    "explanation": "Composite attributes can be divided into smaller sub-parts (basic attributes) that represent more basic fields (e.g., Address broken down into Street, City, State).",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "How is a Multivalued attribute represented in an ER diagram using Chen's notation?",
+    "options": [
+      "Single lined oval shape",
+      "Double lined oval shape",
+      "Dashed line oval shape",
+      "Underlined oval shape"
+    ],
+    "answer": "Double lined oval shape",
+    "explanation": "In Chen's notation, multivalued attributes (which can have a set of values for a single entity, e.g. location of a department) are represented by double-walled ovals.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "What is a 'Derived Attribute' in ER modeling?",
+    "options": [
+      "An attribute inherited from a parent superclass",
+      "An attribute computed from other database attributes",
+      "A key attribute that identifies a weak entity",
+      "An attribute belonging to a relationship type"
+    ],
+    "answer": "An attribute computed from other database attributes",
+    "explanation": "A derived attribute does not have its value stored directly in the database. Instead, its value is calculated on-the-fly from other stored data (e.g. Total_Employees calculated by counting employee records).",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "How is a Derived attribute represented in Chen's ER diagram notation?",
+    "options": [
+      "Double lined oval shape",
+      "Dashed line oval shape",
+      "Double lined rectangle",
+      "Underlined oval shape"
+    ],
+    "answer": "Dashed line oval shape",
+    "explanation": "In Chen's notation, a derived attribute is represented by a dashed oval, indicating its value is not stored but calculated from other attributes.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "In a database relationship, what does the Cardinality Ratio specify?",
+    "options": [
+      "The ratio of read operations to write operations",
+      "The maximum number of relationship instances an entity can participate in",
+      "The percentage of null values in a foreign key column",
+      "The number of subclasses in a specialization hierarchy"
+    ],
+    "answer": "The maximum number of relationship instances an entity can participate in",
+    "explanation": "The cardinality ratio specifies the maximum number of relationship instances that an entity can participate in (e.g., 1:1, 1:N, or M:N).",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "Which constraint specifies whether the existence of an entity depends on its being related to another entity via a relationship type?",
+    "options": [
+      "Cardinality ratio of the relationship",
+      "Participation constraint (Total vs. Partial)",
+      "Completeness constraint of specialization",
+      "Disjointness constraint of subclass"
+    ],
+    "answer": "Participation constraint (Total vs. Partial)",
+    "explanation": "Participation constraints specify whether the existence of an entity depends on its being related to another entity via the relationship (Total participation/existence dependency = must participate; Partial = optional).",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "How is a Total Participation constraint (existence dependency) visually represented in Chen's ER diagram?",
+    "options": [
+      "A single line connecting entity to relationship",
+      "A double line connecting entity to relationship",
+      "A dashed line connecting entity to relationship",
+      "A double-lined diamond relationship box"
+    ],
+    "answer": "A double line connecting entity to relationship",
+    "explanation": "Total participation (or existence dependency) is represented by double lines connecting the entity type to the relationship diamond in Chen's notation.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "What is a 'Weak Entity Type'?",
+    "options": [
+      "An entity that has only derived attributes",
+      "An entity type that lacks a key and is identified by owner",
+      "An entity type that only participates in 1:1 relationships",
+      "A subclass in a partial specialization hierarchy"
+    ],
+    "answer": "An entity type that lacks a key and is identified by owner",
+    "explanation": "Weak entity types do not have key attributes of their own. They are identified by combining their partial key with the key of their owner (identifying) entity type via an identifying relationship.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "How are a Weak Entity and its Identifying Relationship represented in Chen's ER notation respectively?",
+    "options": [
+      "Double rectangle and double diamond",
+      "Single rectangle and double diamond",
+      "Double rectangle and single diamond",
+      "Dashed rectangle and dashed diamond"
+    ],
+    "answer": "Double rectangle and double diamond",
+    "explanation": "In Chen's notation, a weak entity is drawn in a double rectangle, and its identifying relationship (with the owner entity type) is drawn in a double-walled diamond.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "What is the partial key (discriminator) of a weak entity type?",
+    "options": [
+      "A foreign key referencing the owner table",
+      "A set of attributes identifying weak entities under same owner",
+      "A system-generated timestamp counter log",
+      "The key inherited from the parent superclass"
+    ],
+    "answer": "A set of attributes identifying weak entities under same owner",
+    "explanation": "The partial key (or discriminator) is the set of attributes that can uniquely identify weak entities that are related to the same owner entity (e.g. Dependent Name within a single Employee's dependents).",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "How is the partial key of a weak entity represented in an ER diagram?",
+    "options": [
+      "Underlined with a solid line",
+      "Underlined with a dashed line",
+      "Enclosed in a double-lined oval",
+      "Represented in a dashed box"
+    ],
+    "answer": "Underlined with a dashed line",
+    "explanation": "In an ER diagram, the partial key of a weak entity is represented by underlining its attribute name with a dashed (dotted) line.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "What does the (min, max) notation specify in relationship constraints?",
+    "options": [
+      "The minimum and maximum transaction count",
+      "The minimum and maximum relationship participation instances",
+      "The minimum and maximum disk block sizes on startup",
+      "The range of values permitted in an attribute domain"
+    ],
+    "answer": "The minimum and maximum relationship participation instances",
+    "explanation": "The (min, max) notation replaces cardinality and participation constraints by specifying that each entity must participate in at least $min$ and at most $max$ instances of the relationship type.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "What is the difference between specialization and generalization?",
+    "options": [
+      "Specialization is bottom-up; generalization is top-down",
+      "Specialization is top-down; generalization is bottom-up",
+      "Specialization is for strong; generalization is for weak entities",
+      "Specialization increases; generalization controls redundancy"
+    ],
+    "answer": "Specialization is top-down; generalization is bottom-up",
+    "explanation": "Specialization is top-down: it starts with a superclass and identifies its specific subclasses. Generalization is bottom-up: it takes several distinct classes and generalizes them into a common superclass.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "In a specialization, what does the Disjointness Constraint specify?",
+    "options": [
+      "Whether subclasses can overlap or must be mutually exclusive",
+      "Whether every superclass entity must belong to a subclass",
+      "Whether the subclasses have different key attributes",
+      "Whether the specialization is top-down or bottom-up"
+    ],
+    "answer": "Whether subclasses can overlap or must be mutually exclusive",
+    "explanation": "The disjointness constraint specifies whether subclass sets are disjoint (an entity can belong to at most one subclass, denoted by 'd') or overlapping (an entity can belong to multiple subclasses, denoted by 'o').",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "What does a Total Completeness constraint specify in a specialization/generalization?",
+    "options": [
+      "That every entity in the superclass must belong to a subclass",
+      "That every subclass must contain all entities of superclass",
+      "That the specialization is disjoint and overlapping",
+      "That all attributes of the entities are simple and atomic"
+    ],
+    "answer": "That every entity in the superclass must belong to a subclass",
+    "explanation": "A total completeness constraint (represented by a double line to the circle) means every entity in the superclass must belong to at least one subclass. Partial completeness allows an entity to belong only to the superclass.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "What ER modeling construct is used to treat a relationship type as an abstract entity type, allowing it to participate in other relationships?",
+    "options": [
+      "Weak entity mapping structure",
+      "Aggregation of relationships",
+      "Generalization of subclasses",
+      "Multidimensional model star"
+    ],
+    "answer": "Aggregation of relationships",
+    "explanation": "Aggregation is an ER model abstraction that allows representing a relationship type as an abstract entity, so that it can participate in relationships with other entities.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "Which data model is commonly used in data warehouses and OLAP applications to structure multidimensional data?",
+    "options": [
+      "Relational model with 3NF normalization",
+      "Multidimensional model (Star or Snowflake)",
+      "Hierarchical tree pointer model structures",
+      "Network pointer model graph structures"
+    ],
+    "answer": "Multidimensional model (Star or Snowflake)",
+    "explanation": "Data Warehouses and OLAP systems organize data using a multidimensional model (e.g. Star, Snowflake, Fact Constellation) to facilitate fast aggregation and analysis over dimensions.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "What are the components of a 'Star Schema'?",
+    "options": [
+      "A central fact table surrounded by denormalized dimension tables",
+      "A normalized group of tables in a binary tree hierarchy",
+      "A set of nodes and edges containing properties in Neo4j",
+      "A group of column families containing timestamps on GFS"
+    ],
+    "answer": "A central fact table surrounded by denormalized dimension tables",
+    "explanation": "A Star Schema consists of a single central Fact Table containing numerical measures and foreign keys, surrounded by denormalized Dimension Tables. This forms a star shape.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "How does a Snowflake Schema differ from a Star Schema?",
+    "options": [
+      "A Snowflake Schema has multiple fact tables in the center",
+      "A Snowflake Schema normalizes dimension tables into lookup tables",
+      "A Snowflake Schema is used for OLTP while Star is for OLAP",
+      "A Snowflake Schema does not support any aggregation operations"
+    ],
+    "answer": "A Snowflake Schema normalizes dimension tables into lookup tables",
+    "explanation": "In a Snowflake Schema, dimension tables are normalized (split into sub-dimensions to reduce redundancy), whereas in a Star Schema, dimension tables are kept denormalized.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "What is a 'Fact Constellation' (or Galaxy / Multi-Star) schema?",
+    "options": [
+      "A schema that allows only one dimension table in total",
+      "A multidimensional schema containing multiple fact tables sharing dimensions",
+      "A schema used exclusively for graph databases like Neo4j",
+      "A schema that does not require any primary or foreign keys"
+    ],
+    "answer": "A multidimensional schema containing multiple fact tables sharing dimensions",
+    "explanation": "A Fact Constellation (or Galaxy Schema) contains multiple fact tables that share dimension tables, representing complex data warehouses with overlapping analytical domains.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "What OLAP operation cuts a sub-cube by selecting one dimension and providing a filter, or selecting multiple specific dimensions?",
+    "options": [
+      "Roll-up and Drill-down aggregation",
+      "Slice and Dice selection",
+      "Pivot (rotate) representation",
+      "De-correlation query unnesting"
+    ],
+    "answer": "Slice and Dice selection",
+    "explanation": "A Slice operation selects one dimension to create a 2D sub-cube (e.g. Time = 2026). A Dice operation selects a sub-cube on multiple dimensions (e.g. Time = 2026, Location = US, Product = Tech).",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "What is the function of the 'Pivot' (or rotate) operation in OLAP?",
+    "options": [
+      "It splits a composite attribute into simple attributes",
+      "It changes the physical layout of disk blocks in buffer",
+      "It rotates the data axes in the view for representation",
+      "It computes incremental view maintenance updates"
+    ],
+    "answer": "It rotates the data axes in the view for representation",
+    "explanation": "The Pivot (or rotate) operation rotates the data axes in a spreadsheet or multidimensional viewer to present alternative views of the same data (e.g. turning columns into rows).",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "Which constraint is violated in the Company DB if we define an employee as both a Manager and a Secretary, when the superclass 'Employee' has a specialization defined as disjoint (d)?",
+    "options": [
+      "Total completeness constraint superclass rule",
+      "Disjointness constraint subclass exclusion",
+      "Participation constraint existence rule",
+      "Key uniqueness constraint primary attribute"
+    ],
+    "answer": "Disjointness constraint subclass exclusion",
+    "explanation": "A disjoint (d) constraint specifies that subclasses must be mutually exclusive. An entity can belong to at most one subclass. Defining an employee in two subclasses violates disjointness.",
+    "image": null
+  }
+]

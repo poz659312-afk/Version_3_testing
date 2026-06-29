@@ -1,0 +1,262 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choice",
+    "question": "Given original sample: $X = \\{11, 22, 33\\}$. We perform Jackknife estimation. The removed observations and remaining samples are:\n- Remove 11, Remaining $[22, 33]$, LOO Mean $\\bar{x}_{(1)} = 27.5$\n- Remove 22, Remaining $[11, 33]$, LOO Mean $\\bar{x}_{(2)} = 22.0$\n- Remove 33, Remaining $[11, 22]$, LOO Mean $\\bar{x}_{(3)} = 16.5$\n\nWhat is the full sample mean of the original data?",
+    "options": [
+      "A) 20.0",
+      "B) 22.0",
+      "C) 24.5",
+      "D) 25.0"
+    ],
+    "answer": "B) 22.0",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the leave-one-out (LOO) mean when observation 11 is removed?",
+    "options": [
+      "A) 27.5",
+      "B) 22.0",
+      "C) 16.5",
+      "D) 24.0"
+    ],
+    "answer": "A) 27.5",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the Jackknife estimate of the mean using the 3 leave-one-out means?",
+    "options": [
+      "A) 22.0",
+      "B) 24.5",
+      "C) 25.0",
+      "D) 23.3"
+    ],
+    "answer": "A) 22.0",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the full Jackknife bias correction term for the sample mean?",
+    "options": [
+      "A) -2.5",
+      "B) 0",
+      "C) 2.5",
+      "D) 5"
+    ],
+    "answer": "B) 0",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the bias-corrected Jackknife estimate of the mean?",
+    "options": [
+      "A) 20.0",
+      "B) 22.0",
+      "C) 24.5",
+      "D) 25.0"
+    ],
+    "answer": "B) 22.0",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the Jackknife SE estimate of the sample mean?",
+    "options": [
+      "A) 5.25",
+      "B) 6.35",
+      "C) 4.65",
+      "D) 3.33"
+    ],
+    "answer": "B) 6.35",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the 95% confidence interval for the population mean using the Jackknife sample means?",
+    "options": [
+      "A) (16.0, 28.0)",
+      "B) (9.554, 34.446)",
+      "C) (11.0, 33.0)",
+      "D) (12.5, 32.5)"
+    ],
+    "answer": "B) (9.554, 34.446)",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the variance ($\\sigma^2$) of the original data?",
+    "options": [
+      "A) 60.5",
+      "B) 80.67",
+      "C) 121.0",
+      "D) 30.25"
+    ],
+    "answer": "B) 80.67",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the leave-one-out variance when observation 22 is removed?",
+    "options": [
+      "A) 30.25",
+      "B) 121.0",
+      "C) 60.5",
+      "D) 81.0"
+    ],
+    "answer": "B) 121.0",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the Jackknife estimate of the variance $\\sigma^2$ (average of leave-one-out variances)?",
+    "options": [
+      "A) 81.0",
+      "B) 60.5",
+      "C) 121.5",
+      "D) 30.25"
+    ],
+    "answer": "B) 60.5",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the Jackknife bias correction term for the variance $\\sigma^2$?",
+    "options": [
+      "A) 20.5",
+      "B) -40.33",
+      "C) 0",
+      "D) 40.5"
+    ],
+    "answer": "B) -40.33",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the bias-corrected Jackknife estimate of the variance $\\sigma^2$?",
+    "options": [
+      "A) 60.5",
+      "B) 121.0",
+      "C) 81.0",
+      "D) 30.25"
+    ],
+    "answer": "B) 121.0",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the standard error (SE) of the Jackknife estimate of $\\sigma^2$?",
+    "options": [
+      "A) 20.5",
+      "B) 60.5",
+      "C) 40.5",
+      "D) 25.0"
+    ],
+    "answer": "B) 60.5",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choice",
+    "question": "Using the dataset in Question 1, what is the z-based 95% confidence interval for $\\sigma^2$ using the Jackknife method?",
+    "options": [
+      "A) (60.5, 121.5)",
+      "B) (2.42, 239.58)",
+      "C) (81.0, 162.0)",
+      "D) (30.25, 121.0)"
+    ],
+    "answer": "B) (2.42, 239.58)",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choice",
+    "question": "What is the primary purpose of the jackknife resampling method?",
+    "options": [
+      "A) To increase the sample size for better accuracy",
+      "B) To estimate bias and standard error of an estimator by systematically leaving out observations",
+      "C) To replace bootstrapping in all statistical analyses",
+      "D) To ensure all data points are normally distributed"
+    ],
+    "answer": "B) To estimate bias and standard error of an estimator by systematically leaving out observations",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choice",
+    "question": "In jackknife resampling, each pseudo-sample is created by:",
+    "options": [
+      "A) Sampling with replacement from the original data",
+      "B) Removing one observation at a time from the original dataset",
+      "C) Adding Gaussian noise to the original data",
+      "D) Randomly shuffling all observations"
+    ],
+    "answer": "B) Removing one observation at a time from the original dataset",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choice",
+    "question": "The jackknife estimate of bias for an estimator $\\hat{\\theta}$ is given by:",
+    "options": [
+      "A) $(n-1)(\\hat{\\theta}_{(\\cdot)} - \\hat{\\theta})$, where $\\hat{\\theta}_{(\\cdot)}$ is the mean of jackknife replicates",
+      "B) $\\hat{\\theta} - \\theta$, where $\\theta$ is the true population parameter",
+      "C) The variance of jackknife replicates",
+      "D) The standard error of the original sample"
+    ],
+    "answer": "A) $(n-1)(\\hat{\\theta}_{(\\cdot)} - \\hat{\\theta})$, where $\\hat{\\theta}_{(\\cdot)}$ is the mean of jackknife replicates",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choice",
+    "question": "How is the standard error of a jackknife estimator calculated?",
+    "options": [
+      "A) $\\sqrt{\\frac{1}{n} \\sum_{j=1}^n (\\hat{\\theta}_{(-j)} - \\hat{\\theta})^2}$",
+      "B) $\\sqrt{\\frac{n-1}{n} \\sum_{j=1}^n (\\hat{\\theta}_{(-j)} - \\hat{\\theta}_{(\\cdot)})^2}$",
+      "C) The standard deviation of the original sample",
+      "D) The mean squared error of the estimator"
+    ],
+    "answer": "B) $\\sqrt{\\frac{n-1}{n} \\sum_{j=1}^n (\\hat{\\theta}_{(-j)} - \\hat{\\theta}_{(\\cdot)})^2}$",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choice",
+    "question": "Which of the following is true about the jackknife compared to the bootstrap?",
+    "options": [
+      "A) Jackknife is more computationally intensive.",
+      "B) Jackknife performs better for non-smooth statistics like the median.",
+      "C) Jackknife SE is typically larger than bootstrap SE.",
+      "D) Jackknife requires storing full resample matrices."
+    ],
+    "answer": "C) Jackknife SE is typically larger than bootstrap SE.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choice",
+    "question": "The jackknife method performs poorly for which of the following statistics?",
+    "options": [
+      "A) Linear statistics like the mean",
+      "B) Non-smooth or non-linear statistics (e.g., median, correlation)",
+      "C) Large sample sizes",
+      "D) Normally distributed data"
+    ],
+    "answer": "B) Non-smooth or non-linear statistics (e.g., median, correlation)",
+    "image": null
+  }
+]

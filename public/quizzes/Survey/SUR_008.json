@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "What is unstructured text data in surveys?",
+    "options": [
+      "A) Predefined multiple choice options.",
+      "B) Numerical satisfaction ratings.",
+      "C) Open-ended feedback written in the respondent's own words.",
+      "D) Answers on Likert scales from 1 to 7."
+    ],
+    "answer": "C) Open-ended feedback written in the respondent's own words.",
+    "explanation": "Unstructured questions in surveys collect open-ended feedback (e.g. 'What did you like most?') in the respondent's own words.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "Why do researchers use open-ended unstructured questions in surveys?",
+    "options": [
+      "A) Because they are the easiest and fastest to analyze mathematically.",
+      "B) To capture the voice and specific feelings of the respondent.",
+      "C) To prevent respondents from making spelling and grammar mistakes.",
+      "D) To guarantee a 100% completion rate for the survey."
+    ],
+    "answer": "B) To capture the voice and specific feelings of the respondent.",
+    "explanation": "Unstructured questions are used because they capture the voice of the respondent - what they felt, noticed, or needed in their own words.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "Which of the following is a challenge when working with unstructured text responses?",
+    "options": [
+      "A) They do not contain any words that carry syntactic meaning.",
+      "B) Calculating the mean and median of the text is mathematically complex.",
+      "C) Messy spelling/grammar, short responses, and ambiguity.",
+      "D) Predefined categories restrict the opinions respondents can give."
+    ],
+    "answer": "C) Messy spelling/grammar, short responses, and ambiguity.",
+    "explanation": "Challenges include messy spelling/grammar ('gr8'), short/incomplete responses ('Good.'), and ambiguity ('Too fast' - good or bad?).",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "In NLP, what is a 'Token'?",
+    "options": [
+      "A) One complete survey response.",
+      "B) A predefined answer on a Likert scale.",
+      "C) A single word or unit of text.",
+      "D) A collection of all survey answers."
+    ],
+    "answer": "C) A single word or unit of text.",
+    "explanation": "A token is a single word or unit (like punctuation) resulting from splitting text.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "What is a 'Document' in survey text analysis?",
+    "options": [
+      "A) A collection of all responses.",
+      "B) A PDF containing survey lectures.",
+      "C) One complete survey response.",
+      "D) A single word or unit."
+    ],
+    "answer": "C) One complete survey response.",
+    "explanation": "In NLP terms for survey analysis, a document is one complete individual response.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "What is a 'Corpus' in NLP?",
+    "options": [
+      "A) A single word or punctuation mark.",
+      "B) A list of syntax-only stopwords.",
+      "C) A collection of responses (all survey answers).",
+      "D) A dictionary base form of a word."
+    ],
+    "answer": "C) A collection of responses (all survey answers).",
+    "explanation": "A corpus is a collection of documents (in this case, all responses to a survey question).",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "What is 'Tokenization'?",
+    "options": [
+      "A) Removing high-frequency syntax words.",
+      "B) Finding the dictionary base form of a word.",
+      "C) Converting all characters to lowercase form.",
+      "D) Splitting text into individual units like words or punctuation."
+    ],
+    "answer": "D) Splitting text into individual units like words or punctuation.",
+    "explanation": "Tokenization is the process of splitting raw text into individual units, usually words or punctuation marks.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "If the raw text is 'The instructor was AMAZING!!', what is the tokenized form?",
+    "options": [
+      "A) ['the', 'instructor', 'was', 'amazing', '!!']",
+      "B) ['The', 'instructor', 'was']",
+      "C) ['instructor', 'amazing']",
+      "D) ['The', 'instructor', 'was', 'AMAZING', '!!']"
+    ],
+    "answer": "D) ['The', 'instructor', 'was', 'AMAZING', '!!']",
+    "explanation": "Tokenization breaks the sentences into raw units, including uppercase letters and punctuation.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "What is the purpose of lowercasing and removing punctuation in text preprocessing?",
+    "options": [
+      "A) To split a document into a collection of responses.",
+      "B) To normalize text and remove irrelevant differences.",
+      "C) To find the dictionary base form of verbs.",
+      "D) To remove words that carry semantic meaning."
+    ],
+    "answer": "B) To normalize text and remove irrelevant differences.",
+    "explanation": "Normalization (lowercasing and removing punctuation) removes irrelevant differences so that 'AMAZING' and 'amazing' are treated identically.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "What are 'stopwords' in text cleaning?",
+    "options": [
+      "A) Words that express highly negative sentiments.",
+      "B) Words that contain spelling and grammar errors.",
+      "C) Punctuation marks that end a sentence.",
+      "D) Syntactic glue words that don't carry significant meaning."
+    ],
+    "answer": "D) Syntactic glue words that don't carry significant meaning.",
+    "explanation": "Stopwords (the, is, and, was, etc.) are syntactic glue. Removing them reduces noise in frequencies or topic models.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "Why does removing stopwords reduce noise in survey analysis?",
+    "options": [
+      "A) They appear frequently but do not carry topical meaning.",
+      "B) They represent the emotional tone of the respondent.",
+      "C) They cause the sentiment analysis tools to break.",
+      "D) They represent the dictionary base form of verbs."
+    ],
+    "answer": "A) They appear frequently but do not carry topical meaning.",
+    "explanation": "Since stopwords occur very frequently but carry little informational value, removing them helps highlight content-bearing words.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "What is the process of Stemming?",
+    "options": [
+      "A) A fast, suffix-removal process that is often inaccurate.",
+      "B) A method to count the frequency of tokens in a corpus.",
+      "C) A technique to detect sarcasm and emojis in short texts.",
+      "D) A rule-based process converting words to their dictionary base."
+    ],
+    "answer": "A) A fast, suffix-removal process that is often inaccurate.",
+    "explanation": "Stemming removes suffixes fast, but can be inaccurate (e.g. 'teaching' -> 'teach', but might over-truncate other words).",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "What is Lemmatization?",
+    "options": [
+      "A) A smart process using grammar rules to convert words to their dictionary base.",
+      "B) A fast suffix-removal process that ignores vocabulary.",
+      "C) The process of splitting a response into individual words.",
+      "D) The process of removing stopwords like 'the' and 'was'."
+    ],
+    "answer": "A) A smart process using grammar rules to convert words to their dictionary base.",
+    "explanation": "Lemmatization uses vocabulary and grammatical rules to convert words to their dictionary base form (e.g., 'better' -> 'good', 'studies' -> 'study').",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "Why is Lemmatization preferred over Stemming for survey text analysis?",
+    "options": [
+      "A) It automatically removes punctuation and lowercase letters.",
+      "B) It is immune to spelling and grammar mistakes in responses.",
+      "C) It is much faster and does not require vocabulary rules.",
+      "D) It is smarter and converts words to actual dictionary base forms."
+    ],
+    "answer": "D) It is smarter and converts words to actual dictionary base forms.",
+    "explanation": "Lemmatization is preferred because it resolves words to real base forms (e.g., 'better' to 'good') using grammar, which is more accurate.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "What is sentiment analysis in surveys?",
+    "options": [
+      "A) Identifying the frequency of dictionary base words.",
+      "B) Using NLP to detect the emotional tone behind responses.",
+      "C) A pretesting method to check if questions are understood.",
+      "D) Measuring the completion rate and dropout of a survey."
+    ],
+    "answer": "B) Using NLP to detect the emotional tone behind responses.",
+    "explanation": "Sentiment analysis (opinion mining) is the process of using NLP to detect the emotional tone (positive, negative, neutral) behind text.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Which of the following is a benefit of sentiment analysis in surveys?",
+    "options": [
+      "A) Ensures the expected cell counts are greater than 5.",
+      "B) Guarantees that the sample size is statistically valid.",
+      "C) Eliminates messy spelling and grammar errors automatically.",
+      "D) Tracks trends over time without reading hundreds of responses."
+    ],
+    "answer": "D) Tracks trends over time without reading hundreds of responses.",
+    "explanation": "Sentiment analysis allows tracking trends, segmenting groups, and gaining insights without manually reading every response.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "What is a major limitation of automated sentiment analysis tools?",
+    "options": [
+      "A) They are restricted to analyzing nominal and ordinal variables.",
+      "B) They do not understand text, they make pattern-based guesses.",
+      "C) They cannot be combined with structured survey data.",
+      "D) They require the survey to be conducted face-to-face."
+    ],
+    "answer": "B) They do not understand text, they make pattern-based guesses.",
+    "explanation": "Sentiment tools do not understand context or meaning; they make pattern-based guesses and can mislabel responses.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "What frequently breaks traditional sentiment analysis tools?",
+    "options": [
+      "A) Converting words to their dictionary base forms.",
+      "B) Tokenization of sentences into individual words.",
+      "C) Stopword removal and lowercasing preprocessing.",
+      "D) Short texts, emojis, sarcasm, and multilingual inputs."
+    ],
+    "answer": "D) Short texts, emojis, sarcasm, and multilingual inputs.",
+    "explanation": "Sarcasm, emojis, short texts, and multilingual inputs often violate the pattern assumptions of traditional tools.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "Why should automated sentiment insights be verified with human review for critical decisions?",
+    "options": [
+      "A) Because human review is much faster than NLP algorithms.",
+      "B) Because it is required by the university attendance policy.",
+      "C) Because human review removes all stopwords automatically.",
+      "D) Because mislabeling can lead to incorrect conclusions."
+    ],
+    "answer": "D) Because mislabeling can lead to incorrect conclusions.",
+    "explanation": "Since NLP tools make guesses and can mislabel, human review is needed to verify findings before critical decisions.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "What is the Bag of Words (BoW) model?",
+    "options": [
+      "A) A model that converts all verbs to their dictionary base forms.",
+      "B) A model that analyzes the emotional tone and sarcasm of words.",
+      "C) A simple model that ignores grammar, order, and context, counting word frequencies.",
+      "D) A model that requires random assignment of words to categories."
+    ],
+    "answer": "C) A simple model that ignores grammar, order, and context, counting word frequencies.",
+    "explanation": "The Bag of Words model ignores grammar, word order, and context, simply counting how often each word appears.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "In a BoW model, what is ignored?",
+    "options": [
+      "A) Grammar, word order, and context.",
+      "B) The relationship between categorical variables.",
+      "C) The spelling and capitalization of words.",
+      "D) The frequency of occurrence of words."
+    ],
+    "answer": "A) Grammar, word order, and context.",
+    "explanation": "BoW treats a document as a 'bag' of words, meaning structure (grammar, order, context) is completely discarded.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "If the response is 'More feedback on assignments.', what words would be in BoW after stopword removal?",
+    "options": [
+      "A) ['more', 'feedback', 'on', 'assignments']",
+      "B) ['feedback', 'assignments']",
+      "C) ['assignments']",
+      "D) ['feedback']"
+    ],
+    "answer": "B) ['feedback', 'assignments']",
+    "explanation": "BoW counts frequencies of content words. After removing stopwords ('more', 'on'), we get the key terms.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "How does BoW represent a survey response?",
+    "options": [
+      "A) As a sentence diagram showing grammatical relations.",
+      "B) As a positive, negative, or neutral sentiment score.",
+      "C) As a count of how many times each word appears.",
+      "D) As a continuous sequence of lowercase tokens."
+    ],
+    "answer": "C) As a count of how many times each word appears.",
+    "explanation": "BoW represents text by counting word frequencies, disregarding grammatical structure.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "What is opinion mining another term for?",
+    "options": [
+      "A) Lemmatization.",
+      "B) Cognitive Testing.",
+      "C) Bag of Words.",
+      "D) Sentiment Analysis."
+    ],
+    "answer": "D) Sentiment Analysis.",
+    "explanation": "Opinion mining is another term for sentiment analysis.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "What is the output of Lemmatization for the word 'studies'?",
+    "options": [
+      "A) 'stud'",
+      "B) 'study'",
+      "C) 'studies'",
+      "D) 'studying'"
+    ],
+    "answer": "B) 'study'",
+    "explanation": "Lemmatization converts 'studies' to its dictionary base form, which is 'study'.",
+    "image": null
+  }
+]

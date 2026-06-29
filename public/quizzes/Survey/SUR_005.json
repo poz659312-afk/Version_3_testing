@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "What is a pilot test in survey methodology?",
+    "options": [
+      "A) A survey conducted exclusively with aviation industry professionals.",
+      "B) A small-scale version of a full survey conducted with a limited sample.",
+      "C) A survey designed to manipulate variables in a laboratory setting.",
+      "D) A final large-scale data collection after all analysis is complete."
+    ],
+    "answer": "B) A small-scale version of a full survey conducted with a limited sample.",
+    "explanation": "A pilot test is a small-scale version of a full survey conducted with a limited sample representative of the target population.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "What is the primary purpose of conducting a pilot test?",
+    "options": [
+      "A) To uncover problems in survey design, wording, or technology.",
+      "B) To collect the final dataset for statistical hypothesis testing.",
+      "C) To train the general population on how to answer questionnaires.",
+      "D) To prove that the margin of error is exactly equal to zero."
+    ],
+    "answer": "A) To uncover problems in survey design, wording, or technology.",
+    "explanation": "Pilot testing evaluates survey performance to catch issues in questions, instructions, options, or technology before full launch.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "Which of the following is NOT a main reason to conduct a pilot test?",
+    "options": [
+      "A) To increase the population standard deviation value.",
+      "B) To detect potential biases in question wording.",
+      "C) To check if the questions are clear and understandable.",
+      "D) To measure the completion time of the questionnaire."
+    ],
+    "answer": "A) To increase the population standard deviation value.",
+    "explanation": "Reasons for pilot testing include checking understandability, clarity, timing, detecting bias, and finding missing elements.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "What are the key activities performed during pilot testing?",
+    "options": [
+      "A) Calculating Z-scores and adjusting sample sizes for small populations.",
+      "B) Administering the survey, collecting feedback, and measuring completion time.",
+      "C) Converting nominal scales to ratio scales for statistical modeling.",
+      "D) Formulating hypotheses, selecting control groups, and running ANOVA."
+    ],
+    "answer": "B) Administering the survey, collecting feedback, and measuring completion time.",
+    "explanation": "Key activities are: Administering the survey, collecting feedback, and measuring completion time and dropout rate.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "How is 'reliability' defined in survey methodology?",
+    "options": [
+      "A) The consistency or repeatability of the survey results.",
+      "B) Whether the survey measures what it is intended to measure.",
+      "C) The clarity and simplicity of the wording in questions.",
+      "D) The response rate percentage achieved after invitations."
+    ],
+    "answer": "A) The consistency or repeatability of the survey results.",
+    "explanation": "Reliability refers to the consistency or repeatability of the survey results.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "What type of reliability measures consistency of results over time?",
+    "options": [
+      "A) Construct Reliability.",
+      "B) Internal Consistency.",
+      "C) Test-Retest Reliability.",
+      "D) Inter-Rater Reliability."
+    ],
+    "answer": "C) Test-Retest Reliability.",
+    "explanation": "Test-retest reliability measures the consistency of results when the same test is administered to the same group at different times.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "What does 'internal consistency' measure in survey design?",
+    "options": [
+      "A) Whether different items in a survey measure the same construct.",
+      "B) The agreement between two different survey administrators.",
+      "C) The stability of the survey results over a six-month period.",
+      "D) The percentage of questions answered by the average respondent."
+    ],
+    "answer": "A) Whether different items in a survey measure the same construct.",
+    "explanation": "Internal consistency evaluates whether different items that propose to measure the same general construct produce similar scores.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "Which type of reliability evaluates agreement between different observers or raters?",
+    "options": [
+      "A) Internal Consistency.",
+      "B) Test-Retest Reliability.",
+      "C) Inter-Rater Reliability.",
+      "D) Face Reliability."
+    ],
+    "answer": "C) Inter-Rater Reliability.",
+    "explanation": "Inter-rater reliability measures the degree of agreement or consistency between different observers or raters.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "How is 'validity' defined in survey methodology?",
+    "options": [
+      "A) Whether the survey actually measures what it's supposed to measure.",
+      "B) The percentage of respondents who completed the survey.",
+      "C) The repeatability of the scores across multiple administrations.",
+      "D) The speed at which respondents complete the questionnaire."
+    ],
+    "answer": "A) Whether the survey actually measures what it's supposed to measure.",
+    "explanation": "Validity is about whether the survey is actually measuring what it's supposed to measure.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "Which type of validity indicates that a survey appears to measure a construct at first glance?",
+    "options": [
+      "A) Face Validity.",
+      "B) Criterion Validity.",
+      "C) Content Validity.",
+      "D) Construct Validity."
+    ],
+    "answer": "A) Face Validity.",
+    "explanation": "Face validity is the extent to which a measurement method appears 'on its face' to measure the construct of interest.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "What is Content Validity?",
+    "options": [
+      "A) Whether the survey results correlate with an established external standard.",
+      "B) Whether the survey questions are written in the respondents' language.",
+      "C) Whether the survey covers the entire range of the concept being measured.",
+      "D) Whether the survey questions look visually appealing and professional."
+    ],
+    "answer": "C) Whether the survey covers the entire range of the concept being measured.",
+    "explanation": "Content validity is the extent to which a measure covers the entire range of the concept it is intended to measure.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "What does Construct Validity evaluate?",
+    "options": [
+      "A) Whether the survey contains exactly 25 multiple choice questions.",
+      "B) Whether the survey has been pretested using think-aloud protocols.",
+      "C) Whether the survey conforms to theoretical concepts and relationships.",
+      "D) Whether the survey results are consistent across multiple interviewers."
+    ],
+    "answer": "C) Whether the survey conforms to theoretical concepts and relationships.",
+    "explanation": "Construct validity is the degree to which a survey test measures what claims, conforming to theoretical constructs.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "Which validity type compares survey results with an external criterion or standard?",
+    "options": [
+      "A) Construct Validity.",
+      "B) Criterion Validity.",
+      "C) Face Validity.",
+      "D) Content Validity."
+    ],
+    "answer": "B) Criterion Validity.",
+    "explanation": "Criterion validity evaluates whether a measure performs as expected relative to other variables (criteria) that serve as standards.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "What is cognitive testing?",
+    "options": [
+      "A) A pretesting method evaluating if people understand survey questions correctly.",
+      "B) A psychological test measuring a respondent's logical IQ score.",
+      "C) An experimental manipulation of news feeds to study emotional response.",
+      "D) A method to calculate the required sample size for small groups."
+    ],
+    "answer": "A) A pretesting method evaluating if people understand survey questions correctly.",
+    "explanation": "Cognitive testing is a pretesting method used to evaluate whether people understand survey questions correctly.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "Why does cognitive testing matter in survey design?",
+    "options": [
+      "A) It guarantees that the survey response rate will exceed 90%.",
+      "B) It helps researchers identify the exact standard deviation of scores.",
+      "C) It allows the survey to be administered without informed consent.",
+      "D) Background, culture, and experience can make questions mean different things."
+    ],
+    "answer": "D) Background, culture, and experience can make questions mean different things.",
+    "explanation": "Even well-written questions can mean different things to different people based on background, culture, language, or personal experience.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Which technique in cognitive testing requires participants to verbalize their thoughts while answering?",
+    "options": [
+      "A) Structured Protocol.",
+      "B) Think-Aloud Protocol.",
+      "C) Probing Questions.",
+      "D) Bipolar Interviewing."
+    ],
+    "answer": "B) Think-Aloud Protocol.",
+    "explanation": "Think-Aloud Protocol requires participants to think aloud and verbalize their thoughts as they read and answer the questions.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "How do probing questions function in cognitive testing?",
+    "options": [
+      "A) The researcher suggests the correct answer during the pretest.",
+      "B) The researcher forces the respondent to choose between yes or no.",
+      "C) The researcher asks follow-up questions to understand the respondent's choices.",
+      "D) The researcher measures the exact eye-movement patterns of respondents."
+    ],
+    "answer": "C) The researcher asks follow-up questions to understand the respondent's choices.",
+    "explanation": "In cognitive testing, probing questions are used by the researcher to ask about specific terms, how they chose their answer, etc.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "Which of the following is a benefit of cognitive testing?",
+    "options": [
+      "A) It automates the collection of unstructured text feedback.",
+      "B) It reduces the required sample size for the full survey.",
+      "C) It eliminates the need for any pilot testing activities.",
+      "D) It detects unintended meanings and increases validity."
+    ],
+    "answer": "D) It detects unintended meanings and increases validity.",
+    "explanation": "Benefits include: improving clarity, reducing confusion, improving accuracy, increasing validity, and detecting unintended meanings.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "How is 'response rate' defined in survey methodology?",
+    "options": [
+      "A) The number of days the survey link remains active online.",
+      "B) The total number of questions answered divided by total questions.",
+      "C) Percentage of people who completed the survey out of those invited.",
+      "D) The average time taken by a respondent to answer a question."
+    ],
+    "answer": "C) Percentage of people who completed the survey out of those invited.",
+    "explanation": "A response rate is the percentage of people who completed your survey out of those who were invited to participate.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "Why is a high response rate important?",
+    "options": [
+      "A) It reduces the time required to analyze unstructured text.",
+      "B) It eliminates the necessity of having a valid control group.",
+      "C) It guarantees that the standard deviation of scores is 0.5.",
+      "D) It ensures the data is representative and reduces nonresponse bias."
+    ],
+    "answer": "D) It ensures the data is representative and reduces nonresponse bias.",
+    "explanation": "A high response rate is needed to ensure the sample represents the target population and to avoid nonresponse bias.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "What is a consequence of a low response rate?",
+    "options": [
+      "A) You may miss key groups, leading to nonresponse bias.",
+      "B) The Z-score of the confidence interval increases to 2.576.",
+      "C) The research method is forced to become experimental.",
+      "D) The survey questions automatically become double-barreled."
+    ],
+    "answer": "A) You may miss key groups, leading to nonresponse bias.",
+    "explanation": "Low response rates mean key groups might be missing (nonresponse bias), which weakens the validity of the conclusions.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "Which of the following is a proven strategy to increase survey response rates?",
+    "options": [
+      "A) Keeping the survey objectives and privacy policies secret.",
+      "B) Personalized invitations and incentives.",
+      "C) Making the questionnaire longer to capture more details.",
+      "D) Using complex vocabulary to challenge the participants."
+    ],
+    "answer": "B) Personalized invitations and incentives.",
+    "explanation": "Proven strategies include: personalized invitations, incentives, keeping it short/clear, and communicating purpose and privacy.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "How do personalized invitations help increase response rates?",
+    "options": [
+      "A) They allow the researcher to bypass cognitive testing protocols.",
+      "B) They make respondents feel valued and increase engagement.",
+      "C) They automatically double the confidence level of the survey.",
+      "D) They guarantee that the survey is completely anonymous."
+    ],
+    "answer": "B) They make respondents feel valued and increase engagement.",
+    "explanation": "Personalization makes the invitation feel less like spam, increasing the likelihood of participation.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "In the strategies to increase responses, what does 'Communicate Purpose and Privacy' do?",
+    "options": [
+      "A) Enables the researcher to sell data to third parties.",
+      "B) Allows the researcher to use leading questions ethically.",
+      "C) Builds trust so respondents are more comfortable participating.",
+      "D) Forces the respondent to complete the survey in a single session."
+    ],
+    "answer": "C) Builds trust so respondents are more comfortable participating.",
+    "explanation": "Explaining why the study is done and how privacy is protected builds trust, motivating people to respond.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "According to the summary of Lecture 5, what does validity ensure?",
+    "options": [
+      "A) That there are no spelling errors in the questions.",
+      "B) That the sample size is mathematically valid.",
+      "C) That you are measuring the right thing.",
+      "D) That the survey results are consistent over time."
+    ],
+    "answer": "C) That you are measuring the right thing.",
+    "explanation": "Reliability ensures consistency; validity ensures you're measuring the right thing.",
+    "image": null
+  }
+]

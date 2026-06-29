@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "Which of the following is a primary reason for the emergence of NoSQL databases?",
+    "options": [
+      "To support SQL queries with higher efficiency on mainframes",
+      "The need to scale horizontally on commodity hardware clusters",
+      "To enforce stricter ACID constraints on single-user systems",
+      "To implement physical data independence in schemas"
+    ],
+    "answer": "The need to scale horizontally on commodity hardware clusters",
+    "explanation": "NoSQL emerged to handle massive volumes of structured/unstructured web data by scaling out (horizontally adding cheap servers) rather than scaling up (buying expensive database hardware).",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "What does NoSQL stand for in modern database technology?",
+    "options": [
+      "No SQL allowed under any circumstances in the system",
+      "Not Only SQL",
+      "New Object-oriented Schema Query Language syntax",
+      "Network Organized System Query Language architecture"
+    ],
+    "answer": "Not Only SQL",
+    "explanation": "NoSQL generally stands for 'Not Only SQL', representing non-relational, distributed data stores that may support SQL-like querying but relax RDBMS constraints.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "How do ACID properties differ from BASE properties in database transaction processing?",
+    "options": [
+      "ACID is for document; BASE is for key-value stores",
+      "ACID enforces consistency; BASE tolerates eventual consistency",
+      "ACID is for distributed; BASE is for centralized mainframes",
+      "ACID requires no locks; BASE uses rigorous locking"
+    ],
+    "answer": "ACID enforces consistency; BASE tolerates eventual consistency",
+    "explanation": "ACID properties enforce strong consistency and immediate transactional safety. BASE properties prioritize availability, allowing data to be temporarily inconsistent and eventually consistent.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "What are the components of the BASE transactions acronym?",
+    "options": [
+      "Binary isolation, Active state, Serializability, Eventually committed",
+      "Basically Available, Soft state, Eventually consistent",
+      "Backup availability, Sharding storage, Execution planning",
+      "Base architecture, Schema-less, Entity-relationship"
+    ],
+    "answer": "Basically Available, Soft state, Eventually consistent",
+    "explanation": "BASE stands for Basically Available (system remains functional despite node failures), Soft state (data can change dynamically due to replication), and Eventually consistent (replicas align over time).",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "What is the soft state property in BASE transactions?",
+    "options": [
+      "A database state residing only in volatile buffer cache",
+      "A state where replica data changes without user interaction",
+      "A state where data is stored in text files rather than pages",
+      "The status of a transaction during rollback analysis pass"
+    ],
+    "answer": "A state where replica data changes without user interaction",
+    "explanation": "Soft state means that the state of the data can drift and change over time (e.g. during replica updates in the background) without active transaction writes by the user.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "What does the CAP Theorem state about distributed data systems?",
+    "options": [
+      "A system can provide Column-families, Aggregations, and Partitioning",
+      "A system can guarantee at most two of Consistency, Availability, and Partition Tolerance",
+      "Consistent databases are always Available and Partition-tolerant",
+      "Distributed parallel databases must ignore ACID properties"
+    ],
+    "answer": "A system can guarantee at most two of Consistency, Availability, and Partition Tolerance",
+    "explanation": "The CAP Theorem states that a distributed data system can provide at most two of the three properties: Consistency (all nodes see same data), Availability (every request gets a response), and Partition Tolerance (survives network splits).",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "In CAP Theorem, what is 'Partition Tolerance'?",
+    "options": [
+      "The capacity of database to store data on disk partitions",
+      "The system functioning despite network communication failures",
+      "The capacity of partitions to support nested subqueries",
+      "The rate of page replacements in the DBMS cache pool"
+    ],
+    "answer": "The system functioning despite network communication failures",
+    "explanation": "Partition tolerance is the ability of a distributed database cluster to continue operating correctly even when communication links between nodes are broken or delayed.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "During a network partition in a distributed system, what is the trade-off between Availability and Consistency?",
+    "options": [
+      "AP systems remain active but inconsistent; CP systems block writes",
+      "AP is consistency-focused, whereas CP is availability-focused",
+      "Both AP and CP systems must shut down to prevent data loss",
+      "There is no trade-off; both are achieved using hashing"
+    ],
+    "answer": "AP systems remain active but inconsistent; CP systems block writes",
+    "explanation": "During a partition, an AP system remains available by accepting writes on disconnected nodes (violating consistency). A CP system rejects writes on partitioned nodes to maintain consistency, sacrificing availability.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "Which category of NoSQL databases is the simplest, storing data as a collection of schema-less maps where each item has a unique key paired with an arbitrary value?",
+    "options": [
+      "Document Databases",
+      "Key-Value Stores",
+      "Column-oriented Stores",
+      "Graph Databases"
+    ],
+    "answer": "Key-Value Stores",
+    "explanation": "Key-Value stores are the simplest NoSQL database model, storing data as associative arrays (hash maps) where a unique string key maps to a raw value (value is opaque to the DBMS).",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "Which NoSQL database category pairs each key with a complex, nested data structure (typically JSON or BSON) that is readable by the database engine for indexing and querying?",
+    "options": [
+      "Key-Value Stores",
+      "Document Databases",
+      "Column-family Stores",
+      "Graph Databases"
+    ],
+    "answer": "Document Databases",
+    "explanation": "Document databases store semi-structured data as documents (JSON/XML). The DBMS can inspect the document contents, allowing indexing and querying on nested fields.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "Which NoSQL database category stores data in column families, grouping related columns together on disk to avoid storing null values and optimize queries over specific attributes?",
+    "options": [
+      "Key-Value Stores",
+      "Document Stores",
+      "Column-Oriented",
+      "Graph Databases"
+    ],
+    "answer": "Column-Oriented",
+    "explanation": "Column-family stores (like Cassandra or HBase) store data in columns grouped into column families. This optimizes analytical queries over specific attributes and avoids storing nulls for sparse rows.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "Which NoSQL database category represents and stores data as nodes (entities) and edges (relationships), making it highly optimized for traversal-heavy queries?",
+    "options": [
+      "Key-Value Stores",
+      "Document Stores",
+      "Column-family Stores",
+      "Graph Databases"
+    ],
+    "answer": "Graph Databases",
+    "explanation": "Graph databases store data as nodes and edges (relationships). They are optimized for highly interconnected data and network traversals without performing expensive relational joins.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "In key-value partitioning, what is the purpose of 'consistent hashing'?",
+    "options": [
+      "To encrypt the primary keys before storing them in catalog",
+      "To distribute key-values minimizing re-hashing when nodes change",
+      "To compute aggregate summaries for OLAP slice operations",
+      "To enforce strict transactional isolation levels in 2PL"
+    ],
+    "answer": "To distribute key-values minimizing re-hashing when nodes change",
+    "explanation": "Consistent hashing maps keys and nodes to a circular hash ring. When a server node is added or removed, it only requires re-mapping a small fraction of keys, making horizontal scaling efficient.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "What is Apache Cassandra?",
+    "options": [
+      "A centralized relational database used for embedded systems",
+      "A distributed key-value NoSQL store originally designed at Facebook",
+      "A graph database query compiler executing Cypher matches",
+      "A remote backup system that supports two-very-safe config"
+    ],
+    "answer": "A distributed key-value NoSQL store originally designed at Facebook",
+    "explanation": "Apache Cassandra is a highly scalable, distributed column-family data store originally designed by Facebook to handle inbox search and later open-sourced as an Apache project.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "What does a Node represent in a Neo4j graph database?",
+    "options": [
+      "The physical path of a data query on disk blocks",
+      "An entity containing labels and key-value properties",
+      "A directed edge that connects two movie records in graph",
+      "The LSN of a log record written in stable storage"
+    ],
+    "answer": "An entity containing labels and key-value properties",
+    "explanation": "In Neo4j, a node represents a distinct entity in the graph (e.g. Person, Movie). Nodes can have one or more labels (categories) and key-value attributes (properties).",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "In Neo4j, what represents a directed connection between two nodes, possibly containing metadata properties?",
+    "options": [
+      "Label of node category",
+      "Relationship (Edge)",
+      "Tablet row range",
+      "SSTable file format"
+    ],
+    "answer": "Relationship (Edge)",
+    "explanation": "Relationships (edges) connect nodes in a graph database. They always have a type, a direction (incoming/outgoing), and can store metadata properties (e.g. 'roles: [Neo]').",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "What is Cypher?",
+    "options": [
+      "A cryptographic key management system in Oracle DB",
+      "A declarative query language used for Neo4j graphs",
+      "A hashing function used in consistent hashing partitioning",
+      "The recovery utility in BigTable architectures"
+    ],
+    "answer": "A declarative query language used for Neo4j graphs",
+    "explanation": "Cypher is Neo4j's declarative query language. It uses ASCII-art-like patterns to describe node and relationship configurations for querying and updating graphs.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "In Cypher syntax, which pattern describes matching a node with label 'Person' and property name 'Tom Hanks'?",
+    "options": [
+      "MATCH Person(name = 'Tom Hanks')",
+      "MATCH (n:Person {name: 'Tom Hanks'})",
+      "MATCH Person.name = 'Tom Hanks'",
+      "MATCH [n:Person (name: 'Tom Hanks')]"
+    ],
+    "answer": "MATCH (n:Person {name: 'Tom Hanks'})",
+    "explanation": "In Cypher, parenthesis `(n)` denote nodes, `:Person` specifies the label, and curly braces `{name: 'Tom Hanks'}` enclose the property filters.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "In Cypher syntax, how is a directed relationship of type 'ACTED_IN' from a Person node (p) to a Movie node (m) represented?",
+    "options": [
+      "p -> [ACTED_IN] -> m",
+      "(p)-[:ACTED_IN]->(m)",
+      "(p) =[:ACTED_IN]=> (m)",
+      "(p).ACTED_IN.(m)"
+    ],
+    "answer": "(p)-[:ACTED_IN]->(m)",
+    "explanation": "In Cypher, relationships are enclosed in square brackets `[:ACTED_IN]`. Dashes and brackets form the arrow `-(r)->` showing relationship direction between nodes.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "What is Google's BigTable?",
+    "options": [
+      "A graph database used to index web links on cluster",
+      "A sparse, distributed, persistent multidimensional sorted map",
+      "A centralized RDBMS that handles ACID transactions for GFS",
+      "A CASE data modeling tool for star schemas in warehouse"
+    ],
+    "answer": "A sparse, distributed, persistent multidimensional sorted map",
+    "explanation": "BigTable is a sparse, distributed, persistent multi-dimensional sorted map. It is indexed by a row key, column key, and a timestamp, and is built to scale out over GFS.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "What indices partition data in a BigTable?",
+    "options": [
+      "Row key, Column key, and Timestamp",
+      "Primary key, Foreign key, and Checkpoint LSN",
+      "Table name, Attribute name, and Page LSN",
+      "Consistent hash key and Partition number"
+    ],
+    "answer": "Row key, Column key, and Timestamp",
+    "explanation": "BigTable maps `(row:string, column:string, time:int64) -> string (byte array)`. The row key is used to partition data into tablets, the column key groups attributes, and the timestamp keeps historical versions.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "What is a 'Tablet' in the BigTable architecture?",
+    "options": [
+      "A physical mobile device used to access GFS client library",
+      "A contiguous range of rows, the unit of load balancing",
+      "A cache buffer block containing modified tuples in memory",
+      "A column family stored in a denormalized star schema"
+    ],
+    "answer": "A contiguous range of rows, the unit of load balancing",
+    "explanation": "In BigTable, tables are dynamically partitioned into tablets. A tablet is a contiguous range of rows, which tablet servers load and serve, allowing load balancing across servers.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "What building block of BigTable is a large-scale, distributed file system used to store log and data files?",
+    "options": [
+      "Chubby lock service",
+      "Google File System (GFS)",
+      "SSTable file format",
+      "Neo4j graph database"
+    ],
+    "answer": "Google File System (GFS)",
+    "explanation": "Google File System (GFS) is a distributed file system that BigTable uses to store its underlying data files (SSTables) and commit logs on stable, replicated clusters.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "What is Google's Chubby Lock Service used for in BigTable?",
+    "options": [
+      "To encrypt SSTable files on disk to secure storage",
+      "To ensure master uniqueness, find tablet servers, and schemas",
+      "To coordinate wait-die deadlock prevention in transactions",
+      "To manage lock compatibility matrices in cache directories"
+    ],
+    "answer": "To ensure master uniqueness, find tablet servers, and schemas",
+    "explanation": "Chubby is a distributed lock service. BigTable uses it to guarantee there is only one active master, to discover tablet servers, and to bootstrap the database metadata.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "What is an 'SSTable' in BigTable?",
+    "options": [
+      "A table representing secondary index scans on disk blocks",
+      "A file format storing a sorted immutable map of keys/values",
+      "A schema table defining single-site RDBMS layouts",
+      "A transaction log record format for immediate updates"
+    ],
+    "answer": "A file format storing a sorted immutable map of keys/values",
+    "explanation": "SSTable (Sorted String Table) is an immutable, ordered file format that Google uses to store BigTable data in GFS. It contains data blocks and an index for fast key lookup.",
+    "image": null
+  }
+]

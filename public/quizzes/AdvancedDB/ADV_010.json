@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "In query tree optimization, why is pushing selections down the tree beneficial?",
+    "options": [
+      "It increases B+ tree height to speed up range searches",
+      "It reduces intermediate relation sizes early in processing",
+      "It eliminates the need for projection operations completely",
+      "It prevents transaction logging during update executions"
+    ],
+    "answer": "It reduces intermediate relation sizes early in processing",
+    "explanation": "Pushing selections down applies filters as early as possible. This minimizes the size of intermediate relations passed to subsequent expensive operators like joins.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "Which equivalence rule justifies pushing a selection operation $\\sigma_{\\theta}$ past a theta join operation $\\bowtie_{\\psi}$ if the selection condition $\\theta$ only references attributes of relation $r$?",
+    "options": [
+      "$\\sigma_{\\theta}(r \\bowtie_{\\psi} s) = \\sigma_{\\theta}(r) \\bowtie_{\\psi} s$",
+      "$\\sigma_{\\theta}(r \\bowtie_{\\psi} s) = r \\bowtie_{\\psi} \\sigma_{\\theta}(s)$",
+      "$\\sigma_{\\theta}(r \\bowtie_{\\psi} s) = \\sigma_{\\theta}(r) \\bowtie_{\\psi} \\sigma_{\\theta}(s)$",
+      "$\\sigma_{\\theta}(r \\bowtie_{\\psi} s) = \\sigma_{\\theta}(r) \\times s$"
+    ],
+    "answer": "$\\sigma_{\\theta}(r \\bowtie_{\\psi} s) = \\sigma_{\\theta}(r) \\bowtie_{\\psi} s$",
+    "explanation": "If the selection condition $\\theta$ only involves attributes of relation $r$, we can push the selection past the join directly onto $r$: $\\sigma_{\\theta}(r \\bowtie_{\\psi} s) \\equiv \\sigma_{\\theta}(r) \\bowtie_{\\psi} s$.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "How does pushing projections down the query tree optimize performance?",
+    "options": [
+      "It normalizes schemas to 3NF during compilation",
+      "It discards unused columns early to save buffer space",
+      "It prevents deadlock cycles in lock tables",
+      "It forces immediate database updates to non-volatile disk"
+    ],
+    "answer": "It discards unused columns early to save buffer space",
+    "explanation": "Pushing projections down removes unnecessary columns early. This reduces the width of tuples, saving memory space in intermediate query buffers.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "To find the best join-order for $n$ relations using dynamic programming cost-based optimization, what is the search space complexity?",
+    "options": [
+      "It is linear $O(n)$ search space complexity",
+      "It reduces search time from $O(3^n)$ to $O(2^n)$",
+      "It runs in constant time $O(1)$ on cached trees",
+      "It is NP-hard and can only be solved using wait-die"
+    ],
+    "answer": "It reduces search time from $O(3^n)$ to $O(2^n)$",
+    "explanation": "Dynamic programming reduces the search space of finding the optimal join order of $n$ relations from $O(3^n)$ (exhaustive search of all plans) to $O(2^n)$ by storing optimal sub-plans.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "What is a 'Left-Deep Join Tree'?",
+    "options": [
+      "A tree where left child is base and right is join",
+      "A tree where right child is always a leaf base table",
+      "A tree containing only selections on the left branch",
+      "A B+ tree index used exclusively for left outer joins"
+    ],
+    "answer": "A tree where right child is always a leaf base table",
+    "explanation": "A left-deep join tree is a join tree structure where the right sibling of every join operator is a base relation (leaf node).",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "Why do many commercial optimizers restrict their search space to left-deep join trees?",
+    "options": [
+      "To guarantee that the plans are always deadlock-free",
+      "To allow pipelining and simplify optimizer search space",
+      "To avoid using distributed storage partitions like GFS",
+      "To be compatible with Cypher graph pattern match rules"
+    ],
+    "answer": "To allow pipelining and simplify optimizer search space",
+    "explanation": "Restricting to left-deep trees reduces the search space size and enables pipelined execution (e.g. nested-loops can pipe the outer join result directly without writing intermediate tables to disk).",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "What is an 'Interesting Sort Order' in query optimization?",
+    "options": [
+      "A sort order organizing columns by data block size",
+      "An intermediate sort order useful for subsequent operators",
+      "The chronological order of transaction commit records",
+      "The sorting of dirty page tables by their RecLSNs"
+    ],
+    "answer": "An intermediate sort order useful for subsequent operators",
+    "explanation": "An intermediate sort order is 'interesting' if it matches the sort key needed by a subsequent operation (like merge-join or group-by), saving a sorting step later.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "What is the difference between a correlated subquery and an uncorrelated subquery?",
+    "options": [
+      "Correlated subqueries use indexes; uncorrelated ones do not",
+      "Correlated subqueries reference outer columns; uncorrelated don't",
+      "Correlated subqueries are conceptual schemas; uncorrelated are views",
+      "Correlated subqueries use DDL; uncorrelated ones use DML statements"
+    ],
+    "answer": "Correlated subqueries reference outer columns; uncorrelated don't",
+    "explanation": "A correlated subquery references columns from the outer query. An uncorrelated subquery is self-contained and does not reference any outer variables.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "Why is correlated subquery evaluation generally inefficient?",
+    "options": [
+      "It requires scanning the entire physical log block directory",
+      "It requires executing inner query per outer relation tuple",
+      "It violates the database isolation property of transactions",
+      "It forces the recovery manager to take a fuzzy checkpoint"
+    ],
+    "answer": "It requires executing inner query per outer relation tuple",
+    "explanation": "Correlated subqueries reference outer variables, so the inner query must be executed repeatedly for each tuple evaluated in the outer query.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "What is query de-correlation (or unnesting)?",
+    "options": [
+      "Removing sort order requirements from execution trees",
+      "Rewriting nested subqueries to equivalent join operations",
+      "Splitting fact tables into dimension lookup tables",
+      "Eliminating redundant partial keys from weak entity sets"
+    ],
+    "answer": "Rewriting nested subqueries to equivalent join operations",
+    "explanation": "De-correlation rewrites nested, correlated queries into flat joins, allowing the query optimizer to consider standard join algorithms like hash joins.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "What is a 'Materialized View'?",
+    "options": [
+      "A virtual view stored solely as a query text definition",
+      "A view whose query result is computed and stored on disk",
+      "A physical representation of the ER diagram on stable disk",
+      "A temporary transaction log table used during crash recovery"
+    ],
+    "answer": "A view whose query result is computed and stored on disk",
+    "explanation": "A materialized view has its query result pre-computed and physically stored as a database table for faster query execution.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "What is the task of keeping a materialized view up-to-date when the underlying base relations are modified?",
+    "options": [
+      "Taking periodic fuzzy checkpoints during execution",
+      "Updating the stored view when base relations are changed",
+      "Executing dynamic programming join order searches in RAM",
+      "Running transaction rollbacks during database recovery passes"
+    ],
+    "answer": "Updating the stored view when base relations are changed",
+    "explanation": "View maintenance is the process of updating a materialized view to reflect changes made to its underlying base relations.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "What is 'Incremental View Maintenance'?",
+    "options": [
+      "Recomputing the entire materialized view after updates",
+      "Applying only changes to the view instead of recomputing",
+      "Updating view states using wait-die lock schemes",
+      "Recovering the view using ARIES analysis pass logs"
+    ],
+    "answer": "Applying only changes to the view instead of recomputing",
+    "explanation": "Incremental view maintenance computes and applies only the delta (inserts/deletes) to the materialized view rather than recomputing it from scratch.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "Consider a materialized view $V = r \\bowtie s$. If we insert a set of tuples $\\Delta r$ into $r$, what is the incremental update that must be added to $V$?",
+    "options": [
+      "$\\Delta V = \\Delta r \\times s$",
+      "$\\Delta V = \\Delta r \\bowtie s$",
+      "$\\Delta V = r \\bowtie \\Delta s$",
+      "$\\Delta V = \\Delta r \\bowtie \\Delta s$"
+    ],
+    "answer": "$\\Delta V = \\Delta r \\bowtie s$",
+    "explanation": "Inserting $\\Delta r$ into $r$ requires joining only the inserted tuples with $s$ to compute the new matching tuples: $\\Delta V = \\Delta r \\bowtie s$.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "Consider a materialized view $V = r \\bowtie s$. If we delete a set of tuples $d_r$ from $r$, how is the view updated?",
+    "options": [
+      "$V_{new} = V_{old} - (d_r \\bowtie s)$",
+      "$V_{new} = V_{old} \\cup (d_r \\bowtie s)$",
+      "$V_{new} = d_r \\bowtie s$",
+      "$V_{new} = V_{old} - (d_r \\times s)$"
+    ],
+    "answer": "$V_{new} = V_{old} - (d_r \\bowtie s)$",
+    "explanation": "Deleting $d_r$ from $r$ requires joining deleted tuples with $s$ and subtracting the resulting matching tuples from the view: $V_{new} = V_{old} - (d_r \\bowtie s)$.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "For a view $V = \\sigma_{\\theta}(r)$, if a set of tuples $\\Delta r$ is inserted into $r$, what is the incremental update to $V$?",
+    "options": [
+      "$\\Delta V = \\Pi_A(\\Delta r)$",
+      "$\\Delta V = \\sigma_{\\theta}(\\Delta r)$",
+      "$\\Delta V = \\Delta r$",
+      "$\\Delta V = \\sigma_{\\theta}(r) \\cup \\Delta r$"
+    ],
+    "answer": "$\\Delta V = \\sigma_{\\theta}(\\Delta r)$",
+    "explanation": "The change in the selection view is computed by applying the selection filter directly to the inserted tuples: $\\Delta V = \\sigma_{\\theta}(\\Delta r)$.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "Why is incremental maintenance for projection $V = \\Pi_A(r)$ more difficult than for selection?",
+    "options": [
+      "Projection requires index scans of B+ trees on disk",
+      "Multiple tuples can project to one; count must be kept",
+      "Projection changes the database schema metadata diagram",
+      "Projection is not commutative with relational union"
+    ],
+    "answer": "Multiple tuples can project to one; count must be kept",
+    "explanation": "Since projection removes columns, distinct base tuples can project to the same view tuple. We must maintain a tuple count to know when a projected tuple should be deleted (i.e. when count hits 0).",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "How does the count aggregate View $V = \\text{count}(B) (r)$ handle an insert of tuples $i_r$?",
+    "options": [
+      "It recomputes the count aggregation from scratch",
+      "It increments existing group counts or inserts new groups",
+      "It adds the sum of attribute B to the count value",
+      "It writes a CLR record to the transaction database log"
+    ],
+    "answer": "It increments existing group counts or inserts new groups",
+    "explanation": "For count, an inserted tuple either increments the count of its corresponding group or inserts a new group with a count of 1.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "What is the 'Halloween Problem' in database updates?",
+    "options": [
+      "A security vulnerability occurring on October 31st",
+      "Updating search key attributes, causing duplicate updates",
+      "A crash corrupting log files and dirty page tables",
+      "A deadlock cycle in a distributed wait-for graph"
+    ],
+    "answer": "Updating search key attributes, causing duplicate updates",
+    "explanation": "The Halloween Problem occurs when an update modifies the indexing attribute used to locate the records. The updated record moves forward in the index and gets updated repeatedly.",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "What is 'Join Minimization'?",
+    "options": [
+      "Replacing all join operators with selection operators",
+      "Eliminating redundant joins using integrity constraints",
+      "Restricting join ordering searches to left-deep trees",
+      "Using hash-joins instead of nested-loop join plans"
+    ],
+    "answer": "Eliminating redundant joins using integrity constraints",
+    "explanation": "Join minimization uses metadata constraints (like foreign keys) to prove that certain joins are redundant and can be removed from the query tree without changing the result.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "What is 'Multiquery Optimization'?",
+    "options": [
+      "Running SELECT queries in parallel on distributed nodes",
+      "Sharing common sub-expression results among queries",
+      "Running ARIES redo passes for crashed database tables",
+      "Building multiple B+ tree indexes on a single table"
+    ],
+    "answer": "Sharing common sub-expression results among queries",
+    "explanation": "Multiquery optimization identifies shared operations among multiple concurrent queries, computes them once, and shares the result.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "What does 'Parametric Query Optimization' do?",
+    "options": [
+      "It designs menu-based interfaces for naive end users",
+      "It generates plans selected at runtime based on parameters",
+      "It measures physical CPU cache line size parameters",
+      "It restricts active lock counts allowed in transactions"
+    ],
+    "answer": "It generates plans selected at runtime based on parameters",
+    "explanation": "Parametric optimization compiles queries with parameters, creating multiple plans. The best plan is chosen at runtime depending on the actual parameter values.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "In cost-based join ordering, what represents the number of different join orders for a set of $n$ relations in a bushy join tree structure?",
+    "options": [
+      "Factorial permutations of relations: $n!$",
+      "Catalan expression formula: $\\frac{(2(n - 1))!}{(n - 1)!}$",
+      "Linear scan lookup configuration: $n$",
+      "Constant exponential execution trees: $2^n$"
+    ],
+    "answer": "Catalan expression formula: $\\frac{(2(n - 1))!}{(n - 1)!}$",
+    "explanation": "For $n=4$ relations, the Catalan number of join trees multiplied by permutations of leaves yields $\\frac{(2(n-1))!}{(n-1)!} = \\frac{6!}{3!} = 120$ join orders.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "How does the selection operation $\\sigma$ distribute over set difference $-$ according to equivalence rules?",
+    "options": [
+      "$\\sigma_{\\theta}(r - s) \\equiv \\sigma_{\\theta}(r) - \\sigma_{\\theta}(s)$ and also $\\sigma_{\\theta}(r - s) \\equiv \\sigma_{\\theta}(r) - s$",
+      "$\\sigma_{\\theta}(r - s) \\equiv r - \\sigma_{\\theta}(s)$",
+      "Both A and B are equivalent and correct",
+      "Selection does not distribute over set difference"
+    ],
+    "answer": "Both A and B are equivalent and correct",
+    "explanation": "Relational selection distributes over set difference: $\\sigma_{\\theta}(r-s) \\equiv \\sigma_{\\theta}(r) - \\sigma_{\\theta}(s) \\equiv \\sigma_{\\theta}(r) - s$.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "Which equivalence rule applies to the distribution of projection over union?",
+    "options": [
+      "$\\Pi_L(r \\cup s) \\equiv \\Pi_L(r) \\cup \\Pi_L(s)$",
+      "$\\Pi_L(r \\cup s) \\equiv \\Pi_L(r) - \\Pi_L(s)$",
+      "$\\Pi_L(r \\cup s) \\equiv \\Pi_L(r) \\bowtie s$",
+      "Projection does not distribute over union"
+    ],
+    "answer": "$\\Pi_L(r \\cup s) \\equiv \\Pi_L(r) \\cup \\Pi_L(s)$",
+    "explanation": "Relational projection distributes over set union: $\\Pi_L(r \\cup s) \\equiv \\Pi_L(r) \\cup \\Pi_L(s)$.",
+    "image": null
+  }
+]

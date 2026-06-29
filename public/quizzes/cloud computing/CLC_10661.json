@@ -1,0 +1,262 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "When did cloud computing become mainstream?",
+    "options": [
+      "a) 1990s",
+      "b) 2000s",
+      "c) 2010s",
+      "d) 1980s"
+    ],
+    "answer": "b) 2000s",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "Which is NOT a key characteristic of cloud computing?",
+    "options": [
+      "a) On-demand self-service",
+      "b) Dedicated hardware leasing",
+      "c) Broad network access",
+      "d) Rapid elasticity"
+    ],
+    "answer": "b) Dedicated hardware leasing",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "Which service model provides virtualized computing resources over the internet?",
+    "options": [
+      "a) SaaS",
+      "b) IaaS",
+      "c) PaaS",
+      "d) FaaS"
+    ],
+    "answer": "b) IaaS",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "A healthcare organization uses a cloud shared by other hospitals. This is a:",
+    "options": [
+      "a) Public cloud",
+      "b) Private cloud",
+      "c) Hybrid cloud",
+      "d) Community cloud"
+    ],
+    "answer": "d) Community cloud",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "Netflix’s migration to AWS is an example of cloud adoption driven by:",
+    "options": [
+      "a) Cost reduction",
+      "b) Scalability",
+      "c) Regulatory compliance",
+      "d) All of the above"
+    ],
+    "answer": "d) All of the above",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "Which is the oldest major cloud provider?",
+    "options": [
+      "a) AWS",
+      "b) Azure",
+      "c) Google Cloud",
+      "d) IBM Cloud"
+    ],
+    "answer": "a) AWS",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "AWS’s geographic regions contain multiple:",
+    "options": [
+      "a) Edge locations",
+      "b) Availability Zones",
+      "c) Virtual Private Clouds",
+      "d) Content Delivery Networks"
+    ],
+    "answer": "b) Availability Zones",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "Vertical scaling refers to:",
+    "options": [
+      "a) Adding more instances",
+      "b) Increasing CPU/RAM of an instance",
+      "c) Distributing traffic across servers",
+      "d) Migrating to hybrid cloud"
+    ],
+    "answer": "b) Increasing CPU/RAM of an instance",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "Auto-scaling primarily addresses:",
+    "options": [
+      "a) Security breaches",
+      "b) Variable workloads",
+      "c) Data redundancy",
+      "d) Network latency"
+    ],
+    "answer": "b) Variable workloads",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "A VPC component that filters traffic is a:",
+    "options": [
+      "a) Subnet",
+      "b) Route table",
+      "c) Security group",
+      "d) Internet Gateway"
+    ],
+    "answer": "c) Security group",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "Terraform is used for:",
+    "options": [
+      "a) Container orchestration",
+      "b) Infrastructure as Code",
+      "c) Load balancing",
+      "d) Virtual machine monitoring"
+    ],
+    "answer": "b) Infrastructure as Code",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "Edge computing reduces latency by processing data:",
+    "options": [
+      "a) In centralized data centers",
+      "b) At the network periphery",
+      "c) On hybrid clouds",
+      "d) Via community clouds"
+    ],
+    "answer": "b) At the network periphery",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "Type 1 hypervisors run directly on:",
+    "options": [
+      "a) Host OS",
+      "b) Bare-metal hardware",
+      "c) Containers",
+      "d) PaaS environments"
+    ],
+    "answer": "b) Bare-metal hardware",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "Docker is an example of:",
+    "options": [
+      "a) Virtualization",
+      "b) Containerization",
+      "c) Bare-metal hypervisor",
+      "d) Fog computing"
+    ],
+    "answer": "b) Containerization",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "Containers have lower performance overhead than VMs because they:",
+    "options": [
+      "a) Use full OS isolation",
+      "b) Share the host OS kernel",
+      "c) Require more storage",
+      "d) Depend on Type 2 hypervisors"
+    ],
+    "answer": "b) Share the host OS kernel",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Which is a Type 1 hypervisor?",
+    "options": [
+      "a) VMware Workstation",
+      "b) Oracle VirtualBox",
+      "c) KVM",
+      "d) Docker"
+    ],
+    "answer": "c) KVM",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "Fog computing operates:",
+    "options": [
+      "a) Between edge devices and the cloud",
+      "b) Only on public clouds",
+      "c) Within SaaS applications",
+      "d) Exclusively for community clouds"
+    ],
+    "answer": "a) Between edge devices and the cloud",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "Kubernetes manages:",
+    "options": [
+      "a) Virtual machines",
+      "b) Containerized applications",
+      "c) Load balancers",
+      "d) Firewall rules"
+    ],
+    "answer": "b) Containerized applications",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "A hybrid cloud combines:",
+    "options": [
+      "a) Public and private clouds",
+      "b) IaaS and PaaS",
+      "c) Community and edge computing",
+      "d) SaaS and FaaS"
+    ],
+    "answer": "a) Public and private clouds",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "Optimizing virtualization performance involves:",
+    "options": [
+      "a) Increasing hypervisor overhead",
+      "b) Using nested virtualization",
+      "c) Allocating excess resources",
+      "d) Right-sizing VMs"
+    ],
+    "answer": "d) Right-sizing VMs",
+    "image": null
+  }
+]

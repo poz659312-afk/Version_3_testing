@@ -1,0 +1,352 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choices",
+    "question": "Which characteristic of databases describes the database containing both the data itself and a complete definition of its structure and constraints?",
+    "options": [
+      "Insulation between program code and database structures",
+      "Self-describing nature of the database system catalog",
+      "Support for multiple derived views of the same data",
+      "Data abstraction through physical mapping definitions"
+    ],
+    "answer": "Self-describing nature of the database system catalog",
+    "explanation": "A database system catalog stores the schema, structures, types, and constraints of the database, making the system self-describing. This distinguishes it from file-processing systems where definitions are hard-coded in applications.",
+    "image": null
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choices",
+    "question": "What stores the description of a database structure, types, constraints, and user privileges?",
+    "options": [
+      "Run-time database processor mapping cache",
+      "Relational query compiler execution engine",
+      "System catalog metadata repository store",
+      "Host programming language compiler libraries"
+    ],
+    "answer": "System catalog metadata repository store",
+    "explanation": "The system catalog (or metadata repository) contains the complete description of the database (schema definitions, structures, security policies, and user permissions) which the DBMS accesses during compilation and execution.",
+    "image": null
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choices",
+    "question": "Which property allows changing the data storage structure or access paths without having to modify the application programs?",
+    "options": [
+      "Logical data independence schema modification",
+      "Physical data independence access optimization",
+      "Support for virtual views of database tables",
+      "Program-operation independence implementation"
+    ],
+    "answer": "Physical data independence access optimization",
+    "explanation": "Physical data independence refers to the ability to modify the internal schema (storage layouts, indexing, file organization) without changing the conceptual schema, meaning user applications do not need rewriting.",
+    "image": null
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choices",
+    "question": "How does program-operation independence differ from program-data independence in object-oriented and hybrid databases?",
+    "options": [
+      "It permits direct database access bypassing catalog rules",
+      "It separates operation interface definitions from operation implementation",
+      "It forces data to be stored strictly in flat OS file formats",
+      "It eliminates the mapping between external and internal schemas"
+    ],
+    "answer": "It separates operation interface definitions from operation implementation",
+    "explanation": "Program-operation independence separates the interface of an operation (method signature) from its concrete implementation. This allows changing the code that implements the operation without breaking caller programs.",
+    "image": null
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choices",
+    "question": "What is a virtual view in a DBMS?",
+    "options": [
+      "A physical partition of the database containing tuples",
+      "A duplicate copy of the database stored on a remote node",
+      "A view created by the DBA that bypasses all security rules",
+      "A dynamic view computed on demand without physical storage"
+    ],
+    "answer": "A dynamic view computed on demand without physical storage",
+    "explanation": "A virtual view is a derived table that is not stored in the database but is computed dynamically from the base tables when queried by a user.",
+    "image": null
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choices",
+    "question": "Which category of database users is responsible for authorizing access, coordinating and monitoring database use, and acquiring software/hardware resources?",
+    "options": [
+      "Database designers choosing schemas and mappings",
+      "Database administrators managing security and access",
+      "Parametric end users executing standard transactions",
+      "System analysts defining application specifications"
+    ],
+    "answer": "Database administrators managing security and access",
+    "explanation": "The Database Administrator (DBA) is responsible for authorization, security enforcement, resource acquisition, and performance monitoring of the database system.",
+    "image": null
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choices",
+    "question": "Which category of end users constantly query and update the database using pre-programmed standard types of queries and updates (canned transactions)?",
+    "options": [
+      "Casual end users writing ad-hoc SQL queries",
+      "Naive or parametric end users running inputs",
+      "Sophisticated end users creating custom models",
+      "Standalone database users managing home systems"
+    ],
+    "answer": "Naive or parametric end users running inputs",
+    "explanation": "Naive or parametric users run pre-programmed (canned) transactions (e.g., bank tellers, airline reservation clerks) through simple interfaces, rarely writing raw queries.",
+    "image": null
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choices",
+    "question": "What is the primary role of a 'System Analyst' in a database environment?",
+    "options": [
+      "Writing the core execution logic of the DBMS kernel",
+      "Monitoring physical disk block allocations in buffers",
+      "Defining requirements and specifications for transactions",
+      "Creating custom casing tools and interface modules"
+    ],
+    "answer": "Defining requirements and specifications for transactions",
+    "explanation": "System analysts gather user requirements and design specifications for applications, which are then implemented by application programmers as canned transactions.",
+    "image": null
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choices",
+    "question": "Which of the following describes the conceptual level of the Three-Schema Architecture?",
+    "options": [
+      "The level detailing physical storage layouts and indexes",
+      "The level defining specific views for user groups on client",
+      "The level describing the structure of the entire database",
+      "The level compiling host language statements into binary"
+    ],
+    "answer": "The level describing the structure of the entire database",
+    "explanation": "The conceptual schema describes the global structure of the entire database (entities, relationships, constraints) for a community of users, shielding them from physical details.",
+    "image": null
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choices",
+    "question": "What does a mapping between schemas in the Three-Schema Architecture accomplish?",
+    "options": [
+      "It compiles DDL statements into catalog files on disk",
+      "It transforms query requests and results between levels",
+      "It replicates data from a primary server to hot backups",
+      "It normalizes relation attributes into column families"
+    ],
+    "answer": "It transforms query requests and results between levels",
+    "explanation": "Mappings are translations that the DBMS performs to convert requests (queries) and responses (results) between the external, conceptual, and internal levels of the Three-Schema architecture.",
+    "image": null
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choices",
+    "question": "What is logical data independence?",
+    "options": [
+      "The capacity to change internal schemas without conceptually rewriting",
+      "The capacity to change conceptual schemas without changing views",
+      "The capacity to query databases using natural language commands",
+      "The capacity to execute transactions concurrently without locks"
+    ],
+    "answer": "The capacity to change conceptual schemas without changing views",
+    "explanation": "Logical data independence is the ability to alter the conceptual schema (adding tables, splitting columns) without modifying existing external schemas (views) or application programs.",
+    "image": null
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choices",
+    "question": "In a DBMS, which language is typically used by the DBA and database designers to define the conceptual and internal schemas if no strict separation exists?",
+    "options": [
+      "Data Manipulation Language (DML) for database queries",
+      "Storage Definition Language (SDL) for memory indexes",
+      "Data Definition Language (DDL) for schema structure",
+      "View Definition Language (VDL) for client interfaces"
+    ],
+    "answer": "Data Definition Language (DDL) for schema structure",
+    "explanation": "The Data Definition Language (DDL) is used by designers and DBAs to declare the conceptual and external schemas, defining the tables, columns, and constraints.",
+    "image": null
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choices",
+    "question": "How does a high-level (nonprocedural) DML differ from a low-level (procedural) DML?",
+    "options": [
+      "High-level is record-oriented, whereas low-level is set-oriented",
+      "High-level is declarative, whereas low-level is record-at-a-time",
+      "High-level is compiled by compilers, whereas low-level is not",
+      "High-level is for physical schemas, whereas low-level is for views"
+    ],
+    "answer": "High-level is declarative, whereas low-level is record-at-a-time",
+    "explanation": "High-level DMLs (like SQL) are declarative, letting users specify *what* data to retrieve in a set-at-a-time manner. Low-level DMLs require writing code to retrieve records *one-at-a-time* procedurally.",
+    "image": null
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choices",
+    "question": "Which component of a DBMS environment is responsible for parsing, compiling, and optimizing high-level database queries into an efficient execution plan?",
+    "options": [
+      "Pre-compiler extracting embedded host language statements",
+      "DML compiler translating update requests into code",
+      "Query Compiler parsing and generating evaluation plans",
+      "Run-time database processor managing data access on disks"
+    ],
+    "answer": "Query Compiler parsing and generating evaluation plans",
+    "explanation": "The Query Compiler parses the query, checks syntax, performs semantic analysis, and optimizes the logical query plan into an efficient physical execution plan.",
+    "image": null
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choices",
+    "question": "What is the function of the Pre-compiler in the database system environment?",
+    "options": [
+      "Converting binary schemas into visual entity-relationship diagrams",
+      "Extracting embedded DML commands from host programming languages",
+      "Monitoring query performance and automatically rebuilding indexes",
+      "Coordinating transactions at checkpoint times during crashes"
+    ],
+    "answer": "Extracting embedded DML commands from host programming languages",
+    "explanation": "A pre-compiler processes a program written in a host language (like C++ or Java) to extract embedded SQL (DML) statements, replacing them with function calls before compilation.",
+    "image": null
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choices",
+    "question": "Which database utility is used to reconstruct a database from backup copies and logs in the event of a catastrophic system failure?",
+    "options": [
+      "Loading utility for reading raw text file structures",
+      "Reorganization utility rebuilding physical access files",
+      "Recovery utility restoring system to consistent states",
+      "Performance monitoring utility tracking block transfers"
+    ],
+    "answer": "Recovery utility restoring system to consistent states",
+    "explanation": "Database recovery utilities rebuild the database from backup copies and transaction logs to restore it to a consistent state after a crash or storage failure.",
+    "image": null
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choices",
+    "question": "If a DBMS is classified based on the number of sites, what is the difference between homogeneous and heterogeneous distributed databases?",
+    "options": [
+      "Homogeneous uses relational model; heterogeneous uses graphs",
+      "Homogeneous uses identical DBMS; heterogeneous uses different DBMSs",
+      "Homogeneous is single-user; heterogeneous is multi-user",
+      "Homogeneous uses parallel systems; heterogeneous uses mainframe"
+    ],
+    "answer": "Homogeneous uses identical DBMS; heterogeneous uses different DBMSs",
+    "explanation": "Homogeneous distributed databases run the same DBMS software at all sites. Heterogeneous systems can use different database engines (e.g. Oracle at one, MySQL at another) integrated together.",
+    "image": null
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choices",
+    "question": "What is a 'Data Model' in a database system?",
+    "options": [
+      "The physical organization of blocks on the hard disks",
+      "A collection of concepts used to describe schema structure",
+      "A graphical tool utilized by naive end users for forms",
+      "The log recording before and after images of transactions"
+    ],
+    "answer": "A collection of concepts used to describe schema structure",
+    "explanation": "A data model is a set of conceptual tools (data types, relationships, constraints, operations) used to define the logical structures and rules of the database.",
+    "image": null
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choices",
+    "question": "Which category of data models provides concepts that describe details of how data is stored on computer media (such as record formats and access paths)?",
+    "options": [
+      "Conceptual data models defining high-level entity relations",
+      "Representational data models specifying schema tables",
+      "Physical data models describing layouts and block offsets",
+      "Object-oriented data models encapsulating class methods"
+    ],
+    "answer": "Physical data models describing layouts and block offsets",
+    "explanation": "Physical (or low-level) data models provide concepts that describe how data is stored on disk (such as record formats, record ordering, and access paths/indexes).",
+    "image": null
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choices",
+    "question": "Which data model representational category stores data in records linked together via pointers, forming a tree-like hierarchy?",
+    "options": [
+      "Network Model linking records in graph structures",
+      "Hierarchical Model structuring records in parent-child trees",
+      "Relational Model organizing data in tables and keys",
+      "Object-oriented Model encapsulating state and operations"
+    ],
+    "answer": "Hierarchical Model structuring records in parent-child trees",
+    "explanation": "The Hierarchical Model represents data as tree structures where each parent record can have multiple child records, forming strict parent-child hierarchies using physical pointers.",
+    "image": null
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choices",
+    "question": "What is a database schema diagram?",
+    "options": [
+      "A visual representation of the active database state",
+      "An illustrative display showing database schema structure",
+      "A chronological list of transactions logged in ARIES",
+      "A mapping layout of cache buffer pools and dirty pages"
+    ],
+    "answer": "An illustrative display showing database schema structure",
+    "explanation": "A schema diagram is a graphical layout showing the tables, columns, relationships, and constraints that define the database's structure, rather than the data itself.",
+    "image": null
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choices",
+    "question": "What is the difference between a database schema and a database state (instance)?",
+    "options": [
+      "Schema is static; state changes dynamically with updates",
+      "Schema stores data; state defines table headers on disks",
+      "Schema represents active locks; state is the commit log",
+      "Schema is in buffer; state is stored on distributed sites"
+    ],
+    "answer": "Schema is static; state changes dynamically with updates",
+    "explanation": "The database schema is the static metadata structure defined at design time. The database state (or instance) is the actual data stored at any specific point in time, changing with every insert/update/delete.",
+    "image": null
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choices",
+    "question": "Which DBMS utility reorganizes database file structures to improve performance (such as rebuilding indexes)?",
+    "options": [
+      "Loading utility importing bulk flat files into tables",
+      "Backup utility copying logs onto remote tape storage",
+      "Reorganization utility restructuring physical files on disk",
+      "Monitoring utility tracking active lock compatibility"
+    ],
+    "answer": "Reorganization utility restructuring physical files on disk",
+    "explanation": "File reorganization utilities restructure files (such as re-clustering records or rebuilding fragmented indexes) to optimize disk space and speed up database accesses.",
+    "image": null
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choices",
+    "question": "What distinguishes Sophisticated End Users from Naive End Users?",
+    "options": [
+      "Sophisticated use browsers; naive use database command lines",
+      "Sophisticated formulate custom queries; naive run canned forms",
+      "Sophisticated manage security; naive write pre-compilers",
+      "Sophisticated design tables; naive design external mappings"
+    ],
+    "answer": "Sophisticated formulate custom queries; naive run canned forms",
+    "explanation": "Sophisticated users (analysts, engineers) construct custom database queries to meet specialized needs. Naive users interact through pre-written menus and forms that perform predefined transactions.",
+    "image": null
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choices",
+    "question": "What is a centralized database system?",
+    "options": [
+      "A system where data is partitioned over multiple nodes",
+      "A system where all software, storage, and processing is local",
+      "A system distributing query evaluation to client nodes",
+      "A system utilizing GFS replication for fault tolerance"
+    ],
+    "answer": "A system where all software, storage, and processing is local",
+    "explanation": "A centralized database system runs on a single computer system (with one or a few CPUs) where the database software, data storage, and processing are fully localized.",
+    "image": null
+  }
+]
