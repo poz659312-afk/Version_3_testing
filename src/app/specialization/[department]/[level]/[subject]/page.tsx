@@ -174,6 +174,8 @@ function TabsWrapper({
 }) {
   const [currentTab, setCurrentTab] = useState("lectures");
   const [mounted, setMounted] = useState(false);
+  const [dbQuizzes, setDbQuizzes] = useState<any[] | null>(null);
+  const [quizzesLoading, setQuizzesLoading] = useState(true);
 
   // Swipe detection refs
   const touchStartX = useRef<number | null>(null);
@@ -189,6 +191,45 @@ function TabsWrapper({
       setCurrentTab(tabParam);
     }
   }, [sections]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const fetchQuizzes = async () => {
+      try {
+        const { createBrowserClient } = await import('@/lib/supabase/client');
+        const supabase = createBrowserClient();
+        const { data, error } = await supabase
+          .from('quiz_department')
+          .select('code, name, duration, questions_count')
+          .eq('department_slug', resolvedParams.department)
+          .eq('subject_id', resolvedParams.subject);
+
+        if (!error && data) {
+          setDbQuizzes(data);
+        }
+      } catch (err) {
+        console.error("Failed to load quizzes from DB:", err);
+      } finally {
+        setQuizzesLoading(false);
+      }
+    };
+
+    fetchQuizzes();
+  }, [resolvedParams.department, resolvedParams.subject, mounted]);
+
+  const dynamicSections = React.useMemo(() => {
+    return sections.map(sec => {
+      if (sec.id === 'quizzes') {
+        const hasDbQuizzes = dbQuizzes && dbQuizzes.length > 0;
+        const hasStaticQuizzes = (subject.materials.quizzes?.length || 0) > 0;
+        return {
+          ...sec,
+          content: hasDbQuizzes || hasStaticQuizzes ? true : null
+        };
+      }
+      return sec;
+    });
+  }, [sections, dbQuizzes, subject.materials.quizzes]);
 
   // Auto scroll active tab button into view on mobile/tablet
   useEffect(() => {
@@ -236,14 +277,14 @@ function TabsWrapper({
     
     // Trigger swipe only if horizontal movement is significant and larger than vertical scrolling
     if (Math.abs(distanceX) > 60 && Math.abs(distanceX) > Math.abs(distanceY) * 1.5) {
-      const currentIndex = sections.findIndex(s => s.id === currentTab);
+      const currentIndex = dynamicSections.findIndex(s => s.id === currentTab);
       if (currentIndex !== -1) {
-        if (distanceX > 0 && currentIndex < sections.length - 1) {
+        if (distanceX > 0 && currentIndex < dynamicSections.length - 1) {
           // Swipe left -> next tab
-          handleTabChange(sections[currentIndex + 1].id);
+          handleTabChange(dynamicSections[currentIndex + 1].id);
         } else if (distanceX < 0 && currentIndex > 0) {
           // Swipe right -> previous tab
-          handleTabChange(sections[currentIndex - 1].id);
+          handleTabChange(dynamicSections[currentIndex - 1].id);
         }
       }
     }
@@ -256,7 +297,7 @@ function TabsWrapper({
 
   if (!mounted) return null;
 
-  const activeSection = sections.find(s => s.id === currentTab) || sections[0];
+  const activeSection = dynamicSections.find(s => s.id === currentTab) || dynamicSections[0];
   const IconComponent = activeSection.icon;
 
   return (
@@ -264,7 +305,7 @@ function TabsWrapper({
       {/* Pill Segmented Controller */}
       <div className="flex justify-center w-full mb-8 overflow-x-auto pb-4 scrollbar-hide px-4">
         <div className="flex bg-muted/30 p-1.5 rounded-full border border-border/50 backdrop-blur-md mx-auto">
-          {sections.map((section) => (
+          {dynamicSections.map((section) => (
             <TabButton 
               key={section.id} 
               section={section} 
@@ -320,6 +361,8 @@ function TabsWrapper({
                 section={activeSection}
                 subject={subject}
                 resolvedParams={resolvedParams}
+                dbQuizzes={dbQuizzes}
+                quizzesLoading={quizzesLoading}
               />
             </CardContent>
           </Card>
@@ -333,11 +376,15 @@ function TabsWrapper({
 const TabContentRenderer = memo(({ 
   section, 
   subject, 
-  resolvedParams 
+  resolvedParams,
+  dbQuizzes,
+  quizzesLoading,
 }: { 
   section: SectionType; 
   subject: Subject; 
   resolvedParams: { department: string; level: string; subject: string };
+  dbQuizzes: any[] | null;
+  quizzesLoading: boolean;
 }) => {
   const extractDriveId = (url: string): string => {
     try {
@@ -452,9 +499,43 @@ const TabContentRenderer = memo(({
   }
 
   if (section.id === "quizzes") {
+    if (quizzesLoading) {
+      return (
+        <div className="text-center py-12 flex flex-col items-center justify-center">
+          <div className="w-8 h-8 border-4 border-secondary/30 border-t-secondary rounded-full animate-spin mb-4" />
+          <span className="text-muted-foreground text-sm">Loading quizzes...</span>
+        </div>
+      );
+    }
+
+    const quizzesToDisplay = (dbQuizzes && dbQuizzes.length > 0)
+      ? dbQuizzes.map(q => ({
+          id: q.code,
+          name: q.name,
+          code: q.code,
+          duration: q.duration,
+          questions: q.questions_count
+        }))
+      : subject.materials.quizzes;
+
+    if (!quizzesToDisplay || quizzesToDisplay.length === 0) {
+      return (
+        <div className="text-center py-16 flex flex-col items-center">
+          <div className="p-6 bg-muted/40 rounded-full mb-6 relative">
+            <div className={`absolute inset-0 border ${style.borderLight} animate-ping rounded-full opacity-20`} />
+            <IconComponent className={cn("w-10 h-10 opacity-30", section.iconColor)} />
+          </div>
+          <h4 className="font-outfit text-lg font-bold mb-2">Module Offline</h4>
+          <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
+            The resources for <span className="text-foreground font-medium">{subject.name}</span> in this section are currently being assembled by the academic team. They will be pushed here soon.
+          </p>
+        </div>
+      );
+    }
+
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {subject.materials.quizzes?.map((quiz, idx: number) => (
+        {quizzesToDisplay.map((quiz, idx: number) => (
           <Link
             key={quiz.id}
             href={`/quiz/${resolvedParams.department}/${resolvedParams.subject}/${quiz.id}`}

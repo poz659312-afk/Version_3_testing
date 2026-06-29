@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
 
     // Sign in with Supabase Auth using auth_id
     // First, check if user has auth_id
-    if (!userData.auth_id) {
+    if (!user.auth_id) {
       return NextResponse.json(
         { error: 'Account not properly configured. Please contact support.' },
         { status: 500 }
@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the auth user's email to sign in
-    const { data: authUser, error: authUserError } = await supabase.auth.admin.getUserById(userData.auth_id)
+    const { data: authUser, error: authUserError } = await supabase.auth.admin.getUserById(user.auth_id)
     
     if (authUserError || !authUser?.user?.email) {
       console.error('Error fetching auth user:', authUserError)

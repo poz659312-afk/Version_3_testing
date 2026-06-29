@@ -33,6 +33,50 @@ export async function getDepartmentSlugs(): Promise<string[]> {
 
 /** Find a quiz by department + subject + quizId */
 export async function findQuiz(departmentSlug: string, subjectId: string, quizId: string) {
+  try {
+    const { createBrowserClient } = await import('@/lib/supabase/client')
+    const supabase = createBrowserClient()
+    const { data, error } = await supabase
+      .from('quiz_department')
+      .select('*')
+      .eq('department_slug', departmentSlug)
+      .eq('subject_id', subjectId)
+      .eq('code', quizId)
+      .single()
+
+    if (!error && data) {
+      const mod = await getDepartmentModule()
+      const deptName = mod.departmentData[departmentSlug]?.name || departmentSlug
+      
+      let subjectName = subjectId
+      const dept = mod.departmentData[departmentSlug]
+      if (dept) {
+        for (const level of Object.values(dept.levels)) {
+          const subj = [...level.subjects.term1, ...level.subjects.term2].find(s => s.id === subjectId)
+          if (subj) {
+            subjectName = subj.name
+            break
+          }
+        }
+      }
+
+      return {
+        quiz: {
+          id: data.code,
+          name: data.name,
+          code: data.code,
+          duration: data.duration === 'OP' ? 'OP' : Number(data.duration),
+          questions: data.questions, // Load the raw JSON questions directly
+          subjectName,
+          departmentName: deptName,
+        },
+        levelKey: String(data.level_num),
+      }
+    }
+  } catch (dbErr) {
+    console.error('Failed to load quiz from database, falling back to static data:', dbErr)
+  }
+
   const mod = await getDepartmentModule()
   const dept = mod.departmentData[departmentSlug]
   if (!dept) return null

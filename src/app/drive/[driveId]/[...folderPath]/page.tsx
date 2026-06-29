@@ -1195,7 +1195,9 @@ export default function DrivePage() {
                         <CardHeader className="pb-2 relative overflow-hidden">
                           {/* Ownership Badge, shifted left to avoid overlapping the three-dots dropdown */}
                           {isCurrentUserOwner(file) && (
-                            <OwnershipBadge className="absolute -top-2 right-8 z-10" />
+                            <div className="absolute -top-2 right-8 z-10">
+                              <OwnershipBadge />
+                            </div>
                           )}
                           
                           <div className="flex items-start gap-3">

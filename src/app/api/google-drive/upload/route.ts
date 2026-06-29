@@ -16,11 +16,11 @@ export const dynamic = 'force-dynamic'
 async function checkAdminAccess(authId: string) {
   const supabase = createAdminClient()
 
-  const { data: user, error } = await supabase
+  const { data: user, error } = (await supabase
     .from('chameleons')
     .select('is_admin')
     .eq('auth_id', authId)
-    .single()
+    .single()) as any
 
   if (error || !user) {
     console.log('No user found or error:', error)

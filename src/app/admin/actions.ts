@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getServerStudentSession } from '@/lib/auth-server'
 import { syncUserFolderAccess, getMatchingRules } from '@/lib/drive-sharing'
 import { revalidatePath } from 'next/cache'
+import { departmentData } from '@/lib/department-data'
 
 /**
  * Validates that the active session belongs to a Super Admin.
@@ -633,4 +634,351 @@ export async function previewCustomFolderChanges(
     .map(id => ({ id, name: findFolderNameById(DRIVE_TREE, id) || id }))
 
   return { foldersToGrant, foldersToRevoke }
+}
+
+function getMaxQuizCode(codes: string[]): string {
+  if (codes.length === 0) return ''
+  const getNumericPart = (c: string) => {
+    const m = c.match(/\d+$/)
+    return m ? parseInt(m[0], 10) : 0
+  }
+  codes.sort((a, b) => getNumericPart(a) - getNumericPart(b))
+  return codes[codes.length - 1]
+}
+
+export interface QuizValidationError {
+  critical: boolean
+  line?: number
+  questionText?: string
+  error: string
+  fix?: string
+}
+
+function findLineNumber(jsonStr: string, questionText: string): number | undefined {
+  if (!questionText) return undefined
+  const lines = jsonStr.split('\n')
+  
+  // Strip all non-alphanumeric characters to match purely on word content
+  const sanitize = (str: string) => str.replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
+  
+  const cleanQuery = sanitize(questionText.substring(0, 40))
+  if (!cleanQuery) return undefined
+
+  const idx = lines.findIndex(line => sanitize(line).includes(cleanQuery))
+  return idx !== -1 ? idx + 1 : undefined
+}
+
+export async function verifyQuizWithAI(params: {
+  departmentSlug: string
+  levelNum: number
+  subjectId: string
+  quizName: string
+  quizJsonStr: string
+}) {
+  const session = await checkSuperAdmin()
+  const supabase = createAdminClient()
+
+  const { departmentSlug, levelNum, subjectId, quizName, quizJsonStr } = params
+
+  // 1. Try parsing JSON locally first
+  let parsedJson: any[]
+  try {
+    const cleaned = quizJsonStr.replace(/```json|```/g, '').trim()
+    parsedJson = JSON.parse(cleaned)
+    if (!Array.isArray(parsedJson)) {
+      return {
+        success: false,
+        error: 'JSON content must be an array of questions.',
+        validationErrors: [{
+          critical: true,
+          error: 'JSON content must be an array of questions.',
+          fix: 'Wrap all questions inside a JSON array: [ ... ]'
+        }]
+      }
+    }
+  } catch (err: any) {
+    let line: number | undefined = undefined
+    const posMatch = err.message.match(/at position (\d+)/i)
+    if (posMatch) {
+      const pos = parseInt(posMatch[1], 10)
+      line = quizJsonStr.substring(0, pos).split('\n').length
+    }
+    const lineMatch = err.message.match(/at line (\d+)/i)
+    if (lineMatch) {
+      line = parseInt(lineMatch[1], 10)
+    }
+
+    return {
+      success: false,
+      error: `Invalid JSON syntax: ${err.message}`,
+      validationErrors: [{
+        critical: true,
+        line,
+        error: `Syntax Error: ${err.message}`,
+        fix: 'Check for missing commas, brackets, or unescaped quotes around the error line.'
+      }]
+    }
+  }
+
+  // Normalize questions format (resolve string answer to correct index if needed)
+  parsedJson = parsedJson.map((item) => {
+    if (typeof item === 'object' && item !== null) {
+      if (typeof item.correct === 'string') {
+        const parsed = parseInt(item.correct, 10)
+        if (!isNaN(parsed)) {
+          item.correct = parsed
+        }
+      }
+      if (
+        (item.correct === undefined || typeof item.correct !== 'number') &&
+        typeof item.answer === 'string' &&
+        Array.isArray(item.options)
+      ) {
+        const answerIndex = item.options.findIndex(
+          (opt: any) => typeof opt === 'string' && opt.trim() === item.answer.trim()
+        )
+        if (answerIndex !== -1) {
+          item.correct = answerIndex
+        }
+      }
+    }
+    return item
+  })
+
+  // 2. Validate schema
+  const validationErrors: QuizValidationError[] = []
+  parsedJson.forEach((item, idx) => {
+    const questionText = item?.question || ''
+    const line = findLineNumber(quizJsonStr, questionText)
+
+    if (typeof item !== 'object' || item === null) {
+      validationErrors.push({
+        critical: true,
+        error: `Question at index ${idx} is not an object.`,
+        fix: 'Ensure it is a valid JSON object matching the question schema.'
+      })
+      return
+    }
+    if (typeof item.question !== 'string' || !item.question.trim()) {
+      validationErrors.push({
+        critical: true,
+        line,
+        error: `Question at index ${idx} is missing a valid 'question' text.`,
+        fix: 'Add "question": "Your question text here" property.'
+      })
+    }
+    if (!Array.isArray(item.options) || item.options.length < 2) {
+      validationErrors.push({
+        critical: true,
+        line,
+        questionText,
+        error: `Question at index ${idx} must have an 'options' array with at least 2 options.`,
+        fix: 'Add "options": ["Option 1", "Option 2"] property.'
+      })
+    } else {
+      item.options.forEach((opt: any, optIdx: number) => {
+        if (typeof opt !== 'string' || !opt.trim()) {
+          validationErrors.push({
+            critical: true,
+            line,
+            questionText,
+            error: `Question at index ${idx}, Option at index ${optIdx} must be a non-empty string.`,
+            fix: `Replace option at index ${optIdx} with a valid string.`
+          })
+        }
+      })
+    }
+    if (typeof item.correct !== 'number' || isNaN(item.correct) || item.correct < 0 || (item.options && item.correct >= item.options.length)) {
+      validationErrors.push({
+        critical: true,
+        line,
+        questionText,
+        error: `Question at index ${idx} has an invalid 'correct' option index (got ${item.correct}).`,
+        fix: `Change 'correct' index to a value between 0 and ${item.options ? item.options.length - 1 : 1}.`
+      })
+    }
+  })
+
+  // 3. AI verification of questions using OpenRouter
+  try {
+    const apiKey = process.env.OPENROUTER_API_KEY
+    if (apiKey && validationErrors.filter(e => e.critical).length === 0) {
+      const payload = parsedJson.map(q => ({
+        question: q.question,
+        options: q.options,
+        correct: q.correct
+      })).slice(0, 20) // Limit to first 20 questions to prevent huge token consumption
+
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://chameleon-nu.vercel.app",
+          "X-Title": "Chameleon Quiz Checker"
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-lite",
+          messages: [
+            {
+              role: "system",
+              content: "You are a quiz logic checker. Output JSON with schema: {\"warnings\": {\"question\": string, \"error\": string, \"fix\": string}[]}. Inspect the questions array: check for duplicate questions, spelling/logic errors, options that are logically identical, or correct option index matching a wrong option. If everything is fine, return an empty warnings array. Be extremely brief."
+            },
+            {
+              role: "user",
+              content: JSON.stringify(payload)
+            }
+          ],
+          temperature: 0.1,
+          response_format: { type: "json_object" }
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        const text = data.choices?.[0]?.message?.content
+        if (text) {
+          const cleaned = text.replace(/```json|```/g, '').trim()
+          const parsed = JSON.parse(cleaned)
+          if (Array.isArray(parsed.warnings)) {
+            parsed.warnings.forEach((warn: any) => {
+              const line = findLineNumber(quizJsonStr, warn.question)
+              validationErrors.push({
+                critical: false,
+                line,
+                questionText: warn.question,
+                error: warn.error || 'Logical anomaly detected by AI.',
+                fix: warn.fix || 'Review the question and options for correctness.'
+              })
+            })
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('AI quiz check error:', err)
+  }
+
+  // 4. Resolve Term from departmentData
+  const dept = departmentData[departmentSlug]
+  const level = dept?.levels[levelNum]
+  let term = ''
+  if (level) {
+    if (level.subjects.term1.some(s => s.id === subjectId)) term = 'term1'
+    else if (level.subjects.term2.some(s => s.id === subjectId)) term = 'term2'
+  }
+
+  if (!term) {
+    return { success: false, error: `Subject ID '${subjectId}' not found under department '${departmentSlug}' at level ${levelNum}.` }
+  }
+
+  // 5. Generate Code: check last quiz code and add +1
+  const { data: dbQuizzes } = await supabase
+    .from('quiz_department')
+    .select('code')
+    .eq('subject_id', subjectId)
+
+  let lastCode = ''
+  if (dbQuizzes && dbQuizzes.length > 0) {
+    const codes = dbQuizzes.map(q => q.code).filter(Boolean)
+    lastCode = getMaxQuizCode(codes)
+  }
+
+  if (!lastCode && level) {
+    const subjectObj = [...level.subjects.term1, ...level.subjects.term2].find(s => s.id === subjectId)
+    const staticQuizzes = subjectObj?.materials?.quizzes || []
+    if (staticQuizzes.length > 0) {
+      const codes = staticQuizzes.map(q => q.code).filter(Boolean)
+      lastCode = getMaxQuizCode(codes)
+    }
+  }
+
+  let generatedCode = ''
+  let needsManualCodeInput = false
+
+  if (lastCode) {
+    const match = lastCode.match(/^(.*?)(\d+)$/)
+    if (match) {
+      const prefix = match[1]
+      const numStr = match[2]
+      const nextNum = parseInt(numStr, 10) + 1
+      const paddedNum = String(nextNum).padStart(numStr.length, '0')
+      generatedCode = `${prefix}${paddedNum}`
+    } else {
+      needsManualCodeInput = true
+    }
+  } else {
+    needsManualCodeInput = true
+  }
+
+  return {
+    success: !validationErrors.some(e => e.critical),
+    validationErrors,
+    term,
+    questionsCount: parsedJson.length,
+    generatedCode,
+    needsManualCodeInput,
+    duration: 'OP',
+    parsedQuestions: parsedJson
+  }
+}
+
+export async function insertQuizToDb(params: {
+  code: string
+  name: string
+  duration: string
+  questionsCount: number
+  questions: any[]
+  departmentSlug: string
+  levelNum: number
+  subjectId: string
+  term: string
+}) {
+  const admin = await checkSuperAdmin()
+  const supabase = createAdminClient()
+
+  // Verify unique code
+  const { data: existing } = await supabase
+    .from('quiz_department')
+    .select('code')
+    .eq('code', params.code)
+    .maybeSingle()
+
+  if (existing) {
+    return { success: false, error: `Quiz code '${params.code}' already exists. Please enter a different unique code.` }
+  }
+
+  const { error } = await supabase
+    .from('quiz_department')
+    .insert({
+      code: params.code,
+      name: params.name,
+      duration: params.duration,
+      questions_count: params.questionsCount,
+      questions: params.questions,
+      department_slug: params.departmentSlug,
+      level_num: params.levelNum,
+      subject_id: params.subjectId,
+      term: params.term
+    })
+
+  if (error) {
+    return { success: false, error: `Failed to insert quiz: ${error.message}` }
+  }
+
+  // Log action
+  await logAdminActionToDb(
+    admin.auth_id,
+    'UPLOAD_QUIZ',
+    null,
+    {
+      code: params.code,
+      name: params.name,
+      subject_id: params.subjectId,
+      questions_count: params.questionsCount
+    }
+  )
+
+  revalidatePath('/admin')
+  return { success: true }
 }

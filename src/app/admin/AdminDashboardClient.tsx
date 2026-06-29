@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useEffect, useRef } from 'react'
+import { useState, useTransition, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -43,10 +43,13 @@ import {
   deleteAccessRule,
   getAllUsers,
   syncUserCustomFolderAccess,
-  previewCustomFolderChanges
+  previewCustomFolderChanges,
+  verifyQuizWithAI,
+  insertQuizToDb
 } from './actions'
 import { DRIVE_TREE, DRIVE_ROOT_ID, getSuggestedFolderIds, mapSpecializationToDeptCode, getAllChildFolderIds } from '@/lib/drive-tree-data'
 import TokenStatusMonitor from '@/components/TokenStatusMonitor'
+import { departmentData } from '@/lib/department-data'
 
 const SPECIALIZATIONS = [
   'Data Science',
@@ -82,6 +85,169 @@ export default function AdminDashboardClient({
   const [users, setUsers] = useState(initialUsers)
   const [rules, setRules] = useState(initialRules)
   const [logs, setLogs] = useState(initialLogs)
+
+  // Quiz Upload States
+  const [quizDept, setQuizDept] = useState<string>('')
+  const [quizLevel, setQuizLevel] = useState<string>('')
+  const [quizSubject, setQuizSubject] = useState<string>('')
+  const [quizName, setQuizName] = useState<string>('')
+  const [quizJsonStr, setQuizJsonStr] = useState<string>('')
+  const [quizCode, setQuizCode] = useState<string>('')
+  const [quizTerm, setQuizTerm] = useState<string>('')
+  const [questionsCount, setQuestionsCount] = useState<number>(0)
+  const [isVerifyingQuiz, setIsVerifyingQuiz] = useState<boolean>(false)
+  const [isUploadingQuiz, setIsUploadingQuiz] = useState<boolean>(false)
+  const [verificationResult, setVerificationResult] = useState<{
+    success: boolean
+    error?: string
+    validationErrors?: Array<{
+      critical: boolean
+      line?: number
+      questionText?: string
+      error: string
+      fix?: string
+    }>
+  } | null>(null)
+  const [parsedQuestions, setParsedQuestions] = useState<any[] | null>(null)
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const gutterRef = useRef<HTMLDivElement>(null)
+
+  const lineNumbers = useMemo(() => {
+    const lines = quizJsonStr.split('\n')
+    return Array.from({ length: Math.max(lines.length, 1) }, (_, i) => i + 1)
+  }, [quizJsonStr])
+
+  const handleScroll = () => {
+    if (textareaRef.current && gutterRef.current) {
+      gutterRef.current.scrollTop = textareaRef.current.scrollTop
+    }
+  }
+
+  const [highlightedLine, setHighlightedLine] = useState<number | null>(null)
+
+  const scrollToLine = (line?: number) => {
+    if (!line || !textareaRef.current) return
+    setHighlightedLine(line)
+    const lineHeight = 20
+    const scrollTop = (line - 1) * lineHeight
+    textareaRef.current.scrollTo({
+      top: scrollTop,
+      behavior: 'smooth'
+    })
+    textareaRef.current.focus()
+  }
+
+  const handleQuizFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const text = event.target?.result
+      if (typeof text === 'string') {
+        setQuizJsonStr(text)
+        setVerificationResult(null)
+      }
+    }
+    reader.readAsText(file)
+  }
+
+  const handleQuizVerify = async () => {
+    if (!quizDept || !quizLevel || !quizSubject || !quizName || !quizJsonStr.trim()) {
+      toast.error('Please fill in all quiz metadata fields and paste questions JSON.')
+      return
+    }
+    setIsVerifyingQuiz(true)
+    setVerificationResult(null)
+    try {
+      const res = await verifyQuizWithAI({
+        departmentSlug: quizDept,
+        levelNum: Number(quizLevel),
+        subjectId: quizSubject,
+        quizName,
+        quizJsonStr
+      })
+      if (res.success) {
+        setVerificationResult({
+          success: true,
+          validationErrors: res.validationErrors
+        })
+        setQuizCode(res.generatedCode || '')
+        setQuizTerm(res.term || '')
+        setQuestionsCount(res.questionsCount || 0)
+        setParsedQuestions(res.parsedQuestions || null)
+        const warnings = res.validationErrors?.filter(e => !e.critical) || []
+        if (warnings.length > 0) {
+          toast.warning(`Quiz verified with ${warnings.length} logic warnings. Review them before uploading.`)
+        } else {
+          toast.success('Quiz JSON and schema verified successfully!')
+        }
+      } else {
+        setVerificationResult({
+          success: false,
+          error: res.error,
+          validationErrors: res.validationErrors
+        })
+        toast.error(res.error || 'Failed to verify quiz.')
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'An unexpected error occurred during verification.')
+    } finally {
+      setIsVerifyingQuiz(false)
+    }
+  }
+
+  const handleQuizUpload = async () => {
+    if (!quizCode.trim()) {
+      toast.error('Quiz code is required. Please enter or generate it.')
+      return
+    }
+    if (!parsedQuestions) {
+      toast.error('Please verify the quiz JSON first.')
+      return
+    }
+    setIsUploadingQuiz(true)
+    try {
+      const res = await insertQuizToDb({
+        code: quizCode,
+        name: quizName,
+        duration: 'OP',
+        questionsCount,
+        questions: parsedQuestions,
+        departmentSlug: quizDept,
+        levelNum: Number(quizLevel),
+        subjectId: quizSubject,
+        term: quizTerm
+      })
+
+      if (res.success) {
+        toast.success('Quiz uploaded to database successfully!')
+        // Reset form
+        setQuizName('')
+        setQuizJsonStr('')
+        setQuizCode('')
+        setQuizTerm('')
+        setQuestionsCount(0)
+        setParsedQuestions(null)
+        setVerificationResult(null)
+      } else {
+        toast.error(res.error || 'Failed to upload quiz.')
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to upload quiz due to an error.')
+    } finally {
+      setIsUploadingQuiz(false)
+    }
+  }
+
+  const subjectsList = useMemo(() => {
+    if (!quizDept || !quizLevel) return []
+    const dept = departmentData[quizDept]
+    const levelNum = Number(quizLevel)
+    const lvl = dept?.levels[levelNum]
+    if (!lvl) return []
+    return [...lvl.subjects.term1, ...lvl.subjects.term2]
+  }, [quizDept, quizLevel])
 
   // Filters & Search
   const [search, setSearch] = useState('')
@@ -689,7 +855,7 @@ export default function AdminDashboardClient({
 
       {/* Tabs System */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="relative grid grid-cols-2 md:grid-cols-4 h-auto bg-black/5 dark:bg-white/5 backdrop-blur-md p-1.5 rounded-xl border border-black/10 dark:border-white/10 max-w-2xl mb-8">
+        <TabsList className="relative grid grid-cols-2 md:grid-cols-5 h-auto bg-black/5 dark:bg-white/5 backdrop-blur-md p-1.5 rounded-xl border border-black/10 dark:border-white/10 max-w-3xl mb-8">
           <TabsTrigger 
             value="users" 
             className="relative flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground data-[state=active]:text-white focus-visible:outline-none select-none cursor-pointer bg-transparent data-[state=active]:!bg-transparent data-[state=active]:!shadow-none"
@@ -748,6 +914,21 @@ export default function AdminDashboardClient({
             )}
             <History className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'logs' ? 'scale-110 -rotate-6' : 'hover:scale-110'}`} />
             <span>Audit Logs</span>
+          </TabsTrigger>
+
+          <TabsTrigger 
+            value="quizzes" 
+            className="relative flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground data-[state=active]:text-white focus-visible:outline-none select-none cursor-pointer bg-transparent data-[state=active]:!bg-transparent data-[state=active]:!shadow-none"
+          >
+            {activeTab === 'quizzes' && (
+              <motion.div
+                layoutId="active-admin-tab"
+                className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-lg -z-10 shadow-lg shadow-primary/30"
+                transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+              />
+            )}
+            <FileCode className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'quizzes' ? 'scale-110 rotate-12' : 'hover:scale-110'}`} />
+            <span>Quizzes</span>
           </TabsTrigger>
         </TabsList>
 
@@ -1469,6 +1650,374 @@ export default function AdminDashboardClient({
               </div>
             </CardContent>
           </Card>
+          </motion.div>
+        </TabsContent>
+
+        {/* Tab 5: Quizzes Upload */}
+        <TabsContent value="quizzes" className="mt-0 focus-visible:outline-none">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="space-y-6"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              {/* Left Panel: Quiz Metadata Form */}
+              <Card className="lg:col-span-1 bg-card border-border shadow-lg h-fit">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-foreground">
+                    <FileCode className="w-5 h-5 text-primary" />
+                    Quiz Metadata
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground text-xs mt-1">
+                    Select the target subject, level, and specify the quiz details.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  
+                  {/* Department Slug Selector */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-muted-foreground">Department</label>
+                    <Select value={quizDept} onValueChange={(val) => {
+                      setQuizDept(val)
+                      setQuizSubject('')
+                      setVerificationResult(null)
+                    }}>
+                      <SelectTrigger className="bg-muted/10 border-border">
+                        <SelectValue placeholder="Select Department" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(departmentData).map((slug) => (
+                          <SelectItem key={slug} value={slug}>
+                            {departmentData[slug].name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Level Selector */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-muted-foreground">Academic Level</label>
+                    <Select value={quizLevel} onValueChange={(val) => {
+                      setQuizLevel(val)
+                      setQuizSubject('')
+                      setVerificationResult(null)
+                    }}>
+                      <SelectTrigger className="bg-muted/10 border-border">
+                        <SelectValue placeholder="Select Level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {LEVELS.map((lvl) => (
+                          <SelectItem key={lvl} value={String(lvl)}>
+                            Level {lvl}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Subject Selector */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-muted-foreground">Subject</label>
+                    <Select 
+                      value={quizSubject} 
+                      onValueChange={(val) => {
+                        setQuizSubject(val)
+                        setVerificationResult(null)
+                      }}
+                      disabled={!quizDept || !quizLevel}
+                    >
+                      <SelectTrigger className="bg-muted/10 border-border">
+                        <SelectValue placeholder={!quizDept || !quizLevel ? "Select Dept & Level first" : "Select Subject"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {subjectsList.map((subj: any) => (
+                          <SelectItem key={subj.id} value={subj.id}>
+                            {subj.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Quiz Name Input */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-semibold text-muted-foreground">Quiz Title / Name</label>
+                    <Input
+                      placeholder="e.g. Midterm Practice, Chapter 1 Quiz"
+                      value={quizName}
+                      onChange={(e) => {
+                        setQuizName(e.target.value)
+                        setVerificationResult(null)
+                      }}
+                      className="bg-muted/10 border-border text-sm"
+                    />
+                  </div>
+
+                </CardContent>
+              </Card>
+
+              {/* Right Panel: JSON Editor & Verification Status */}
+              <div className="lg:col-span-2 space-y-6">
+                
+                {/* JSON Question Payload Input */}
+                <Card className="bg-card border-border shadow-lg">
+                  <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+                    <div>
+                      <CardTitle className="flex items-center gap-2 text-foreground">
+                        <FileCode className="w-5 h-5 text-primary" />
+                        Questions JSON
+                      </CardTitle>
+                      <CardDescription className="text-muted-foreground text-xs mt-1">
+                        Paste the raw JSON array of quiz questions or import a file.
+                      </CardDescription>
+                    </div>
+                    
+                    {/* File upload button */}
+                    <div className="relative">
+                      <Input
+                        type="file"
+                        accept=".json"
+                        onChange={handleQuizFileChange}
+                        className="hidden"
+                        id="quiz-file-upload"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        asChild
+                        className="border-border hover:bg-primary/10 hover:text-primary transition-all text-xs font-semibold cursor-pointer"
+                      >
+                        <label htmlFor="quiz-file-upload">
+                          <FolderPlus className="w-3.5 h-3.5 mr-1.5" />
+                          Import JSON File
+                        </label>
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex border border-border rounded-xl bg-neutral-950 h-80 overflow-hidden focus-within:ring-1 focus-within:ring-primary">
+                      {/* Gutter for Line Numbers */}
+                      <div 
+                        ref={gutterRef}
+                        className="flex-shrink-0 bg-neutral-900 border-r border-border/40 select-none text-right pr-2.5 pl-2 text-[11px] font-mono text-muted-foreground/30 pt-4 overflow-hidden"
+                        style={{ fontFamily: 'monospace' }}
+                      >
+                        {lineNumbers.map((num) => (
+                          <div key={num} style={{ height: '20px', lineHeight: '20px' }}>{num}</div>
+                        ))}
+                      </div>
+
+                      {/* Textarea */}
+                      <textarea
+                        ref={textareaRef}
+                        placeholder={`[\n  {\n    "question": "What is 1 + 1?",\n    "options": ["1", "2", "3", "4"],\n    "correct": 1\n  }\n]`}
+                        value={quizJsonStr}
+                        onChange={(e) => {
+                          setQuizJsonStr(e.target.value)
+                          setVerificationResult(null)
+                        }}
+                        onScroll={handleScroll}
+                        className="flex-grow bg-transparent text-neutral-200 font-mono text-xs pt-4 pl-2 outline-none border-0 focus:ring-0 focus:outline-none resize-none overflow-y-auto"
+                        style={{ 
+                          fontFamily: 'monospace',
+                          lineHeight: '20px'
+                        }}
+                      />
+                    </div>
+
+                    <Button
+                      onClick={handleQuizVerify}
+                      disabled={isVerifyingQuiz || !quizJsonStr.trim() || !quizName}
+                      className="w-full bg-gradient-to-r from-primary to-secondary text-primary-foreground font-semibold py-2.5 rounded-xl border-0 shadow-lg hover:brightness-110 active:scale-95 transition-all"
+                    >
+                      {isVerifyingQuiz ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Verifying JSON and AI Validation...
+                        </>
+                      ) : (
+                        <>
+                          <Shield className="w-4 h-4 mr-2" />
+                          Check & Verify with AI
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Validation & Verification Panel */}
+                {verificationResult && (
+                  <Card className={`border shadow-lg overflow-hidden transition-all ${
+                    verificationResult.success ? 'border-green-500/20 bg-green-500/5' : 'border-red-500/20 bg-red-500/5'
+                  }`}>
+                    <CardHeader className="pb-3 border-b border-border/50">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                          {verificationResult.success ? (
+                            <>
+                              <CheckCircle className="w-5 h-5 text-green-500" />
+                              <span className="text-green-400">Verification Succeeded</span>
+                            </>
+                          ) : (
+                            <>
+                              <AlertTriangle className="w-5 h-5 text-red-500" />
+                              <span className="text-red-400">Verification Failed</span>
+                            </>
+                          )}
+                        </CardTitle>
+                        {verificationResult.success && (
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-[10px] py-0 px-2 h-5">
+                            AI Approved
+                          </Badge>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-4 space-y-4">
+                      {/* Overall parse error */}
+                      {verificationResult.error && !verificationResult.validationErrors && (
+                        <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-300 rounded-lg text-xs leading-relaxed font-mono">
+                          {verificationResult.error}
+                        </div>
+                      )}
+
+                      {/* Unified Schema Errors & AI Warnings list */}
+                      {verificationResult.validationErrors && verificationResult.validationErrors.length > 0 && (
+                        <div className="space-y-3">
+                          <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                            <Settings className="w-4 h-4 text-primary" />
+                            Validation Report ({verificationResult.validationErrors.length} issues found):
+                          </label>
+                          <div className="space-y-3.5 max-h-[350px] overflow-y-auto pr-1" data-lenis-prevent="true">
+                            {verificationResult.validationErrors.map((err, index) => (
+                              <div 
+                                key={index} 
+                                onClick={() => scrollToLine(err.line)}
+                                className={`p-3.5 rounded-xl border transition-all text-xs flex flex-col gap-2 select-none duration-150 ${
+                                  err.line ? 'cursor-pointer hover:border-primary/40 hover:bg-neutral-900/60 active:scale-[0.98]' : ''
+                                } ${
+                                  err.critical 
+                                    ? 'bg-red-500/5 border-red-500/20 text-red-300' 
+                                    : 'bg-yellow-500/5 border-yellow-500/20 text-yellow-300'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between gap-2 border-b border-white/5 pb-1.5">
+                                  <div className="flex items-center gap-2">
+                                    <Badge className={err.critical ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'}>
+                                      {err.critical ? 'Critical Error' : 'AI Logic Warning'}
+                                    </Badge>
+                                    {err.line && (
+                                      <span className="font-mono text-[10px] text-muted-foreground bg-neutral-900 px-1.5 py-0.5 rounded border border-border/40">
+                                        Line {err.line}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {err.line && (
+                                    <span className="text-[10px] opacity-70 italic flex items-center gap-1 text-primary">
+                                      <Search className="w-3 h-3" />
+                                      Click to locate
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className="space-y-1">
+                                  {err.questionText && (
+                                    <div className="font-semibold truncate max-w-full opacity-80 mb-1">
+                                      Q: "{err.questionText}"
+                                    </div>
+                                  )}
+                                  <div className="leading-relaxed font-mono text-[11px]">
+                                    {err.error}
+                                  </div>
+                                </div>
+
+                                {err.fix && (
+                                  <div className="mt-1 p-2 rounded-lg bg-black/40 border border-white/5 space-y-1">
+                                    <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Suggested Fix:</div>
+                                    <div className="text-[11px] text-foreground leading-relaxed font-medium">
+                                      {err.fix}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Editable Fields for Upload */}
+                      {verificationResult.success && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-muted/20 border border-border/80 p-4 rounded-xl">
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Quiz Code (Editable)</label>
+                            <Input
+                              value={quizCode}
+                              onChange={(e) => setQuizCode(e.target.value)}
+                              placeholder="e.g. CS_001"
+                              className="bg-background/80 border-border text-sm h-9"
+                            />
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Duration (Read-only)</label>
+                            <Input
+                              value="OP"
+                              disabled
+                              className="bg-muted/40 border-border text-sm h-9 cursor-not-allowed text-muted-foreground"
+                            />
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Questions Count (Read-only)</label>
+                            <Input
+                              value={questionsCount}
+                              disabled
+                              className="bg-muted/40 border-border text-sm h-9 cursor-not-allowed text-muted-foreground"
+                            />
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Subject Term (Read-only)</label>
+                            <Input
+                              value={quizTerm || 'N/A'}
+                              disabled
+                              className="bg-muted/40 border-border text-sm h-9 cursor-not-allowed text-muted-foreground"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Upload Button */}
+                      {verificationResult.success && (
+                        <Button
+                          onClick={handleQuizUpload}
+                          disabled={isUploadingQuiz || !quizCode.trim()}
+                          className="w-full bg-green-600 hover:bg-green-500 text-white font-semibold py-2.5 rounded-xl border-0 shadow-lg active:scale-95 transition-all"
+                        >
+                          {isUploadingQuiz ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Uploading Quiz to Database...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="w-4 h-4 mr-2" />
+                              Upload Quiz to Database
+                            </>
+                          )}
+                        </Button>
+                      )}
+
+                    </CardContent>
+                  </Card>
+                )}
+
+              </div>
+
+            </div>
           </motion.div>
         </TabsContent>
       </Tabs>
