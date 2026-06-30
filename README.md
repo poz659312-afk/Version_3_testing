@@ -11,6 +11,109 @@
 
 ---
 
+```mermaid
+flowchart TD
+
+subgraph group_app["App routes"]
+  node_app_home["Home<br/>route page<br/>[page.tsx]"]
+  node_app_journeys["Journeys<br/>route pages"]
+  node_app_quiz["Quiz route<br/>dynamic route<br/>[page.tsx]"]
+  node_app_drive["Drive route<br/>dynamic route<br/>[page.tsx]"]
+  node_app_specialization["Specialization<br/>dynamic route<br/>[page.tsx]"]
+  node_app_admin["Admin dashboard<br/>admin page<br/>[page.tsx]"]
+end
+
+subgraph group_api["API boundary"]
+  node_api_auth["Auth API<br/>auth endpoints"]
+  node_api_quiz["Quiz API<br/>quiz endpoints"]
+  node_api_drive["Drive API<br/>drive endpoints"]
+  node_api_ai["AI API<br/>ai endpoints"]
+  node_api_ops["Ops API<br/>system endpoints"]
+end
+
+subgraph group_ui["Shared UI"]
+  node_ui_shell["UI shell<br/>shared components"]
+  node_ui_quiz["Quiz UI<br/>experience components<br/>[quiz-interface.tsx]"]
+  node_ui_drive["Drive UI<br/>experience components"]
+  node_ui_admin["Admin UI<br/>ops components<br/>[AdminAuthGuard.tsx]"]
+end
+
+subgraph group_lib["Core logic"]
+  node_lib_auth["Auth core<br/>session/security<br/>[auth.ts]"]
+  node_lib_supabase[("Supabase layer<br/>database access")]
+  node_lib_integrations["Integrations<br/>external services<br/>[google-oauth.ts]"]
+  node_lib_domain["Domain data<br/>quiz/content logic<br/>[department-data.ts]"]
+end
+
+subgraph group_content["Content & storage"]
+  node_content_quizzes["Quiz assets<br/>static content"]
+  node_content_media["Public media<br/>static assets"]
+  node_content_supabase["DB bootstrap<br/>migrations and seed"]
+end
+
+node_app_home -->|"renders"| node_ui_shell
+node_app_journeys -->|"uses"| node_ui_shell
+node_app_quiz -->|"renders"| node_ui_quiz
+node_app_quiz -->|"loads metadata"| node_lib_domain
+node_app_quiz -->|"fetches"| node_api_quiz
+node_app_quiz -->|"reads"| node_content_quizzes
+node_app_drive -->|"renders"| node_ui_drive
+node_app_drive -->|"calls"| node_api_drive
+node_app_specialization -->|"uses"| node_lib_domain
+node_app_admin -->|"renders"| node_ui_admin
+node_app_admin -->|"operates on"| node_api_ops
+node_api_auth -->|"enforces"| node_lib_auth
+node_api_auth -->|"persists"| node_lib_supabase
+node_api_quiz -->|"reads"| node_content_quizzes
+node_api_quiz -->|"scores to"| node_lib_supabase
+node_api_drive -->|"proxies"| node_lib_integrations
+node_api_drive -->|"stores tokens"| node_lib_supabase
+node_api_ai -->|"forwards to"| node_lib_integrations
+node_api_ops -->|"reads/writes"| node_lib_supabase
+node_api_ops -->|"protects"| node_lib_auth
+node_ui_shell -->|"uses"| node_content_media
+node_lib_supabase -->|"bootstrapped by"| node_content_supabase
+node_lib_domain -->|"derives from"| node_content_quizzes
+node_lib_integrations -.->|"supports"| node_api_drive
+
+click node_app_home "https://github.com/poz659312-afk/version_3_testing/blob/main/src/app/page.tsx"
+click node_app_journeys "https://github.com/poz659312-afk/version_3_testing/tree/main/src/app"
+click node_app_quiz "https://github.com/poz659312-afk/version_3_testing/blob/main/src/app/quiz/[department]/[subject]/[quizId]/page.tsx"
+click node_app_drive "https://github.com/poz659312-afk/version_3_testing/blob/main/src/app/drive/[driveId]/[...folderPath]/page.tsx"
+click node_app_specialization "https://github.com/poz659312-afk/version_3_testing/blob/main/src/app/specialization/[department]/[level]/[subject]/page.tsx"
+click node_app_admin "https://github.com/poz659312-afk/version_3_testing/blob/main/src/app/admin/page.tsx"
+click node_api_auth "https://github.com/poz659312-afk/version_3_testing/tree/main/src/app/api/auth"
+click node_api_quiz "https://github.com/poz659312-afk/version_3_testing/tree/main/src/app/api/quiz"
+click node_api_drive "https://github.com/poz659312-afk/version_3_testing/tree/main/src/app/api/google-drive"
+click node_api_ai "https://github.com/poz659312-afk/version_3_testing/tree/main/src/app/api/ai"
+click node_api_ops "https://github.com/poz659312-afk/version_3_testing/tree/main/src/app/api"
+click node_ui_shell "https://github.com/poz659312-afk/version_3_testing/tree/main/src/components"
+click node_ui_quiz "https://github.com/poz659312-afk/version_3_testing/blob/main/src/components/quiz-system/quiz-interface.tsx"
+click node_ui_drive "https://github.com/poz659312-afk/version_3_testing/blob/main/src/components/GoogleDriveManager.tsx"
+click node_ui_admin "https://github.com/poz659312-afk/version_3_testing/blob/main/src/components/AdminAuthGuard.tsx"
+click node_lib_auth "https://github.com/poz659312-afk/version_3_testing/blob/main/src/lib/auth.ts"
+click node_lib_supabase "https://github.com/poz659312-afk/version_3_testing/tree/main/src/lib/supabase"
+click node_lib_integrations "https://github.com/poz659312-afk/version_3_testing/blob/main/src/lib/google-oauth.ts"
+click node_lib_domain "https://github.com/poz659312-afk/version_3_testing/blob/main/src/lib/department-data.ts"
+click node_content_quizzes "https://github.com/poz659312-afk/version_3_testing/tree/main/public/quizzes"
+click node_content_media "https://github.com/poz659312-afk/version_3_testing/tree/main/public"
+click node_content_supabase "https://github.com/poz659312-afk/version_3_testing/blob/main/supabase/migrations/20260629_create_quiz_department.sql"
+
+classDef toneNeutral fill:#f8fafc,stroke:#334155,stroke-width:1.5px,color:#0f172a
+classDef toneBlue fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#172554
+classDef toneAmber fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+classDef toneMint fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+classDef toneRose fill:#ffe4e6,stroke:#e11d48,stroke-width:1.5px,color:#881337
+classDef toneIndigo fill:#e0e7ff,stroke:#4f46e5,stroke-width:1.5px,color:#312e81
+classDef toneTeal fill:#ccfbf1,stroke:#0f766e,stroke-width:1.5px,color:#134e4a
+class node_app_home,node_app_journeys,node_app_quiz,node_app_drive,node_app_specialization,node_app_admin toneBlue
+class node_api_auth,node_api_quiz,node_api_drive,node_api_ai,node_api_ops toneAmber
+class node_ui_shell,node_ui_quiz,node_ui_drive,node_ui_admin toneMint
+class node_lib_auth,node_lib_supabase,node_lib_integrations,node_lib_domain toneRose
+class node_content_quizzes,node_content_media,node_content_supabase toneIndigo
+
+```
+
 ## 📋 Table of Contents
 
 - [Features](#-features)
