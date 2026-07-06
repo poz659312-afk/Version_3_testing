@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/huggingface": "^1.0.43",
     "@ai-sdk/react": "^3.0.170",
+    "@anthropic-ai/sdk": "^0.110.0",
     "@fontsource/fugaz-one": "^5.2.7",
     "@fontsource/rubik-80s-fade": "^5.2.7",
     "@fontsource/stalinist-one": "^5.2.8",

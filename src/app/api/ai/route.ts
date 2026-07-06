@@ -6,12 +6,11 @@ import pdf from 'pdf-parse';
 import { getCachedAIResult, setCachedAIResult } from '@/lib/persistent-ai-cache';
 
 const pdfParse = pdf;
-const ZENMUX_API_KEY = process.env.ZENMUX_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN || process.env.ANTHROPIC_API_KEY || "sk-ai-v1-4f6c49c11caf0b84b2a96dc6db4803ff119981f776ada57de2211d5f2030767f";
-const ZENMUX_API_URL = "https://zenmux.ai/api/v1/chat/completions";
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || process.env.GROQ_API_KEY;
 
-// Production scale high-reasoning models
-const PRIMARY_AI_MODEL = "anthropic/claude-sonnet-5-free";
-const FAST_CHAT_MODEL = "anthropic/claude-sonnet-5-free"; // Optimized for fast, short-form responses like chunk summarization
+// Production scale lightweight inference models
+const PRIMARY_AI_MODEL = "google/gemini-2.5-flash-lite";
+const FAST_CHAT_MODEL = "google/gemini-2.5-flash-lite"; // Optimized for fast, short-form responses like chunk summarization
 
 // Helper function to handle fetch retries with exponential backoff for high concurrency
 async function fetchWithRetry(url: string, options: any, retries = 3, delay = 1000) {
@@ -20,7 +19,7 @@ async function fetchWithRetry(url: string, options: any, retries = 3, delay = 10
     try {
       const response = await fetch(url, options);
       if (response.ok) return response;
-      
+
       lastStatus = response.status;
       if (response.status === 429 || response.status >= 500) {
         console.warn(`[AI Route Retry] Request failed with status ${response.status}. Retrying in ${delay}ms...`);
@@ -49,10 +48,10 @@ async function summarizeChunk(chunk: string, index: number, total: number, apiKe
     }
 
     const keyPreview = apiKey ? `${apiKey.slice(0, 6)}...${apiKey.slice(-4)}` : 'undefined';
-    console.log(`[AI summarizeChunk] Calling ZenMux for chunk ${index + 1}/${total} with key: ${keyPreview}, Length: ${apiKey?.length}`);
-    
+    console.log(`[AI summarizeChunk] Calling Groq for chunk ${index + 1}/${total} with key: ${keyPreview}, Length: ${apiKey?.length}`);
+
     // 2. Fetch with backoff retry
-    const response = await fetchWithRetry(ZENMUX_API_URL, {
+    const response = await fetchWithRetry("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
@@ -61,28 +60,28 @@ async function summarizeChunk(chunk: string, index: number, total: number, apiKe
       body: JSON.stringify({
         model: FAST_CHAT_MODEL,
         messages: [
-          { role: "system", content: `You are Neuri AI. Summarize the following text for a study guide. Capture all critical information, terms, formulas, and concepts in high-density, highly compact bullet points. Retain all technical details but omit conversational filler. Respond in ${language}.` },
+          { role: "system", content: `You are Neuri AI. Summarize concisely in ${language}. Key facts, formulas only.` },
           { role: "user", content: chunk.slice(0, 12000) }
         ],
-        max_tokens: 600,
+        max_tokens: 450,
         temperature: 0.1
       })
     });
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`[AI Chunk Error] Attempt failed with status: ${response.status}. Body: ${errorText}`);
       return chunk.slice(0, 800); // Graceful degradation fallback
     }
-    
+
     const data = await response.json();
     const summary = data.choices?.[0]?.message?.content || chunk.slice(0, 800);
-    
+
     // 3. Cache the successful chunk summary for future uploads
     if (summary && summary.trim().length > 50) {
       await setCachedAIResult(chunk, 'chunk-summary', language, summary);
     }
-    
+
     return summary;
   } catch (e) {
     console.error(`[AI Chunk Exception] Failed for chunk ${index + 1}/${total}:`, e);
@@ -92,13 +91,13 @@ async function summarizeChunk(chunk: string, index: number, total: number, apiKe
 
 export async function POST(req: NextRequest) {
   try {
-    const keyPreview = ZENMUX_API_KEY 
-      ? `${ZENMUX_API_KEY.slice(0, 6)}...${ZENMUX_API_KEY.slice(-4)}` 
+    const keyPreview = OPENROUTER_API_KEY
+      ? `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-4)}`
       : 'undefined';
-    console.log(`[AI POST] Initializing request. Key Preview: ${keyPreview}, Length: ${ZENMUX_API_KEY?.length}`);
+    console.log(`[AI POST] Initializing request. Key Preview: ${keyPreview}, Length: ${OPENROUTER_API_KEY?.length}`);
 
-    if (!ZENMUX_API_KEY) {
-      console.error("Missing ZENMUX_API_KEY");
+    if (!OPENROUTER_API_KEY) {
+      console.error("Missing OPENROUTER_API_KEY environment variable");
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
 
@@ -109,21 +108,21 @@ export async function POST(req: NextRequest) {
 
     const rateLimit = checkRateLimit(session.auth_id, RateLimitTier.AI);
     if (!rateLimit.success) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: 'Daily limit reached. You can perform 10 AI actions per day.',
         reset: rateLimit.reset
       }, { status: 429 });
     }
 
-    const { fileId, task, language = 'English', messages = [], difficulty = 'medium', numQuestions = 10 } = await req.json();
+    const { fileId, task, language = 'English', messages = [] } = await req.json();
 
     if (!fileId) {
       return NextResponse.json({ error: 'Missing fileId' }, { status: 400 });
     }
 
-    const drive = google.drive({ 
-      version: 'v3', 
-      auth: process.env.GOOGLE_DRIVE_API_KEY 
+    const drive = google.drive({
+      version: 'v3',
+      auth: process.env.GOOGLE_DRIVE_API_KEY
     });
 
     const metadataResponse = await drive.files.get({
@@ -173,12 +172,11 @@ export async function POST(req: NextRequest) {
     // 1. PERSISTENT CACHE LOOKUP (Only for core tasks to avoid chat collisions)
     const isCoreTask = task === 'summarize' || task === 'quiz' || task === 'translate';
     const shouldCache = isCoreTask && messages.length === 0 && fileContent.trim().length > 0;
-    const cacheTaskKey = task === 'quiz' ? `${task}-${difficulty}-${numQuestions}` : task;
 
     if (shouldCache) {
-      const cachedResult = await getCachedAIResult(fileContent, cacheTaskKey, language);
+      const cachedResult = await getCachedAIResult(fileContent, task, language);
       if (cachedResult) {
-        console.log(`[AI Cache Hit] Instantly returning cached result for ${cacheTaskKey} in ${language}.`);
+        console.log(`[AI Cache Hit] Instantly returning cached result for ${task} in ${language}.`);
         if (task === 'quiz') {
           return NextResponse.json({ result: cachedResult });
         } else {
@@ -218,16 +216,16 @@ export async function POST(req: NextRequest) {
         for (let i = 0; i < fileContent.length; i += chunkSize) {
           chunks.push(fileContent.substring(i, i + chunkSize));
         }
-        
+
         // Define dynamic orchestration strategy parameters
         const MAX_CONCURRENT_CHUNKS = parseInt(process.env.MAX_CONCURRENT_CHUNKS || '2', 10);
         const totalChunks = Math.min(chunks.length, 6);
         const estimatedTokens = Math.floor(fileContent.length / 4);
-        
+
         let concurrencyLimit = MAX_CONCURRENT_CHUNKS;
         let batchDelay = 1000; // Delay in milliseconds between batch schedules
         let strategy = "Parallel";
-        
+
         // Adaptive Batching Orchestration Strategy
         if (totalChunks <= 2 || estimatedTokens <= 6000) {
           concurrencyLimit = 2;
@@ -242,12 +240,12 @@ export async function POST(req: NextRequest) {
           batchDelay = 2500;
           strategy = "Rolling Sequential (Huge PDF / Strict TPM Protection)";
         }
-        
+
         console.log(`[AI Pipeline Strategy] Selecting Strategy: ${strategy} for ${totalChunks} chunks (Est. Tokens: ${estimatedTokens}). Concurrency Limit: ${concurrencyLimit}, Batch Throttle Delay: ${batchDelay}ms`);
 
         const chunkSummaries: string[] = new Array(totalChunks);
         const activePromises: Promise<void>[] = [];
-        
+
         // Orchestrate chunk processing queue
         for (let i = 0; i < totalChunks; i++) {
           const chunkIndex = i;
@@ -258,20 +256,20 @@ export async function POST(req: NextRequest) {
               console.log(`[AI Pipeline Throttle] Delaying chunk ${chunkIndex + 1}/${totalChunks} by ${throttlingDelay}ms to prevent Groq TPM overflow.`);
               await new Promise(resolve => setTimeout(resolve, throttlingDelay));
             }
-            
+
             const summary = await summarizeChunk(
-              chunks[chunkIndex], 
-              chunkIndex, 
-              totalChunks, 
-              ZENMUX_API_KEY,
+              chunks[chunkIndex],
+              chunkIndex,
+              totalChunks,
+              OPENROUTER_API_KEY || '',
               language
             );
             chunkSummaries[chunkIndex] = summary;
           })();
-          
+
           activePromises.push(chunkPromise);
         }
-        
+
         // Await all scheduled active chunk jobs to complete safely
         await Promise.all(activePromises);
         contextualText = chunkSummaries.join("\n\n");
@@ -291,27 +289,25 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      console.log(`[AI POST - Quiz] Fetching ZenMux completions. Key Preview: ${ZENMUX_API_KEY ? `${ZENMUX_API_KEY.slice(0, 6)}...${ZENMUX_API_KEY.slice(-4)}` : 'undefined'}`);
-      const response = await fetchWithRetry(ZENMUX_API_URL, {
+      console.log(`[AI POST - Quiz] Fetching Groq completions. Key Preview: ${OPENROUTER_API_KEY ? `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-4)}` : 'undefined'}`);
+      const response = await fetchWithRetry("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${ZENMUX_API_KEY}`,
-          "Content-Type": "application/json"
+          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://chameleon-v3.vercel.app",
+          "X-Title": "Neuri AI"
         },
         body: JSON.stringify({
-          model: PRIMARY_AI_MODEL,
+          model: currentModel,
           messages: [
-            { 
-              role: "system", 
-              content: `You are Neuri AI. Output a JSON array of exactly ${numQuestions} Multiple Choice Questions (MCQs) in ${language} at a "${difficulty}" difficulty level.
-Schema: {"numb":number,"type":"Multiple Choice","question":"...","options":["...","...","...","..."],"answer":"...","explanation":"..."}.
-The "answer" field MUST match one of the four options exactly.
-Provide an informative "explanation" for why the answer is correct and why other options are incorrect.
-Output ONLY a raw JSON array. Do not include markdown code blocks, backticks, or any conversational text.` 
+            {
+              role: "system",
+              content: `Output JSON array of 5-10 MCQs in ${language}. Schema: {"numb":number,"type":"Multiple Choice","question":"...","options":["...","...","...","..."],"answer":"...","explanation":"..."}. answer MUST match 1 option exactly. No markdown, only raw JSON array.`
             },
-            { role: "user", content: `Context:\n${quizContext.slice(0, 12000)}\n\nGenerate the ${numQuestions} MCQs at "${difficulty}" difficulty.` }
+            { role: "user", content: `Context:\n${quizContext.slice(0, 10000)}\n\nGenerate MCQs.` }
           ],
-          temperature: 0.2
+          temperature: 0.1
         })
       });
 
@@ -327,9 +323,9 @@ Output ONLY a raw JSON array. Do not include markdown code blocks, backticks, or
         const cleaned = result.replace(/```json|```/g, '').trim();
         const parsed = JSON.parse(cleaned);
         const finalQuestions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
-        
+
         if (shouldCache && finalQuestions.length > 0) {
-          await setCachedAIResult(fileContent, cacheTaskKey, language, finalQuestions);
+          await setCachedAIResult(fileContent, task, language, finalQuestions);
         }
         return NextResponse.json({ result: finalQuestions });
       } catch (e) {
@@ -352,28 +348,17 @@ Output ONLY a raw JSON array. Do not include markdown code blocks, backticks, or
       if (task === 'summarize') {
         apiMessages.push({
           role: "user",
-          content: `You are an elite academic professor. Generate an exhaustive, high-density professional study guide based on the provided context.
-Ensure the summary is highly detailed, educational, and structured as follows:
-
-1. Executive Summary & Contextual Introduction
-   - A detailed overview of the subject matter, historical/practical context, and its significance.
+          content: `Generate a study guide. Include:
+1. Intro
 ---
-2. Deep-Dive Core Concepts & Theories
-   - Comprehensive, hierarchically organized explanations of all key terms, ideas, and theories mentioned. Use bold terms and bullet points. Include step-by-step breakdowns of complex processes.
+2. Core Concepts (hierarchical bullets)
 ---
-3. Technical Formulas, Equations & Data Tables
-   - Provide a complete reference table of all formulas, equations, and key data points. Use LaTeX ($$...$$) for isolated equations and $...$ for inline terms. Explain each variable clearly.
+3. Formulas & Tables
 ---
-4. Strategic Exam Preparation & Applied Practice
-   - High-yield exam tips, common student misconceptions, and potential exam-style conceptual questions with explanations.
+4. Exam Tips
 ---
-5. Key Takeaways & Synthesis
-   - A final synthesis of the material, outlining the main conclusions and broader applications.
-
-Important Guidelines:
-- You must separate the 5 sections with exactly "---" on its own line.
-- Do not summarize vaguely; include actual details, names, dates, rules, and mathematical relations.
-- Keep the writing highly professional, clear, and dense with educational value.`
+5. Takeaways
+Must use "---" between sections. Be concise, dense, educational.`
         });
       } else if (task === 'translate') {
         apiMessages.push({
@@ -384,17 +369,19 @@ Important Guidelines:
     }
 
     // Adaptive output token budgeting
-    const dynamicMaxTokens = fileContent.length <= 6000 ? 1500 : 2500;
+    const dynamicMaxTokens = fileContent.length <= 6000 ? 1200 : 1800;
 
-    console.log(`[AI POST - Summarize] Fetching ZenMux completions. Key Preview: ${ZENMUX_API_KEY ? `${ZENMUX_API_KEY.slice(0, 6)}...${ZENMUX_API_KEY.slice(-4)}` : 'undefined'}`);
-    const response = await fetchWithRetry(ZENMUX_API_URL, {
+    console.log(`[AI POST - Summarize] Fetching completions. Key Preview: ${OPENROUTER_API_KEY ? `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-4)}` : 'undefined'}`);
+    const response = await fetchWithRetry("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${ZENMUX_API_KEY}`,
-        "Content-Type": "application/json"
+        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://neuri.ai",
+        "X-Title": "Neuri AI"
       },
       body: JSON.stringify({
-        model: PRIMARY_AI_MODEL,
+        model: currentModel,
         messages: apiMessages,
         max_tokens: dynamicMaxTokens,
         temperature: 0.1,
@@ -423,11 +410,11 @@ Important Guidelines:
                 const parsed = JSON.parse(jsonStr);
                 const content = parsed.choices?.[0]?.delta?.content || '';
                 fullResponseText += content;
-              } catch (e) {}
+              } catch (e) { }
             }
           }
           if (fullResponseText.trim().length > 100) {
-            setCachedAIResult(fileContent, cacheTaskKey, language, fullResponseText);
+            setCachedAIResult(fileContent, task, language, fullResponseText);
           }
         } catch (cacheErr) {
           console.error('[AI Cache Stream Save Error]:', cacheErr);
