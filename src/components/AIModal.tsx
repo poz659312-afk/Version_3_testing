@@ -443,6 +443,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [activeTask, setActiveTask] = useState<string | null>(null);
   const [quizQuestions, setQuizQuestions] = useState<any[] | null>(null);
+  const [quizDifficulty, setQuizDifficulty] = useState("Medium");
+  const [quizNumQuestions, setQuizNumQuestions] = useState(10);
   const [showQuiz, setShowQuiz] = useState(false);
   const [sessionUser, setSessionUser] = useState<any | null>(null);
   
@@ -581,7 +583,9 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           fileId: file.id, 
           task, 
           language,
-          messages: newMessages 
+          messages: newMessages,
+          difficulty: quizDifficulty.toLowerCase(),
+          numQuestions: quizNumQuestions
         }),
       });
 
@@ -1410,10 +1414,43 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                       <h4 className={cn("text-xl sm:text-2xl font-black mb-2 sm:mb-3 tracking-tight", isDark ? "text-white/90" : "text-slate-900")}>
                         How can I help with this file?
                       </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mb-6 leading-relaxed font-medium">
+                      <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mb-4 leading-relaxed font-medium">
                         I've analyzed <span className="font-bold" style={{ color: activeClasses.accent }}>{file.name}</span>. 
                         Try one of these powerful actions to get started:
                       </p>
+
+                      {/* Quiz Configuration Settings */}
+                      <div className="flex gap-3 mb-5 w-full max-w-md">
+                        <div className="flex-1 flex flex-col gap-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Quiz Difficulty</span>
+                          <Select value={quizDifficulty} onValueChange={setQuizDifficulty}>
+                            <SelectTrigger className={cn("w-full h-9 text-xs rounded-xl focus:ring-0 focus:ring-transparent focus:ring-offset-0 transition-colors", isDark ? "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20" : "bg-black/5 border-black/10 hover:bg-black/10 hover:border-black/20")}>
+                              <SelectValue placeholder="Difficulty" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-background/95 backdrop-blur-xl border-border">
+                              <SelectItem value="Easy" className="text-xs">Easy</SelectItem>
+                              <SelectItem value="Medium" className="text-xs">Medium</SelectItem>
+                              <SelectItem value="Hard" className="text-xs">Hard</SelectItem>
+                              <SelectItem value="Expert" className="text-xs">Expert</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex-1 flex flex-col gap-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Quiz Questions</span>
+                          <Select value={String(quizNumQuestions)} onValueChange={(val) => setQuizNumQuestions(Number(val))}>
+                            <SelectTrigger className={cn("w-full h-9 text-xs rounded-xl focus:ring-0 focus:ring-transparent focus:ring-offset-0 transition-colors", isDark ? "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20" : "bg-black/5 border-black/10 hover:bg-black/10 hover:border-black/20")}>
+                              <SelectValue placeholder="Number of questions" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-background/95 backdrop-blur-xl border-border">
+                              <SelectItem value="5" className="text-xs">5 Questions</SelectItem>
+                              <SelectItem value="10" className="text-xs">10 Questions</SelectItem>
+                              <SelectItem value="15" className="text-xs">15 Questions</SelectItem>
+                              <SelectItem value="20" className="text-xs">20 Questions</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
                       
                       <div className="grid grid-cols-2 gap-3 w-full max-w-md">
                         <Button 
