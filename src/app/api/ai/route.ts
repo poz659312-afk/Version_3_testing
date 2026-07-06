@@ -6,12 +6,12 @@ import pdf from 'pdf-parse';
 import { getCachedAIResult, setCachedAIResult } from '@/lib/persistent-ai-cache';
 
 const pdfParse = pdf;
-const ZENMUX_API_KEY = process.env.ZENMUX_API_KEY || "sk-ai-v1-4f6c49c11caf0b84b2a96dc6db4803ff119981f776ada57de2211d5f2030767f";
+const ZENMUX_API_KEY = process.env.ZENMUX_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN || process.env.ANTHROPIC_API_KEY || "sk-ai-v1-4f6c49c11caf0b84b2a96dc6db4803ff119981f776ada57de2211d5f2030767f";
 const ZENMUX_API_URL = "https://zenmux.ai/api/v1/chat/completions";
 
 // Production scale high-reasoning models
-const PRIMARY_AI_MODEL = "anthropic/claude-sonnet-4.6";
-const FAST_CHAT_MODEL = "anthropic/claude-sonnet-4.6"; // Optimized for fast, short-form responses like chunk summarization
+const PRIMARY_AI_MODEL = "anthropic/claude-sonnet-5-free";
+const FAST_CHAT_MODEL = "anthropic/claude-sonnet-5-free"; // Optimized for fast, short-form responses like chunk summarization
 
 // Helper function to handle fetch retries with exponential backoff for high concurrency
 async function fetchWithRetry(url: string, options: any, retries = 3, delay = 1000) {
