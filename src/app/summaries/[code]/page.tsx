@@ -3,6 +3,7 @@ import { getServerStudentSession } from '@/lib/auth-server'
 import { getSummary } from '../actions'
 import SummaryRenderer from '@/components/SummaryRenderer'
 import SummaryLikesButton from './SummaryLikesButton'
+import SummaryShareButton from './SummaryShareButton'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -68,14 +69,17 @@ export default async function SummaryDetailPage({ params }: SummaryDetailPagePro
             </Link>
           </Button>
 
-          {isAdmin && (
-            <Button asChild className="bg-amber-600 hover:bg-amber-500 border border-amber-500/30 text-white rounded-xl font-bold flex items-center gap-2">
-              <Link href={`/summaries/console/${summary.code}`}>
-                <Edit2 className="w-4 h-4" />
-                Edit Summary
-              </Link>
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            <SummaryShareButton code={summary.code} title={summary.title} variant="icon" />
+            {isAdmin && (
+              <Button asChild className="bg-amber-600 hover:bg-amber-500 border border-amber-500/30 text-white rounded-xl font-bold flex items-center gap-2">
+                <Link href={`/summaries/console/${summary.code}`}>
+                  <Edit2 className="w-4 h-4" />
+                  Edit Summary
+                </Link>
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Article Header */}
@@ -121,15 +125,20 @@ export default async function SummaryDetailPage({ params }: SummaryDetailPagePro
           <SummaryRenderer content={summary.content} />
         </div>
 
-        {/* Like Section */}
         <div className="flex flex-col items-center justify-center gap-4 py-8 border-t border-white/10">
           <p className="text-gray-400 text-sm">Did you find this summary helpful? Show your support!</p>
-          <SummaryLikesButton
-            code={summary.code}
-            initialLikes={summary.likes_count}
-            initialLiked={summary.userLiked}
-            isLoggedIn={isLoggedIn}
-          />
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <SummaryLikesButton
+              code={summary.code}
+              initialLikes={summary.likes_count}
+              initialLiked={summary.userLiked}
+              isLoggedIn={isLoggedIn}
+            />
+            <SummaryShareButton
+              code={summary.code}
+              title={summary.title}
+            />
+          </div>
         </div>
       </div>
     </div>

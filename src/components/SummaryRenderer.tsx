@@ -158,6 +158,60 @@ export default function SummaryRenderer({ content, className }: SummaryRendererP
               {children}
             </a>
           ),
+          span: ({ children, style, className, ...props }) => {
+            let parsedStyle: React.CSSProperties = {}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const styleProp = style as any
+            if (typeof styleProp === 'string') {
+              const styleObj: Record<string, string> = {}
+              styleProp.split(';').forEach((rule: string) => {
+                const parts = rule.split(':')
+                if (parts.length >= 2) {
+                  const key = parts[0].trim()
+                  const val = parts.slice(1).join(':').trim()
+                  if (key && val) {
+                    const camelKey = key.replace(/-./g, (x: string) => x[1].toUpperCase())
+                    styleObj[camelKey] = val
+                  }
+                }
+              })
+              parsedStyle = styleObj as React.CSSProperties
+            } else if (style) {
+              parsedStyle = { ...style }
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const extraProps = props as Record<string, any>
+            const font = extraProps['data-font']
+            const size = extraProps['data-size']
+            const color = extraProps['data-color']
+
+            if (font === 'cairo') parsedStyle.fontFamily = 'Cairo, var(--font-cairo), sans-serif'
+            else if (font === 'outfit') parsedStyle.fontFamily = 'Outfit, var(--font-outfit), sans-serif'
+            else if (font === 'rubik') parsedStyle.fontFamily = 'Rubik, var(--font-rubik), sans-serif'
+            else if (font === 'noto') parsedStyle.fontFamily = 'Noto_Sans_Arabic, var(--font-noto-arabic), sans-serif'
+            else if (font === 'rock-salt') parsedStyle.fontFamily = 'Rock_Salt, var(--font-rock-salt), cursive'
+            else if (font === 'mono') parsedStyle.fontFamily = 'Roboto_Mono, var(--font-geist-mono), monospace'
+
+            if (size === 'sm') parsedStyle.fontSize = '12px'
+            else if (size === 'md') parsedStyle.fontSize = '20px'
+            else if (size === 'lg') parsedStyle.fontSize = '24px'
+            else if (size === 'xl') parsedStyle.fontSize = '32px'
+
+            if (color === 'violet') parsedStyle.color = '#c084fc'
+            else if (color === 'fuchsia') parsedStyle.color = '#f472b6'
+            else if (color === 'blue') parsedStyle.color = '#60a5fa'
+            else if (color === 'emerald') parsedStyle.color = '#34d399'
+            else if (color === 'gold') parsedStyle.color = '#fbbf24'
+            else if (color === 'red') parsedStyle.color = '#f87171'
+            else if (color && String(color).startsWith('#')) parsedStyle.color = String(color)
+
+            return (
+              <span className={className} style={parsedStyle}>
+                {children}
+              </span>
+            )
+          },
         }}
       >
         {content}
