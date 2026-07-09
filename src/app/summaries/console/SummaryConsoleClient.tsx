@@ -30,6 +30,7 @@ export default function SummaryConsoleClient({ initialData }: SummaryConsoleClie
   const [content, setContent] = useState(initialData?.content || '')
   const [isSaving, setIsSaving] = useState(false)
   const [activeTab, setActiveTab] = useState<'editor' | 'preview'>('editor')
+  const [editorDir, setEditorDir] = useState<'rtl' | 'ltr'>('rtl')
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -142,6 +143,31 @@ export default function SummaryConsoleClient({ initialData }: SummaryConsoleClie
     }
   }
 
+  // Handle Shift+Enter to insert soft break (<br />)
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && e.shiftKey) {
+      e.preventDefault()
+      const textarea = textareaRef.current
+      if (!textarea) return
+
+      const startPos = textarea.selectionStart
+      const endPos = textarea.selectionEnd
+      const insertStr = '<br />\n'
+      const newValue = 
+        textarea.value.substring(0, startPos) + 
+        insertStr + 
+        textarea.value.substring(endPos)
+
+      setContent(newValue)
+
+      setTimeout(() => {
+        textarea.focus()
+        const newCursorPos = startPos + insertStr.length
+        textarea.setSelectionRange(newCursorPos, newCursorPos)
+      }, 50)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Top Bar */}
@@ -205,6 +231,8 @@ export default function SummaryConsoleClient({ initialData }: SummaryConsoleClie
               textareaRef={textareaRef} 
               onChange={setContent} 
               onImageUploaded={handleImageUploaded}
+              editorDir={editorDir}
+              setEditorDir={setEditorDir}
             />
 
             {/* Mobile Tab Switcher */}
@@ -225,6 +253,8 @@ export default function SummaryConsoleClient({ initialData }: SummaryConsoleClie
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 onPaste={handlePaste}
+                onKeyDown={handleKeyDown}
+                dir={editorDir}
                 className={`w-full h-full min-h-[400px] p-4 bg-transparent text-gray-200 outline-none resize-none font-mono text-sm leading-relaxed ${activeTab !== 'editor' ? 'max-lg:hidden' : ''}`}
               />
 

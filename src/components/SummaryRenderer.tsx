@@ -5,8 +5,10 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import rehypeRaw from 'rehype-raw'
+import rehypeHighlight from 'rehype-highlight'
 import 'katex/dist/katex.min.css'
 import { cn } from '@/lib/utils'
+import MermaidRenderer from '@/components/MermaidRenderer'
 
 interface SummaryRendererProps {
   content: string
@@ -20,22 +22,35 @@ export default function SummaryRenderer({ content, className }: SummaryRendererP
         .katex-display {
           overflow-x: auto;
           overflow-y: hidden;
-          padding: 8px 0;
-          margin: 12px 0;
+          padding: 16px;
+          margin: 20px 0;
           background: rgba(255, 255, 255, 0.02);
-          border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+          text-align: center;
         }
         .katex {
-          font-size: 1.05em;
+          font-size: 1.08em;
         }
         .katex-html {
           overflow-x: auto;
         }
+        /* Code Syntax Highlighting Theme (One Dark Style) */
+        .hljs-keyword, .hljs-selector-tag, .hljs-doctag { color: #f472b6; font-weight: bold; } /* Pink */
+        .hljs-string, .hljs-type, .hljs-built_in { color: #a7f3d0; } /* Mint / Green */
+        .hljs-number, .hljs-literal, .hljs-symbol, .hljs-bullet { color: #fbbf24; } /* Amber Gold */
+        .hljs-comment, .hljs-quote { color: #6b7280; font-style: italic; } /* Gray */
+        .hljs-title, .hljs-title.function_, .hljs-section { color: #60a5fa; } /* Blue */
+        .hljs-params, .hljs-variable, .hljs-template-variable { color: #e2e8f0; } /* Light Slate */
+        .hljs-attr, .hljs-attribute { color: #fb7185; } /* Rose */
+        .hljs-tag, .hljs-name { color: #f472b6; } /* Pink tag names */
+        .hljs-emphasis { font-style: italic; }
+        .hljs-strong { font-weight: bold; }
       `}</style>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[[rehypeKatex, { strict: false }], rehypeRaw]}
+        rehypePlugins={[[rehypeKatex, { strict: false }], rehypeRaw, rehypeHighlight]}
         components={{
           h1: ({ children }) => (
             <h1 className="text-3xl font-black mt-8 mb-4 border-b border-white/10 pb-3 text-white tracking-tight leading-tight">
@@ -80,6 +95,12 @@ export default function SummaryRenderer({ content, className }: SummaryRendererP
           code: ({ children, className }) => {
             const match = /language-(\w+)/.exec(className || '')
             const isInline = !match
+            const language = match ? match[1] : ''
+
+            if (language === 'mermaid') {
+              return <MermaidRenderer chart={String(children)} />
+            }
+
             return isInline ? (
               <code className="font-mono bg-white/10 text-violet-300 px-1.5 py-0.5 rounded text-sm font-semibold">
                 {children}
@@ -127,14 +148,32 @@ export default function SummaryRenderer({ content, className }: SummaryRendererP
             const params = new URLSearchParams(hash)
             const width = params.get('w') || params.get('width') || '100%'
             const align = params.get('align') || 'center'
-            
+
+            if (align === 'left' || align === 'right') {
+              return (
+                <span className={cn(
+                  "block my-3 select-none",
+                  align === 'left' ? 'float-left mr-5 mb-2' : 'float-right ml-5 mb-2'
+                )}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src}
+                    alt={alt || 'Image'}
+                    className="rounded-xl max-h-[380px] object-contain border border-white/10 shadow-2xl transition-transform hover:scale-[1.01]"
+                    style={{ width: width !== '100%' ? width : undefined }}
+                  />
+                  {alt && <span className="block text-center text-xs text-gray-500 italic mt-1">{alt}</span>}
+                </span>
+              )
+            }
+
             const alignClass = 
               align === 'left' ? 'justify-start' : 
               align === 'right' ? 'justify-end' : 
               'justify-center'
 
             return (
-              <div className={cn("my-6 flex w-full gap-2", alignClass)}>
+              <div className={cn("my-6 flex w-full gap-2 clear-both", alignClass)}>
                 <div className="flex flex-col items-center max-w-full">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -211,6 +250,41 @@ export default function SummaryRenderer({ content, className }: SummaryRendererP
                 {children}
               </span>
             )
+          },
+          div: ({ children, style, className, ...props }) => {
+            let parsedStyle: React.CSSProperties = {}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const styleProp = style as any
+            if (typeof styleProp === 'string') {
+              const styleObj: Record<string, string> = {}
+              styleProp.split(';').forEach((rule: string) => {
+                const parts = rule.split(':')
+                if (parts.length >= 2) {
+                  const key = parts[0].trim()
+                  const val = parts.slice(1).join(':').trim()
+                  if (key && val) {
+                    const camelKey = key.replace(/-./g, (x: string) => x[1].toUpperCase())
+                    styleObj[camelKey] = val
+                  }
+                }
+              })
+              parsedStyle = styleObj as React.CSSProperties
+            } else if (style) {
+              parsedStyle = { ...style }
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const extraProps = props as Record<string, any>
+            const dir = extraProps['dir'] || undefined
+
+            return (
+              <div className={className} style={parsedStyle} dir={dir}>
+                {children}
+              </div>
+            )
+          },
+          u: ({ children }) => {
+            return <u className="underline decoration-violet-500/40 underline-offset-4">{children}</u>
           },
         }}
       >
