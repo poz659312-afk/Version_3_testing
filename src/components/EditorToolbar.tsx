@@ -293,7 +293,10 @@ export default function EditorToolbar({
           {fontFamilies.map((font, idx) => (
             <DropdownMenuItem
               key={idx}
-              onClick={() => insertText(`<span style="font-family: ${font.value}">`, '</span>', 'text')}
+              onSelect={(e) => {
+                e.preventDefault()
+                insertText(`<span style="font-family: ${font.value}">`, '</span>', 'text')
+              }}
               className="text-xs hover:bg-violet-600 focus:bg-violet-600 cursor-pointer"
             >
               {font.name}
@@ -319,7 +322,10 @@ export default function EditorToolbar({
           {fontSizes.map((size, idx) => (
             <DropdownMenuItem
               key={idx}
-              onClick={() => insertText(`<span style="font-size: ${size.value}">`, '</span>', 'text')}
+              onSelect={(e) => {
+                e.preventDefault()
+                insertText(`<span style="font-size: ${size.value}">`, '</span>', 'text')
+              }}
               className="text-xs hover:bg-violet-600 focus:bg-violet-600 cursor-pointer"
             >
               {size.name}
@@ -346,7 +352,8 @@ export default function EditorToolbar({
           {fontColors.map((color, idx) => (
             <DropdownMenuItem
               key={idx}
-              onClick={() => {
+              onSelect={(e) => {
+                e.preventDefault()
                 if (color.value) {
                   insertText(`<span style="color: ${color.value}">`, '</span>', 'colored text')
                 } else {
