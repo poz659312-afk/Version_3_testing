@@ -56,10 +56,24 @@ export default function EditorToolbar({
     const textarea = textareaRef.current
     if (!textarea) return
 
+    textarea.focus()
     const startPos = textarea.selectionStart
     const endPos = textarea.selectionEnd
     const selectedText = textarea.value.substring(startPos, endPos)
     const textToInsert = before + (selectedText || defaultValue) + after
+
+    // Use document.execCommand first for native undo/redo and focus preservation
+    try {
+      textarea.focus()
+      textarea.setSelectionRange(startPos, endPos)
+      const success = document.execCommand('insertText', false, textToInsert)
+      if (success) {
+        onChange(textarea.value)
+        return
+      }
+    } catch (e) {
+      console.warn('execCommand failed, falling back to manual replacement:', e)
+    }
 
     const newValue = 
       textarea.value.substring(0, startPos) + 
@@ -268,7 +282,10 @@ export default function EditorToolbar({
           type="button"
           size="icon"
           variant="ghost"
-          onClick={item.action}
+          onMouseDown={(e) => {
+            e.preventDefault()
+            item.action()
+          }}
           className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10 rounded-md"
           title={item.label}
         >
@@ -377,9 +394,12 @@ export default function EditorToolbar({
           type="button"
           size="icon"
           variant="ghost"
-          onClick={() => insertText('<div style="text-align: left">\n', '\n</div>', 'left align')}
+          onMouseDown={(e) => {
+            e.preventDefault()
+            insertText('<div style="text-align: left">', '</div>', 'left align')
+          }}
           className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10 rounded-md"
-          title="Align Left (Block)"
+          title="Align Left (Line)"
         >
           <AlignLeft className="w-4 h-4" />
         </Button>
@@ -387,9 +407,12 @@ export default function EditorToolbar({
           type="button"
           size="icon"
           variant="ghost"
-          onClick={() => insertText('<div style="text-align: center">\n', '\n</div>', 'center align')}
+          onMouseDown={(e) => {
+            e.preventDefault()
+            insertText('<div style="text-align: center">', '</div>', 'centered text')
+          }}
           className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10 rounded-md"
-          title="Align Center (Block)"
+          title="Align Center (Line)"
         >
           <AlignCenter className="w-4 h-4" />
         </Button>
@@ -397,9 +420,12 @@ export default function EditorToolbar({
           type="button"
           size="icon"
           variant="ghost"
-          onClick={() => insertText('<div style="text-align: right">\n', '\n</div>', 'right align')}
+          onMouseDown={(e) => {
+            e.preventDefault()
+            insertText('<div style="text-align: right">', '</div>', 'right align')
+          }}
           className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10 rounded-md"
-          title="Align Right (Block)"
+          title="Align Right (Line)"
         >
           <AlignRight className="w-4 h-4" />
         </Button>
@@ -407,9 +433,12 @@ export default function EditorToolbar({
           type="button"
           size="icon"
           variant="ghost"
-          onClick={() => insertText('<div style="text-align: justify">\n', '\n</div>', 'justified text')}
+          onMouseDown={(e) => {
+            e.preventDefault()
+            insertText('<div style="text-align: justify">', '</div>', 'justified text')
+          }}
           className="h-8 w-8 text-gray-400 hover:text-white hover:bg-white/10 rounded-md"
-          title="Align Justify (Block)"
+          title="Align Justify (Line)"
         >
           <AlignJustify className="w-4 h-4" />
         </Button>
@@ -423,7 +452,10 @@ export default function EditorToolbar({
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => setEditorDir(editorDir === 'rtl' ? 'ltr' : 'rtl')}
+            onMouseDown={(e) => {
+              e.preventDefault()
+              setEditorDir(editorDir === 'rtl' ? 'ltr' : 'rtl')
+            }}
             className="h-8 text-xs text-gray-400 hover:text-white hover:bg-white/10 px-2 rounded-md flex items-center gap-1.5 border border-white/5"
             title="Toggle Editor Typing Direction (RTL / LTR)"
           >
@@ -742,7 +774,8 @@ export default function EditorToolbar({
                   type="button"
                   size="sm"
                   variant="ghost"
-                  onClick={() => {
+                  onMouseDown={(e) => {
+                    e.preventDefault()
                     insertText(snippet.before, snippet.after, snippet.default)
                     setShowMathHelper(false)
                   }}
@@ -797,7 +830,8 @@ export default function EditorToolbar({
                   type="button"
                   size="sm"
                   variant="ghost"
-                  onClick={() => {
+                  onMouseDown={(e) => {
+                    e.preventDefault()
                     insertText(snippet.before, snippet.after, snippet.default)
                     setShowDiagramHelper(false)
                   }}
