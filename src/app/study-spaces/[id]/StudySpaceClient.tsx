@@ -30,7 +30,10 @@ import {
   Crown,
   Sparkles,
   Loader2,
-  Plus
+  Plus,
+  Shield,
+  ShieldOff,
+  Trash2
 } from 'lucide-react'
 import { 
   getRoomDetails, 
@@ -42,7 +45,8 @@ import {
   rejectMember,
   removeMember,
   updateRoomSettings,
-  deleteStudyRoom
+  deleteStudyRoom,
+  toggleMemberRole
 } from '../actions'
 
 interface StudySpaceClientProps {
@@ -88,6 +92,18 @@ export default function StudySpaceClient({
   const [selectedProfile, setSelectedProfile] = useState<any>(null)
   const [showProfileModal, setShowProfileModal] = useState(false)
 
+  // Confirmation dialog states
+  const [showRemoveDialog, setShowRemoveDialog] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [showPromoteDialog, setShowPromoteDialog] = useState(false)
+  const [pendingActionUser, setPendingActionUser] = useState<any>(null)
+  const [pendingPromoteRole, setPendingPromoteRole] = useState<'admin' | 'member'>('admin')
+  const [confirmDeleteText, setConfirmDeleteText] = useState('')
+
+  const currentMember = members.find((m: any) => m.user?.auth_id === currentUserId)
+  const isAdmin = currentMember?.role === 'admin'
+  const canManage = isOwner || isAdmin
+
   const handleApprove = async (userId: string) => {
     try {
       const res = await approveMember(roomId, userId)
@@ -117,7 +133,7 @@ export default function StudySpaceClient({
   }
 
   const handleRemoveMember = async (userId: string) => {
-    if (!confirm('Are you sure you want to remove this member from this space?')) return
+    setIsPending(true)
     try {
       const res = await removeMember(roomId, userId)
       if (res.success) {
@@ -128,6 +144,29 @@ export default function StudySpaceClient({
       }
     } catch (err) {
       toast.error('An error occurred.')
+    } finally {
+      setIsPending(false)
+      setShowRemoveDialog(false)
+      setPendingActionUser(null)
+    }
+  }
+
+  const handleToggleRole = async (userId: string, newRole: 'admin' | 'member') => {
+    setIsPending(true)
+    try {
+      const res = await toggleMemberRole(roomId, userId, newRole)
+      if (res.success) {
+        toast.success(newRole === 'admin' ? 'Member promoted to Admin!' : 'Admin demoted to Member.')
+        setMembers(prev => prev.map(m => m.user?.auth_id === userId ? { ...m, role: newRole } : m))
+      } else {
+        toast.error(res.error || 'Failed to update role')
+      }
+    } catch (err) {
+      toast.error('An error occurred.')
+    } finally {
+      setIsPending(false)
+      setShowPromoteDialog(false)
+      setPendingActionUser(null)
     }
   }
 
@@ -166,7 +205,6 @@ export default function StudySpaceClient({
   }
 
   const handleDeleteRoom = async () => {
-    if (!confirm('WARNING: Are you absolutely sure you want to delete this study space? This action is irreversible.')) return
     setIsPending(true)
     try {
       const res = await deleteStudyRoom(roomId)
@@ -180,6 +218,8 @@ export default function StudySpaceClient({
       toast.error('An error occurred.')
     } finally {
       setIsPending(false)
+      setShowDeleteDialog(false)
+      setConfirmDeleteText('')
     }
   }
 
@@ -399,25 +439,24 @@ export default function StudySpaceClient({
   }
 
   const handleLeaveRoom = () => {
-    if (!confirm('Are you sure you want to leave this study space?')) return
+    setShowLeaveDialog(true)
+  }
 
+  const performLeave = async () => {
     setIsPending(true)
-    const performLeave = async () => {
-      try {
-        const res = await leaveStudyRoom(roomId)
-        if (res.success) {
-          toast.success('Left the study space.')
-          router.push('/study-spaces')
-        } else {
-          toast.error(res.error || 'Failed to leave space')
-        }
-      } catch (err) {
-        toast.error('An error occurred while leaving space.')
-      } finally {
-        setIsPending(false)
+    try {
+      const res = await leaveStudyRoom(roomId)
+      if (res.success) {
+        toast.success('Left the study space.')
+        router.push('/study-spaces')
+      } else {
+        toast.error(res.error || 'Failed to leave space')
       }
+    } catch (err) {
+      toast.error('An error occurred while leaving space.')
+    } finally {
+      setIsPending(false)
     }
-    performLeave()
   }
 
   // Filter Q&A questions
@@ -808,24 +847,53 @@ export default function StudySpaceClient({
                                 {isCreator && (
                                   <Crown className="w-3.5 h-3.5 text-yellow-500 shrink-0" />
                                 )}
+                                {member.role === 'admin' && !isCreator && (
+                                  <Shield className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                                )}
                               </div>
                               <p className="text-[9px] text-muted-foreground line-clamp-1">{user.specialization}</p>
                               <p className="text-[9px] text-indigo-400 font-semibold">Level {user.current_level}</p>
                             </div>
 
-                            {/* KICK BUTTON FOR OWNER */}
-                            {isOwner && !isSelf && !isCreator && (
-                              <Button
-                                size="xs"
-                                variant="ghost"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleRemoveMember(user.auth_id)
-                                }}
-                                className="text-red-500 hover:text-red-650 hover:bg-red-500/10 h-8 w-8 p-0 rounded-md shrink-0 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                ✕
-                              </Button>
+                            {/* ACTION BUTTONS FOR OWNER/ADMIN */}
+                            {canManage && !isSelf && !isCreator && (
+                              <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {/* Promote/Demote - Owner Only */}
+                                {isOwner && (
+                                  <Button
+                                    size="xs"
+                                    variant="ghost"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setPendingActionUser(user)
+                                      setPendingPromoteRole(member.role === 'admin' ? 'member' : 'admin')
+                                      setShowPromoteDialog(true)
+                                    }}
+                                    className={`h-7 w-7 p-0 rounded-md cursor-pointer ${
+                                      member.role === 'admin' 
+                                        ? 'text-orange-400 hover:text-orange-500 hover:bg-orange-500/10' 
+                                        : 'text-blue-400 hover:text-blue-500 hover:bg-blue-500/10'
+                                    }`}
+                                    title={member.role === 'admin' ? 'Demote to Member' : 'Promote to Admin'}
+                                  >
+                                    {member.role === 'admin' ? <ShieldOff className="w-3.5 h-3.5" /> : <Shield className="w-3.5 h-3.5" />}
+                                  </Button>
+                                )}
+                                {/* Remove */}
+                                <Button
+                                  size="xs"
+                                  variant="ghost"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setPendingActionUser(user)
+                                    setShowRemoveDialog(true)
+                                  }}
+                                  className="text-red-500 hover:text-red-600 hover:bg-red-500/10 h-7 w-7 p-0 rounded-md cursor-pointer"
+                                  title="Remove Member"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
+                              </div>
                             )}
                           </div>
                         )
@@ -833,8 +901,8 @@ export default function StudySpaceClient({
                     </div>
                   </div>
 
-                  {/* Pending Requests Section for Owner */}
-                  {isOwner && members.some((m: any) => m.status === 'pending') && (
+                  {/* Pending Requests Section for Owner/Admin */}
+                  {canManage && members.some((m: any) => m.status === 'pending') && (
                     <div className="space-y-3 pt-4 border-t border-border">
                       <h3 className="text-xs font-bold uppercase tracking-wider text-yellow-500 flex items-center gap-1.5">
                         <AlertCircle className="w-4 h-4" />
@@ -905,7 +973,7 @@ export default function StudySpaceClient({
 
               {/* Tab 4: Settings Tab */}
               <TabsContent value="settings" className="flex-1 overflow-y-auto p-4 mt-0 focus-visible:outline-none">
-                {isOwner ? (
+                {canManage ? (
                   <form onSubmit={handleSaveSettings} className="space-y-4 max-w-md">
                     <div className="space-y-1.5">
                       <label htmlFor="settings-name" className="text-xs font-semibold text-muted-foreground">Space Name</label>
@@ -968,16 +1036,18 @@ export default function StudySpaceClient({
                         >
                           {isSavingSettings ? 'Saving...' : 'Save Settings'}
                         </Button>
-                        <Button 
-                          type="button"
-                          variant="destructive"
-                          onClick={handleDeleteRoom}
-                          disabled={isPending}
-                          size="sm"
-                          className="text-xs font-semibold cursor-pointer"
-                        >
-                          Delete Study Space
-                        </Button>
+                        {isOwner && (
+                          <Button 
+                            type="button"
+                            variant="destructive"
+                            onClick={() => setShowDeleteDialog(true)}
+                            disabled={isPending}
+                            size="sm"
+                            className="text-xs font-semibold cursor-pointer"
+                          >
+                            Delete Study Space
+                          </Button>
+                        )}
                       </div>
                       <Button 
                         type="button"
@@ -1078,11 +1148,11 @@ export default function StudySpaceClient({
             </Button>
             <Button 
               variant="destructive"
-              onClick={handleLeaveRoom}
+              onClick={performLeave}
               disabled={!confirmLeave || isPending}
               className="text-xs font-semibold cursor-pointer"
             >
-              Confirm & Leave
+              {isPending ? 'Leaving...' : 'Confirm & Leave'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1142,6 +1212,137 @@ export default function StudySpaceClient({
               </DialogFooter>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Remove Member Confirmation Dialog */}
+      <Dialog open={showRemoveDialog} onOpenChange={(open) => {
+        setShowRemoveDialog(open)
+        if (!open) setPendingActionUser(null)
+      }}>
+        <DialogContent className="bg-card border-border shadow-2xl max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2 text-red-500">
+              <Trash2 className="w-5 h-5" />
+              Remove Member
+            </DialogTitle>
+            <DialogDescription className="text-xs mt-1 text-muted-foreground">
+              Are you sure you want to remove <span className="font-bold text-foreground">{pendingActionUser?.username}</span> from this study space? They will need to rejoin.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 pt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowRemoveDialog(false)
+                setPendingActionUser(null)
+              }}
+              className="border-border hover:bg-muted text-xs cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={() => pendingActionUser && handleRemoveMember(pendingActionUser.auth_id)}
+              disabled={isPending}
+              className="text-xs font-semibold cursor-pointer"
+            >
+              {isPending ? 'Removing...' : 'Remove Member'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Study Space Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={(open) => {
+        setShowDeleteDialog(open)
+        if (!open) setConfirmDeleteText('')
+      }}>
+        <DialogContent className="bg-card border-border shadow-2xl max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2 text-red-500">
+              <AlertCircle className="w-5 h-5" />
+              Delete Study Space
+            </DialogTitle>
+            <DialogDescription className="text-xs mt-1 text-muted-foreground">
+              This action is <span className="font-bold text-red-400">irreversible</span>. All messages, challenges, and members data will be permanently deleted.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-3 space-y-2">
+            <label className="text-xs text-muted-foreground font-medium">
+              Type <span className="font-bold text-foreground">DELETE</span> to confirm:
+            </label>
+            <Input 
+              value={confirmDeleteText}
+              onChange={e => setConfirmDeleteText(e.target.value)}
+              placeholder="Type DELETE"
+              className="bg-muted/30 border-border text-xs"
+            />
+          </div>
+          <DialogFooter className="gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowDeleteDialog(false)
+                setConfirmDeleteText('')
+              }}
+              className="border-border hover:bg-muted text-xs cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={handleDeleteRoom}
+              disabled={confirmDeleteText !== 'DELETE' || isPending}
+              className="text-xs font-semibold cursor-pointer"
+            >
+              {isPending ? 'Deleting...' : 'Permanently Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Promote / Demote Confirmation Dialog */}
+      <Dialog open={showPromoteDialog} onOpenChange={(open) => {
+        setShowPromoteDialog(open)
+        if (!open) setPendingActionUser(null)
+      }}>
+        <DialogContent className="bg-card border-border shadow-2xl max-w-sm">
+          <DialogHeader>
+            <DialogTitle className={`text-lg font-bold flex items-center gap-2 ${pendingPromoteRole === 'admin' ? 'text-blue-400' : 'text-orange-400'}`}>
+              {pendingPromoteRole === 'admin' ? <Shield className="w-5 h-5" /> : <ShieldOff className="w-5 h-5" />}
+              {pendingPromoteRole === 'admin' ? 'Promote to Admin' : 'Demote to Member'}
+            </DialogTitle>
+            <DialogDescription className="text-xs mt-1 text-muted-foreground">
+              {pendingPromoteRole === 'admin' 
+                ? <>Are you sure you want to promote <span className="font-bold text-foreground">{pendingActionUser?.username}</span> to Admin? They will be able to manage members and space settings.</>
+                : <>Are you sure you want to demote <span className="font-bold text-foreground">{pendingActionUser?.username}</span> back to a regular Member?</>
+              }
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 pt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowPromoteDialog(false)
+                setPendingActionUser(null)
+              }}
+              className="border-border hover:bg-muted text-xs cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => pendingActionUser && handleToggleRole(pendingActionUser.auth_id, pendingPromoteRole)}
+              disabled={isPending}
+              className={`text-xs font-semibold cursor-pointer text-white ${
+                pendingPromoteRole === 'admin' 
+                  ? 'bg-blue-500 hover:bg-blue-600' 
+                  : 'bg-orange-500 hover:bg-orange-600'
+              }`}
+            >
+              {isPending ? 'Processing...' : pendingPromoteRole === 'admin' ? 'Promote to Admin' : 'Demote to Member'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

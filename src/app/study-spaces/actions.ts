@@ -377,9 +377,9 @@ export async function approveMember(roomId: string, userId: string) {
       .eq('user_id', session.auth_id)
       .single()
 
-    const isCreator = memberRole?.role === 'creator'
-    if (!isCreator && !session.is_super_admin) {
-      return { success: false, error: 'Unauthorized. Only the owner can manage access.' }
+    const isAdminOrCreator = memberRole?.role === 'creator' || memberRole?.role === 'admin'
+    if (!isAdminOrCreator && !session.is_super_admin) {
+      return { success: false, error: 'Unauthorized. Only the owner or admins can manage access.' }
     }
 
     const { error } = await supabase
@@ -415,9 +415,9 @@ export async function rejectMember(roomId: string, userId: string) {
       .eq('user_id', session.auth_id)
       .single()
 
-    const isCreator = memberRole?.role === 'creator'
-    if (!isCreator && !session.is_super_admin) {
-      return { success: false, error: 'Unauthorized. Only the owner can manage access.' }
+    const isAdminOrCreator = memberRole?.role === 'creator' || memberRole?.role === 'admin'
+    if (!isAdminOrCreator && !session.is_super_admin) {
+      return { success: false, error: 'Unauthorized. Only the owner or admins can manage access.' }
     }
 
     const { error } = await supabase
@@ -445,6 +445,43 @@ export async function removeMember(roomId: string, userId: string) {
 }
 
 /**
+ * Promote a member to admin or demote back to member.
+ */
+export async function toggleMemberRole(roomId: string, userId: string, newRole: 'admin' | 'member') {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+
+    // Guard: Only room creator can promote/demote
+    const { data: memberRole } = await supabase
+      .from('study_room_members')
+      .select('role')
+      .eq('room_id', roomId)
+      .eq('user_id', session.auth_id)
+      .single()
+
+    if (memberRole?.role !== 'creator' && !session.is_super_admin) {
+      return { success: false, error: 'Unauthorized. Only the owner can promote or demote members.' }
+    }
+
+    const { error } = await supabase
+      .from('study_room_members')
+      .update({ role: newRole })
+      .eq('room_id', roomId)
+      .eq('user_id', userId)
+
+    if (error) {
+      return { success: false, error: error.message }
+    }
+
+    revalidatePath(`/study-spaces/${roomId}`)
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'An unexpected error occurred.' }
+  }
+}
+
+/**
  * Update study space configuration settings.
  */
 export async function updateRoomSettings(
@@ -458,7 +495,7 @@ export async function updateRoomSettings(
     const session = await checkAuth()
     const supabase = await createServerClient()
 
-    // Guard: Only room creator or super admin can update settings
+    // Guard: Only room creator, admins, or super admin can update settings
     const { data: memberRole } = await supabase
       .from('study_room_members')
       .select('role')
@@ -466,9 +503,9 @@ export async function updateRoomSettings(
       .eq('user_id', session.auth_id)
       .single()
 
-    const isCreator = memberRole?.role === 'creator'
-    if (!isCreator && !session.is_super_admin) {
-      return { success: false, error: 'Unauthorized. Only the owner can update settings.' }
+    const isAdminOrCreator = memberRole?.role === 'creator' || memberRole?.role === 'admin'
+    if (!isAdminOrCreator && !session.is_super_admin) {
+      return { success: false, error: 'Unauthorized. Only the owner or admins can update settings.' }
     }
 
     const { error } = await supabase
