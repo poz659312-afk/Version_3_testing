@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, MessageSquare, Swords, HelpCircle, Users, BarChart3, TrendingUp, Calendar, AlertCircle } from 'lucide-react'
+import { ArrowLeft, MessageSquare, Swords, HelpCircle, Users, BarChart3, TrendingUp } from 'lucide-react'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar } from 'recharts'
 
 interface SpaceReportClientProps {
@@ -35,32 +35,31 @@ export default function SpaceReportClient({ roomName, roomId, reportData }: Spac
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-border">
-        <div className="flex items-center gap-3">
+      <div className="ss-mesh-hero relative overflow-hidden rounded-3xl border border-border/70 p-4 sm:p-6">
+        <div className="absolute -top-20 right-0 h-56 w-56 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex items-start gap-3">
           <Button 
             variant="outline" 
             size="icon" 
             onClick={() => router.push(`/study-spaces/${roomId}`)}
-            className="border-border hover:bg-muted cursor-pointer shrink-0"
+            className="border-border/80 hover:bg-muted cursor-pointer shrink-0 h-9 w-9"
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-foreground">{roomName}</h1>
-              <Badge variant="outline" className="text-[9px] py-0 h-4 border-emerald-500/20 bg-emerald-500/5 text-emerald-400 font-semibold">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">{roomName}</h1>
+              <Badge variant="outline" className="text-[10px] py-0 h-5 border-emerald-500/20 bg-emerald-500/5 text-emerald-400 font-semibold">
                 Activity Report
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">Statistical insights, member activity, and learning charts.</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">Statistical insights, member activity, and learning charts.</p>
           </div>
         </div>
       </div>
 
-      {/* Grid of Key Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-card border-border shadow-md">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <Card className="ss-glass-card ss-stat-blue rounded-2xl">
           <CardHeader className="pb-2">
             <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5 text-blue-450" />
@@ -70,7 +69,7 @@ export default function SpaceReportClient({ roomName, roomId, reportData }: Spac
           </CardHeader>
         </Card>
 
-        <Card className="bg-card border-border shadow-md">
+        <Card className="ss-glass-card ss-stat-indigo rounded-2xl">
           <CardHeader className="pb-2">
             <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1.5">
               <MessageSquare className="w-3.5 h-3.5 text-indigo-405" />
@@ -80,7 +79,7 @@ export default function SpaceReportClient({ roomName, roomId, reportData }: Spac
           </CardHeader>
         </Card>
 
-        <Card className="bg-card border-border shadow-md">
+        <Card className="ss-glass-card ss-stat-amber rounded-2xl">
           <CardHeader className="pb-2">
             <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1.5">
               <HelpCircle className="w-3.5 h-3.5 text-amber-450" />
@@ -90,7 +89,7 @@ export default function SpaceReportClient({ roomName, roomId, reportData }: Spac
           </CardHeader>
         </Card>
 
-        <Card className="bg-card border-border shadow-md">
+        <Card className="ss-glass-card ss-stat-rose rounded-2xl">
           <CardHeader className="pb-2">
             <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1.5">
               <Swords className="w-3.5 h-3.5 text-rose-455" />
@@ -101,10 +100,8 @@ export default function SpaceReportClient({ roomName, roomId, reportData }: Spac
         </Card>
       </div>
 
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Activity Timeline Chart */}
-        <Card className="lg:col-span-8 bg-card border-border shadow-md">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 sm:gap-6">
+        <Card className="xl:col-span-8 ss-glass-card rounded-2xl">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-bold flex items-center gap-1.5">
               <TrendingUp className="w-4 h-4 text-emerald-450" />
@@ -112,7 +109,7 @@ export default function SpaceReportClient({ roomName, roomId, reportData }: Spac
             </CardTitle>
             <CardDescription className="text-[10px]">Comparative trend analysis of messages, Q&A, and battles.</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px] pt-4">
+          <CardContent className="h-[280px] sm:h-[320px] pt-4">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
@@ -142,8 +139,7 @@ export default function SpaceReportClient({ roomName, roomId, reportData }: Spac
           </CardContent>
         </Card>
 
-        {/* Member Enrollment Chart */}
-        <Card className="lg:col-span-4 bg-card border-border shadow-md">
+        <Card className="xl:col-span-4 ss-glass-card rounded-2xl">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-bold flex items-center gap-1.5">
               <BarChart3 className="w-4 h-4 text-blue-450" />
@@ -151,7 +147,7 @@ export default function SpaceReportClient({ roomName, roomId, reportData }: Spac
             </CardTitle>
             <CardDescription className="text-[10px]">Enrollment status breakdown inside the space.</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px] pt-4 flex flex-col justify-between">
+          <CardContent className="h-[280px] sm:h-[320px] pt-4 flex flex-col justify-between">
             <div className="flex-1 min-h-[180px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={[
@@ -183,9 +179,8 @@ export default function SpaceReportClient({ roomName, roomId, reportData }: Spac
         </Card>
       </div>
 
-      {/* Activity Timeline logs */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-card border-border shadow-md">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 sm:gap-6">
+        <Card className="ss-glass-card rounded-2xl">
           <CardHeader className="pb-2 border-b border-border">
             <CardTitle className="text-sm font-bold flex items-center gap-1.5">
               <MessageSquare className="w-4 h-4 text-indigo-405" />
@@ -198,7 +193,7 @@ export default function SpaceReportClient({ roomName, roomId, reportData }: Spac
               <p className="text-xs text-muted-foreground py-6 text-center">No recent messages.</p>
             ) : (
               recentActivity.messages.map((m: any, idx: number) => (
-                <div key={idx} className="flex justify-between gap-4 text-xs">
+                <div key={idx} className="ss-timeline-item flex justify-between gap-4 text-xs">
                   <div className="space-y-0.5">
                     <span className="font-bold text-foreground">{m.user?.username || 'Student'}</span>
                     <p className="text-muted-foreground leading-normal">{m.content}</p>
@@ -212,7 +207,7 @@ export default function SpaceReportClient({ roomName, roomId, reportData }: Spac
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border shadow-md">
+        <Card className="ss-glass-card rounded-2xl">
           <CardHeader className="pb-2 border-b border-border">
             <CardTitle className="text-sm font-bold flex items-center gap-1.5">
               <Swords className="w-4 h-4 text-rose-455" />
@@ -225,7 +220,7 @@ export default function SpaceReportClient({ roomName, roomId, reportData }: Spac
               <p className="text-xs text-muted-foreground py-6 text-center">No recent challenges.</p>
             ) : (
               recentActivity.challenges.map((c: any, idx: number) => (
-                <div key={idx} className="flex items-center justify-between gap-4 text-xs">
+                <div key={idx} className="ss-timeline-item flex items-center justify-between gap-4 text-xs">
                   <div className="space-y-0.5">
                     <span className="font-bold text-foreground">Quiz Code: {c.quiz_code}</span>
                     <p className="text-[10px] text-muted-foreground">Status: <Badge variant="secondary" className="text-[8px] py-0 px-1 font-semibold">{c.status}</Badge></p>

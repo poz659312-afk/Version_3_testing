@@ -50,7 +50,7 @@ export default async function StudySpacesPage() {
   const initialRooms = await getRoomsList()
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
+    <div className="container mx-auto py-6 sm:py-8 px-3 sm:px-4 max-w-7xl">
       <StudySpacesDirectoryClient 
         initialRooms={initialRooms} 
         userSpecialization={session.specialization || 'General'} 

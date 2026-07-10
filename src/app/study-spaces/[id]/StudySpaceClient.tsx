@@ -12,7 +12,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Users, 
   MessageSquare, 
@@ -470,25 +469,26 @@ export default function StudySpaceClient({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-border">
-        <div className="flex items-center gap-3">
+      <div className="ss-mesh-hero relative overflow-hidden rounded-3xl border border-border/70 p-4 sm:p-6">
+        <div className="absolute -top-20 right-0 h-56 w-56 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-center justify-between">
+          <div className="flex items-start gap-3">
           <Button 
             variant="outline" 
             size="icon" 
             onClick={() => router.push('/study-spaces')}
-            className="border-border hover:bg-muted cursor-pointer shrink-0"
+            className="border-border/80 hover:bg-muted cursor-pointer shrink-0 h-9 w-9"
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-foreground">{room.name}</h1>
-              <Badge variant="outline" className="text-[9px] py-0 h-4 border-primary/20 bg-primary/5 text-primary">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">{room.name}</h1>
+              <Badge variant="outline" className="text-[10px] py-0 h-5 border-primary/20 bg-primary/5 text-primary">
                 Level {room.level_num}
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground mt-0.5">{room.description || 'Collaborative study space.'}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">{room.description || 'Collaborative study space.'}</p>
           </div>
         </div>
         
@@ -497,19 +497,18 @@ export default function StudySpaceClient({
             variant="outline"
             size="sm"
             onClick={() => router.push(`/study-spaces/${roomId}/report`)}
-            className="border-border hover:bg-muted text-xs cursor-pointer flex items-center gap-1.5"
+            className="border-border hover:bg-muted text-xs h-9 cursor-pointer flex items-center gap-1.5"
           >
             <Award className="w-3.5 h-3.5 text-primary" />
             Space Report
           </Button>
         </div>
       </div>
+      </div>
 
-      {/* Main Study Space Layout Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[70vh]">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 sm:gap-6">
         
-        {/* LEFT COMPONENT: Live Chat & Q&A Board (lg:col-span-5) */}
-        <Card className="lg:col-span-5 bg-card border-border shadow-md flex flex-col justify-between overflow-hidden h-[75vh]">
+        <Card className="xl:col-span-5 ss-glass-card rounded-2xl flex flex-col justify-between overflow-hidden min-h-[440px] sm:min-h-[560px] xl:h-[75vh]">
           <CardHeader className="pb-2 border-b border-border flex flex-row items-center justify-between shrink-0">
             <div>
               <CardTitle className="text-sm font-bold flex items-center gap-1.5">
@@ -540,7 +539,7 @@ export default function StudySpaceClient({
           </CardHeader>
           
           {/* Messages Feed */}
-          <CardContent className="flex-1 overflow-y-auto p-4 space-y-3">
+          <CardContent className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
             {displayedMessages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-10">
                 <HelpCircle className="w-10 h-10 text-muted-foreground/30 mb-2" />
@@ -556,7 +555,7 @@ export default function StudySpaceClient({
                 return (
                   <div 
                     key={msg.id} 
-                    className={`flex gap-2 items-start max-w-[90%] ${isSelf ? 'flex-row-reverse self-end ml-auto' : 'self-start mr-auto'}`}
+                    className={`ss-msg-enter flex gap-2 items-start max-w-[95%] sm:max-w-[90%] ${isSelf ? 'flex-row-reverse self-end ml-auto' : 'self-start mr-auto'}`}
                   >
                     {/* User profile image/avatar */}
                     <div className="w-7 h-7 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0 mt-1" title={msg.user?.username || 'Student'}>
@@ -599,7 +598,7 @@ export default function StudySpaceClient({
           </CardContent>
           
           {/* Chat Form */}
-          <form onSubmit={handleSendMessage} className="p-3 border-t border-border bg-muted/20 shrink-0">
+          <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-border bg-muted/20 shrink-0">
             <div className="flex gap-2 items-center">
               <Input 
                 placeholder={isQuestionInput ? "Type your study question..." : "Send a message..."}
@@ -631,11 +630,10 @@ export default function StudySpaceClient({
           </form>
         </Card>
 
-        {/* CENTER COMPONENT: Collaborative Workspaces (lg:col-span-7) */}
-        <Card className="lg:col-span-7 bg-card border-border shadow-md flex flex-col justify-between h-[75vh]">
+        <Card className="xl:col-span-7 ss-glass-card rounded-2xl flex flex-col justify-between min-h-[440px] sm:min-h-[560px] xl:h-[75vh]">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col">
             <CardHeader className="pb-2 border-b border-border shrink-0">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3">
                 <div>
                   <CardTitle className="text-sm font-bold flex items-center gap-1.5">
                     <BookOpen className="w-4 h-4 text-primary" />
@@ -643,24 +641,26 @@ export default function StudySpaceClient({
                   </CardTitle>
                   <CardDescription className="text-[10px]">Notes scratchpad, quiz battles, and member moderation.</CardDescription>
                 </div>
-                <TabsList className="bg-muted/50 border border-border p-0.5 rounded-lg h-8">
-                  <TabsTrigger value="notes" className="text-xs h-7 rounded-md data-[state=active]:bg-card">
+                <div className="overflow-x-auto no-scrollbar">
+                  <TabsList className="inline-flex min-w-max bg-muted/50 border border-border p-0.5 rounded-lg h-8">
+                  <TabsTrigger value="notes" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3">
                     Scratchpad
                   </TabsTrigger>
-                  <TabsTrigger value="quizzes" className="text-xs h-7 rounded-md data-[state=active]:bg-card">
+                  <TabsTrigger value="quizzes" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3">
                     Quiz Battles
                   </TabsTrigger>
-                  <TabsTrigger value="members" className="text-xs h-7 rounded-md data-[state=active]:bg-card">
+                  <TabsTrigger value="members" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3">
                     Members ({members.filter((m: any) => m.status === 'approved').length})
                   </TabsTrigger>
-                  <TabsTrigger value="settings" className="text-xs h-7 rounded-md data-[state=active]:bg-card">
+                  <TabsTrigger value="settings" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3">
                     Settings
                   </TabsTrigger>
                 </TabsList>
+                </div>
               </div>
             </CardHeader>
             
-            <CardContent className="flex-1 overflow-y-auto p-4">
+            <CardContent className="flex-1 overflow-y-auto p-3 sm:p-4">
               {/* Tab 1: Live Scratchpad */}
               <TabsContent value="notes" className="h-full mt-0 focus-visible:outline-none flex flex-col">
                 <div className="flex items-center justify-between pb-2 mb-2 border-b border-border shrink-0">

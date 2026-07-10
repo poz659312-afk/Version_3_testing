@@ -141,7 +141,7 @@ export default async function StudySpacePage({ params }: SpacePageProps) {
     }
 
     return (
-      <div className="container mx-auto py-6 px-4 max-w-7xl">
+      <div className="container mx-auto py-4 sm:py-6 px-3 sm:px-4 max-w-7xl">
         <StudySpaceClient 
           initialDetails={details} 
           roomId={params.id}

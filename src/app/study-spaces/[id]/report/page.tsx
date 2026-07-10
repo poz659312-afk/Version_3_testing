@@ -47,7 +47,7 @@ export default async function SpaceReportPage({ params }: SpaceReportPageProps) 
   }
 
   return (
-    <div className="container mx-auto py-6 px-4 max-w-5xl">
+    <div className="container mx-auto py-4 sm:py-6 px-3 sm:px-4 max-w-6xl">
       <SpaceReportClient 
         roomName={details.room.name} 
         roomId={params.id} 

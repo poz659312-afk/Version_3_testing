@@ -13,7 +13,6 @@ import {
   Users, 
   Plus, 
   Search, 
-  MessageSquare, 
   BookOpen, 
   Sparkles,
   ArrowRight,
@@ -56,6 +55,8 @@ export default function StudySpacesDirectoryClient({
     (room.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
     (room.description && room.description.toLowerCase().includes(searchQuery.toLowerCase()))
   )
+  const joinedRoomsCount = rooms.filter((room) => room.joinStatus === 'approved').length
+  const pendingRoomsCount = rooms.filter((room) => room.joinStatus === 'pending').length
 
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -124,33 +125,31 @@ export default function StudySpacesDirectoryClient({
 
   return (
     <div className="space-y-8 premium-container">
-      {/* Hero Banner */}
-      <div className="relative p-6 md:p-8 rounded-2xl bg-gradient-to-br from-card to-muted border border-border shadow-lg overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Badge className="bg-primary/20 text-primary border-primary/30 flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-primary animate-pulse" />
-                Collaborative Learning
+      <section className="ss-mesh-hero relative overflow-hidden rounded-3xl border border-border/70 p-5 sm:p-7 lg:p-9 shadow-xl">
+        <div className="absolute -top-24 right-0 h-64 w-64 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-28 left-0 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col gap-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-3">
+              <Badge className="w-fit bg-primary/10 text-primary border-primary/25 flex items-center gap-1.5 px-3 py-1 text-[11px]">
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+                Collaborative Learning Hub
               </Badge>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-foreground">Study Teams & Spaces</h1>
+              <p className="text-muted-foreground text-sm sm:text-base max-w-2xl leading-relaxed">
+                Browse, join, or create study spaces to collaborate on summaries, chat with peers, and solve quizzes together.
+              </p>
             </div>
-            <h1 className="text-3xl font-extrabold text-foreground tracking-tight">Study Teams & Spaces</h1>
-            <p className="text-muted-foreground text-sm max-w-xl leading-relaxed">
-              Browse, join, or create study spaces to collaborate on summaries, chat with peers, and solve quizzes together.
-            </p>
-          </div>
-          
-          {/* Create Room Button Trigger */}
-          {isAdmin && (
-            <Dialog open={openCreate} onOpenChange={setOpenCreate}>
-              <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-primary to-secondary text-white font-semibold shadow-lg hover:shadow-primary/20 transition-all cursor-pointer">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Study Space
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-card border-border shadow-2xl">
+
+            {isAdmin && (
+              <Dialog open={openCreate} onOpenChange={setOpenCreate}>
+                <DialogTrigger asChild>
+                  <Button className="ss-btn-shimmer text-white font-semibold shadow-lg hover:shadow-primary/20 transition-all cursor-pointer h-10 sm:h-11 px-4 sm:px-5">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Study Space
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-card border-border shadow-2xl">
                 <form onSubmit={handleCreateRoom}>
                   <DialogHeader>
                     <DialogTitle className="text-lg font-bold">Create a Study Space</DialogTitle>
@@ -238,36 +237,66 @@ export default function StudySpacesDirectoryClient({
                     </Button>
                   </DialogFooter>
                 </form>
-              </DialogContent>
-            </Dialog>
-          )}
-        </div>
-      </div>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
 
-      {/* Search and Filters */}
-      <div className="flex items-center gap-3 bg-muted/20 p-3 rounded-xl border border-border">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search study spaces by name or description..." 
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            className="pl-9 bg-card border-border text-sm"
-          />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Card className="ss-glass-card rounded-2xl">
+              <CardContent className="p-4 sm:p-5">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Matched Spaces</p>
+                <p className="text-2xl font-black text-foreground mt-1">{filteredRooms.length}</p>
+              </CardContent>
+            </Card>
+            <Card className="ss-glass-card rounded-2xl">
+              <CardContent className="p-4 sm:p-5">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Joined by You</p>
+                <p className="text-2xl font-black text-foreground mt-1">{joinedRoomsCount}</p>
+              </CardContent>
+            </Card>
+            <Card className="ss-glass-card rounded-2xl">
+              <CardContent className="p-4 sm:p-5">
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Pending Requests</p>
+                <p className="text-2xl font-black text-foreground mt-1">{pendingRoomsCount}</p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Rooms Grid */}
+      <section className="rounded-2xl border border-border/70 bg-card/60 backdrop-blur-sm p-3 sm:p-4">
+        <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-center">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search study spaces by name or description..." 
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="pl-9 bg-background/80 border-border text-sm h-10"
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="outline" className="text-[11px] h-7 px-2.5 border-border bg-muted/40">
+              {userSpecialization}
+            </Badge>
+            <Badge variant="outline" className="text-[11px] h-7 px-2.5 border-border bg-muted/40">
+              Level {userLevel}
+            </Badge>
+          </div>
+        </div>
+      </section>
+
       {filteredRooms.length === 0 ? (
-        <Card className="bg-card border-border shadow-md py-20 flex flex-col items-center justify-center text-center">
+        <Card className="bg-card border-border shadow-md py-16 sm:py-20 flex flex-col items-center justify-center text-center rounded-2xl">
           <BookOpen className="w-12 h-12 text-muted-foreground/40 mb-4" />
-          <CardTitle className="text-lg font-bold text-foreground">No Study Spaces Found</CardTitle>
-          <CardDescription className="text-xs text-muted-foreground max-w-sm mt-1">
+          <CardTitle className="text-lg sm:text-xl font-bold text-foreground">No Study Spaces Found</CardTitle>
+          <CardDescription className="text-xs sm:text-sm text-muted-foreground max-w-sm mt-1">
             There are no active study spaces matching your search. Create the first space to study with your classmates!
           </CardDescription>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
           {filteredRooms.map((room, index) => (
             <motion.div
               key={room.id}
@@ -275,7 +304,7 @@ export default function StudySpacesDirectoryClient({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
             >
-              <Card className="bg-card border-border shadow-md hover:border-primary/30 transition-all duration-300 h-full flex flex-col justify-between group">
+              <Card className="ss-glass-card rounded-2xl h-full flex flex-col justify-between group">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-4">
                     <CardTitle className="text-base font-bold group-hover:text-primary transition-colors line-clamp-1">
@@ -312,7 +341,7 @@ export default function StudySpacesDirectoryClient({
                     )}
                   </div>
                 </CardContent>
-                <CardFooter className="pt-3 border-t border-border flex items-center justify-between">
+                <CardFooter className="pt-3 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>
                     Created {new Date(room.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </span>
@@ -321,7 +350,7 @@ export default function StudySpacesDirectoryClient({
                     variant={room.joinStatus === 'approved' ? "outline" : (room.joinStatus === 'pending' ? "secondary" : "default")}
                     disabled={isPending}
                     onClick={() => handleJoinRoom(room.id, room.name, room.isJoined, room.joinStatus)}
-                    className="h-8 text-xs font-semibold cursor-pointer border-border hover:bg-muted group/btn"
+                    className="h-8 w-full sm:w-auto text-xs font-semibold cursor-pointer border-border hover:bg-muted group/btn"
                   >
                     {room.joinStatus === 'approved' ? (
                       <>
