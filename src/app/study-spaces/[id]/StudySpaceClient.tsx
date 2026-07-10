@@ -415,6 +415,11 @@ export default function StudySpaceClient({
   }
 
   const handleLaunchChallenge = async () => {
+    if (availableQuizzes.length === 0) {
+      toast.error('No quizzes are available for this space right now.')
+      return
+    }
+
     if (!selectedQuizCode) {
       toast.error('Please select a quiz')
       return
@@ -462,6 +467,12 @@ export default function StudySpaceClient({
   const displayedMessages = chatTab === 'all' 
     ? messages 
     : messages.filter((m: any) => m.is_question)
+
+  useEffect(() => {
+    if (openChallenge && !selectedQuizCode && availableQuizzes.length > 0) {
+      setSelectedQuizCode(availableQuizzes[0].code)
+    }
+  }, [openChallenge, selectedQuizCode, availableQuizzes])
 
   if (!mounted) {
     return <div className="min-h-screen bg-background" />
@@ -712,7 +723,11 @@ export default function StudySpaceClient({
                     {/* Launch Quiz Battle dialog */}
                     <Dialog open={openChallenge} onOpenChange={setOpenChallenge}>
                       <DialogTrigger asChild>
-                        <Button size="xs" className="h-6 text-[10px] bg-rose-500 text-white hover:bg-rose-600 font-semibold cursor-pointer">
+                        <Button
+                          size="xs"
+                          disabled={availableQuizzes.length === 0}
+                          className="h-6 text-[10px] bg-rose-500 text-white hover:bg-rose-600 font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
                           <Plus className="w-3 h-3 mr-1" />
                           Start Challenge
                         </Button>
@@ -757,7 +772,7 @@ export default function StudySpaceClient({
                           </Button>
                           <Button 
                             onClick={handleLaunchChallenge}
-                            disabled={isPending}
+                            disabled={isPending || availableQuizzes.length === 0 || !selectedQuizCode}
                             className="bg-rose-500 text-white hover:bg-rose-600 font-semibold text-sm cursor-pointer"
                           >
                             {isPending ? (

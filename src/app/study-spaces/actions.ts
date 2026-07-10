@@ -3,6 +3,7 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { getServerStudentSession } from '@/lib/auth-server'
 import { revalidatePath } from 'next/cache'
+import { resolveDepartmentKey } from '@/lib/department-data-accessor'
 
 /**
  * Helper to validate user session.
@@ -11,6 +12,19 @@ async function checkAuth() {
   const session = await getServerStudentSession()
   if (!session || session.is_banned) {
     throw new Error('Unauthorized. Please log in.')
+  }
+
+  function buildDepartmentSlugCandidates(specialization: string): string[] {
+    const raw = specialization.trim().toLowerCase()
+    if (!raw) return []
+
+    const slugified = raw
+      .replace(/&/g, 'and')
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+
+    return Array.from(new Set([raw, slugified]))
   }
   return session
 }
@@ -140,11 +154,21 @@ export async function getRoomDetails(roomId: string) {
   // 5. Fetch available quizzes for the room's level and specialization to allow starting challenges
   let quizzes: any[] = []
   if (room) {
-    const { data: quizzesData, error: quizzesError } = await supabase
+    const specCandidates = buildDepartmentSlugCandidates(room.specialization || '')
+    const resolvedSpec = specCandidates.length > 0
+      ? await resolveDepartmentKey(specCandidates[0])
+      : null
+    const allCandidates = Array.from(new Set([...(resolvedSpec ? [resolvedSpec] : []), ...specCandidates]))
+
+    const query = supabase
       .from('quiz_department')
       .select('code, name, questions_count')
-      .eq('department_slug', room.specialization)
       .eq('level_num', room.level_num)
+
+    const { data: quizzesData, error: quizzesError } =
+      allCandidates.length > 0
+        ? await query.in('department_slug', allCandidates)
+        : await query
 
     if (quizzesError) {
       console.error('Failed to fetch quizzes:', quizzesError)
@@ -343,12 +367,38 @@ export async function updateScratchpad(roomId: string, content: string) {
 export async function startQuizChallenge(roomId: string, quizCode: string) {
   const session = await checkAuth()
   const supabase = await createServerClient()
+  const cleanQuizCode = quizCode.trim()
+
+  if (!cleanQuizCode) {
+    return { success: false, error: 'Please select a quiz before starting a challenge.' }
+  }
+
+  const { data: memberRow, error: memberError } = await supabase
+    .from('study_room_members')
+    .select('status')
+    .eq('room_id', roomId)
+    .eq('user_id', session.auth_id)
+    .single()
+
+  if (memberError || memberRow?.status !== 'approved') {
+    return { success: false, error: 'Only approved members can launch quiz battles.' }
+  }
+
+  const { data: quizRow, error: quizError } = await supabase
+    .from('quiz_department')
+    .select('code')
+    .eq('code', cleanQuizCode)
+    .single()
+
+  if (quizError || !quizRow) {
+    return { success: false, error: 'Selected quiz was not found. Please choose another quiz.' }
+  }
 
   const { error } = await supabase
     .from('study_room_challenges')
     .insert({
       room_id: roomId,
-      quiz_code: quizCode,
+      quiz_code: cleanQuizCode,
       status: 'pending',
       started_by: session.auth_id
     })
