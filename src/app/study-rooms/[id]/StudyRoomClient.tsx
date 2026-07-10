@@ -29,7 +29,8 @@ import {
   AlertCircle,
   Crown,
   Sparkles,
-  Loader2
+  Loader2,
+  Plus
 } from 'lucide-react'
 import { 
   getRoomDetails, 
