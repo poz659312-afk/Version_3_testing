@@ -12,7 +12,7 @@ const Grainient = dynamic(() => import("./Grainient"), { ssr: false })
 
 const pacifico = Pacifico({
   subsets: ["latin"],
-  weight: ["400"],
+  weight: ["360"],
   variable: "--font-pacifico",
   display: "swap",
 })
