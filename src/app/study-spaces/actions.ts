@@ -66,6 +66,20 @@ export async function getRoomsList() {
   })
 }
 
+// normalize specialization -> candidate slugs (keeps raw + slugified)
+function buildDepartmentSlugCandidates(specialization: string): string[] {
+  const raw = (specialization || '').trim().toLowerCase()
+  if (!raw) return []
+
+  const slugified = raw
+    .replace(/&/g, 'and')
+    .replace(/[^\w\s-]/g, '')   // remove punctuation
+    .replace(/\s+/g, '-')       // spaces -> hyphens
+    .replace(/-+/g, '-')        // collapse multiple hyphens
+
+  return Array.from(new Set([raw, slugified]))
+}
+
 /**
  * Get full details of a specific study space.
  */
@@ -129,6 +143,7 @@ export async function getRoomDetails(roomId: string) {
     console.error('Failed to fetch messages:', messagesError)
   }
 
+  
   // 4. Fetch Active & Pending Room Challenges
   const { data: challenges, error: challengesError } = await supabase
     .from('study_room_challenges')
