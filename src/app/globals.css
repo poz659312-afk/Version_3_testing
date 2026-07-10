@@ -1459,4 +1459,130 @@ html.lenis-stopped body {
   backdrop-filter: blur(12px) !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   Study Spaces — Premium UI System
+   ═══════════════════════════════════════════════════════════════ */
 
+/* Animated gradient mesh for hero banners */
+@keyframes ss-mesh-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.ss-mesh-hero {
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.08) 0%,
+    rgba(139, 92, 246, 0.06) 25%,
+    rgba(59, 130, 246, 0.05) 50%,
+    rgba(168, 85, 247, 0.07) 75%,
+    rgba(99, 102, 241, 0.08) 100%
+  );
+  background-size: 200% 200%;
+  animation: ss-mesh-shift 16s ease-in-out infinite;
+  will-change: background-position;
+}
+
+/* Glass card style */
+.ss-glass-card {
+  background: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--card) / 0.7) 100%);
+  border: 1px solid hsl(var(--border));
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ss-glass-card:hover {
+  border-color: hsl(var(--primary) / 0.3);
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.08), 0 8px 32px -8px hsl(var(--primary) / 0.12);
+  transform: translateY(-2px);
+}
+
+/* Online pulse indicator */
+@keyframes ss-pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(1.8); }
+}
+.ss-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  position: relative;
+}
+.ss-pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: ss-pulse-dot 2s ease-in-out infinite;
+}
+
+/* Shimmer effect for CTA buttons */
+@keyframes ss-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.ss-btn-shimmer {
+  background-size: 200% auto;
+  background-image: linear-gradient(
+    90deg,
+    hsl(var(--primary)) 0%,
+    hsl(var(--primary) / 0.7) 40%,
+    hsl(var(--primary) / 0.4) 50%,
+    hsl(var(--primary) / 0.7) 60%,
+    hsl(var(--primary)) 100%
+  );
+  animation: ss-shimmer 3s linear infinite;
+}
+
+/* Stat card gradient overlays */
+.ss-stat-blue    { background: linear-gradient(135deg, rgba(59,130,246,0.08) 0%, transparent 60%); }
+.ss-stat-indigo  { background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, transparent 60%); }
+.ss-stat-amber   { background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, transparent 60%); }
+.ss-stat-rose    { background: linear-gradient(135deg, rgba(244,63,94,0.08) 0%, transparent 60%); }
+
+/* Timeline connector line */
+.ss-timeline-item {
+  position: relative;
+  padding-left: 24px;
+}
+.ss-timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 24px;
+  bottom: -16px;
+  width: 1px;
+  background: hsl(var(--border));
+}
+.ss-timeline-item:last-child::before {
+  display: none;
+}
+.ss-timeline-item::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: hsl(var(--primary) / 0.5);
+  border: 1.5px solid hsl(var(--primary));
+}
+
+/* Chat message slide-in */
+@keyframes ss-msg-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ss-msg-enter {
+  animation: ss-msg-in 0.25s ease-out both;
+}
+
+/* Scroll-to-bottom FAB */
+.ss-scroll-fab {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ss-scroll-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.25);
+}
