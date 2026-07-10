@@ -117,7 +117,7 @@ export default function StudySpaceClient({
   }
 
   const handleRemoveMember = async (userId: string) => {
-    if (!confirm('Are you sure you want to remove this member from the room?')) return
+    if (!confirm('Are you sure you want to remove this member from this space?')) return
     try {
       const res = await removeMember(roomId, userId)
       if (res.success) {
@@ -461,12 +461,12 @@ export default function StudySpaceClient({
             className="border-border hover:bg-muted text-xs cursor-pointer flex items-center gap-1.5"
           >
             <Award className="w-3.5 h-3.5 text-primary" />
-            Room Report
+            Space Report
           </Button>
         </div>
       </div>
 
-      {/* Main Study Room Layout Grid */}
+      {/* Main Study Space Layout Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[70vh]">
         
         {/* LEFT COMPONENT: Live Chat & Q&A Board (lg:col-span-5) */}
@@ -908,7 +908,7 @@ export default function StudySpaceClient({
                 {isOwner ? (
                   <form onSubmit={handleSaveSettings} className="space-y-4 max-w-md">
                     <div className="space-y-1.5">
-                      <label htmlFor="settings-name" className="text-xs font-semibold text-muted-foreground">Room Name</label>
+                      <label htmlFor="settings-name" className="text-xs font-semibold text-muted-foreground">Space Name</label>
                       <Input 
                         id="settings-name"
                         value={settingsName}

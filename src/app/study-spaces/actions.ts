@@ -16,7 +16,7 @@ async function checkAuth() {
 }
 
 /**
- * Fetch all study rooms matching the student's level and specialization.
+ * Fetch all study spaces matching the student's level and specialization.
  */
 export async function getRoomsList() {
   const session = await checkAuth()
@@ -53,7 +53,7 @@ export async function getRoomsList() {
 }
 
 /**
- * Get full details of a specific study room.
+ * Get full details of a specific study space.
  */
 export async function getRoomDetails(roomId: string) {
   const session = await checkAuth()
@@ -67,7 +67,7 @@ export async function getRoomDetails(roomId: string) {
     .single()
 
   if (roomError || !room) {
-    throw new Error('Study room not found.')
+    throw new Error('Study space not found.')
   }
 
   // 2. Fetch Members joined with chameleons to get profile details
@@ -170,7 +170,7 @@ export async function getRoomDetails(roomId: string) {
 }
 
 /**
- * Create a new study room and join as creator.
+ * Create a new study space and join as creator.
  */
 export async function createStudyRoom(
   name: string, 
@@ -271,7 +271,7 @@ export async function joinStudyRoom(roomId: string) {
 }
 
 /**
- * Leave a study room.
+ * Leave a study space.
  */
 export async function leaveStudyRoom(roomId: string) {
   const session = await checkAuth()
@@ -293,7 +293,7 @@ export async function leaveStudyRoom(roomId: string) {
 }
 
 /**
- * Send a chat message or Q&A question inside a study room.
+ * Send a chat message or Q&A question inside a study space.
  */
 export async function sendRoomMessage(roomId: string, content: string, isQuestion: boolean = false) {
   const session = await checkAuth()
@@ -445,7 +445,7 @@ export async function removeMember(roomId: string, userId: string) {
 }
 
 /**
- * Update study room configuration settings.
+ * Update study space configuration settings.
  */
 export async function updateRoomSettings(
   roomId: string, 
@@ -495,7 +495,7 @@ export async function updateRoomSettings(
 }
 
 /**
- * Delete a study room.
+ * Delete a study space.
  */
 export async function deleteStudyRoom(roomId: string) {
   try {
