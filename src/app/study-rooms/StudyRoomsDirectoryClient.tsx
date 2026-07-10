@@ -68,7 +68,7 @@ export default function StudyRoomsDirectoryClient({
     try {
       const res = await createStudyRoom(newRoomName, newRoomDesc, newRoomVisibility, newRoomJoinApproval)
       if (res.success && res.roomId) {
-        toast.success(`Study Room "${newRoomName}" created successfully!`)
+        toast.success(`Study Space "${newRoomName}" created successfully!`)
         setOpenCreate(false)
         setNewRoomName('')
         setNewRoomDesc('')
@@ -76,10 +76,10 @@ export default function StudyRoomsDirectoryClient({
         setNewRoomJoinApproval('immediate')
         router.push(`/study-rooms/${res.roomId}`)
       } else {
-        toast.error(res.error || 'Failed to create study room')
+        toast.error(res.error || 'Failed to create study space')
       }
     } catch (err) {
-      toast.error('An error occurred while creating study room.')
+      toast.error('An error occurred while creating study space.')
     } finally {
       setIsPending(false)
     }
@@ -104,15 +104,15 @@ export default function StudyRoomsDirectoryClient({
           toast.success(`Join request sent for "${roomName}"! Waiting for owner's approval.`)
           setRooms(prev => prev.map(r => r.id === roomId ? { ...r, joinStatus: 'pending' } : r))
         } else {
-          toast.success(`Joined room "${roomName}"!`)
+          toast.success(`Joined space "${roomName}"!`)
           setRooms(prev => prev.map(r => r.id === roomId ? { ...r, joinStatus: 'approved' } : r))
           router.push(`/study-rooms/${roomId}`)
         }
       } else {
-        toast.error(res.error || 'Failed to join study room')
+        toast.error(res.error || 'Failed to join study space')
       }
     } catch (err) {
-      toast.error('An error occurred while joining study room.')
+      toast.error('An error occurred while joining study space.')
     } finally {
       setIsPending(false)
     }
@@ -135,9 +135,9 @@ export default function StudyRoomsDirectoryClient({
                 Collaborative Learning
               </Badge>
             </div>
-            <h1 className="text-3xl font-extrabold text-foreground tracking-tight">Study Teams & Rooms</h1>
+            <h1 className="text-3xl font-extrabold text-foreground tracking-tight">Study Teams & Spaces</h1>
             <p className="text-muted-foreground text-sm max-w-xl leading-relaxed">
-              Browse, join, or create study rooms to collaborate on summaries, chat with peers, and solve quizzes together.
+              Browse, join, or create study spaces to collaborate on summaries, chat with peers, and solve quizzes together.
             </p>
           </div>
           
@@ -147,15 +147,15 @@ export default function StudyRoomsDirectoryClient({
               <DialogTrigger asChild>
                 <Button className="bg-gradient-to-r from-primary to-secondary text-white font-semibold shadow-lg hover:shadow-primary/20 transition-all cursor-pointer">
                   <Plus className="w-4 h-4 mr-2" />
-                  Create Study Room
+                  Create Study Space
                 </Button>
               </DialogTrigger>
               <DialogContent className="bg-card border-border shadow-2xl">
                 <form onSubmit={handleCreateRoom}>
                   <DialogHeader>
-                    <DialogTitle className="text-lg font-bold">Create a Study Room</DialogTitle>
+                    <DialogTitle className="text-lg font-bold">Create a Study Space</DialogTitle>
                     <DialogDescription className="text-xs mt-1 text-muted-foreground">
-                      This room will be listed in the global directory and visible to all registered students.
+                      This space will be listed in the global directory and visible to all registered students.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
@@ -233,7 +233,7 @@ export default function StudyRoomsDirectoryClient({
                           Creating...
                         </>
                       ) : (
-                        'Create Room'
+                        'Create Space'
                       )}
                     </Button>
                   </DialogFooter>
@@ -249,7 +249,7 @@ export default function StudyRoomsDirectoryClient({
         <div className="relative flex-1">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input 
-            placeholder="Search study rooms by name or description..." 
+            placeholder="Search study spaces by name or description..." 
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="pl-9 bg-card border-border text-sm"
@@ -261,9 +261,9 @@ export default function StudyRoomsDirectoryClient({
       {filteredRooms.length === 0 ? (
         <Card className="bg-card border-border shadow-md py-20 flex flex-col items-center justify-center text-center">
           <BookOpen className="w-12 h-12 text-muted-foreground/40 mb-4" />
-          <CardTitle className="text-lg font-bold text-foreground">No Study Rooms Found</CardTitle>
+          <CardTitle className="text-lg font-bold text-foreground">No Study Spaces Found</CardTitle>
           <CardDescription className="text-xs text-muted-foreground max-w-sm mt-1">
-            There are no active study rooms matching your search. Create the first room to study with your classmates!
+            There are no active study spaces matching your search. Create the first space to study with your classmates!
           </CardDescription>
         </Card>
       ) : (
@@ -325,7 +325,7 @@ export default function StudyRoomsDirectoryClient({
                   >
                     {room.joinStatus === 'approved' ? (
                       <>
-                        Enter Room
+                        Enter Space
                         <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover/btn:translate-x-0.5" />
                       </>
                     ) : room.joinStatus === 'pending' ? (

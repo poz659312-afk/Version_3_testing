@@ -30,7 +30,7 @@ export default async function StudyRoomPage({ params }: RoomPageProps) {
               </div>
               <CardTitle className="text-xl font-bold">Access Denied</CardTitle>
               <CardDescription className="text-xs mt-1 text-muted-foreground">
-                Please log in to access this study room.
+                Please log in to access this study space.
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-2 text-center">
@@ -109,9 +109,9 @@ export default async function StudyRoomPage({ params }: RoomPageProps) {
                     <Users className="w-7 h-7 text-primary" />
                   </div>
                 </div>
-                <CardTitle className="text-xl font-bold">Join Study Room</CardTitle>
+                <CardTitle className="text-xl font-bold">Join Study Space</CardTitle>
                 <CardDescription className="text-xs mt-1 text-muted-foreground">
-                  You are not currently a member of this study group.
+                  You are not currently a member of this study space.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -159,7 +159,7 @@ export default async function StudyRoomPage({ params }: RoomPageProps) {
                   <ShieldAlert className="w-7 h-7 text-destructive" />
                 </div>
               </div>
-              <CardTitle className="text-xl font-bold">Error Loading Room</CardTitle>
+              <CardTitle className="text-xl font-bold">Error Loading Space</CardTitle>
               <CardDescription className="text-xs mt-1 text-muted-foreground">
                 {err.message || 'An unexpected error occurred.'}
               </CardDescription>

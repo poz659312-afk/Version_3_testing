@@ -149,7 +149,7 @@ export default function RoomReportClient({ roomName, roomId, reportData }: RoomR
               <BarChart3 className="w-4 h-4 text-blue-450" />
               Membership Distribution
             </CardTitle>
-            <CardDescription className="text-[10px]">Enrollment status breakdown inside the room.</CardDescription>
+            <CardDescription className="text-[10px]">Enrollment status breakdown inside the space.</CardDescription>
           </CardHeader>
           <CardContent className="h-[300px] pt-4 flex flex-col justify-between">
             <div className="flex-1 min-h-[180px]">

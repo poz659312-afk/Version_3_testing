@@ -36,7 +36,7 @@ export default async function RoomReportPage({ params }: ReportPageProps) {
               <Link href={`/study-rooms/${params.id}`}>
                 <Button variant="outline" className="border-border hover:bg-muted text-xs cursor-pointer">
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Study Room
+                  Back to Study Space
                 </Button>
               </Link>
             </CardContent>

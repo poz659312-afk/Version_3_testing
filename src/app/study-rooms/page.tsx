@@ -8,7 +8,7 @@ import { ShieldAlert, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Collaborative Study Rooms - Chameleon',
+  title: 'Collaborative Study Spaces - Chameleon',
   description: 'Study and solve quizzes together with students in your specialization.',
 }
 

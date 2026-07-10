@@ -134,7 +134,7 @@ export default function StudyRoomClient({
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!settingsName.trim()) {
-      toast.error('Room name is required')
+      toast.error('Space name is required')
       return
     }
     setIsSavingSettings(true)
@@ -147,7 +147,7 @@ export default function StudyRoomClient({
         settingsJoinApproval
       )
       if (res.success) {
-        toast.success('Room settings updated successfully!')
+        toast.success('Space settings updated successfully!')
         setRoom(prev => ({
           ...prev,
           name: settingsName,
@@ -166,15 +166,15 @@ export default function StudyRoomClient({
   }
 
   const handleDeleteRoom = async () => {
-    if (!confirm('WARNING: Are you absolutely sure you want to delete this study room? This action is irreversible.')) return
+    if (!confirm('WARNING: Are you absolutely sure you want to delete this study space? This action is irreversible.')) return
     setIsPending(true)
     try {
       const res = await deleteStudyRoom(roomId)
       if (res.success) {
-        toast.success('Study room deleted successfully!')
+        toast.success('Study space deleted successfully!')
         router.push('/study-rooms')
       } else {
-        toast.error(res.error || 'Failed to delete room')
+        toast.error(res.error || 'Failed to delete space')
       }
     } catch (err) {
       toast.error('An error occurred.')
@@ -399,20 +399,20 @@ export default function StudyRoomClient({
   }
 
   const handleLeaveRoom = () => {
-    if (!confirm('Are you sure you want to leave this study room?')) return
+    if (!confirm('Are you sure you want to leave this study space?')) return
 
     setIsPending(true)
     const performLeave = async () => {
       try {
         const res = await leaveStudyRoom(roomId)
         if (res.success) {
-          toast.success('Left the study room.')
+          toast.success('Left the study space.')
           router.push('/study-rooms')
         } else {
-          toast.error(res.error || 'Failed to leave room')
+          toast.error(res.error || 'Failed to leave space')
         }
       } catch (err) {
-        toast.error('An error occurred while leaving room.')
+        toast.error('An error occurred while leaving space.')
       } finally {
         setIsPending(false)
       }
@@ -976,7 +976,7 @@ export default function StudyRoomClient({
                           size="sm"
                           className="text-xs font-semibold cursor-pointer"
                         >
-                          Delete Study Room
+                          Delete Study Space
                         </Button>
                       </div>
                       <Button 
@@ -987,7 +987,7 @@ export default function StudyRoomClient({
                         size="sm"
                         className="text-xs font-semibold cursor-pointer border-red-500/20 text-red-405 hover:bg-red-500/10 shrink-0"
                       >
-                        Leave Room
+                        Leave Space
                       </Button>
                     </div>
                   </form>
@@ -995,7 +995,7 @@ export default function StudyRoomClient({
                   <div className="space-y-4 max-w-md">
                     <Card className="bg-muted/20 border-border">
                       <CardHeader className="p-4">
-                        <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Room Information</CardTitle>
+                        <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Space Information</CardTitle>
                       </CardHeader>
                       <CardContent className="p-4 pt-0 space-y-3 text-xs">
                         <div>
@@ -1027,7 +1027,7 @@ export default function StudyRoomClient({
                         size="sm"
                         className="w-full text-xs font-semibold cursor-pointer"
                       >
-                        Leave Study Room
+                        Leave Study Space
                       </Button>
                     </div>
                   </div>
@@ -1038,7 +1038,7 @@ export default function StudyRoomClient({
         </Card>
       </div>
 
-      {/* Leave Room Verification Dialog */}
+      {/* Leave Space Verification Dialog */}
       <Dialog open={showLeaveDialog} onOpenChange={(open) => {
         setShowLeaveDialog(open)
         if (!open) setConfirmLeave(false)
@@ -1047,10 +1047,10 @@ export default function StudyRoomClient({
           <DialogHeader>
             <DialogTitle className="text-lg font-bold flex items-center gap-2 text-red-500">
               <LogOut className="w-5 h-5" />
-              Leave Study Room
+              Leave Study Space
             </DialogTitle>
             <DialogDescription className="text-xs mt-1 text-muted-foreground">
-              Are you sure you want to leave this study room? You will lose access to the shared scratchpad and chat history.
+              Are you sure you want to leave this study space? You will lose access to the shared scratchpad and chat history.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 flex items-start gap-2.5">

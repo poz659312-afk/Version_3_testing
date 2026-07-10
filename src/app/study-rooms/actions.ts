@@ -184,7 +184,7 @@ export async function createStudyRoom(
 
     // Guard: Only admins can create rooms
     if (!session.is_admin && !session.is_super_admin) {
-      return { success: false, error: 'Unauthorized. Only Admins can create study rooms.' }
+      return { success: false, error: 'Unauthorized. Only Admins can create study spaces.' }
     }
 
     // Insert room
