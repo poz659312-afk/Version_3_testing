@@ -137,7 +137,7 @@ export default function StudyRoomsDirectoryClient({
             </div>
             <h1 className="text-3xl font-extrabold text-foreground tracking-tight">Study Teams & Rooms</h1>
             <p className="text-muted-foreground text-sm max-w-xl leading-relaxed">
-              Join or create study groups matched to your specialization <strong className="text-foreground">{userSpecialization}</strong> and level <strong className="text-foreground">Level {userLevel}</strong>. Write collaborative summaries, solve active quiz challenges, and clear your doubts on the Q&A wall.
+              Browse, join, or create study rooms to collaborate on summaries, chat with peers, and solve quizzes together.
             </p>
           </div>
           
@@ -155,7 +155,7 @@ export default function StudyRoomsDirectoryClient({
                   <DialogHeader>
                     <DialogTitle className="text-lg font-bold">Create a Study Room</DialogTitle>
                     <DialogDescription className="text-xs mt-1 text-muted-foreground">
-                      This room will be visible to all students in your specialization ({userSpecialization}) and level (Level {userLevel}).
+                      This room will be listed in the global directory and visible to all registered students.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 py-4">

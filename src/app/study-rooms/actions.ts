@@ -123,7 +123,7 @@ export async function getRoomDetails(roomId: string) {
       quiz_code,
       status,
       created_at,
-      quiz:quiz_code (
+      quiz:quiz_department (
         name,
         questions_count,
         department_slug,
@@ -137,14 +137,14 @@ export async function getRoomDetails(roomId: string) {
     console.error('Failed to fetch challenges:', challengesError)
   }
 
-  // 5. Fetch available quizzes for the student's level and specialization to allow starting challenges
+  // 5. Fetch available quizzes for the room's level and specialization to allow starting challenges
   let quizzes: any[] = []
-  if (session.specialization && session.current_level) {
+  if (room) {
     const { data: quizzesData, error: quizzesError } = await supabase
       .from('quiz_department')
       .select('code, name, questions_count')
-      .eq('department_slug', session.specialization)
-      .eq('level_num', session.current_level)
+      .eq('department_slug', room.specialization)
+      .eq('level_num', room.level_num)
 
     if (quizzesError) {
       console.error('Failed to fetch quizzes:', quizzesError)

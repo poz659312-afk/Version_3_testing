@@ -184,11 +184,13 @@ export default function StudyRoomClient({
   }
 
   // Interaction states
-  const [activeTab, setActiveTab] = useState('notes') // 'notes' | 'quizzes'
+  const [activeTab, setActiveTab] = useState('notes') // 'notes' | 'quizzes' | 'members' | 'settings'
   const [chatTab, setChatTab] = useState('all') // 'all' | 'questions'
   const [chatInput, setChatInput] = useState('')
   const [isQuestionInput, setIsQuestionInput] = useState(false)
   const [scratchpad, setScratchpad] = useState(room.scratchpad_content || '')
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false)
+  const [confirmLeave, setConfirmLeave] = useState(false)
   
   // Quiz launch states
   const [openChallenge, setOpenChallenge] = useState(false)
@@ -461,24 +463,14 @@ export default function StudyRoomClient({
             <Award className="w-3.5 h-3.5 text-primary" />
             Room Report
           </Button>
-          <Button 
-            variant="destructive" 
-            size="sm" 
-            onClick={handleLeaveRoom}
-            disabled={isPending}
-            className="cursor-pointer shrink-0"
-          >
-            <LogOut className="w-3.5 h-3.5 mr-1" />
-            Leave Room
-          </Button>
         </div>
       </div>
 
       {/* Main Study Room Layout Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[70vh]">
         
-        {/* LEFT COMPONENT: Live Chat & Q&A Board (lg:col-span-4) */}
-        <Card className="lg:col-span-4 bg-card border-border shadow-md flex flex-col justify-between overflow-hidden h-[75vh]">
+        {/* LEFT COMPONENT: Live Chat & Q&A Board (lg:col-span-5) */}
+        <Card className="lg:col-span-5 bg-card border-border shadow-md flex flex-col justify-between overflow-hidden h-[75vh]">
           <CardHeader className="pb-2 border-b border-border flex flex-row items-center justify-between shrink-0">
             <div>
               <CardTitle className="text-sm font-bold flex items-center gap-1.5">
@@ -525,27 +517,40 @@ export default function StudyRoomClient({
                 return (
                   <div 
                     key={msg.id} 
-                    className={`flex flex-col ${isSelf ? 'items-end' : 'items-start'}`}
+                    className={`flex gap-2 items-start max-w-[90%] ${isSelf ? 'flex-row-reverse self-end ml-auto' : 'self-start mr-auto'}`}
                   >
-                    <span className="text-[9px] text-muted-foreground font-semibold px-1 mb-0.5">
-                      {msg.user?.username || 'Student'}
-                    </span>
-                    <div 
-                      className={`p-2.5 rounded-xl text-xs max-w-[85%] border shadow-sm leading-relaxed ${
-                        msg.is_question 
-                          ? 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200' 
-                          : isSelf 
-                            ? 'bg-primary text-primary-foreground border-primary/20' 
-                            : 'bg-muted/40 border-border text-foreground'
-                      }`}
-                    >
-                      {msg.is_question && (
-                        <Badge className="bg-amber-500 text-white font-semibold text-[8px] h-4 py-0 px-1 mb-1 flex items-center gap-0.5 w-fit">
-                          <HelpCircle className="w-2.5 h-2.5" />
-                          QUESTION
-                        </Badge>
+                    {/* User profile image/avatar */}
+                    <div className="w-7 h-7 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0 mt-1" title={msg.user?.username || 'Student'}>
+                      {msg.user?.profile_image ? (
+                        <img src={msg.user.profile_image} alt={msg.user.username} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-[10px] font-bold text-muted-foreground">
+                          {(msg.user?.username || 'S').substring(0, 1).toUpperCase()}
+                        </span>
                       )}
-                      <p>{msg.content}</p>
+                    </div>
+
+                    <div className={`flex flex-col ${isSelf ? 'items-end' : 'items-start'}`}>
+                      <span className="text-[9px] text-muted-foreground font-semibold px-1 mb-0.5">
+                        {msg.user?.username || 'Student'}
+                      </span>
+                      <div 
+                        className={`p-2.5 rounded-xl text-xs border shadow-sm leading-relaxed ${
+                          msg.is_question 
+                            ? 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200' 
+                            : isSelf 
+                              ? 'bg-primary text-primary-foreground border-primary/20' 
+                              : 'bg-muted/40 border-border text-foreground'
+                        }`}
+                      >
+                        {msg.is_question && (
+                          <Badge className="bg-amber-500 text-white font-semibold text-[8px] h-4 py-0 px-1 mb-1 flex items-center gap-0.5 w-fit">
+                            <HelpCircle className="w-2.5 h-2.5" />
+                            QUESTION
+                          </Badge>
+                        )}
+                        <p>{msg.content}</p>
+                      </div>
                     </div>
                   </div>
                 )
@@ -587,8 +592,8 @@ export default function StudyRoomClient({
           </form>
         </Card>
 
-        {/* CENTER COMPONENT: Collaborative Workspaces (lg:col-span-5) */}
-        <Card className="lg:col-span-5 bg-card border-border shadow-md flex flex-col justify-between h-[75vh]">
+        {/* CENTER COMPONENT: Collaborative Workspaces (lg:col-span-7) */}
+        <Card className="lg:col-span-7 bg-card border-border shadow-md flex flex-col justify-between h-[75vh]">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col">
             <CardHeader className="pb-2 border-b border-border shrink-0">
               <div className="flex items-center justify-between">
@@ -597,7 +602,7 @@ export default function StudyRoomClient({
                     <BookOpen className="w-4 h-4 text-primary" />
                     Workspace
                   </CardTitle>
-                  <CardDescription className="text-[10px]">Notes scratchpad and quiz battles.</CardDescription>
+                  <CardDescription className="text-[10px]">Notes scratchpad, quiz battles, and member moderation.</CardDescription>
                 </div>
                 <TabsList className="bg-muted/50 border border-border p-0.5 rounded-lg h-8">
                   <TabsTrigger value="notes" className="text-xs h-7 rounded-md data-[state=active]:bg-card">
@@ -606,11 +611,12 @@ export default function StudyRoomClient({
                   <TabsTrigger value="quizzes" className="text-xs h-7 rounded-md data-[state=active]:bg-card">
                     Quiz Battles
                   </TabsTrigger>
-                  {isOwner && (
-                    <TabsTrigger value="settings" className="text-xs h-7 rounded-md data-[state=active]:bg-card">
-                      Settings
-                    </TabsTrigger>
-                  )}
+                  <TabsTrigger value="members" className="text-xs h-7 rounded-md data-[state=active]:bg-card">
+                    Members ({members.filter((m: any) => m.status === 'approved').length})
+                  </TabsTrigger>
+                  <TabsTrigger value="settings" className="text-xs h-7 rounded-md data-[state=active]:bg-card">
+                    Settings
+                  </TabsTrigger>
                 </TabsList>
               </div>
             </CardHeader>
@@ -765,8 +771,141 @@ export default function StudyRoomClient({
                   )}
                 </div>
               </TabsContent>
-              {isOwner && (
-                <TabsContent value="settings" className="flex-1 overflow-y-auto p-4 mt-0 focus-visible:outline-none">
+              {/* Tab 3: Members Tab */}
+              <TabsContent value="members" className="flex-1 overflow-y-auto p-4 mt-0 focus-visible:outline-none">
+                <div className="space-y-6">
+                  {/* Active Members Section */}
+                  <div className="space-y-3">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Active Members</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {members.filter((m: any) => m.status === 'approved').map((member: any) => {
+                        const user = member.user
+                        const isCreator = member.role === 'creator'
+                        const isSelf = user?.auth_id === currentUserId
+                        if (!user) return null
+
+                        return (
+                          <div 
+                            key={user.auth_id}
+                            onClick={() => {
+                              setSelectedProfile(user)
+                              setShowProfileModal(true)
+                            }}
+                            className="p-3 bg-muted/20 border border-border rounded-xl flex items-center gap-3 relative overflow-hidden group hover:border-primary/30 transition-all cursor-pointer animate-notif-modal-enter"
+                          >
+                            <div className="w-9 h-9 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
+                              {user.profile_image ? (
+                                <img src={user.profile_image} alt={user.username} className="w-full h-full object-cover" />
+                              ) : (
+                                <Users className="w-4 h-4 text-primary" />
+                              )}
+                            </div>
+                            <div className="space-y-0.5 flex-1 min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+                                  {user.username}
+                                </span>
+                                {isCreator && (
+                                  <Crown className="w-3.5 h-3.5 text-yellow-500 shrink-0" />
+                                )}
+                              </div>
+                              <p className="text-[9px] text-muted-foreground line-clamp-1">{user.specialization}</p>
+                              <p className="text-[9px] text-indigo-400 font-semibold">Level {user.current_level}</p>
+                            </div>
+
+                            {/* KICK BUTTON FOR OWNER */}
+                            {isOwner && !isSelf && !isCreator && (
+                              <Button
+                                size="xs"
+                                variant="ghost"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleRemoveMember(user.auth_id)
+                                }}
+                                className="text-red-500 hover:text-red-650 hover:bg-red-500/10 h-8 w-8 p-0 rounded-md shrink-0 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                ✕
+                              </Button>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Pending Requests Section for Owner */}
+                  {isOwner && members.some((m: any) => m.status === 'pending') && (
+                    <div className="space-y-3 pt-4 border-t border-border">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-yellow-500 flex items-center gap-1.5">
+                        <AlertCircle className="w-4 h-4" />
+                        Pending Approvals
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {members.filter((m: any) => m.status === 'pending').map((member: any) => {
+                          const user = member.user
+                          if (!user) return null
+
+                          return (
+                            <div 
+                              key={user.auth_id}
+                              onClick={() => {
+                                setSelectedProfile(user)
+                                setShowProfileModal(true)
+                              }}
+                              className="p-3 bg-yellow-500/5 border border-yellow-500/20 rounded-xl flex flex-col gap-3 relative overflow-hidden group hover:border-yellow-500/40 transition-all cursor-pointer animate-notif-modal-enter"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center overflow-hidden shrink-0">
+                                  {user.profile_image ? (
+                                    <img src={user.profile_image} alt={user.username} className="w-full h-full object-cover" />
+                                  ) : (
+                                    <Users className="w-4 h-4 text-yellow-500" />
+                                  )}
+                                </div>
+                                <div className="space-y-0.5 flex-1 min-w-0">
+                                  <span className="text-xs font-bold text-foreground line-clamp-1">
+                                    {user.username}
+                                  </span>
+                                  <p className="text-[9px] text-muted-foreground line-clamp-1">{user.specialization}</p>
+                                  <p className="text-[9px] text-indigo-400 font-semibold">Level {user.current_level}</p>
+                                </div>
+                              </div>
+
+                              <div className="flex gap-2 w-full mt-1">
+                                <Button
+                                  size="xs"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleApprove(user.auth_id)
+                                  }}
+                                  className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold text-xs h-8 cursor-pointer"
+                                >
+                                  Approve
+                                </Button>
+                                <Button
+                                  size="xs"
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleReject(user.auth_id)
+                                  }}
+                                  className="flex-1 border-border hover:bg-muted text-red-500 text-xs h-8 cursor-pointer"
+                                >
+                                  Reject
+                                </Button>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              {/* Tab 4: Settings Tab */}
+              <TabsContent value="settings" className="flex-1 overflow-y-auto p-4 mt-0 focus-visible:outline-none">
+                {isOwner ? (
                   <form onSubmit={handleSaveSettings} className="space-y-4 max-w-md">
                     <div className="space-y-1.5">
                       <label htmlFor="settings-name" className="text-xs font-semibold text-muted-foreground">Room Name</label>
@@ -819,153 +958,135 @@ export default function StudyRoomClient({
                       </div>
                     </div>
                     
-                    <div className="pt-2 flex items-center justify-between gap-4">
-                      <Button 
-                        type="submit"
-                        disabled={isSavingSettings || isPending}
-                        size="sm"
-                        className="bg-primary text-white text-xs font-semibold cursor-pointer"
-                      >
-                        {isSavingSettings ? 'Saving...' : 'Save Settings'}
-                      </Button>
+                    <div className="pt-4 border-t border-border/60 flex flex-wrap items-center justify-between gap-4">
+                      <div className="flex gap-2">
+                        <Button 
+                          type="submit"
+                          disabled={isSavingSettings || isPending}
+                          size="sm"
+                          className="bg-primary text-white text-xs font-semibold cursor-pointer"
+                        >
+                          {isSavingSettings ? 'Saving...' : 'Save Settings'}
+                        </Button>
+                        <Button 
+                          type="button"
+                          variant="destructive"
+                          onClick={handleDeleteRoom}
+                          disabled={isPending}
+                          size="sm"
+                          className="text-xs font-semibold cursor-pointer"
+                        >
+                          Delete Study Room
+                        </Button>
+                      </div>
                       <Button 
                         type="button"
-                        variant="destructive"
-                        onClick={handleDeleteRoom}
+                        variant="outline"
+                        onClick={() => setShowLeaveDialog(true)}
                         disabled={isPending}
                         size="sm"
-                        className="text-xs font-semibold cursor-pointer"
+                        className="text-xs font-semibold cursor-pointer border-red-500/20 text-red-405 hover:bg-red-500/10 shrink-0"
                       >
-                        Delete Study Room
+                        Leave Room
                       </Button>
                     </div>
                   </form>
-                </TabsContent>
-              )}
+                ) : (
+                  <div className="space-y-4 max-w-md">
+                    <Card className="bg-muted/20 border-border">
+                      <CardHeader className="p-4">
+                        <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Room Information</CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-0 space-y-3 text-xs">
+                        <div>
+                          <span className="text-muted-foreground block font-medium">Name:</span>
+                          <span className="font-semibold text-foreground">{room.name}</span>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground block font-medium">Description:</span>
+                          <span className="text-foreground">{room.description || 'No description provided.'}</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 pt-2">
+                          <div>
+                            <span className="text-muted-foreground block font-medium">Visibility:</span>
+                            <span className="font-semibold text-foreground uppercase text-[10px]">{room.visibility || 'public'}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground block font-medium">Join Requirement:</span>
+                            <span className="font-semibold text-foreground uppercase text-[10px]">{room.join_approval === 'requires_approval' ? 'Approval Req.' : 'Immediate'}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <div className="pt-2">
+                      <Button 
+                        type="button"
+                        variant="destructive"
+                        onClick={() => setShowLeaveDialog(true)}
+                        disabled={isPending}
+                        size="sm"
+                        className="w-full text-xs font-semibold cursor-pointer"
+                      >
+                        Leave Study Room
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
             </CardContent>
           </Tabs>
         </Card>
-
-        {/* RIGHT COMPONENT: Members List (lg:col-span-3) */}
-        <Card className="lg:col-span-3 bg-card border-border shadow-md h-[75vh] flex flex-col overflow-hidden">
-          <CardHeader className="pb-2 border-b border-border shrink-0">
-            <CardTitle className="text-sm font-bold flex items-center gap-1.5">
-              <Users className="w-4 h-4 text-primary" />
-              Members ({members.filter((m: any) => m.status === 'approved').length})
-            </CardTitle>
-            <CardDescription className="text-[10px]">Registered study partners.</CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-            
-            {/* Approved Members Section */}
-            <div className="space-y-2">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Active Members</h3>
-              {members.filter((m: any) => m.status === 'approved').map((member: any) => {
-                const user = member.user
-                const isCreator = member.role === 'creator'
-                const isSelf = user?.auth_id === currentUserId
-                if (!user) return null
-
-                return (
-                  <div 
-                    key={user.auth_id}
-                    onClick={() => {
-                      setSelectedProfile(user)
-                      setShowProfileModal(true)
-                    }}
-                    className="p-2.5 bg-muted/25 border border-border rounded-xl flex items-center justify-between gap-2.5 relative overflow-hidden group hover:border-primary/30 transition-all cursor-pointer"
-                  >
-                    <div className="space-y-0.5 flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
-                          {user.username}
-                        </span>
-                        {isCreator && (
-                          <Crown className="w-3.5 h-3.5 text-yellow-500 shrink-0" />
-                        )}
-                      </div>
-                      <p className="text-[9px] text-muted-foreground line-clamp-1">{user.specialization}</p>
-                      <p className="text-[9px] text-indigo-400 font-semibold">Level {user.current_level}</p>
-                    </div>
-
-                    {/* KICK BUTTON FOR OWNER */}
-                    {isOwner && !isSelf && !isCreator && (
-                      <Button
-                        size="xs"
-                        variant="ghost"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleRemoveMember(user.auth_id)
-                        }}
-                        className="text-red-500 hover:text-red-600 hover:bg-red-500/10 h-7 w-7 p-0 rounded-md shrink-0 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        ✕
-                      </Button>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* Pending Requests Section for Owner */}
-            {isOwner && members.some((m: any) => m.status === 'pending') && (
-              <div className="space-y-2 pt-2 border-t border-border">
-                <h3 className="text-[10px] font-bold uppercase tracking-wider text-yellow-500 flex items-center gap-1">
-                  <AlertCircle className="w-3.5 h-3.5" />
-                  Pending Approvals
-                </h3>
-                {members.filter((m: any) => m.status === 'pending').map((member: any) => {
-                  const user = member.user
-                  if (!user) return null
-
-                  return (
-                    <div 
-                      key={user.auth_id}
-                      onClick={() => {
-                        setSelectedProfile(user)
-                        setShowProfileModal(true)
-                      }}
-                      className="p-2.5 bg-yellow-500/5 border border-yellow-500/20 rounded-xl flex flex-col gap-2 relative overflow-hidden group hover:border-yellow-500/40 transition-all cursor-pointer"
-                    >
-                      <div className="space-y-0.5 flex-1 min-w-0">
-                        <span className="text-xs font-bold text-foreground line-clamp-1">
-                          {user.username}
-                        </span>
-                        <p className="text-[9px] text-muted-foreground line-clamp-1">{user.specialization}</p>
-                        <p className="text-[9px] text-indigo-400 font-semibold">Level {user.current_level}</p>
-                      </div>
-
-                      <div className="flex gap-2 w-full mt-1">
-                        <Button
-                          size="xs"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleApprove(user.auth_id)
-                          }}
-                          className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold text-[10px] h-7 px-2 cursor-pointer"
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          size="xs"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleReject(user.auth_id)
-                          }}
-                          className="flex-1 border-border hover:bg-muted text-red-500 text-[10px] h-7 px-2 cursor-pointer"
-                        >
-                          Reject
-                        </Button>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
+
+      {/* Leave Room Verification Dialog */}
+      <Dialog open={showLeaveDialog} onOpenChange={(open) => {
+        setShowLeaveDialog(open)
+        if (!open) setConfirmLeave(false)
+      }}>
+        <DialogContent className="bg-card border-border shadow-2xl max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2 text-red-500">
+              <LogOut className="w-5 h-5" />
+              Leave Study Room
+            </DialogTitle>
+            <DialogDescription className="text-xs mt-1 text-muted-foreground">
+              Are you sure you want to leave this study room? You will lose access to the shared scratchpad and chat history.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 flex items-start gap-2.5">
+            <input 
+              type="checkbox"
+              id="confirm-leave-checkbox"
+              checked={confirmLeave}
+              onChange={e => setConfirmLeave(e.target.checked)}
+              className="rounded border-border text-red-500 focus:ring-red-500 h-4 w-4 mt-0.5 cursor-pointer bg-muted/40"
+            />
+            <label htmlFor="confirm-leave-checkbox" className="text-xs text-foreground font-medium cursor-pointer select-none leading-relaxed">
+              I understand that I am leaving "{room.name}" and confirm I want to proceed.
+            </label>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowLeaveDialog(false)
+                setConfirmLeave(false)
+              }}
+              className="border-border hover:bg-muted text-xs cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={handleLeaveRoom}
+              disabled={!confirmLeave || isPending}
+              className="text-xs font-semibold cursor-pointer"
+            >
+              Confirm & Leave
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* User Profile Inspection Dialog */}
       <Dialog open={showProfileModal} onOpenChange={setShowProfileModal}>
