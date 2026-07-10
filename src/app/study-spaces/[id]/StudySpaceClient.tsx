@@ -45,7 +45,7 @@ import {
   deleteStudyRoom
 } from '../actions'
 
-interface StudyRoomClientProps {
+interface StudySpaceClientProps {
   initialDetails: {
     room: any
     members: any[]
@@ -57,10 +57,10 @@ interface StudyRoomClientProps {
   roomId: string
 }
 
-export default function StudyRoomClient({
+export default function StudySpaceClient({
   initialDetails,
   roomId
-}: StudyRoomClientProps) {
+}: StudySpaceClientProps) {
   const router = useRouter()
   const [isPending, setIsPending] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -172,7 +172,7 @@ export default function StudyRoomClient({
       const res = await deleteStudyRoom(roomId)
       if (res.success) {
         toast.success('Study space deleted successfully!')
-        router.push('/study-rooms')
+        router.push('/study-spaces')
       } else {
         toast.error(res.error || 'Failed to delete space')
       }
@@ -407,7 +407,7 @@ export default function StudyRoomClient({
         const res = await leaveStudyRoom(roomId)
         if (res.success) {
           toast.success('Left the study space.')
-          router.push('/study-rooms')
+          router.push('/study-spaces')
         } else {
           toast.error(res.error || 'Failed to leave space')
         }
@@ -437,7 +437,7 @@ export default function StudyRoomClient({
           <Button 
             variant="outline" 
             size="icon" 
-            onClick={() => router.push('/study-rooms')}
+            onClick={() => router.push('/study-spaces')}
             className="border-border hover:bg-muted cursor-pointer shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -457,7 +457,7 @@ export default function StudyRoomClient({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => router.push(`/study-rooms/${roomId}/report`)}
+            onClick={() => router.push(`/study-spaces/${roomId}/report`)}
             className="border-border hover:bg-muted text-xs cursor-pointer flex items-center gap-1.5"
           >
             <Award className="w-3.5 h-3.5 text-primary" />

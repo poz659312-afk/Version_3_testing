@@ -1,23 +1,23 @@
-import { getRoomReportData, getRoomDetails } from '../../actions'
-import RoomReportClient from './RoomReportClient'
+import { Metadata } from 'next'
+import { getServerStudentSession } from '@/lib/auth-server'
+import { getRoomsList } from './actions'
+import StudySpacesDirectoryClient from './StudySpacesDirectoryClient'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ShieldAlert, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
-interface ReportPageProps {
-  params: {
-    id: string
-  }
+export const metadata: Metadata = {
+  title: 'Collaborative Study Spaces - Chameleon',
+  description: 'Study and solve quizzes together with students in your specialization.',
 }
 
-export default async function RoomReportPage({ params }: ReportPageProps) {
-  const details = await getRoomDetails(params.id)
-  const report = await getRoomReportData(params.id)
+export default async function StudySpacesPage() {
+  const session = await getServerStudentSession()
 
-  if (!report.success) {
+  if (!session || session.is_banned) {
     return (
-      <div className="container mx-auto py-20 px-4 min-h-[85vh] flex items-center justify-center">
+      <div className="container mx-auto py-20 px-4 min-h-[80vh] flex items-center justify-center">
         <div className="w-full max-w-md">
           <Card className="bg-card border-border shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-destructive" />
@@ -29,14 +29,14 @@ export default async function RoomReportPage({ params }: ReportPageProps) {
               </div>
               <CardTitle className="text-xl font-bold">Access Denied</CardTitle>
               <CardDescription className="text-xs mt-1 text-muted-foreground">
-                {report.error || 'Failed to load report data.'}
+                Please log in to access the study spaces.
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-2 text-center">
-              <Link href={`/study-rooms/${params.id}`}>
+              <Link href="/">
                 <Button variant="outline" className="border-border hover:bg-muted text-xs cursor-pointer">
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Study Space
+                  Go to Login
                 </Button>
               </Link>
             </CardContent>
@@ -46,12 +46,16 @@ export default async function RoomReportPage({ params }: ReportPageProps) {
     )
   }
 
+  // Pre-fetch matching rooms on the server
+  const initialRooms = await getRoomsList()
+
   return (
-    <div className="container mx-auto py-6 px-4 max-w-5xl">
-      <RoomReportClient 
-        roomName={details.room.name} 
-        roomId={params.id} 
-        reportData={report} 
+    <div className="container mx-auto py-8 px-4 max-w-7xl">
+      <StudySpacesDirectoryClient 
+        initialRooms={initialRooms} 
+        userSpecialization={session.specialization || 'General'} 
+        userLevel={session.current_level || 1} 
+        isAdmin={!!(session.is_admin || session.is_super_admin)}
       />
     </div>
   )

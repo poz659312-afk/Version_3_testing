@@ -222,7 +222,7 @@ export async function createStudyRoom(
       return { success: false, error: joinError.message }
     }
 
-    revalidatePath('/study-rooms')
+    revalidatePath('/study-spaces')
     return { success: true, roomId: room.id }
   } catch (err: any) {
     console.error('Server action error in createStudyRoom:', err)
@@ -261,8 +261,8 @@ export async function joinStudyRoom(roomId: string) {
       return { success: false, error: error.message }
     }
 
-    revalidatePath('/study-rooms')
-    revalidatePath(`/study-rooms/${roomId}`)
+    revalidatePath('/study-spaces')
+    revalidatePath(`/study-spaces/${roomId}`)
     return { success: true, status: joinStatus }
   } catch (err: any) {
     console.error('Server action error in joinStudyRoom:', err)
@@ -287,8 +287,8 @@ export async function leaveStudyRoom(roomId: string) {
     return { success: false, error: error.message }
   }
 
-  revalidatePath('/study-rooms')
-  revalidatePath(`/study-rooms/${roomId}`)
+  revalidatePath('/study-spaces')
+  revalidatePath(`/study-spaces/${roomId}`)
   return { success: true }
 }
 
@@ -357,7 +357,7 @@ export async function startQuizChallenge(roomId: string, quizCode: string) {
     return { success: false, error: error.message }
   }
 
-  revalidatePath(`/study-rooms/${roomId}`)
+  revalidatePath(`/study-spaces/${roomId}`)
   return { success: true }
 }
 
@@ -392,7 +392,7 @@ export async function approveMember(roomId: string, userId: string) {
       return { success: false, error: error.message }
     }
 
-    revalidatePath(`/study-rooms/${roomId}`)
+    revalidatePath(`/study-spaces/${roomId}`)
     return { success: true }
   } catch (err: any) {
     return { success: false, error: err.message || 'An unexpected error occurred.' }
@@ -430,7 +430,7 @@ export async function rejectMember(roomId: string, userId: string) {
       return { success: false, error: error.message }
     }
 
-    revalidatePath(`/study-rooms/${roomId}`)
+    revalidatePath(`/study-spaces/${roomId}`)
     return { success: true }
   } catch (err: any) {
     return { success: false, error: err.message || 'An unexpected error occurred.' }
@@ -486,8 +486,8 @@ export async function updateRoomSettings(
       return { success: false, error: error.message }
     }
 
-    revalidatePath('/study-rooms')
-    revalidatePath(`/study-rooms/${roomId}`)
+    revalidatePath('/study-spaces')
+    revalidatePath(`/study-spaces/${roomId}`)
     return { success: true }
   } catch (err: any) {
     return { success: false, error: err.message || 'An unexpected error occurred.' }
@@ -524,7 +524,7 @@ export async function deleteStudyRoom(roomId: string) {
       return { success: false, error: error.message }
     }
 
-    revalidatePath('/study-rooms')
+    revalidatePath('/study-spaces')
     return { success: true }
   } catch (err: any) {
     return { success: false, error: err.message || 'An unexpected error occurred.' }

@@ -1,19 +1,19 @@
 import { getServerStudentSession } from '@/lib/auth-server'
 import { getRoomDetails, joinStudyRoom } from '../actions'
-import StudyRoomClient from './StudyRoomClient'
+import StudySpaceClient from './StudySpaceClient'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Users, ShieldAlert } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
-interface RoomPageProps {
+interface SpacePageProps {
   params: {
     id: string
   }
 }
 
-export default async function StudyRoomPage({ params }: RoomPageProps) {
+export default async function StudySpacePage({ params }: SpacePageProps) {
   const session = await getServerStudentSession()
 
   if (!session || session.is_banned) {
@@ -51,11 +51,12 @@ export default async function StudyRoomPage({ params }: RoomPageProps) {
     const details = await getRoomDetails(params.id)
 
     // Guard: If student is not a member of this room (accessed via direct URL)
-    const bypassCheck = !!session.is_super_admin;
-    if (!details.isMember && !bypassCheck) {
-      if (details.isPending) {
+    if (!details.isMember) {
+      const isPendingApproval = details.joinStatus === 'pending'
+
+      if (isPendingApproval) {
         return (
-          <div className="container mx-auto py-20 px-4 min-h-[85vh] flex items-center justify-center">
+          <div className="container mx-auto py-20 px-4 min-h-[80vh] flex items-center justify-center">
             <div className="w-full max-w-md animate-notif-modal-enter">
               <Card className="bg-card border-border shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-yellow-500" />
@@ -76,7 +77,7 @@ export default async function StudyRoomPage({ params }: RoomPageProps) {
                   </p>
 
                   <div className="pt-2 flex flex-col gap-2">
-                    <Link href="/study-rooms" className="w-full">
+                    <Link href="/study-spaces" className="w-full">
                       <Button variant="outline" className="w-full border-border hover:bg-muted text-xs cursor-pointer">
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Back to Directory
@@ -93,7 +94,7 @@ export default async function StudyRoomPage({ params }: RoomPageProps) {
       const joinAction = async () => {
         'use server'
         await joinStudyRoom(params.id)
-        redirect(`/study-rooms/${params.id}`)
+        redirect(`/study-spaces/${params.id}`)
       }
 
       const requiresApproval = details.room.join_approval === 'requires_approval';
@@ -125,7 +126,7 @@ export default async function StudyRoomPage({ params }: RoomPageProps) {
                       {requiresApproval ? 'Request Access (Approval Required)' : 'Join Group (Immediate)'}
                     </Button>
                   </form>
-                  <Link href="/study-rooms" className="w-full">
+                  <Link href="/study-spaces" className="w-full">
                     <Button variant="outline" className="w-full border-border hover:bg-muted text-xs cursor-pointer">
                       <ArrowLeft className="w-4 h-4 mr-2" />
                       Back to Directory
@@ -141,7 +142,7 @@ export default async function StudyRoomPage({ params }: RoomPageProps) {
 
     return (
       <div className="container mx-auto py-6 px-4 max-w-7xl">
-        <StudyRoomClient 
+        <StudySpaceClient 
           initialDetails={details} 
           roomId={params.id}
         />
@@ -165,7 +166,7 @@ export default async function StudyRoomPage({ params }: RoomPageProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-2 text-center">
-              <Link href="/study-rooms">
+              <Link href="/study-spaces">
                 <Button variant="outline" className="border-border hover:bg-muted text-xs">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back to Directory

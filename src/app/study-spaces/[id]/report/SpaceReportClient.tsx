@@ -8,13 +8,13 @@ import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, MessageSquare, Swords, HelpCircle, Users, BarChart3, TrendingUp, Calendar, AlertCircle } from 'lucide-react'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar } from 'recharts'
 
-interface RoomReportClientProps {
+interface SpaceReportClientProps {
   roomName: string
   roomId: string
   reportData: any
 }
 
-export default function RoomReportClient({ roomName, roomId, reportData }: RoomReportClientProps) {
+export default function SpaceReportClient({ roomName, roomId, reportData }: SpaceReportClientProps) {
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
 
@@ -41,7 +41,7 @@ export default function RoomReportClient({ roomName, roomId, reportData }: RoomR
           <Button 
             variant="outline" 
             size="icon" 
-            onClick={() => router.push(`/study-rooms/${roomId}`)}
+            onClick={() => router.push(`/study-spaces/${roomId}`)}
             className="border-border hover:bg-muted cursor-pointer shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />

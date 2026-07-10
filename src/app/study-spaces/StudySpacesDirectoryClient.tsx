@@ -21,19 +21,19 @@ import {
 } from 'lucide-react'
 import { createStudyRoom, joinStudyRoom } from './actions'
 
-interface StudyRoomsDirectoryClientProps {
+interface StudySpacesDirectoryClientProps {
   initialRooms: any[]
   userSpecialization: string
   userLevel: number
   isAdmin: boolean
 }
 
-export default function StudyRoomsDirectoryClient({
+export default function StudySpacesDirectoryClient({
   initialRooms,
   userSpecialization,
   userLevel,
   isAdmin
-}: StudyRoomsDirectoryClientProps) {
+}: StudySpacesDirectoryClientProps) {
   const router = useRouter()
   const [rooms, setRooms] = useState(initialRooms || [])
   const [searchQuery, setSearchQuery] = useState('')
@@ -74,7 +74,7 @@ export default function StudyRoomsDirectoryClient({
         setNewRoomDesc('')
         setNewRoomVisibility('public')
         setNewRoomJoinApproval('immediate')
-        router.push(`/study-rooms/${res.roomId}`)
+        router.push(`/study-spaces/${res.roomId}`)
       } else {
         toast.error(res.error || 'Failed to create study space')
       }
@@ -87,7 +87,7 @@ export default function StudyRoomsDirectoryClient({
 
   const handleJoinRoom = async (roomId: string, roomName: string, isJoined: boolean, currentJoinStatus: string) => {
     if (isJoined || currentJoinStatus === 'approved') {
-      router.push(`/study-rooms/${roomId}`)
+      router.push(`/study-spaces/${roomId}`)
       return
     }
 
@@ -106,7 +106,7 @@ export default function StudyRoomsDirectoryClient({
         } else {
           toast.success(`Joined space "${roomName}"!`)
           setRooms(prev => prev.map(r => r.id === roomId ? { ...r, joinStatus: 'approved' } : r))
-          router.push(`/study-rooms/${roomId}`)
+          router.push(`/study-spaces/${roomId}`)
         }
       } else {
         toast.error(res.error || 'Failed to join study space')
