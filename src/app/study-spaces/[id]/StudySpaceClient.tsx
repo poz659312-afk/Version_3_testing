@@ -985,7 +985,7 @@ export default function StudySpaceClient({
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 sm:gap-6">
         
         {/* Left Column: Live Discussion */}
-        <Card className="xl:col-span-5 bg-card/40 border-border/60 backdrop-blur-md rounded-3xl flex flex-col justify-between overflow-hidden min-h-[440px] sm:min-h-[560px] xl:h-[75vh]">
+        <Card className="xl:col-span-5 bg-card/40 border-border/60 backdrop-blur-md rounded-3xl flex flex-col justify-between overflow-hidden h-[500px] sm:h-[600px] xl:h-[75vh]">
           <CardHeader className="pb-2 border-b border-border flex flex-row items-center justify-between shrink-0">
             <div>
               <CardTitle className="text-sm font-bold flex items-center gap-1.5">
@@ -1015,46 +1015,7 @@ export default function StudySpaceClient({
             </div>
           </CardHeader>
           
-          <CardContent className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
-            {/* Inline Active Quizzes (countdown style) */}
-            {chatQuizzes.length > 0 && chatQuizzes.filter(q => !isQuizExpired(q)).map((q: any) => {
-              const myAnswer = q.answers?.find((a: any) => a.user_id === currentUserId)
-              return (
-                <div key={q.id} className="p-3.5 bg-indigo-500/5 border border-indigo-500/20 rounded-2xl space-y-2">
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-[10px] font-black text-indigo-400 flex items-center gap-1">
-                      <BrainCircuit className="w-3.5 h-3.5" />
-                      INLINE QUIZ CHALLENGE
-                    </span>
-                    {q.ends_at && (
-                      <span className="text-[9px] bg-indigo-500/10 text-indigo-400 font-bold px-2 py-0.5 rounded-full">
-                        Active
-                      </span>
-                    )}
-                  </div>
-                  <h4 className="text-xs font-bold text-foreground">{q.question}</h4>
-                  
-                  <div className="grid grid-cols-2 gap-2 pt-1">
-                    {q.options.map((opt: string, i: number) => {
-                      const isCorrectChoice = opt === q.correct_answer
-                      const hasVotedThis = myAnswer?.answer === opt
-                      return (
-                        <Button
-                          key={i}
-                          size="sm"
-                          variant={hasVotedThis ? (isCorrectChoice ? 'default' : 'destructive') : 'outline'}
-                          disabled={!!myAnswer || isQuizExpired(q)}
-                          onClick={() => handleSubmitQuizAnswer(q.id, opt)}
-                          className="h-8 text-[10px] font-semibold text-left justify-start px-3 rounded-xl cursor-pointer"
-                        >
-                          {opt}
-                        </Button>
-                      )
-                    })}
-                  </div>
-                </div>
-              )
-            })}
+          <CardContent className="flex-1 overflow-y-auto ss-chat-scrollbar p-3 sm:p-4 space-y-3">
 
             {displayedMessages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-10">
@@ -1094,20 +1055,78 @@ export default function StudySpaceClient({
                       
                       <div 
                         className={`p-2.5 rounded-2xl text-xs border shadow-sm leading-relaxed relative group ${
-                          msg.is_question 
-                            ? 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200' 
-                            : isSelf 
-                              ? 'bg-primary text-primary-foreground border-primary/20' 
-                              : 'bg-muted/40 border-border text-foreground'
+                          msg.content.startsWith('[QUIZ:')
+                            ? 'bg-indigo-500/5 border-indigo-500/20 text-foreground w-[260px] sm:w-[340px]'
+                            : msg.is_question 
+                              ? 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200' 
+                              : isSelf 
+                                ? 'bg-primary text-primary-foreground border-primary/20' 
+                                : 'bg-muted/40 border-border text-foreground'
                         }`}
                       >
-                        {msg.is_question && (
-                          <Badge className="bg-amber-500 text-white font-semibold text-[8px] h-4 py-0 px-1 mb-1.5 flex items-center gap-0.5 w-fit">
-                            <HelpCircle className="w-2.5 h-2.5" />
-                            QUESTION
-                          </Badge>
-                        )}
-                        <p>{msg.content}</p>
+                        {(() => {
+                          const quizMatch = msg.content.match(/^\[QUIZ:([\w-]+)\] (.*)/)
+                          if (quizMatch) {
+                            const quizId = quizMatch[1]
+                            const q = chatQuizzes.find((x: any) => x.id === quizId)
+                            if (!q) {
+                              return (
+                                <div className="p-1 flex items-center gap-2 text-indigo-400">
+                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  <span className="text-[10px] font-semibold">Loading Quiz Battle...</span>
+                                </div>
+                              )
+                            }
+                            
+                            const myAnswer = q.answers?.find((a: any) => a.user_id === currentUserId)
+                            const isExpired = isQuizExpired(q)
+                            
+                            return (
+                              <div className="space-y-2 min-w-[200px] sm:min-w-[280px]">
+                                <div className="flex items-center justify-between gap-4">
+                                  <span className="text-[9px] font-black text-indigo-400 flex items-center gap-1">
+                                    <BrainCircuit className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
+                                    QUIZ BATTLE
+                                  </span>
+                                  <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${isExpired ? 'bg-muted text-muted-foreground' : 'bg-indigo-500/10 text-indigo-400'}`}>
+                                    {isExpired ? 'Expired' : 'Active'}
+                                  </span>
+                                </div>
+                                <h4 className="text-xs font-bold text-foreground leading-relaxed">{q.question}</h4>
+                                <div className="grid grid-cols-2 gap-1.5 pt-1">
+                                  {q.options.map((opt: string, idx: number) => {
+                                    const isCorrectChoice = opt === q.correct_answer
+                                    const hasVotedThis = myAnswer?.answer === opt
+                                    return (
+                                      <Button
+                                        key={idx}
+                                        size="sm"
+                                        variant={hasVotedThis ? (isCorrectChoice ? 'default' : 'destructive') : 'outline'}
+                                        disabled={!!myAnswer || isExpired}
+                                        onClick={() => handleSubmitQuizAnswer(q.id, opt)}
+                                        className="h-7 text-[9px] font-semibold text-left justify-start px-2.5 rounded-lg cursor-pointer"
+                                      >
+                                        {opt}
+                                      </Button>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+                            )
+                          }
+                          
+                          return (
+                            <>
+                              {msg.is_question && (
+                                <Badge className="bg-amber-500 text-white font-semibold text-[8px] h-4 py-0 px-1 mb-1.5 flex items-center gap-0.5 w-fit">
+                                  <HelpCircle className="w-2.5 h-2.5" />
+                                  QUESTION
+                                </Badge>
+                              )}
+                              <p>{msg.content}</p>
+                            </>
+                          )
+                        })()}
 
                         {/* Quiet reaction popover */}
                         <div className="absolute top-[-14px] right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 bg-card border border-border/80 px-1.5 py-0.5 rounded-lg shadow-md">

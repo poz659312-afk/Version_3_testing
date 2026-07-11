@@ -1593,3 +1593,24 @@ html.lenis-stopped body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Custom premium scrollbar for the chat window */
+.ss-chat-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.ss-chat-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ss-chat-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.15);
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+.ss-chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.35);
+}
+.ss-chat-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.15) transparent;
+}

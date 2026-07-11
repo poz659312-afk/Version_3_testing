@@ -1107,7 +1107,7 @@ export async function createChatQuiz(roomId: string, question: string, options: 
       endsAt = new Date(Date.now() + countdownSeconds * 1000).toISOString()
     }
 
-    const { error } = await supabase
+    const { data: quizData, error } = await supabase
       .from('study_room_quizzes')
       .insert({
         room_id: roomId,
@@ -1118,8 +1118,27 @@ export async function createChatQuiz(roomId: string, question: string, options: 
         countdown_seconds: countdownSeconds,
         ends_at: endsAt
       })
+      .select('id')
+      .single()
 
-    if (error) return { success: false, error: error.message }
+    if (error || !quizData) {
+      return { success: false, error: error?.message || 'Failed to create quiz' }
+    }
+
+    // Post a referencing message in study_room_messages so the quiz shows up directly in the chat window
+    const { error: msgError } = await supabase
+      .from('study_room_messages')
+      .insert({
+        room_id: roomId,
+        user_id: session.auth_id,
+        content: `[QUIZ:${quizData.id}] ${question}`,
+        is_question: false
+      })
+
+    if (msgError) {
+      console.error('Failed to post quiz message:', msgError)
+    }
+
     return { success: true }
   } catch (err: any) {
     return { success: false, error: err.message }
