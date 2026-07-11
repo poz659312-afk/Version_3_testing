@@ -178,8 +178,21 @@ export default function StudySpaceClient({
 
   const lenis = useLenis()
 
+  const anyModalOpen = !!(
+    showProfileModal ||
+    showRemoveDialog ||
+    showDeleteDialog ||
+    showPromoteDialog ||
+    showLeaveDialog ||
+    openChallenge ||
+    openPollCreator ||
+    openDcCreator ||
+    openQuizCreator ||
+    previewPdfFile
+  )
+
   useEffect(() => {
-    if (previewPdfFile) {
+    if (anyModalOpen) {
       if (lenis) lenis.stop()
       document.documentElement.classList.add('lenis-stopped')
     } else {
@@ -190,7 +203,7 @@ export default function StudySpaceClient({
       if (lenis) lenis.start()
       document.documentElement.classList.remove('lenis-stopped')
     }
-  }, [previewPdfFile, lenis])
+  }, [anyModalOpen, lenis])
 
   // Collaboration references
   const isEditingRef = useRef(false)
@@ -1430,7 +1443,7 @@ export default function StudySpaceClient({
             </div>
           </CardHeader>
           
-          <CardContent className="flex-1 overflow-y-auto ss-chat-scrollbar p-3 sm:p-4 space-y-3">
+          <CardContent className="flex-1 overflow-y-auto ss-chat-scrollbar p-3 sm:p-4 space-y-3" data-lenis-prevent>
 
             {displayedMessages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-10">
@@ -1675,7 +1688,7 @@ export default function StudySpaceClient({
               </div>
             </CardHeader>
             
-            <CardContent className="flex-1 overflow-y-auto p-3 sm:p-4">
+            <CardContent className="flex-1 overflow-y-auto p-3 sm:p-4" data-lenis-prevent>
               
               {/* Tab 1: Scratchpad */}
               <TabsContent value="notes" className="h-full mt-0 focus-visible:outline-none flex flex-col">
@@ -2049,7 +2062,7 @@ export default function StudySpaceClient({
               </TabsContent>
 
               {/* Tab 6: Study Consistency Leaderboard */}
-              <TabsContent value="members" className="flex-1 overflow-y-auto p-2 mt-0 focus-visible:outline-none">
+              <TabsContent value="members" className="flex-1 overflow-y-auto p-2 mt-0 focus-visible:outline-none" data-lenis-prevent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-border">
                     <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
@@ -2118,7 +2131,7 @@ export default function StudySpaceClient({
               </TabsContent>
 
               {/* Tab 7: Settings Tab */}
-              <TabsContent value="settings" className="flex-1 overflow-y-auto p-2 mt-0 focus-visible:outline-none">
+              <TabsContent value="settings" className="flex-1 overflow-y-auto p-2 mt-0 focus-visible:outline-none" data-lenis-prevent>
                 {canManage ? (
                   <form onSubmit={handleSaveSettings} className="space-y-4 max-w-md">
                     <div className="space-y-1.5">
