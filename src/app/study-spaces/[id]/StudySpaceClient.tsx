@@ -78,6 +78,27 @@ import dynamic from 'next/dynamic'
 
 const PDFViewer = dynamic(() => import('@/components/PDFViewer'), { ssr: false })
 
+const formatMessageTime = (dateStr: string) => {
+  try {
+    const d = new Date(dateStr)
+    const now = new Date()
+    const diffTime = Math.abs(now.getTime() - d.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    
+    if (d.toDateString() === now.toDateString()) {
+      return timeStr
+    } else if (diffDays <= 1) {
+      return `Yesterday, ${timeStr}`
+    } else {
+      return `${d.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${timeStr}`
+    }
+  } catch (e) {
+    return ''
+  }
+}
+
 interface StudySpaceClientProps {
   initialDetails: any
   roomId: string
@@ -255,7 +276,24 @@ export default function StudySpaceClient({
   // Auto-scroll chat to bottom
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  }, [messages, chatTab])
+
+  // Silent unnoticeable background polling sync every 5 seconds
+  useEffect(() => {
+    const refreshTimer = setInterval(() => {
+      getRoomDetails(roomId).then(d => {
+        // Silently update states in the background if they actually changed
+        setMembers((prev: any) => JSON.stringify(prev) === JSON.stringify(d.members) ? prev : d.members)
+        setPolls((prev: any) => JSON.stringify(prev) === JSON.stringify(d.polls) ? prev : d.polls)
+        setDailyChallenges((prev: any) => JSON.stringify(prev) === JSON.stringify(d.dailyChallenges) ? prev : d.dailyChallenges)
+        setChatQuizzes((prev: any) => JSON.stringify(prev) === JSON.stringify(d.chatQuizzes) ? prev : d.chatQuizzes)
+        setResources((prev: any) => JSON.stringify(prev) === JSON.stringify(d.resources) ? prev : d.resources)
+        setMessageReactions((prev: any) => JSON.stringify(prev) === JSON.stringify(d.messageReactions) ? prev : d.messageReactions)
+      }).catch(err => console.error("Silent background refresh error:", err))
+    }, 5000)
+
+    return () => clearInterval(refreshTimer)
+  }, [roomId])
 
   // --- STUDY TRACKER STOPWATCH ---
   useEffect(() => {
@@ -1413,7 +1451,7 @@ export default function StudySpaceClient({
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 sm:gap-6">
         
         {/* Left Column: Live Discussion */}
-        <Card className="xl:col-span-5 bg-card/40 border-border/60 backdrop-blur-md rounded-3xl flex flex-col justify-between overflow-hidden h-[500px] sm:h-[600px] xl:h-[75vh]">
+        <Card className="xl:col-span-5 bg-card/40 border-border/60 backdrop-blur-md rounded-3xl flex flex-col justify-between overflow-hidden h-[500px] sm:h-[600px] xl:h-[75vh] max-h-[500px] sm:max-h-[600px] xl:max-h-[75vh]">
           <CardHeader className="pb-2 border-b border-border flex flex-row items-center justify-between shrink-0">
             <div>
               <CardTitle className="text-sm font-bold flex items-center gap-1.5">
