@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { FileText, Upload, ZoomIn, ZoomOut, RotateCw, Plus } from "lucide-react"
+import { FileText, Upload, ZoomIn, ZoomOut, RotateCw, Plus, ExternalLink, Loader2 } from "lucide-react"
 
 // Import pdfjs-dist
 import * as pdfjsLib from "pdfjs-dist"
@@ -19,17 +19,17 @@ if (typeof window !== "undefined" && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
 interface PDFViewerProps {
   initialUrl?: string
   fileName?: string
+  driveFileId?: string
   onAddToStudySpace?: () => void
 }
 
-export default function PDFViewer({ initialUrl = "", fileName = "", onAddToStudySpace }: PDFViewerProps) {
+export default function PDFViewer({ initialUrl = "", fileName = "", driveFileId = "", onAddToStudySpace }: PDFViewerProps) {
   const [pdfUrl, setPdfUrl] = useState(initialUrl)
   const [zoom, setZoom] = useState(1.0)
   const [rotation, setRotation] = useState(0)
   const [pdfDoc, setPdfDoc] = useState<pdfjsLib.PDFDocumentProxy | null>(null)
-  
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null)
+  const [numPages, setNumPages] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -46,70 +46,49 @@ export default function PDFViewer({ initialUrl = "", fileName = "", onAddToStudy
     }
   }, [initialUrl])
 
-  // Memoize the document loading process
+  // Load the document
   useEffect(() => {
     if (!pdfUrl) return
+    setLoading(true)
     const loadPdf = async () => {
       try {
         const loadingTask = pdfjsLib.getDocument(pdfUrl)
         const doc = await loadingTask.promise
         setPdfDoc(doc)
+        setNumPages(doc.numPages)
       } catch (error) {
         console.error("Error loading PDF:", error)
+      } finally {
+        setLoading(false)
       }
     }
     loadPdf()
   }, [pdfUrl])
 
-  // Memoize the rendering process
-  const renderPage = useCallback(async () => {
-    if (!pdfDoc || !canvasRef.current) return
-
-    try {
-      const page = await pdfDoc.getPage(1) // Render first page for preview
-      const viewport = page.getViewport({ scale: zoom, rotation })
-      
-      const canvas = canvasRef.current
-      const context = canvas.getContext("2d", { alpha: false }) // Optimize canvas context
-      if (!context) return
-
-      canvas.height = viewport.height
-      canvas.width = viewport.width
-
-      const renderContext = {
-        canvasContext: context,
-        canvas: canvas,
-        viewport: viewport,
-      }
-
-      // Cancel previous render task if it exists
-      if (renderTaskRef.current) {
-        renderTaskRef.current.cancel()
-      }
-
-      renderTaskRef.current = page.render(renderContext)
-      await renderTaskRef.current.promise
-    } catch (error: any) {
-      if (error?.name !== "RenderingCancelledException") {
-        console.error("Error rendering PDF page:", error)
-      }
-    }
-  }, [pdfDoc, zoom, rotation])
-
-  useEffect(() => {
-    renderPage()
-  }, [renderPage])
-
   return (
     <div className="h-full flex flex-col">
-      <Card className="bg-white/[0.02] border-white/[0.08] backdrop-blur-lg flex-1 flex flex-col">
-        <CardHeader className="pb-4 flex flex-row items-center justify-between flex-wrap gap-4">
+      <Card className="bg-white/[0.02] border-white/[0.08] backdrop-blur-lg flex-1 flex flex-col min-h-0">
+        <CardHeader className="pb-4 shrink-0 flex flex-row items-center justify-between flex-wrap gap-4 border-b border-white/[0.08]">
           <CardTitle className="flex items-center gap-3 max-w-[60%]">
             <FileText className="w-6 h-6 text-primary shrink-0" />
-            <span className="truncate text-sm sm:text-base font-bold">{fileName || "PDF Viewer Preview"}</span>
+            <span className="truncate text-sm sm:text-base font-bold text-foreground">{fileName || "PDF Viewer Preview"}</span>
           </CardTitle>
 
           <div className="flex gap-2 items-center">
+            {driveFileId && (
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="border-white/[0.15] hover:bg-white/[0.05] cursor-pointer text-xs flex items-center gap-1.5 h-9 rounded-xl text-foreground shrink-0"
+              >
+                <a href={`https://drive.google.com/file/d/${driveFileId}/view`} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Open in Drive
+                </a>
+              </Button>
+            )}
+
             {onAddToStudySpace && (
               <Button
                 onClick={onAddToStudySpace}
@@ -128,7 +107,7 @@ export default function PDFViewer({ initialUrl = "", fileName = "", onAddToStudy
                   type="file"
                   accept=".pdf"
                   onChange={handleFileUpload}
-                  className="bg-white/[0.05] border-white/[0.15]"
+                  className="bg-white/[0.05] border-white/[0.15] text-xs text-foreground"
                 />
               </div>
             )}
@@ -139,15 +118,18 @@ export default function PDFViewer({ initialUrl = "", fileName = "", onAddToStudy
                   variant="outline"
                   size="sm"
                   onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
-                  className="border-white/[0.15] hover:bg-white/[0.05] cursor-pointer"
+                  className="border-white/[0.15] hover:bg-white/[0.05] cursor-pointer text-foreground"
                 >
                   <ZoomOut className="w-4 h-4" />
                 </Button>
+                <span className="flex items-center text-xs font-bold text-muted-foreground px-2">
+                  {Math.round(zoom * 100)}%
+                </span>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setZoom(Math.min(3.0, zoom + 0.25))}
-                  className="border-white/[0.15] hover:bg-white/[0.05] cursor-pointer"
+                  className="border-white/[0.15] hover:bg-white/[0.05] cursor-pointer text-foreground"
                 >
                   <ZoomIn className="w-4 h-4" />
                 </Button>
@@ -155,7 +137,7 @@ export default function PDFViewer({ initialUrl = "", fileName = "", onAddToStudy
                   variant="outline"
                   size="sm"
                   onClick={() => setRotation((rotation + 90) % 360)}
-                  className="border-white/[0.15] hover:bg-white/[0.05] cursor-pointer"
+                  className="border-white/[0.15] hover:bg-white/[0.05] cursor-pointer text-foreground"
                 >
                   <RotateCw className="w-4 h-4" />
                 </Button>
@@ -164,16 +146,30 @@ export default function PDFViewer({ initialUrl = "", fileName = "", onAddToStudy
           </div>
         </CardHeader>
 
-        <CardContent className="flex-1 flex flex-col overflow-auto relative items-center justify-center min-h-[350px]">
-          {pdfUrl ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white/[0.03] rounded-lg border border-white/[0.08] overflow-auto flex items-center justify-center max-h-full p-4"
-              style={{ minHeight: "300px", minWidth: "100%" }}
-            >
-              <canvas ref={canvasRef} className="max-w-full h-auto shadow-lg" />
-            </motion.div>
+        <CardContent className="flex-1 overflow-y-auto p-4 flex flex-col items-center gap-4 bg-black/10 ss-chat-scrollbar min-h-0 relative">
+          {loading ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+              <div className="flex flex-col items-center gap-2 text-primary">
+                <Loader2 className="w-8 h-8 animate-spin" />
+                <span className="text-xs font-bold">Loading document...</span>
+              </div>
+            </div>
+          ) : pdfUrl && pdfDoc ? (
+            <div className="w-full flex flex-col items-center gap-4 py-2">
+              {Array.from({ length: numPages }, (_, index) => (
+                <PDFPage
+                  key={index + 1}
+                  pdfDoc={pdfDoc}
+                  pageNumber={index + 1}
+                  zoom={zoom}
+                  rotation={rotation}
+                />
+              ))}
+            </div>
+          ) : pdfUrl && !pdfDoc ? (
+            <div className="flex-grow flex items-center justify-center">
+              <span className="text-sm font-semibold text-muted-foreground">Unable to load PDF document</span>
+            </div>
           ) : (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -189,6 +185,83 @@ export default function PDFViewer({ initialUrl = "", fileName = "", onAddToStudy
           )}
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+interface PDFPageProps {
+  pdfDoc: pdfjsLib.PDFDocumentProxy
+  pageNumber: number
+  zoom: number
+  rotation: number
+}
+
+function PDFPage({ pdfDoc, pageNumber, zoom, rotation }: PDFPageProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+
+    const render = async () => {
+      if (!canvasRef.current) return
+      setLoading(true)
+      try {
+        const page = await pdfDoc.getPage(pageNumber)
+        if (!active) return
+
+        const viewport = page.getViewport({ scale: zoom, rotation })
+        const canvas = canvasRef.current
+        const context = canvas.getContext("2d", { alpha: false })
+        if (!context || !active) return
+
+        canvas.height = viewport.height
+        canvas.width = viewport.width
+
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+          canvas: canvas,
+        }
+
+        if (renderTaskRef.current) {
+          renderTaskRef.current.cancel()
+        }
+
+        renderTaskRef.current = page.render(renderContext)
+        await renderTaskRef.current.promise
+        if (active) {
+          setLoading(false)
+        }
+      } catch (error: any) {
+        if (error?.name !== "RenderingCancelledException") {
+          console.error(`Error rendering page ${pageNumber}:`, error)
+        }
+      }
+    }
+
+    render()
+
+    return () => {
+      active = false
+      if (renderTaskRef.current) {
+        renderTaskRef.current.cancel()
+      }
+    }
+  }, [pdfDoc, pageNumber, zoom, rotation])
+
+  return (
+    <div className="bg-white/[0.02] rounded-xl border border-white/[0.08] p-3 flex flex-col items-center shadow-lg relative min-h-[150px]">
+      <div className="absolute top-1 right-2 text-[9px] font-black text-muted-foreground select-none">
+        Page {pageNumber}
+      </div>
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-[2px]">
+          <Loader2 className="w-5 h-5 animate-spin text-primary" />
+        </div>
+      )}
+      <canvas ref={canvasRef} className="max-w-full h-auto shadow-sm rounded-lg" />
     </div>
   )
 }

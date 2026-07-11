@@ -2408,6 +2408,7 @@ export default function StudySpaceClient({
               <PDFViewer
                 initialUrl={`/api/google-drive/download?fileId=${previewPdfFile.file_id}&authId=${currentUserId}`}
                 fileName={previewPdfFile.name}
+                driveFileId={previewPdfFile.file_id}
               />
             )}
           </div>
