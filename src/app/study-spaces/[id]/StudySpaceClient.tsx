@@ -400,16 +400,36 @@ export default function StudySpaceClient({
       .channel('room-quizzes-v2')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'study_room_quizzes', filter: `room_id=eq.${roomId}` },
-        () => {
-          getRoomDetails(roomId).then(d => setChatQuizzes(d.chatQuizzes))
+        { event: 'INSERT', schema: 'public', table: 'study_room_quizzes', filter: `room_id=eq.${roomId}` },
+        (payload: any) => {
+          const newQuiz = {
+            ...payload.new,
+            answers: []
+          }
+          setChatQuizzes((prev: any[]) => {
+            if (prev.some((q: any) => q.id === newQuiz.id)) return prev
+            return [newQuiz, ...prev]
+          })
         }
       )
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'study_room_quiz_answers' },
-        () => {
-          getRoomDetails(roomId).then(d => setChatQuizzes(d.chatQuizzes))
+        { event: 'INSERT', schema: 'public', table: 'study_room_quiz_answers' },
+        (payload: any) => {
+          const newAnswer = payload.new
+          setChatQuizzes((prev: any[]) => {
+            return prev.map((q: any) => {
+              if (q.id === newAnswer.quiz_id) {
+                const existingAnswers = q.answers || []
+                if (existingAnswers.some((a: any) => a.user_id === newAnswer.user_id)) return q
+                return {
+                  ...q,
+                  answers: [...existingAnswers, newAnswer]
+                }
+              }
+              return q
+            })
+          })
         }
       )
       .subscribe()
@@ -839,8 +859,7 @@ export default function StudySpaceClient({
 
   // --- PREVENT EXPIRING CHAT QUIZZES COUNTDOWN RENDER ---
   const isQuizExpired = (quiz: any) => {
-    if (!quiz.ends_at) return false
-    return new Date(quiz.ends_at).getTime() < Date.now()
+    return false
   }
 
   if (!mounted) {

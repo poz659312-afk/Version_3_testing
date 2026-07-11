@@ -1102,11 +1102,6 @@ export async function createChatQuiz(roomId: string, question: string, options: 
     const session = await checkAuth()
     const supabase = await createServerClient()
 
-    let endsAt = null
-    if (countdownSeconds) {
-      endsAt = new Date(Date.now() + countdownSeconds * 1000).toISOString()
-    }
-
     const { data: quizData, error } = await supabase
       .from('study_room_quizzes')
       .insert({
@@ -1115,8 +1110,8 @@ export async function createChatQuiz(roomId: string, question: string, options: 
         question,
         options,
         correct_answer: correctAnswer,
-        countdown_seconds: countdownSeconds,
-        ends_at: endsAt
+        countdown_seconds: null,
+        ends_at: null
       })
       .select('id')
       .single()
