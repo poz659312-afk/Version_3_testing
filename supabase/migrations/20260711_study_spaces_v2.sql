@@ -193,6 +193,31 @@ CREATE POLICY "Allow delete resources for space managers" ON public.study_room_r
     )
 );
 
+-- Manage/Update/Delete policies for votes & challenge progress
+CREATE POLICY "Allow update votes for owner" ON public.study_room_poll_votes FOR UPDATE TO authenticated USING (
+    auth.uid() = user_id
+) WITH CHECK (
+    auth.uid() = user_id AND EXISTS (
+        SELECT 1 FROM public.study_room_members 
+        WHERE room_id = (SELECT room_id FROM public.study_room_polls WHERE id = poll_id) 
+        AND user_id = auth.uid() AND status = 'approved'
+    )
+);
+
+CREATE POLICY "Allow delete votes for owner" ON public.study_room_poll_votes FOR DELETE TO authenticated USING (
+    auth.uid() = user_id
+);
+
+CREATE POLICY "Allow update progress for owner" ON public.study_room_challenge_progress FOR UPDATE TO authenticated USING (
+    auth.uid() = user_id
+) WITH CHECK (
+    auth.uid() = user_id AND EXISTS (
+        SELECT 1 FROM public.study_room_members 
+        WHERE room_id = (SELECT room_id FROM public.study_room_daily_challenges WHERE id = challenge_id) 
+        AND user_id = auth.uid() AND status = 'approved'
+    )
+);
+
 -- Update Realtime publication
 BEGIN;
   -- Add new tables to replication
