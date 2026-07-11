@@ -47,7 +47,8 @@ import {
   Play,
   Pause,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  Settings
 } from 'lucide-react'
 import { 
   getRoomDetails, 
@@ -274,8 +275,15 @@ export default function StudySpaceClient({
   }
 
   // Auto-scroll chat to bottom
+  // On initial mount: instant jump. On new messages: smooth scroll.
+  const isFirstScrollRef = useRef(true)
   useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (isFirstScrollRef.current) {
+      chatBottomRef.current?.scrollIntoView({ behavior: 'instant' })
+      isFirstScrollRef.current = false
+    } else {
+      chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
   }, [messages, chatTab])
 
   // --- STUDY TRACKER STOPWATCH ---
@@ -1686,30 +1694,40 @@ export default function StudySpaceClient({
                   </CardTitle>
                   <CardDescription className="text-[10px]">Notes scratchpad, quiz battles, polls and drive libraries.</CardDescription>
                 </div>
-                <div className="overflow-x-auto no-scrollbar">
-                  <TabsList className="inline-flex min-w-max bg-muted/50 border border-border p-0.5 rounded-lg h-8">
-                    <TabsTrigger value="notes" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
+                <div className="flex items-start gap-2">
+                  {/* 6 tabs in 2 rows of 3 */}
+                  <TabsList className="grid grid-cols-3 gap-0.5 bg-muted/50 border border-border p-0.5 rounded-lg h-auto flex-1">
+                    <TabsTrigger value="notes" className="text-[10px] h-7 rounded-md data-[state=active]:bg-card px-2 cursor-pointer">
                       Scratchpad
                     </TabsTrigger>
-                    <TabsTrigger value="quizzes" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
+                    <TabsTrigger value="quizzes" className="text-[10px] h-7 rounded-md data-[state=active]:bg-card px-2 cursor-pointer">
                       Quiz Battles
                     </TabsTrigger>
-                    <TabsTrigger value="polls" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
-                      Live Polls ({polls.length})
+                    <TabsTrigger value="polls" className="text-[10px] h-7 rounded-md data-[state=active]:bg-card px-2 cursor-pointer">
+                      Live Polls {polls.length > 0 && <span className="ml-0.5 opacity-70">({polls.length})</span>}
                     </TabsTrigger>
-                    <TabsTrigger value="daily" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
+                    <TabsTrigger value="daily" className="text-[10px] h-7 rounded-md data-[state=active]:bg-card px-2 cursor-pointer">
                       Daily Tasks
                     </TabsTrigger>
-                    <TabsTrigger value="resources" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
-                      Drive Resources ({resources.length})
+                    <TabsTrigger value="resources" className="text-[10px] h-7 rounded-md data-[state=active]:bg-card px-2 cursor-pointer">
+                      Resources {resources.length > 0 && <span className="ml-0.5 opacity-70">({resources.length})</span>}
                     </TabsTrigger>
-                    <TabsTrigger value="members" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
+                    <TabsTrigger value="members" className="text-[10px] h-7 rounded-md data-[state=active]:bg-card px-2 cursor-pointer">
                       Leaderboard
                     </TabsTrigger>
-                    <TabsTrigger value="settings" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
-                      Settings
-                    </TabsTrigger>
                   </TabsList>
+                  {/* Settings gear icon */}
+                  <button
+                    onClick={() => setActiveTab('settings')}
+                    className={`shrink-0 w-8 h-8 mt-0.5 rounded-lg border flex items-center justify-center transition-colors cursor-pointer ${
+                      activeTab === 'settings'
+                        ? 'bg-card border-primary text-primary'
+                        : 'bg-muted/50 border-border text-muted-foreground hover:text-foreground hover:bg-muted'
+                    }`}
+                    title="Settings"
+                  >
+                    <Settings className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
             </CardHeader>
