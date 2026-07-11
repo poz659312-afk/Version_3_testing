@@ -282,16 +282,24 @@ export default function StudySpaceClient({
   // Uses direct Supabase browser client (NOT server actions — those don't work in intervals)
   useEffect(() => {
     const supabase = createClient()
+    let isStopped = false
 
     const fetchUpdates = async () => {
+      if (isStopped) return
+
       try {
+        // Guard: verify session is still valid before hitting DB
+        // Use getSession() (not refreshSession) to avoid triggering unwanted sign-outs
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) return // Session gone — stop silently, don't sign out
+
         const [
-          { data: freshMessages },
-          { data: freshPolls },
-          { data: freshDailyChallenges },
-          { data: freshChatQuizzes },
-          { data: freshResources },
-          { data: freshMembers },
+          { data: freshMessages, error: e1 },
+          { data: freshPolls, error: e2 },
+          { data: freshDailyChallenges, error: e3 },
+          { data: freshChatQuizzes, error: e4 },
+          { data: freshResources, error: e5 },
+          { data: freshMembers, error: e6 },
         ] = await Promise.all([
           supabase
             .from('study_room_messages')
@@ -324,6 +332,10 @@ export default function StudySpaceClient({
             .eq('room_id', roomId),
         ])
 
+        // If ANY query returns auth error, just bail out — don't sign out, don't crash
+        if ([e1, e2, e3, e4, e5, e6].some(e => e?.code === 'PGRST301' || e?.message?.includes('JWT'))) return
+        if (isStopped) return
+
         if (freshMessages) {
           setMessages((prev: any) => JSON.stringify(prev) === JSON.stringify(freshMessages) ? prev : freshMessages)
         }
@@ -349,17 +361,20 @@ export default function StudySpaceClient({
             .from('study_room_message_reactions')
             .select('*')
             .in('message_id', freshMessages.map((m: any) => m.id))
-          if (freshReactions) {
+          if (freshReactions && !isStopped) {
             setMessageReactions((prev: any) => JSON.stringify(prev) === JSON.stringify(freshReactions) ? prev : freshReactions)
           }
         }
-      } catch (err) {
-        // Silently ignore errors — user should never know about this
+      } catch (_err) {
+        // Silently swallow all errors — never let polling crash the session
       }
     }
 
     const refreshTimer = setInterval(fetchUpdates, 5000)
-    return () => clearInterval(refreshTimer)
+    return () => {
+      isStopped = true
+      clearInterval(refreshTimer)
+    }
   }, [roomId])
 
   // --- STUDY TRACKER STOPWATCH ---
