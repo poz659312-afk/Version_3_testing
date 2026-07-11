@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { useLenis } from 'lenis/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
@@ -174,6 +175,22 @@ export default function StudySpaceClient({
 
   // --- RESOURCE PREVIEWER STATE ---
   const [previewPdfFile, setPreviewPdfFile] = useState<any>(null)
+
+  const lenis = useLenis()
+
+  useEffect(() => {
+    if (previewPdfFile) {
+      if (lenis) lenis.stop()
+      document.documentElement.classList.add('lenis-stopped')
+    } else {
+      if (lenis) lenis.start()
+      document.documentElement.classList.remove('lenis-stopped')
+    }
+    return () => {
+      if (lenis) lenis.start()
+      document.documentElement.classList.remove('lenis-stopped')
+    }
+  }, [previewPdfFile, lenis])
 
   // Collaboration references
   const isEditingRef = useRef(false)
@@ -2397,7 +2414,7 @@ export default function StudySpaceClient({
       <Dialog open={!!previewPdfFile} onOpenChange={(open) => {
         if (!open) setPreviewPdfFile(null)
       }}>
-        <DialogContent className="max-w-4xl h-[85vh] bg-background/95 backdrop-blur-xl border-border p-4 flex flex-col">
+        <DialogContent className="max-w-4xl h-[85vh] bg-background/95 backdrop-blur-xl border-border p-4 flex flex-col" data-lenis-prevent>
           <DialogHeader className="shrink-0 pb-2 border-b border-border">
             <DialogTitle className="text-sm font-bold text-foreground">
               PDF Previewer

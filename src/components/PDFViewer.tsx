@@ -146,7 +146,7 @@ export default function PDFViewer({ initialUrl = "", fileName = "", driveFileId 
           </div>
         </CardHeader>
 
-        <CardContent className="flex-1 overflow-y-auto p-4 flex flex-col items-center gap-4 bg-black/10 ss-chat-scrollbar min-h-0 relative">
+        <CardContent className="flex-1 overflow-y-auto p-4 flex flex-col items-center gap-4 bg-black/10 ss-chat-scrollbar min-h-0 relative" data-lenis-prevent>
           {loading ? (
             <div className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm">
               <div className="flex flex-col items-center gap-2 text-primary">
