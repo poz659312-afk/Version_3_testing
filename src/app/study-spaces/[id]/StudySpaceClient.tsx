@@ -308,22 +308,45 @@ export default function StudySpaceClient({
             user: { username, profile_image }
           }
 
-          setMessages((prev: any) => {
+          setMessages((prev: any[]) => {
             if (prev.some((m: any) => m.id === newMsg.id)) return prev
+            // Remove optimistic messages that match the content
+            const filtered = prev.filter((m: any) => {
+              if (String(m.id).startsWith('optimistic-') && m.content === newMsg.content && m.user_id === newMsg.user_id) {
+                return false
+              }
+              // Check for temp-quiz message matching the new content
+              const tempQuizMatch = String(m.id).startsWith('optimistic-') && m.content.match(/^\[QUIZ:optimistic-quiz-[\w-]+\] (.*)/)
+              const newQuizMatch = newMsg.content.match(/^\[QUIZ:([\w-]+)\] (.*)/)
+              if (tempQuizMatch && newQuizMatch && tempQuizMatch[1] === newQuizMatch[1]) {
+                return false
+              }
+              return true
+            })
             // Play sound if not focusing
             if (!isFocusing && senderId !== currentUserId) {
               playSystemSound('message')
             }
-            return [...prev, newMsg]
+            return [...filtered, newMsg]
           })
         }
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'study_room_message_reactions' },
-        () => {
-          // Re-fetch all reactions or details to keep synced
-          getRoomDetails(roomId).then(d => setMessageReactions(d.messageReactions))
+        (payload: any) => {
+          if (payload.eventType === 'INSERT') {
+            const newReaction = payload.new
+            setMessageReactions((prev: any[]) => {
+              if (prev.some(r => r.message_id === newReaction.message_id && r.user_id === newReaction.user_id && r.emoji === newReaction.emoji)) return prev
+              return [...prev, newReaction]
+            })
+          } else if (payload.eventType === 'DELETE') {
+            const oldReaction = payload.old
+            setMessageReactions((prev: any[]) => {
+              return prev.filter(r => !(r.message_id === oldReaction.message_id && r.user_id === oldReaction.user_id && r.emoji === oldReaction.emoji))
+            })
+          }
         }
       )
       .subscribe()
@@ -351,8 +374,33 @@ export default function StudySpaceClient({
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'study_room_members', filter: `room_id=eq.${roomId}` },
-        () => {
-          getRoomDetails(roomId).then(d => setMembers(d.members))
+        (payload: any) => {
+          if (payload.eventType === 'UPDATE') {
+            const updated = payload.new
+            setMembers((prev: any[]) => {
+              return prev.map(m => {
+                if (m.user?.auth_id === updated.user_id) {
+                  return {
+                    ...m,
+                    total_study_time: updated.total_study_time,
+                    current_streak: updated.current_streak,
+                    longest_streak: updated.longest_streak,
+                    last_active_at: updated.last_active_at,
+                    last_study_date: updated.last_study_date,
+                    weekly_study_time: updated.weekly_study_time,
+                    is_focusing: updated.is_focusing,
+                    focus_timer_ends_at: updated.focus_timer_ends_at,
+                    status: updated.status,
+                    role: updated.role
+                  }
+                }
+                return m
+              })
+            })
+          } else {
+            // For inserts or deletes, perform a soft reload
+            getRoomDetails(roomId).then(d => setMembers(d.members))
+          }
         }
       )
       .subscribe()
@@ -362,16 +410,97 @@ export default function StudySpaceClient({
       .channel('room-polls-v2')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'study_room_polls', filter: `room_id=eq.${roomId}` },
-        () => {
-          getRoomDetails(roomId).then(d => setPolls(d.polls))
+        { event: 'INSERT', schema: 'public', table: 'study_room_polls', filter: `room_id=eq.${roomId}` },
+        (payload: any) => {
+          const newPoll = {
+            ...payload.new,
+            votes: []
+          }
+          setPolls((prev: any[]) => {
+            // Filter out optimistic equivalents
+            const filtered = prev.filter(p => !(String(p.id).startsWith('optimistic-') && p.question === newPoll.question))
+            if (filtered.some(p => p.id === newPoll.id)) return filtered
+            return [newPoll, ...filtered]
+          })
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'study_room_polls', filter: `room_id=eq.${roomId}` },
+        (payload: any) => {
+          const updatedPoll = payload.new
+          setPolls((prev: any[]) => {
+            return prev.map(p => {
+              if (p.id === updatedPoll.id) {
+                return {
+                  ...p,
+                  question: updatedPoll.question,
+                  options: updatedPoll.options,
+                  is_multiple_choice: updatedPoll.is_multiple_choice,
+                  is_pinned: updatedPoll.is_pinned
+                }
+              }
+              return p
+            })
+          })
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'study_room_polls', filter: `room_id=eq.${roomId}` },
+        (payload: any) => {
+          const deletedPoll = payload.old
+          setPolls((prev: any[]) => prev.filter(p => p.id !== deletedPoll.id))
         }
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'study_room_poll_votes' },
-        () => {
-          getRoomDetails(roomId).then(d => setPolls(d.polls))
+        (payload: any) => {
+          if (payload.eventType === 'INSERT') {
+            const newVote = payload.new
+            setPolls((prev: any[]) => {
+              return prev.map(p => {
+                if (p.id === newVote.poll_id) {
+                  const votes = p.votes || []
+                  if (votes.some((v: any) => v.user_id === newVote.user_id)) return p
+                  return {
+                    ...p,
+                    votes: [...votes, newVote]
+                  }
+                }
+                return p
+              })
+            })
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedVote = payload.new
+            setPolls((prev: any[]) => {
+              return prev.map(p => {
+                if (p.id === updatedVote.poll_id) {
+                  const votes = p.votes || []
+                  return {
+                    ...p,
+                    votes: votes.map((v: any) => v.user_id === updatedVote.user_id ? updatedVote : v)
+                  }
+                }
+                return p
+              })
+            })
+          } else if (payload.eventType === 'DELETE') {
+            const deletedVote = payload.old
+            setPolls((prev: any[]) => {
+              return prev.map(p => {
+                if (p.id === deletedVote.poll_id) {
+                  const votes = p.votes || []
+                  return {
+                    ...p,
+                    votes: votes.filter((v: any) => v.user_id !== deletedVote.user_id)
+                  }
+                }
+                return p
+              })
+            })
+          }
         }
       )
       .subscribe()
@@ -381,16 +510,61 @@ export default function StudySpaceClient({
       .channel('room-dc-v2')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'study_room_daily_challenges', filter: `room_id=eq.${roomId}` },
-        () => {
-          getRoomDetails(roomId).then(d => setDailyChallenges(d.dailyChallenges))
+        { event: 'INSERT', schema: 'public', table: 'study_room_daily_challenges', filter: `room_id=eq.${roomId}` },
+        (payload: any) => {
+          const newChallenge = {
+            ...payload.new,
+            progress: []
+          }
+          setDailyChallenges((prev: any[]) => {
+            const filtered = prev.filter(c => !(String(c.id).startsWith('optimistic-') && c.title === newChallenge.title))
+            if (filtered.some(c => c.id === newChallenge.id)) return filtered
+            return [newChallenge, ...filtered]
+          })
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'study_room_daily_challenges', filter: `room_id=eq.${roomId}` },
+        (payload: any) => {
+          const deletedChallenge = payload.old
+          setDailyChallenges((prev: any[]) => prev.filter(c => c.id !== deletedChallenge.id))
         }
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'study_room_challenge_progress' },
-        () => {
-          getRoomDetails(roomId).then(d => setDailyChallenges(d.dailyChallenges))
+        (payload: any) => {
+          if (payload.eventType === 'INSERT') {
+            const newProgress = payload.new
+            setDailyChallenges((prev: any[]) => {
+              return prev.map(c => {
+                if (c.id === newProgress.challenge_id) {
+                  const progressList = c.progress || []
+                  if (progressList.some((p: any) => p.user_id === newProgress.user_id)) return c
+                  return {
+                    ...c,
+                    progress: [...progressList, newProgress]
+                  }
+                }
+                return c
+              })
+            })
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedProgress = payload.new
+            setDailyChallenges((prev: any[]) => {
+              return prev.map(c => {
+                if (c.id === updatedProgress.challenge_id) {
+                  const progressList = c.progress || []
+                  return {
+                    ...c,
+                    progress: progressList.map((p: any) => p.user_id === updatedProgress.user_id ? updatedProgress : p)
+                  }
+                }
+                return c
+              })
+            })
+          }
         }
       )
       .subscribe()
@@ -407,8 +581,9 @@ export default function StudySpaceClient({
             answers: []
           }
           setChatQuizzes((prev: any[]) => {
-            if (prev.some((q: any) => q.id === newQuiz.id)) return prev
-            return [newQuiz, ...prev]
+            const filtered = prev.filter(q => !String(q.id).startsWith('optimistic-'))
+            if (filtered.some((q: any) => q.id === newQuiz.id)) return filtered
+            return [newQuiz, ...filtered]
           })
         }
       )
@@ -439,9 +614,21 @@ export default function StudySpaceClient({
       .channel('room-resources-v2')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'study_room_resources', filter: `room_id=eq.${roomId}` },
-        () => {
-          getRoomDetails(roomId).then(d => setResources(d.resources))
+        { event: 'INSERT', schema: 'public', table: 'study_room_resources', filter: `room_id=eq.${roomId}` },
+        (payload: any) => {
+          const newResource = payload.new
+          setResources((prev: any[]) => {
+            if (prev.some(r => r.id === newResource.id)) return prev
+            return [newResource, ...prev]
+          })
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'study_room_resources', filter: `room_id=eq.${roomId}` },
+        (payload: any) => {
+          const deletedResource = payload.old
+          setResources((prev: any[]) => prev.filter(r => r.id !== deletedResource.id))
         }
       )
       .subscribe()
@@ -626,8 +813,9 @@ export default function StudySpaceClient({
     setIsQuestionInput(false)
 
     // Optimistic insert
+    const optimisticMsgId = 'optimistic-' + Math.random().toString()
     const optimisticMsg = {
-      id: Math.random().toString(),
+      id: optimisticMsgId,
       content: messageContent,
       is_question: isQuestion,
       created_at: new Date().toISOString(),
@@ -642,15 +830,30 @@ export default function StudySpaceClient({
     const res = await sendRoomMessage(roomId, messageContent, isQuestion)
     if (!res.success) {
       toast.error('Failed to send message.')
+      setMessages((prev: any[]) => prev.filter(m => m.id !== optimisticMsgId))
     }
   }
 
   // --- CHAT REACTION HANDLERS ---
   const handleMessageReaction = async (messageId: string, emoji: string) => {
+    // Optimistic reaction toggle
+    const existing = messageReactions.find(r => r.message_id === messageId && r.user_id === currentUserId && r.emoji === emoji)
+    if (existing) {
+      setMessageReactions((prev: any[]) => prev.filter(r => !(r.message_id === messageId && r.user_id === currentUserId && r.emoji === emoji)))
+    } else {
+      const tempReaction = { message_id: messageId, user_id: currentUserId, emoji }
+      setMessageReactions((prev: any[]) => [...prev, tempReaction])
+    }
+
     const res = await toggleMessageReaction(messageId, emoji)
-    if (res.success) {
-      // Soft refresh reactions
-      getRoomDetails(roomId).then(d => setMessageReactions(d.messageReactions))
+    if (!res.success) {
+      toast.error('Failed to update reaction.')
+      // Revert optimistic changes
+      if (existing) {
+        setMessageReactions((prev: any[]) => [...prev, existing])
+      } else {
+        setMessageReactions((prev: any[]) => prev.filter(r => !(r.message_id === messageId && r.user_id === currentUserId && r.emoji === emoji)))
+      }
     }
   }
 
@@ -679,15 +882,34 @@ export default function StudySpaceClient({
       return
     }
 
-    const res = await createRoomPoll(roomId, pollQuestion, validOptions, pollMultiChoice)
-    if (res.success) {
-      toast.success('Poll created successfully!')
-      setPollQuestion('')
-      setPollOptions(['', ''])
-      setPollMultiChoice(false)
-      setOpenPollCreator(false)
-    } else {
+    const questionText = pollQuestion
+    const optionsText = validOptions
+    const isMulti = pollMultiChoice
+
+    setPollQuestion('')
+    setPollOptions(['', ''])
+    setPollMultiChoice(false)
+    setOpenPollCreator(false)
+
+    // Optimistic insert
+    const tempPollId = 'optimistic-poll-' + Math.random().toString()
+    const optimisticPoll = {
+      id: tempPollId,
+      room_id: roomId,
+      question: questionText,
+      options: optionsText,
+      is_multiple_choice: isMulti,
+      is_pinned: false,
+      created_by: currentUserId,
+      created_at: new Date().toISOString(),
+      votes: []
+    }
+    setPolls((prev: any[]) => [optimisticPoll, ...prev])
+
+    const res = await createRoomPoll(roomId, questionText, optionsText, isMulti)
+    if (!res.success) {
       toast.error(res.error || 'Failed to create poll')
+      setPolls((prev: any[]) => prev.filter(p => p.id !== tempPollId))
     }
   }
 
@@ -709,18 +931,60 @@ export default function StudySpaceClient({
       selected = [optionIndex]
     }
 
+    // Optimistically update poll votes
+    setPolls((prev: any[]) => {
+      return prev.map(p => {
+        if (p.id === pollId) {
+          const votes = p.votes || []
+          const existingVote = votes.find((v: any) => v.user_id === currentUserId)
+          let nextVotes
+          if (existingVote) {
+            nextVotes = votes.map((v: any) => v.user_id === currentUserId ? { ...v, selected_options: selected } : v)
+          } else {
+            nextVotes = [...votes, { poll_id: pollId, user_id: currentUserId, selected_options: selected }]
+          }
+          return {
+            ...p,
+            votes: nextVotes
+          }
+        }
+        return p
+      })
+    })
+
     const res = await voteOnPoll(pollId, selected)
-    if (res.success) {
-      toast.success('Vote submitted!')
-    } else {
+    if (!res.success) {
       toast.error(res.error || 'Failed to submit vote')
+      // Restore previous votes from backend
+      getRoomDetails(roomId).then(d => setPolls(d.polls))
     }
   }
 
   const handleTogglePinPoll = async (pollId: string, isPinned: boolean) => {
+    // Optimistically toggle pin
+    setPolls((prev: any[]) => {
+      return prev.map(p => {
+        if (p.id === pollId) {
+          return { ...p, is_pinned: !isPinned }
+        }
+        return p
+      })
+    })
+
     const res = await togglePinPoll(pollId, !isPinned)
     if (res.success) {
       toast.success(!isPinned ? 'Poll pinned to top!' : 'Poll unpinned.')
+    } else {
+      toast.error(res.error || 'Failed to toggle pin')
+      // Revert pin
+      setPolls((prev: any[]) => {
+        return prev.map(p => {
+          if (p.id === pollId) {
+            return { ...p, is_pinned: isPinned }
+          }
+          return p
+        })
+      })
     }
   }
 
@@ -730,23 +994,65 @@ export default function StudySpaceClient({
       toast.error('Challenge title is required')
       return
     }
-    const res = await createDailyChallenge(roomId, dcTitle, dcDesc, dcXp)
-    if (res.success) {
-      toast.success('Daily Challenge created!')
-      setDcTitle('')
-      setDcDesc('')
-      setDcXp(100)
-      setOpenDcCreator(false)
-    } else {
+
+    const titleText = dcTitle
+    const descText = dcDesc
+    const xpVal = dcXp
+
+    setDcTitle('')
+    setDcDesc('')
+    setDcXp(100)
+    setOpenDcCreator(false)
+
+    // Optimistic insert
+    const tempChallengeId = 'optimistic-challenge-' + Math.random().toString()
+    const optimisticChallenge = {
+      id: tempChallengeId,
+      room_id: roomId,
+      title: titleText,
+      description: descText,
+      xp_reward: xpVal,
+      challenge_date: new Date().toISOString().split('T')[0],
+      created_at: new Date().toISOString(),
+      progress: []
+    }
+    setDailyChallenges((prev: any[]) => [optimisticChallenge, ...prev])
+
+    const res = await createDailyChallenge(roomId, titleText, descText, xpVal)
+    if (!res.success) {
       toast.error(res.error || 'Failed to create challenge')
+      setDailyChallenges((prev: any[]) => prev.filter(c => c.id !== tempChallengeId))
     }
   }
 
   const handleProgressSliderChange = async (challengeId: string, progressVal: number) => {
+    // Optimistic progress slider update
+    setDailyChallenges((prev: any[]) => {
+      return prev.map(c => {
+        if (c.id === challengeId) {
+          const progressList = c.progress || []
+          const myProg = progressList.find((p: any) => p.user_id === currentUserId)
+          let nextProgList
+          if (myProg) {
+            nextProgList = progressList.map((p: any) => p.user_id === currentUserId ? { ...p, progress: progressVal, is_completed: progressVal >= 100 } : p)
+          } else {
+            nextProgList = [...progressList, { challenge_id: challengeId, user_id: currentUserId, progress: progressVal, is_completed: progressVal >= 100 }]
+          }
+          return { ...c, progress: nextProgList }
+        }
+        return c
+      })
+    })
+
     const res = await updateDailyChallengeProgress(challengeId, progressVal)
-    if (res.success && progressVal >= 100) {
-      toast.success('Challenge completed! Coins awarded!')
-      playSystemSound('success')
+    if (res.success) {
+      if (progressVal >= 100) {
+        toast.success('Challenge completed! Coins awarded!')
+        playSystemSound('success')
+      }
+    } else {
+      toast.error(res.error || 'Failed to update progress')
+      getRoomDetails(roomId).then(d => setDailyChallenges(d.dailyChallenges))
     }
   }
 
@@ -762,29 +1068,102 @@ export default function StudySpaceClient({
       return
     }
 
-    const res = await createChatQuiz(roomId, quizQuestion, validOptions, quizAnswer, quizCountdown)
-    if (res.success) {
-      toast.success('Inline Chat Quiz posted!')
-      setQuizQuestion('')
-      setQuizOptions(['', '', '', ''])
-      setQuizAnswer('')
-      setOpenQuizCreator(false)
-    } else {
+    const questionText = quizQuestion
+    const optionsText = validOptions
+    const answerText = quizAnswer
+
+    setQuizQuestion('')
+    setQuizOptions(['', '', '', ''])
+    setQuizAnswer('')
+    setOpenQuizCreator(false)
+
+    // Optimistic insert quiz and matching reference message
+    const tempQuizId = 'optimistic-quiz-' + Math.random().toString()
+    const tempMsgId = 'optimistic-msg-' + Math.random().toString()
+
+    const optimisticQuiz = {
+      id: tempQuizId,
+      room_id: roomId,
+      created_by: currentUserId,
+      question: questionText,
+      options: optionsText,
+      correct_answer: answerText,
+      countdown_seconds: null,
+      ends_at: null,
+      answers: []
+    }
+    setChatQuizzes((prev: any[]) => [optimisticQuiz, ...prev])
+
+    const optimisticMsg = {
+      id: tempMsgId,
+      content: `[QUIZ:${tempQuizId}] ${questionText}`,
+      is_question: false,
+      created_at: new Date().toISOString(),
+      user_id: currentUserId,
+      user: {
+        username: currentMember?.user?.username || 'You',
+        profile_image: currentMember?.user?.profile_image || null
+      }
+    }
+    setMessages((prev: any) => [...prev, optimisticMsg])
+
+    const res = await createChatQuiz(roomId, questionText, optionsText, answerText)
+    if (!res.success) {
       toast.error(res.error || 'Failed to create quiz')
+      setChatQuizzes((prev: any[]) => prev.filter(q => q.id !== tempQuizId))
+      setMessages((prev: any[]) => prev.filter(m => m.id !== tempMsgId))
     }
   }
 
   const handleSubmitQuizAnswer = async (quizId: string, choiceText: string) => {
-    const res = await submitQuizAnswer(quizId, choiceText)
-    if (res.success) {
-      if (res.isCorrect) {
-        toast.success('Correct! +10 Coins added!')
-        playSystemSound('success')
-      } else {
-        toast.error('Incorrect answer! Keep studying!')
-      }
+    // Optimistic answer
+    setChatQuizzes((prev: any[]) => {
+      return prev.map(q => {
+        if (q.id === quizId) {
+          const answers = q.answers || []
+          if (answers.some((a: any) => a.user_id === currentUserId)) return q
+          const optimisticAnswer = {
+            quiz_id: quizId,
+            user_id: currentUserId,
+            answer: choiceText,
+            is_correct: choiceText === q.correct_answer,
+            score: choiceText === q.correct_answer ? 10 : 0,
+            submitted_at: new Date().toISOString()
+          }
+          return {
+            ...q,
+            answers: [...answers, optimisticAnswer]
+          }
+        }
+        return q
+      })
+    })
+
+    const q = chatQuizzes.find(x => x.id === quizId)
+    const isCorrect = q ? choiceText === q.correct_answer : false
+    if (isCorrect) {
+      toast.success('Correct! +10 Coins added!')
+      playSystemSound('success')
     } else {
+      toast.error('Incorrect answer! Keep studying!')
+    }
+
+    const res = await submitQuizAnswer(quizId, choiceText)
+    if (!res.success) {
       toast.error(res.error || 'Failed to submit answer')
+      // Revert optimistic answer
+      setChatQuizzes((prev: any[]) => {
+        return prev.map(q => {
+          if (q.id === quizId) {
+            const answers = q.answers || []
+            return {
+              ...q,
+              answers: answers.filter((a: any) => a.user_id !== currentUserId)
+            }
+          }
+          return q
+        })
+      })
     }
   }
 
