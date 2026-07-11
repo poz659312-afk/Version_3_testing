@@ -279,19 +279,86 @@ export default function StudySpaceClient({
   }, [messages, chatTab])
 
   // Silent unnoticeable background polling sync every 5 seconds
+  // Uses direct Supabase browser client (NOT server actions — those don't work in intervals)
   useEffect(() => {
-    const refreshTimer = setInterval(() => {
-      getRoomDetails(roomId).then(d => {
-        // Silently update states in the background if they actually changed
-        setMembers((prev: any) => JSON.stringify(prev) === JSON.stringify(d.members) ? prev : d.members)
-        setPolls((prev: any) => JSON.stringify(prev) === JSON.stringify(d.polls) ? prev : d.polls)
-        setDailyChallenges((prev: any) => JSON.stringify(prev) === JSON.stringify(d.dailyChallenges) ? prev : d.dailyChallenges)
-        setChatQuizzes((prev: any) => JSON.stringify(prev) === JSON.stringify(d.chatQuizzes) ? prev : d.chatQuizzes)
-        setResources((prev: any) => JSON.stringify(prev) === JSON.stringify(d.resources) ? prev : d.resources)
-        setMessageReactions((prev: any) => JSON.stringify(prev) === JSON.stringify(d.messageReactions) ? prev : d.messageReactions)
-      }).catch(err => console.error("Silent background refresh error:", err))
-    }, 5000)
+    const supabase = createClient()
 
+    const fetchUpdates = async () => {
+      try {
+        const [
+          { data: freshMessages },
+          { data: freshPolls },
+          { data: freshDailyChallenges },
+          { data: freshChatQuizzes },
+          { data: freshResources },
+          { data: freshMembers },
+        ] = await Promise.all([
+          supabase
+            .from('study_room_messages')
+            .select('id, content, is_question, created_at, user_id, user:user_id(username, profile_image)')
+            .eq('room_id', roomId)
+            .order('created_at', { ascending: true }),
+          supabase
+            .from('study_room_polls')
+            .select('*, votes:study_room_poll_votes(*)')
+            .eq('room_id', roomId)
+            .order('created_at', { ascending: false }),
+          supabase
+            .from('study_room_daily_challenges')
+            .select('*, progress:study_room_challenge_progress(*)')
+            .eq('room_id', roomId)
+            .order('challenge_date', { ascending: false }),
+          supabase
+            .from('study_room_quizzes')
+            .select('*, answers:study_room_quiz_answers(*)')
+            .eq('room_id', roomId)
+            .order('created_at', { ascending: false }),
+          supabase
+            .from('study_room_resources')
+            .select('*')
+            .eq('room_id', roomId)
+            .order('created_at', { ascending: false }),
+          supabase
+            .from('study_room_members')
+            .select('role, joined_at, status, total_study_time, current_streak, longest_streak, last_active_at, last_study_date, weekly_study_time, is_focusing, focus_timer_ends_at, user:user_id(auth_id, username, email, current_level, specialization, phone_number, coins, profile_image)')
+            .eq('room_id', roomId),
+        ])
+
+        if (freshMessages) {
+          setMessages((prev: any) => JSON.stringify(prev) === JSON.stringify(freshMessages) ? prev : freshMessages)
+        }
+        if (freshPolls) {
+          setPolls((prev: any) => JSON.stringify(prev) === JSON.stringify(freshPolls) ? prev : freshPolls)
+        }
+        if (freshDailyChallenges) {
+          setDailyChallenges((prev: any) => JSON.stringify(prev) === JSON.stringify(freshDailyChallenges) ? prev : freshDailyChallenges)
+        }
+        if (freshChatQuizzes) {
+          setChatQuizzes((prev: any) => JSON.stringify(prev) === JSON.stringify(freshChatQuizzes) ? prev : freshChatQuizzes)
+        }
+        if (freshResources) {
+          setResources((prev: any) => JSON.stringify(prev) === JSON.stringify(freshResources) ? prev : freshResources)
+        }
+        if (freshMembers) {
+          setMembers((prev: any) => JSON.stringify(prev) === JSON.stringify(freshMembers) ? prev : freshMembers)
+        }
+
+        // Also fetch reactions for current messages
+        if (freshMessages && freshMessages.length > 0) {
+          const { data: freshReactions } = await supabase
+            .from('study_room_message_reactions')
+            .select('*')
+            .in('message_id', freshMessages.map((m: any) => m.id))
+          if (freshReactions) {
+            setMessageReactions((prev: any) => JSON.stringify(prev) === JSON.stringify(freshReactions) ? prev : freshReactions)
+          }
+        }
+      } catch (err) {
+        // Silently ignore errors — user should never know about this
+      }
+    }
+
+    const refreshTimer = setInterval(fetchUpdates, 5000)
     return () => clearInterval(refreshTimer)
   }, [roomId])
 
