@@ -1513,10 +1513,15 @@ export default function StudySpaceClient({
                     </div>
 
                     <div className={`flex flex-col ${isSelf ? 'items-end' : 'items-start'}`}>
-                      <div className="flex items-center gap-1.5 mb-0.5">
+                      <div className={`flex items-center gap-1.5 mb-0.5 ${isSelf ? 'flex-row-reverse' : ''}`}>
                         <span className="text-[9px] text-muted-foreground font-semibold px-1">
                           {msg.user?.username || 'Student'}
                         </span>
+                        {msg.created_at && (
+                          <span className="text-[8px] text-muted-foreground/60 font-medium">
+                            {formatMessageTime(msg.created_at)}
+                          </span>
+                        )}
                       </div>
                       
                       <div 
