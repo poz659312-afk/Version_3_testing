@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Users, 
   MessageSquare, 
@@ -32,7 +33,20 @@ import {
   Plus,
   Shield,
   ShieldOff,
-  Trash2
+  Trash2,
+  Tv,
+  BrainCircuit,
+  VolumeX,
+  Volume2,
+  FolderOpen,
+  Pin,
+  Trophy,
+  Flame,
+  Hourglass,
+  Play,
+  Pause,
+  ExternalLink,
+  ChevronRight
 } from 'lucide-react'
 import { 
   getRoomDetails, 
@@ -45,18 +59,26 @@ import {
   removeMember,
   updateRoomSettings,
   deleteStudyRoom,
-  toggleMemberRole
+  toggleMemberRole,
+  setFocusStatus,
+  updateStudyTime,
+  toggleMessageReaction,
+  createRoomPoll,
+  voteOnPoll,
+  togglePinPoll,
+  createDailyChallenge,
+  updateDailyChallengeProgress,
+  createChatQuiz,
+  submitQuizAnswer,
+  removeRoomResource,
+  incrementResourceViews
 } from '../actions'
+import dynamic from 'next/dynamic'
+
+const PDFViewer = dynamic(() => import('@/components/PDFViewer'), { ssr: false })
 
 interface StudySpaceClientProps {
-  initialDetails: {
-    room: any
-    members: any[]
-    messages: any[]
-    challenges: any[]
-    availableQuizzes: any[]
-    currentUserId: string
-  }
+  initialDetails: any
   roomId: string
 }
 
@@ -77,10 +99,15 @@ export default function StudySpaceClient({
   const [members, setMembers] = useState(initialDetails?.members || [])
   const [messages, setMessages] = useState(initialDetails?.messages || [])
   const [challenges, setChallenges] = useState(initialDetails?.challenges || [])
+  const [polls, setPolls] = useState<any[]>(initialDetails?.polls || [])
+  const [dailyChallenges, setDailyChallenges] = useState<any[]>(initialDetails?.dailyChallenges || [])
+  const [chatQuizzes, setChatQuizzes] = useState<any[]>(initialDetails?.chatQuizzes || [])
+  const [resources, setResources] = useState<any[]>(initialDetails?.resources || [])
+  const [messageReactions, setMessageReactions] = useState<any[]>(initialDetails?.messageReactions || [])
   const [availableQuizzes] = useState(initialDetails?.availableQuizzes || [])
   const currentUserId = initialDetails?.currentUserId
 
-  const isOwner = room.created_by === currentUserId;
+  const isOwner = room.created_by === currentUserId
 
   const [settingsName, setSettingsName] = useState(room.name || '')
   const [settingsDesc, setSettingsDesc] = useState(room.description || '')
@@ -103,12 +130,321 @@ export default function StudySpaceClient({
   const isAdmin = currentMember?.role === 'admin'
   const canManage = isOwner || isAdmin
 
+  // --- FOCUS MODE STATES ---
+  const [isFocusing, setIsFocusing] = useState(currentMember?.is_focusing || false)
+  const [focusTimerDuration, setFocusTimerDuration] = useState<number>(25) // Default 25 min Pomodoro
+  const [focusTimerRemaining, setFocusTimerRemaining] = useState<number>(0)
+  const [focusTimerInterval, setFocusTimerInterval] = useState<any>(null)
+
+  // --- STUDY TRACKER STATE ---
+  const [studySecondsElapsed, setStudySecondsElapsed] = useState<number>(0)
+  const lastEgressTimeRef = useRef<number>(Date.now())
+
+  // --- TAB NAVIGATION ---
+  const [activeTab, setActiveTab] = useState('notes') // 'notes' | 'quizzes' | 'polls' | 'daily' | 'resources' | 'members' | 'settings'
+  const [chatTab, setChatTab] = useState('all') // 'all' | 'questions'
+  const [chatInput, setChatInput] = useState('')
+  const [isQuestionInput, setIsQuestionInput] = useState(false)
+  const [scratchpad, setScratchpad] = useState(room.scratchpad_content || '')
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false)
+  const [confirmLeave, setConfirmLeave] = useState(false)
+  
+  // --- QUIZ LAUNCH STATES ---
+  const [openChallenge, setOpenChallenge] = useState(false)
+  const [selectedQuizCode, setSelectedQuizCode] = useState('')
+
+  // --- POLL CREATOR STATES ---
+  const [pollQuestion, setPollQuestion] = useState('')
+  const [pollOptions, setPollOptions] = useState(['', ''])
+  const [pollMultiChoice, setPollMultiChoice] = useState(false)
+  const [openPollCreator, setOpenPollCreator] = useState(false)
+
+  // --- DAILY CHALLENGE CREATOR STATES ---
+  const [dcTitle, setDcTitle] = useState('')
+  const [dcDesc, setDcDesc] = useState('')
+  const [dcXp, setDcXp] = useState(100)
+  const [openDcCreator, setOpenDcCreator] = useState(false)
+
+  // --- CHAT QUIZ CREATOR STATES ---
+  const [quizQuestion, setQuizQuestion] = useState('')
+  const [quizOptions, setQuizOptions] = useState(['', '', '', ''])
+  const [quizAnswer, setQuizAnswer] = useState('')
+  const [quizCountdown, setQuizCountdown] = useState(30)
+  const [openQuizCreator, setOpenQuizCreator] = useState(false)
+
+  // --- RESOURCE PREVIEWER STATE ---
+  const [previewPdfFile, setPreviewPdfFile] = useState<any>(null)
+
+  // Collaboration references
+  const isEditingRef = useRef(false)
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const chatBottomRef = useRef<HTMLDivElement>(null)
+  
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const lastSavedContentRef = useRef(room.scratchpad_content || '')
+
+  // Sound Synth Helper
+  const playSystemSound = (type: 'message' | 'focus-end' | 'success') => {
+    if (typeof window === 'undefined') return
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const osc = audioCtx.createOscillator()
+      const gain = audioCtx.createGain()
+      osc.connect(gain)
+      gain.connect(audioCtx.destination)
+
+      if (type === 'message') {
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime) // D5
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime)
+        osc.start()
+        osc.stop(audioCtx.currentTime + 0.08)
+      } else if (type === 'focus-end') {
+        osc.type = 'triangle'
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime) // A4
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.4) // A5
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime)
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4)
+        osc.start()
+        osc.stop(audioCtx.currentTime + 0.5)
+      } else if (type === 'success') {
+        osc.type = 'sine'
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime) // C5
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1) // E5
+        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2) // G5
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime)
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4)
+        osc.start()
+        osc.stop(audioCtx.currentTime + 0.4)
+      }
+    } catch (err) {
+      console.warn('Audio synthesis failed:', err)
+    }
+  }
+
+  // Auto-scroll chat to bottom
+  useEffect(() => {
+    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  // --- STUDY TRACKER STOPWATCH ---
+  useEffect(() => {
+    const studyTimer = setInterval(() => {
+      setStudySecondsElapsed(prev => {
+        const nextVal = prev + 1
+        // Auto-save/egress study time to database every 3 minutes (180 seconds)
+        if (nextVal > 0 && nextVal % 180 === 0) {
+          const delta = nextVal - (nextVal - 180)
+          updateStudyTime(roomId, delta).then(res => {
+            if (res.success) {
+              // Soft refresh members data
+              getRoomDetails(roomId).then(d => setMembers(d.members))
+            }
+          })
+        }
+        return nextVal
+      })
+    }, 1000)
+
+    // Unmount or window blur: send final study time session delta
+    return () => {
+      clearInterval(studyTimer)
+      const now = Date.now()
+      const deltaSec = Math.floor((now - lastEgressTimeRef.current) / 1000)
+      if (deltaSec > 5) {
+        updateStudyTime(roomId, deltaSec)
+      }
+    }
+  }, [roomId])
+
+  // --- FOCUS MODE POMODORO DECREMENTER ---
+  useEffect(() => {
+    if (isFocusing && currentMember?.focus_timer_ends_at) {
+      const endsAt = new Date(currentMember.focus_timer_ends_at).getTime()
+      
+      const updateTimer = () => {
+        const remaining = Math.max(0, Math.floor((endsAt - Date.now()) / 1000))
+        setFocusTimerRemaining(remaining)
+        
+        if (remaining <= 0) {
+          setIsFocusing(false)
+          setFocusStatus(roomId, false)
+          playSystemSound('focus-end')
+          toast.success('Your focus session has finished! Welcome back to normal mode.')
+          clearInterval(intervalId)
+        }
+      }
+      
+      updateTimer()
+      const intervalId = setInterval(updateTimer, 1000)
+      return () => clearInterval(intervalId)
+    } else {
+      setFocusTimerRemaining(0)
+    }
+  }, [isFocusing, currentMember])
+
+  // --- REAL-TIME SUBSCRIPTIONS ---
+  useEffect(() => {
+    const supabase = createClient()
+
+    // 1. Messages and Message Reactions Channel
+    const messageChannel = supabase
+      .channel('room-messages-v2')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'study_room_messages', filter: `room_id=eq.${roomId}` },
+        (payload: any) => {
+          const senderId = payload.new.user_id
+          const sender = members.find((m: any) => m.user?.auth_id === senderId)
+          const username = sender?.user?.username || 'Anonymous Student'
+          const profile_image = sender?.user?.profile_image || null
+
+          const newMsg = {
+            id: payload.new.id,
+            content: payload.new.content,
+            is_question: payload.new.is_question,
+            created_at: payload.new.created_at,
+            user_id: senderId,
+            user: { username, profile_image }
+          }
+
+          setMessages((prev: any) => {
+            if (prev.some((m: any) => m.id === newMsg.id)) return prev
+            // Play sound if not focusing
+            if (!isFocusing && senderId !== currentUserId) {
+              playSystemSound('message')
+            }
+            return [...prev, newMsg]
+          })
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'study_room_message_reactions' },
+        () => {
+          // Re-fetch all reactions or details to keep synced
+          getRoomDetails(roomId).then(d => setMessageReactions(d.messageReactions))
+        }
+      )
+      .subscribe()
+
+    // 2. Scratchpad update channel
+    const scratchpadChannel = supabase
+      .channel('room-scratchpad-v2')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'study_rooms', filter: `id=eq.${roomId}` },
+        (payload: any) => {
+          if (!isEditingRef.current) {
+            const newContent = payload.new.scratchpad_content || ''
+            setScratchpad(newContent)
+            lastSavedContentRef.current = newContent
+            setHasUnsavedChanges(false)
+          }
+        }
+      )
+      .subscribe()
+
+    // 3. Member changes (focus, streaks, time tracking)
+    const membersChannel = supabase
+      .channel('room-members-v2')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'study_room_members', filter: `room_id=eq.${roomId}` },
+        () => {
+          getRoomDetails(roomId).then(d => setMembers(d.members))
+        }
+      )
+      .subscribe()
+
+    // 4. Polls & Votes
+    const pollsChannel = supabase
+      .channel('room-polls-v2')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'study_room_polls', filter: `room_id=eq.${roomId}` },
+        () => {
+          getRoomDetails(roomId).then(d => setPolls(d.polls))
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'study_room_poll_votes' },
+        () => {
+          getRoomDetails(roomId).then(d => setPolls(d.polls))
+        }
+      )
+      .subscribe()
+
+    // 5. Daily Challenges
+    const dcChannel = supabase
+      .channel('room-dc-v2')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'study_room_daily_challenges', filter: `room_id=eq.${roomId}` },
+        () => {
+          getRoomDetails(roomId).then(d => setDailyChallenges(d.dailyChallenges))
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'study_room_challenge_progress' },
+        () => {
+          getRoomDetails(roomId).then(d => setDailyChallenges(d.dailyChallenges))
+        }
+      )
+      .subscribe()
+
+    // 6. Quizzes
+    const quizzesChannel = supabase
+      .channel('room-quizzes-v2')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'study_room_quizzes', filter: `room_id=eq.${roomId}` },
+        () => {
+          getRoomDetails(roomId).then(d => setChatQuizzes(d.chatQuizzes))
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'study_room_quiz_answers' },
+        () => {
+          getRoomDetails(roomId).then(d => setChatQuizzes(d.chatQuizzes))
+        }
+      )
+      .subscribe()
+
+    // 7. Resources
+    const resourcesChannel = supabase
+      .channel('room-resources-v2')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'study_room_resources', filter: `room_id=eq.${roomId}` },
+        () => {
+          getRoomDetails(roomId).then(d => setResources(d.resources))
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(messageChannel)
+      supabase.removeChannel(scratchpadChannel)
+      supabase.removeChannel(membersChannel)
+      supabase.removeChannel(pollsChannel)
+      supabase.removeChannel(dcChannel)
+      supabase.removeChannel(quizzesChannel)
+      supabase.removeChannel(resourcesChannel)
+    }
+  }, [roomId, members, isFocusing])
+
+  // --- ACTIONS HANDLERS ---
+  
   const handleApprove = async (userId: string) => {
     try {
       const res = await approveMember(roomId, userId)
       if (res.success) {
         toast.success('Member approved successfully!')
-        setMembers(prev => prev.map(m => m.user?.auth_id === userId ? { ...m, status: 'approved' } : m))
+        setMembers((prev: any[]) => prev.map((m: any) => m.user?.auth_id === userId ? { ...m, status: 'approved' } : m))
       } else {
         toast.error(res.error || 'Failed to approve member')
       }
@@ -122,7 +458,7 @@ export default function StudySpaceClient({
       const res = await rejectMember(roomId, userId)
       if (res.success) {
         toast.success('Member request rejected.')
-        setMembers(prev => prev.filter(m => m.user?.auth_id !== userId))
+        setMembers((prev: any[]) => prev.filter((m: any) => m.user?.auth_id !== userId))
       } else {
         toast.error(res.error || 'Failed to reject request')
       }
@@ -137,7 +473,7 @@ export default function StudySpaceClient({
       const res = await removeMember(roomId, userId)
       if (res.success) {
         toast.success('Member removed successfully.')
-        setMembers(prev => prev.filter(m => m.user?.auth_id !== userId))
+        setMembers((prev: any[]) => prev.filter((m: any) => m.user?.auth_id !== userId))
       } else {
         toast.error(res.error || 'Failed to remove member')
       }
@@ -156,7 +492,7 @@ export default function StudySpaceClient({
       const res = await toggleMemberRole(roomId, userId, newRole)
       if (res.success) {
         toast.success(newRole === 'admin' ? 'Member promoted to Admin!' : 'Admin demoted to Member.')
-        setMembers(prev => prev.map(m => m.user?.auth_id === userId ? { ...m, role: newRole } : m))
+        setMembers((prev: any[]) => prev.map((m: any) => m.user?.auth_id === userId ? { ...m, role: newRole } : m))
       } else {
         toast.error(res.error || 'Failed to update role')
       }
@@ -186,7 +522,7 @@ export default function StudySpaceClient({
       )
       if (res.success) {
         toast.success('Space settings updated successfully!')
-        setRoom(prev => ({
+        setRoom((prev: any) => ({
           ...prev,
           name: settingsName,
           description: settingsDesc,
@@ -222,135 +558,12 @@ export default function StudySpaceClient({
     }
   }
 
-  // Interaction states
-  const [activeTab, setActiveTab] = useState('notes') // 'notes' | 'quizzes' | 'members' | 'settings'
-  const [chatTab, setChatTab] = useState('all') // 'all' | 'questions'
-  const [chatInput, setChatInput] = useState('')
-  const [isQuestionInput, setIsQuestionInput] = useState(false)
-  const [scratchpad, setScratchpad] = useState(room.scratchpad_content || '')
-  const [showLeaveDialog, setShowLeaveDialog] = useState(false)
-  const [confirmLeave, setConfirmLeave] = useState(false)
-  
-  // Quiz launch states
-  const [openChallenge, setOpenChallenge] = useState(false)
-  const [selectedQuizCode, setSelectedQuizCode] = useState('')
-
-  // Collaboration references
-  const isEditingRef = useRef(false)
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const chatBottomRef = useRef<HTMLDivElement>(null)
-  
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
-  const lastSavedContentRef = useRef(room.scratchpad_content || '')
-
-  // Auto-scroll chat to bottom
-  useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
-
-  // Real-time Subscriptions using Supabase Browser Client
-  useEffect(() => {
-    const supabase = createClient()
-
-    // 1. Subscribe to Messages
-    const messageChannel = supabase
-      .channel('room-messages')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'study_room_messages',
-          filter: `room_id=eq.${roomId}`
-        },
-        (payload: any) => {
-          const senderId = payload.new.user_id
-          const member = members.find((m: any) => m.user?.auth_id === senderId)
-          const username = member?.user?.username || 'Anonymous Student'
-          
-          const newMsg = {
-            id: payload.new.id,
-            content: payload.new.content,
-            is_question: payload.new.is_question,
-            created_at: payload.new.created_at,
-            user_id: senderId,
-            user: {
-              username
-            }
-          }
-
-          // Avoid duplicates (e.g. if local user inserted it and we already have it in state)
-          setMessages((prev: any) => {
-            if (prev.some((m: any) => m.id === newMsg.id)) return prev
-            return [...prev, newMsg]
-          })
-        }
-      )
-      .subscribe()
-
-    // 2. Subscribe to Scratchpad updates
-    const scratchpadChannel = supabase
-      .channel('room-scratchpad')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'study_rooms',
-          filter: `id=eq.${roomId}`
-        },
-        (payload: any) => {
-          if (!isEditingRef.current) {
-            const newContent = payload.new.scratchpad_content || ''
-            setScratchpad(newContent)
-            lastSavedContentRef.current = newContent
-            setHasUnsavedChanges(false)
-          }
-        }
-      )
-      .subscribe()
-
-    // 3. Subscribe to Challenges
-    const challengesChannel = supabase
-      .channel('room-challenges')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'study_room_challenges',
-          filter: `room_id=eq.${roomId}`
-        },
-        () => {
-          // Re-fetch challenges list to get quiz details
-          const reloadChallenges = async () => {
-            try {
-              const freshDetails = await getRoomDetails(roomId)
-              setChallenges(freshDetails.challenges)
-            } catch (err) {
-              console.error('Failed to reload challenges:', err)
-            }
-          }
-          reloadChallenges()
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(messageChannel)
-      supabase.removeChannel(scratchpadChannel)
-      supabase.removeChannel(challengesChannel)
-    }
-  }, [roomId, members])
-
-  // Save Scratchpad content to database (throttled/low egress)
+  // --- SAVE SCRATCHPAD CONTENT ---
   const saveScratchpadContent = async (val: string) => {
     if (val === lastSavedContentRef.current) {
       setHasUnsavedChanges(false)
       return
     }
-    
     setIsSaving(true)
     try {
       const res = await updateScratchpad(roomId, val)
@@ -367,24 +580,21 @@ export default function StudySpaceClient({
     }
   }
 
-  // Handle Scratchpad Changes: update state locally first without hitting the database on every keypress
   const handleScratchpadChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value
     setScratchpad(val)
     isEditingRef.current = true
     setHasUnsavedChanges(val !== lastSavedContentRef.current)
 
-    // Lock the editor for real-time updates while actively typing
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current)
     }
-    
     typingTimeoutRef.current = setTimeout(() => {
       isEditingRef.current = false
     }, 3000)
   }
 
-  // Handle message sending
+  // --- CHAT MESSAGE HANDLING ---
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!chatInput.trim()) return
@@ -395,7 +605,7 @@ export default function StudySpaceClient({
     setChatInput('')
     setIsQuestionInput(false)
 
-    // Insert locally immediately for optimistic UI
+    // Optimistic insert
     const optimisticMsg = {
       id: Math.random().toString(),
       content: messageContent,
@@ -403,7 +613,8 @@ export default function StudySpaceClient({
       created_at: new Date().toISOString(),
       user_id: currentUserId,
       user: {
-        username: 'You'
+        username: currentMember?.user?.username || 'You',
+        profile_image: currentMember?.user?.profile_image || null
       }
     }
     setMessages((prev: any) => [...prev, optimisticMsg])
@@ -414,17 +625,179 @@ export default function StudySpaceClient({
     }
   }
 
+  // --- CHAT REACTION HANDLERS ---
+  const handleMessageReaction = async (messageId: string, emoji: string) => {
+    const res = await toggleMessageReaction(messageId, emoji)
+    if (res.success) {
+      // Soft refresh reactions
+      getRoomDetails(roomId).then(d => setMessageReactions(d.messageReactions))
+    }
+  }
+
+  // --- FOCUS MODE TOGGLE ---
+  const handleToggleFocusMode = async () => {
+    const nextFocusState = !isFocusing
+    const res = await setFocusStatus(roomId, nextFocusState, nextFocusState ? focusTimerDuration : undefined)
+    if (res.success) {
+      setIsFocusing(nextFocusState)
+      toast.success(nextFocusState ? `Focus Mode activated! Timer set for ${focusTimerDuration}m.` : 'Focus Mode deactivated.')
+      playSystemSound('success')
+    } else {
+      toast.error(res.error || 'Failed to update focus status')
+    }
+  }
+
+  // --- POLL CREATOR ---
+  const handleCreatePoll = async () => {
+    if (!pollQuestion.trim()) {
+      toast.error('Poll question is required')
+      return
+    }
+    const validOptions = pollOptions.filter(o => o.trim() !== '')
+    if (validOptions.length < 2) {
+      toast.error('Please specify at least 2 choices')
+      return
+    }
+
+    const res = await createRoomPoll(roomId, pollQuestion, validOptions, pollMultiChoice)
+    if (res.success) {
+      toast.success('Poll created successfully!')
+      setPollQuestion('')
+      setPollOptions(['', ''])
+      setPollMultiChoice(false)
+      setOpenPollCreator(false)
+    } else {
+      toast.error(res.error || 'Failed to create poll')
+    }
+  }
+
+  const handleVoteOnPoll = async (pollId: string, optionIndex: number) => {
+    const poll = polls.find(p => p.id === pollId)
+    if (!poll) return
+
+    const myVoteRow = poll.votes?.find((v: any) => v.user_id === currentUserId)
+    let selected: number[] = []
+
+    if (poll.is_multiple_choice) {
+      const prev = myVoteRow?.selected_options || []
+      if (prev.includes(optionIndex)) {
+        selected = prev.filter((o: number) => o !== optionIndex)
+      } else {
+        selected = [...prev, optionIndex]
+      }
+    } else {
+      selected = [optionIndex]
+    }
+
+    const res = await voteOnPoll(pollId, selected)
+    if (res.success) {
+      toast.success('Vote submitted!')
+    } else {
+      toast.error(res.error || 'Failed to submit vote')
+    }
+  }
+
+  const handleTogglePinPoll = async (pollId: string, isPinned: boolean) => {
+    const res = await togglePinPoll(pollId, !isPinned)
+    if (res.success) {
+      toast.success(!isPinned ? 'Poll pinned to top!' : 'Poll unpinned.')
+    }
+  }
+
+  // --- DAILY CHALLENGE PROGRESS ---
+  const handleCreateDailyChallenge = async () => {
+    if (!dcTitle.trim()) {
+      toast.error('Challenge title is required')
+      return
+    }
+    const res = await createDailyChallenge(roomId, dcTitle, dcDesc, dcXp)
+    if (res.success) {
+      toast.success('Daily Challenge created!')
+      setDcTitle('')
+      setDcDesc('')
+      setDcXp(100)
+      setOpenDcCreator(false)
+    } else {
+      toast.error(res.error || 'Failed to create challenge')
+    }
+  }
+
+  const handleProgressSliderChange = async (challengeId: string, progressVal: number) => {
+    const res = await updateDailyChallengeProgress(challengeId, progressVal)
+    if (res.success && progressVal >= 100) {
+      toast.success('Challenge completed! Coins awarded!')
+      playSystemSound('success')
+    }
+  }
+
+  // --- CHAT QUIZ SUBMISSION ---
+  const handleCreateChatQuiz = async () => {
+    if (!quizQuestion.trim() || !quizAnswer.trim()) {
+      toast.error('Question and correct answer are required')
+      return
+    }
+    const validOptions = quizOptions.filter(o => o.trim() !== '')
+    if (validOptions.length < 2) {
+      toast.error('Please specify at least 2 choices')
+      return
+    }
+
+    const res = await createChatQuiz(roomId, quizQuestion, validOptions, quizAnswer, quizCountdown)
+    if (res.success) {
+      toast.success('Inline Chat Quiz posted!')
+      setQuizQuestion('')
+      setQuizOptions(['', '', '', ''])
+      setQuizAnswer('')
+      setOpenQuizCreator(false)
+    } else {
+      toast.error(res.error || 'Failed to create quiz')
+    }
+  }
+
+  const handleSubmitQuizAnswer = async (quizId: string, choiceText: string) => {
+    const res = await submitQuizAnswer(quizId, choiceText)
+    if (res.success) {
+      if (res.isCorrect) {
+        toast.success('Correct! +10 Coins added!')
+        playSystemSound('success')
+      } else {
+        toast.error('Incorrect answer! Keep studying!')
+      }
+    } else {
+      toast.error(res.error || 'Failed to submit answer')
+    }
+  }
+
+  // --- LEAVE SPACE ---
+  const performLeave = async () => {
+    setIsPending(true)
+    try {
+      const res = await leaveStudyRoom(roomId)
+      if (res.success) {
+        toast.success('Left the study space.')
+        router.push('/study-spaces')
+      } else {
+        toast.error(res.error || 'Failed to leave space')
+      }
+    } catch (err) {
+      toast.error('An error occurred while leaving space.')
+    } finally {
+      setIsPending(false)
+      setShowLeaveDialog(false)
+      setConfirmLeave(false)
+    }
+  }
+
+  // --- QUIZ CHALLENGE BATTLE ---
   const handleLaunchChallenge = async () => {
     if (availableQuizzes.length === 0) {
       toast.error('No quizzes are available for this space right now.')
       return
     }
-
     if (!selectedQuizCode) {
       toast.error('Please select a quiz')
       return
     }
-
     setIsPending(true)
     try {
       const res = await startQuizChallenge(roomId, selectedQuizCode)
@@ -442,37 +815,33 @@ export default function StudySpaceClient({
     }
   }
 
-  const handleLeaveRoom = () => {
-    setShowLeaveDialog(true)
-  }
-
-  const performLeave = async () => {
-    setIsPending(true)
-    try {
-      const res = await leaveStudyRoom(roomId)
-      if (res.success) {
-        toast.success('Left the study space.')
-        router.push('/study-spaces')
-      } else {
-        toast.error(res.error || 'Failed to leave space')
-      }
-    } catch (err) {
-      toast.error('An error occurred while leaving space.')
-    } finally {
-      setIsPending(false)
+  // --- RESOURCE REMOVING ---
+  const handleRemoveResource = async (resourceId: string) => {
+    const res = await removeRoomResource(roomId, resourceId)
+    if (res.success) {
+      toast.success('Resource detached successfully.')
+    } else {
+      toast.error(res.error || 'Failed to detach resource')
     }
   }
 
-  // Filter Q&A questions
+  // --- LEADERBOARD COMPUTATION ---
+  const leaderboardMembers = useMemo(() => {
+    return [...members]
+      .filter((m: any) => m.status === 'approved')
+      .sort((a, b) => (b.total_study_time || 0) - (a.total_study_time || 0))
+  }, [members])
+
+  // --- MESSAGES FILTERING ---
   const displayedMessages = chatTab === 'all' 
     ? messages 
     : messages.filter((m: any) => m.is_question)
 
-  useEffect(() => {
-    if (openChallenge && !selectedQuizCode && availableQuizzes.length > 0) {
-      setSelectedQuizCode(availableQuizzes[0].code)
-    }
-  }, [openChallenge, selectedQuizCode, availableQuizzes])
+  // --- PREVENT EXPIRING CHAT QUIZZES COUNTDOWN RENDER ---
+  const isQuizExpired = (quiz: any) => {
+    if (!quiz.ends_at) return false
+    return new Date(quiz.ends_at).getTime() < Date.now()
+  }
 
   if (!mounted) {
     return <div className="min-h-screen bg-background" />
@@ -480,46 +849,143 @@ export default function StudySpaceClient({
 
   return (
     <div className="space-y-6">
-      <div className="ss-mesh-hero relative overflow-hidden rounded-3xl border border-border/70 p-4 sm:p-6">
+      
+      {/* 1. Header with Stats & Focus Mode */}
+      <div className="ss-mesh-hero relative overflow-hidden rounded-3xl border border-border/70 p-5 sm:p-6 bg-gradient-to-br from-primary/5 via-secondary/5 to-card backdrop-blur-md">
         <div className="absolute -top-20 right-0 h-56 w-56 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-center justify-between">
-          <div className="flex items-start gap-3">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={() => router.push('/study-spaces')}
-            className="border-border/80 hover:bg-muted cursor-pointer shrink-0 h-9 w-9"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">{room.name}</h1>
-              <Badge variant="outline" className="text-[10px] py-0 h-5 border-primary/20 bg-primary/5 text-primary">
-                Level {room.level_num}
-              </Badge>
+        
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => router.push('/study-spaces')}
+              className="border-border/80 hover:bg-muted cursor-pointer shrink-0 h-9 w-9 rounded-xl"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">{room.name}</h1>
+                <Badge variant="outline" className="text-[10px] py-0 h-5 border-primary/20 bg-primary/5 text-primary font-bold">
+                  Level {room.level_num}
+                </Badge>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-medium">{room.description || 'Collaborative study space.'}</p>
             </div>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-1">{room.description || 'Collaborative study space.'}</p>
+          </div>
+          
+          {/* Active study tracker / streaks */}
+          <div className="flex flex-wrap items-center gap-4">
+            
+            {/* Streak Indicator */}
+            <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-3.5 py-1.5 rounded-2xl shadow-sm">
+              <Flame className="w-4 h-4 text-amber-500 animate-pulse" />
+              <div>
+                <span className="text-[10px] text-muted-foreground block font-bold leading-tight">MY STREAK</span>
+                <span className="text-xs font-black text-amber-500">{currentMember?.current_streak || 0} Days</span>
+              </div>
+            </div>
+
+            {/* Focus Session Stopwatch */}
+            <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1.5 rounded-2xl shadow-sm">
+              <Clock className="w-4 h-4 text-indigo-400" />
+              <div>
+                <span className="text-[10px] text-muted-foreground block font-bold leading-tight">ACTIVE SESSION</span>
+                <span className="text-xs font-black text-indigo-400">
+                  {Math.floor(studySecondsElapsed / 60)}m {studySecondsElapsed % 60}s
+                </span>
+              </div>
+            </div>
+
+            {/* Focus Mode Trigger */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  className={`cursor-pointer rounded-2xl h-10 px-4 text-xs font-bold transition-all shadow-lg flex items-center gap-2 ${
+                    isFocusing 
+                      ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/20' 
+                      : 'bg-primary hover:bg-primary/95 text-primary-foreground shadow-primary/20'
+                  }`}
+                >
+                  <BrainCircuit className="w-4 h-4" />
+                  {isFocusing ? 'Stop Focusing' : 'Focus Mode'}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-card border-border shadow-2xl max-w-sm">
+                <DialogHeader>
+                  <DialogTitle className="text-lg font-bold flex items-center gap-2">
+                    <BrainCircuit className="w-5 h-5 text-primary" />
+                    Focus Mode Config
+                  </DialogTitle>
+                  <DialogDescription className="text-xs mt-1 text-muted-foreground">
+                    Activate Focus Mode to filter notifications, hide chat bubbles, and concentrate on your tasks.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="py-4 space-y-3">
+                  <label className="text-xs font-bold text-muted-foreground">Pomodoro Timer (Minutes)</label>
+                  <Select 
+                    value={String(focusTimerDuration)} 
+                    onValueChange={(val) => setFocusTimerDuration(Number(val))}
+                    disabled={isFocusing}
+                  >
+                    <SelectTrigger className="bg-muted/30 border-border">
+                      <SelectValue placeholder="Select duration" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="15">15 Minutes</SelectItem>
+                      <SelectItem value="25">25 Minutes (Recommended)</SelectItem>
+                      <SelectItem value="50">50 Minutes</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <DialogFooter>
+                  <Button
+                    onClick={handleToggleFocusMode}
+                    className="w-full bg-primary text-white hover:bg-primary/90 text-xs font-semibold cursor-pointer"
+                  >
+                    {isFocusing ? 'Deactivate Focus Mode' : 'Start Focus Ticker'}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push(`/study-spaces/${roomId}/report`)}
+              className="border-border hover:bg-muted text-xs h-10 px-4 rounded-2xl cursor-pointer flex items-center gap-1.5"
+            >
+              <Award className="w-4 h-4 text-primary" />
+              Report
+            </Button>
           </div>
         </div>
-        
-        <div className="flex gap-2 shrink-0">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push(`/study-spaces/${roomId}/report`)}
-            className="border-border hover:bg-muted text-xs h-9 cursor-pointer flex items-center gap-1.5"
-          >
-            <Award className="w-3.5 h-3.5 text-primary" />
-            Space Report
-          </Button>
-        </div>
-      </div>
+
+        {/* Focus Active bar */}
+        {isFocusing && (
+          <div className="mt-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center justify-between gap-4 animate-pulse">
+            <span className="text-xs font-bold text-rose-500 flex items-center gap-2">
+              <VolumeX className="w-4 h-4" />
+              Focus Mode Active (Chat notification sounds muffled)
+            </span>
+            {focusTimerRemaining > 0 && (
+              <span className="text-xs font-black text-rose-500">
+                Remaining: {Math.floor(focusTimerRemaining / 60)}:
+                {String(focusTimerRemaining % 60).padStart(2, '0')}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
+      {/* 2. Main content Layout */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 sm:gap-6">
         
-        <Card className="xl:col-span-5 ss-glass-card rounded-2xl flex flex-col justify-between overflow-hidden min-h-[440px] sm:min-h-[560px] xl:h-[75vh]">
+        {/* Left Column: Live Discussion */}
+        <Card className="xl:col-span-5 bg-card/40 border-border/60 backdrop-blur-md rounded-3xl flex flex-col justify-between overflow-hidden min-h-[440px] sm:min-h-[560px] xl:h-[75vh]">
           <CardHeader className="pb-2 border-b border-border flex flex-row items-center justify-between shrink-0">
             <div>
               <CardTitle className="text-sm font-bold flex items-center gap-1.5">
@@ -528,29 +994,68 @@ export default function StudySpaceClient({
               </CardTitle>
               <CardDescription className="text-[10px]">Discuss subjects and clear doubts.</CardDescription>
             </div>
-            {/* Chat vs Q&A Toggle Buttons */}
+            
             <div className="flex gap-1 bg-muted/50 p-0.5 rounded-lg border border-border">
               <Button 
                 variant="ghost" 
-                size="xs" 
+                size="sm" 
                 onClick={() => setChatTab('all')}
-                className={`text-[10px] h-6 px-2 rounded-md ${chatTab === 'all' ? 'bg-card text-foreground font-semibold shadow-sm' : 'text-muted-foreground'}`}
+                className={`text-[10px] h-6 px-2.5 rounded-md cursor-pointer ${chatTab === 'all' ? 'bg-card text-foreground font-semibold shadow-sm' : 'text-muted-foreground'}`}
               >
                 Chat
               </Button>
               <Button 
                 variant="ghost" 
-                size="xs" 
+                size="sm" 
                 onClick={() => setChatTab('questions')}
-                className={`text-[10px] h-6 px-2 rounded-md ${chatTab === 'questions' ? 'bg-card text-foreground font-semibold shadow-sm' : 'text-muted-foreground'}`}
+                className={`text-[10px] h-6 px-2.5 rounded-md cursor-pointer ${chatTab === 'questions' ? 'bg-card text-foreground font-semibold shadow-sm' : 'text-muted-foreground'}`}
               >
-                Q&A Wall
+                Q&A
               </Button>
             </div>
           </CardHeader>
           
-          {/* Messages Feed */}
           <CardContent className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3">
+            {/* Inline Active Quizzes (countdown style) */}
+            {chatQuizzes.length > 0 && chatQuizzes.filter(q => !isQuizExpired(q)).map((q: any) => {
+              const myAnswer = q.answers?.find((a: any) => a.user_id === currentUserId)
+              return (
+                <div key={q.id} className="p-3.5 bg-indigo-500/5 border border-indigo-500/20 rounded-2xl space-y-2">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-[10px] font-black text-indigo-400 flex items-center gap-1">
+                      <BrainCircuit className="w-3.5 h-3.5" />
+                      INLINE QUIZ CHALLENGE
+                    </span>
+                    {q.ends_at && (
+                      <span className="text-[9px] bg-indigo-500/10 text-indigo-400 font-bold px-2 py-0.5 rounded-full">
+                        Active
+                      </span>
+                    )}
+                  </div>
+                  <h4 className="text-xs font-bold text-foreground">{q.question}</h4>
+                  
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    {q.options.map((opt: string, i: number) => {
+                      const isCorrectChoice = opt === q.correct_answer
+                      const hasVotedThis = myAnswer?.answer === opt
+                      return (
+                        <Button
+                          key={i}
+                          size="sm"
+                          variant={hasVotedThis ? (isCorrectChoice ? 'default' : 'destructive') : 'outline'}
+                          disabled={!!myAnswer || isQuizExpired(q)}
+                          onClick={() => handleSubmitQuizAnswer(q.id, opt)}
+                          className="h-8 text-[10px] font-semibold text-left justify-start px-3 rounded-xl cursor-pointer"
+                        >
+                          {opt}
+                        </Button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+
             {displayedMessages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-10">
                 <HelpCircle className="w-10 h-10 text-muted-foreground/30 mb-2" />
@@ -563,13 +1068,14 @@ export default function StudySpaceClient({
             ) : (
               displayedMessages.map((msg: any) => {
                 const isSelf = msg.user_id === currentUserId
+                const msgReactions = messageReactions.filter(r => r.message_id === msg.id)
+                
                 return (
                   <div 
                     key={msg.id} 
-                    className={`ss-msg-enter flex gap-2 items-start max-w-[95%] sm:max-w-[90%] ${isSelf ? 'flex-row-reverse self-end ml-auto' : 'self-start mr-auto'}`}
+                    className={`flex gap-2.5 items-start max-w-[95%] sm:max-w-[90%] ${isSelf ? 'flex-row-reverse self-end ml-auto' : 'self-start mr-auto'}`}
                   >
-                    {/* User profile image/avatar */}
-                    <div className="w-7 h-7 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0 mt-1" title={msg.user?.username || 'Student'}>
+                    <div className="w-7 h-7 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0 mt-1 cursor-pointer" title={msg.user?.username || 'Student'}>
                       {msg.user?.profile_image ? (
                         <img src={msg.user.profile_image} alt={msg.user.username} className="w-full h-full object-cover" />
                       ) : (
@@ -580,11 +1086,14 @@ export default function StudySpaceClient({
                     </div>
 
                     <div className={`flex flex-col ${isSelf ? 'items-end' : 'items-start'}`}>
-                      <span className="text-[9px] text-muted-foreground font-semibold px-1 mb-0.5">
-                        {msg.user?.username || 'Student'}
-                      </span>
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className="text-[9px] text-muted-foreground font-semibold px-1">
+                          {msg.user?.username || 'Student'}
+                        </span>
+                      </div>
+                      
                       <div 
-                        className={`p-2.5 rounded-xl text-xs border shadow-sm leading-relaxed ${
+                        className={`p-2.5 rounded-2xl text-xs border shadow-sm leading-relaxed relative group ${
                           msg.is_question 
                             ? 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200' 
                             : isSelf 
@@ -593,13 +1102,51 @@ export default function StudySpaceClient({
                         }`}
                       >
                         {msg.is_question && (
-                          <Badge className="bg-amber-500 text-white font-semibold text-[8px] h-4 py-0 px-1 mb-1 flex items-center gap-0.5 w-fit">
+                          <Badge className="bg-amber-500 text-white font-semibold text-[8px] h-4 py-0 px-1 mb-1.5 flex items-center gap-0.5 w-fit">
                             <HelpCircle className="w-2.5 h-2.5" />
                             QUESTION
                           </Badge>
                         )}
                         <p>{msg.content}</p>
+
+                        {/* Quiet reaction popover */}
+                        <div className="absolute top-[-14px] right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 bg-card border border-border/80 px-1.5 py-0.5 rounded-lg shadow-md">
+                          {['👍', '❤️', '🔥', '🚀', '🎉'].map(emoji => (
+                            <button
+                              key={emoji}
+                              type="button"
+                              onClick={() => handleMessageReaction(msg.id, emoji)}
+                              className="hover:scale-125 transition-transform text-xs cursor-pointer"
+                            >
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
                       </div>
+
+                      {/* Displayed reactions */}
+                      {msgReactions.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {Array.from(new Set(msgReactions.map(r => r.emoji))).map(emoji => {
+                            const count = msgReactions.filter(r => r.emoji === emoji).length
+                            const reactedByMe = msgReactions.some(r => r.emoji === emoji && r.user_id === currentUserId)
+                            return (
+                              <button
+                                key={emoji}
+                                onClick={() => handleMessageReaction(msg.id, emoji)}
+                                className={`inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
+                                  reactedByMe 
+                                    ? 'bg-primary/10 border-primary text-primary' 
+                                    : 'bg-muted/30 border-border text-muted-foreground'
+                                }`}
+                              >
+                                <span>{emoji}</span>
+                                <span>{count}</span>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )
@@ -608,40 +1155,54 @@ export default function StudySpaceClient({
             <div ref={chatBottomRef} />
           </CardContent>
           
-          {/* Chat Form */}
           <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-border bg-muted/20 shrink-0">
             <div className="flex gap-2 items-center">
               <Input 
                 placeholder={isQuestionInput ? "Type your study question..." : "Send a message..."}
                 value={chatInput}
                 onChange={e => setChatInput(e.target.value)}
-                className="bg-card border-border text-xs flex-1"
+                className="bg-card border-border text-xs flex-1 rounded-xl h-9"
                 maxLength={400}
               />
               <Button 
                 type="submit" 
                 size="icon" 
-                className="bg-primary text-primary-foreground h-9 w-9 shrink-0 cursor-pointer"
+                className="bg-primary text-primary-foreground h-9 w-9 shrink-0 cursor-pointer rounded-xl"
               >
                 <Send className="w-3.5 h-3.5" />
               </Button>
             </div>
-            <div className="flex items-center gap-1.5 mt-2">
-              <input 
-                type="checkbox"
-                id="is-question"
-                checked={isQuestionInput}
-                onChange={e => setIsQuestionInput(e.target.checked)}
-                className="rounded border-border text-amber-500 focus:ring-amber-500 h-3.5 w-3.5 cursor-pointer bg-card"
-              />
-              <label htmlFor="is-question" className="text-[10px] text-muted-foreground font-medium cursor-pointer select-none">
-                Post as Q&A Question (Highlights in orange)
-              </label>
+            
+            <div className="flex flex-wrap items-center justify-between gap-2 mt-2">
+              <div className="flex items-center gap-1.5">
+                <input 
+                  type="checkbox"
+                  id="is-question"
+                  checked={isQuestionInput}
+                  onChange={e => setIsQuestionInput(e.target.checked)}
+                  className="rounded border-border text-amber-500 focus:ring-amber-500 h-3.5 w-3.5 cursor-pointer bg-card"
+                />
+                <label htmlFor="is-question" className="text-[10px] text-muted-foreground font-medium cursor-pointer select-none">
+                  Highlight as Q&A Question
+                </label>
+              </div>
+
+              {/* Inline Quiz battle creator trigger */}
+              {canManage && (
+                <button
+                  type="button"
+                  onClick={() => setOpenQuizCreator(true)}
+                  className="text-[9px] font-black text-indigo-400 hover:text-indigo-500 transition-colors uppercase cursor-pointer"
+                >
+                  + Add Quiz Question
+                </button>
+              )}
             </div>
           </form>
         </Card>
 
-        <Card className="xl:col-span-7 ss-glass-card rounded-2xl flex flex-col justify-between min-h-[440px] sm:min-h-[560px] xl:h-[75vh]">
+        {/* Right Column: Workspace Tabs */}
+        <Card className="xl:col-span-7 bg-card/40 border-border/60 backdrop-blur-md rounded-3xl flex flex-col justify-between min-h-[440px] sm:min-h-[560px] xl:h-[75vh]">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col">
             <CardHeader className="pb-2 border-b border-border shrink-0">
               <div className="flex flex-col gap-3">
@@ -650,52 +1211,62 @@ export default function StudySpaceClient({
                     <BookOpen className="w-4 h-4 text-primary" />
                     Workspace
                   </CardTitle>
-                  <CardDescription className="text-[10px]">Notes scratchpad, quiz battles, and member moderation.</CardDescription>
+                  <CardDescription className="text-[10px]">Notes scratchpad, quiz battles, polls and drive libraries.</CardDescription>
                 </div>
                 <div className="overflow-x-auto no-scrollbar">
                   <TabsList className="inline-flex min-w-max bg-muted/50 border border-border p-0.5 rounded-lg h-8">
-                  <TabsTrigger value="notes" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3">
-                    Scratchpad
-                  </TabsTrigger>
-                  <TabsTrigger value="quizzes" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3">
-                    Quiz Battles
-                  </TabsTrigger>
-                  <TabsTrigger value="members" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3">
-                    Members ({members.filter((m: any) => m.status === 'approved').length})
-                  </TabsTrigger>
-                  <TabsTrigger value="settings" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3">
-                    Settings
-                  </TabsTrigger>
-                </TabsList>
+                    <TabsTrigger value="notes" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
+                      Scratchpad
+                    </TabsTrigger>
+                    <TabsTrigger value="quizzes" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
+                      Quiz Battles
+                    </TabsTrigger>
+                    <TabsTrigger value="polls" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
+                      Live Polls ({polls.length})
+                    </TabsTrigger>
+                    <TabsTrigger value="daily" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
+                      Daily Tasks
+                    </TabsTrigger>
+                    <TabsTrigger value="resources" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
+                      Drive Resources ({resources.length})
+                    </TabsTrigger>
+                    <TabsTrigger value="members" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
+                      Leaderboard
+                    </TabsTrigger>
+                    <TabsTrigger value="settings" className="text-xs h-7 rounded-md data-[state=active]:bg-card px-3 cursor-pointer">
+                      Settings
+                    </TabsTrigger>
+                  </TabsList>
                 </div>
               </div>
             </CardHeader>
             
             <CardContent className="flex-1 overflow-y-auto p-3 sm:p-4">
-              {/* Tab 1: Live Scratchpad */}
+              
+              {/* Tab 1: Scratchpad */}
               <TabsContent value="notes" className="h-full mt-0 focus-visible:outline-none flex flex-col">
                 <div className="flex items-center justify-between pb-2 mb-2 border-b border-border shrink-0">
-                  <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1">
+                  <span className="text-[10px] text-muted-foreground font-bold flex items-center gap-1">
                     <Sparkles className="w-3.5 h-3.5 text-primary" />
                     Collaborative Notes
                   </span>
                   <div className="flex items-center gap-2">
                     {isSaving ? (
-                      <span className="text-[9px] text-primary flex items-center gap-1">
+                      <span className="text-[9px] text-primary flex items-center gap-1 font-bold">
                         <Loader2 className="w-3 h-3 animate-spin" />
                         Saving...
                       </span>
                     ) : hasUnsavedChanges ? (
                       <Button 
-                        size="xs" 
+                        size="sm" 
                         variant="default"
                         onClick={() => saveScratchpadContent(scratchpad)}
-                        className="h-6 text-[9px] px-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold cursor-pointer"
+                        className="h-6 text-[9px] px-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold cursor-pointer rounded-lg"
                       >
                         Save Changes *
                       </Button>
                     ) : (
-                      <span className="text-[9px] text-emerald-500 flex items-center gap-0.5 font-medium">
+                      <span className="text-[9px] text-emerald-500 flex items-center gap-0.5 font-bold">
                         <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
                         Saved
                       </span>
@@ -707,26 +1278,25 @@ export default function StudySpaceClient({
                   value={scratchpad}
                   onChange={handleScratchpadChange}
                   onBlur={() => saveScratchpadContent(scratchpad)}
-                  className="w-full flex-1 border-none focus-visible:ring-0 resize-none bg-muted/10 rounded-xl p-3 text-xs leading-relaxed"
+                  className="w-full flex-1 border-none focus-visible:ring-0 resize-none bg-muted/15 rounded-2xl p-3.5 text-xs leading-relaxed"
                 />
               </TabsContent>
               
               {/* Tab 2: Quiz Battles */}
-              <TabsContent value="quizzes" className="h-full mt-0 focus-visible:outline-none flex flex-col justify-between">
-                <div className="space-y-4 flex-1 overflow-y-auto">
-                  <div className="flex items-center justify-between pb-2 border-b border-border shrink-0">
-                    <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1">
+              <TabsContent value="quizzes" className="h-full mt-0 focus-visible:outline-none flex flex-col">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-2 border-b border-border">
+                    <span className="text-[10px] text-muted-foreground font-bold flex items-center gap-1">
                       <Swords className="w-4 h-4 text-rose-500 animate-bounce" />
-                      Active quiz Challenges
+                      Active Quiz Challenges
                     </span>
                     
-                    {/* Launch Quiz Battle dialog */}
                     <Dialog open={openChallenge} onOpenChange={setOpenChallenge}>
                       <DialogTrigger asChild>
                         <Button
-                          size="xs"
+                          size="sm"
                           disabled={availableQuizzes.length === 0}
-                          className="h-6 text-[10px] bg-rose-500 text-white hover:bg-rose-600 font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="h-6 text-[10px] bg-rose-500 text-white hover:bg-rose-600 font-bold cursor-pointer rounded-lg"
                         >
                           <Plus className="w-3 h-3 mr-1" />
                           Start Challenge
@@ -765,7 +1335,6 @@ export default function StudySpaceClient({
                             variant="outline" 
                             size="sm" 
                             onClick={() => setOpenChallenge(false)}
-                            disabled={isPending}
                             className="border-border hover:bg-muted text-sm cursor-pointer"
                           >
                             Cancel
@@ -775,21 +1344,13 @@ export default function StudySpaceClient({
                             disabled={isPending || availableQuizzes.length === 0 || !selectedQuizCode}
                             className="bg-rose-500 text-white hover:bg-rose-600 font-semibold text-sm cursor-pointer"
                           >
-                            {isPending ? (
-                              <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Launching...
-                              </>
-                            ) : (
-                              'Launch Challenge'
-                            )}
+                            Launch
                           </Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
                   </div>
                   
-                  {/* Challenges List */}
                   {challenges.length === 0 ? (
                     <div className="py-12 text-center text-muted-foreground flex flex-col items-center justify-center">
                       <Swords className="w-8 h-8 text-muted-foreground/30 mb-2" />
@@ -806,15 +1367,14 @@ export default function StudySpaceClient({
                           >
                             <div className="space-y-1">
                               <h4 className="text-xs font-bold text-foreground line-clamp-1">{c.quiz?.name || 'Quiz'}</h4>
-                              <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                <Clock className="w-3 h-3 text-muted-foreground" />
+                              <p className="text-[10px] text-muted-foreground">
                                 {c.quiz?.questions_count} Qs • Started by {c.starter?.username || 'Student'}
                               </p>
                             </div>
                             <Button 
-                              size="xs" 
+                              size="sm" 
                               onClick={() => router.push(quizLink)}
-                              className="bg-rose-500 text-white hover:bg-rose-600 font-semibold text-[10px] h-7 px-3.5 cursor-pointer shrink-0"
+                              className="bg-rose-500 text-white hover:bg-rose-600 font-bold text-[10px] h-7 px-3.5 cursor-pointer rounded-lg shrink-0"
                             >
                               Solve Quiz
                             </Button>
@@ -825,169 +1385,306 @@ export default function StudySpaceClient({
                   )}
                 </div>
               </TabsContent>
-              {/* Tab 3: Members Tab */}
-              <TabsContent value="members" className="flex-1 overflow-y-auto p-4 mt-0 focus-visible:outline-none">
-                <div className="space-y-6">
-                  {/* Active Members Section */}
-                  <div className="space-y-3">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Active Members</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {members.filter((m: any) => m.status === 'approved').map((member: any) => {
-                        const user = member.user
-                        const isCreator = member.role === 'creator'
-                        const isSelf = user?.auth_id === currentUserId
-                        if (!user) return null
+              
+              {/* Tab 3: Live Polls */}
+              <TabsContent value="polls" className="h-full mt-0 focus-visible:outline-none flex flex-col">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-2 border-b border-border">
+                    <span className="text-xs font-bold text-muted-foreground">Live Room Polls</span>
+                    <Button
+                      size="sm"
+                      onClick={() => setOpenPollCreator(true)}
+                      className="h-6 text-[10px] bg-primary text-primary-foreground font-bold cursor-pointer rounded-lg"
+                    >
+                      <Plus className="w-3.5 h-3.5 mr-1" />
+                      New Poll
+                    </Button>
+                  </div>
 
+                  {polls.length === 0 ? (
+                    <div className="py-12 text-center text-muted-foreground flex flex-col items-center justify-center">
+                      <Pin className="w-8 h-8 text-muted-foreground/30 mb-2" />
+                      <p className="text-xs">No active polls. Create one to collect member opinions!</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {polls.sort((a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0)).map((poll: any) => {
+                        const totalVotes = poll.votes?.length || 0
+                        const myVote = poll.votes?.find((v: any) => v.user_id === currentUserId)
+                        
                         return (
                           <div 
-                            key={user.auth_id}
-                            onClick={() => {
-                              setSelectedProfile(user)
-                              setShowProfileModal(true)
-                            }}
-                            className="p-3 bg-muted/20 border border-border rounded-xl flex items-center gap-3 relative overflow-hidden group hover:border-primary/30 transition-all cursor-pointer animate-notif-modal-enter"
+                            key={poll.id} 
+                            className={`p-4 rounded-2xl border transition-all ${
+                              poll.is_pinned 
+                                ? 'bg-primary/5 border-primary/30 shadow-sm' 
+                                : 'bg-muted/20 border-border/80'
+                            }`}
                           >
-                            <div className="w-9 h-9 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
-                              {user.profile_image ? (
-                                <img src={user.profile_image} alt={user.username} className="w-full h-full object-cover" />
-                              ) : (
-                                <Users className="w-4 h-4 text-primary" />
-                              )}
-                            </div>
-                            <div className="space-y-0.5 flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-4 mb-2">
+                              <h4 className="text-xs font-bold text-foreground">{poll.question}</h4>
                               <div className="flex items-center gap-1.5">
-                                <span className="text-xs font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
-                                  {user.username}
+                                {canManage && (
+                                  <button
+                                    onClick={() => handleTogglePinPoll(poll.id, poll.is_pinned)}
+                                    className={`p-1 hover:bg-white/10 rounded cursor-pointer ${poll.is_pinned ? 'text-primary' : 'text-muted-foreground'}`}
+                                  >
+                                    <Pin className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
+                                <span className="text-[9px] bg-muted px-2 py-0.5 rounded-full font-bold text-muted-foreground">
+                                  {totalVotes} Votes
                                 </span>
-                                {isCreator && (
-                                  <Crown className="w-3.5 h-3.5 text-yellow-500 shrink-0" />
-                                )}
-                                {member.role === 'admin' && !isCreator && (
-                                  <Shield className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                                )}
                               </div>
-                              <p className="text-[9px] text-muted-foreground line-clamp-1">{user.specialization}</p>
-                              <p className="text-[9px] text-indigo-400 font-semibold">Level {user.current_level}</p>
                             </div>
 
-                            {/* ACTION BUTTONS FOR OWNER/ADMIN */}
-                            {canManage && !isSelf && !isCreator && (
-                              <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                                {/* Promote/Demote - Owner Only */}
-                                {isOwner && (
-                                  <Button
-                                    size="xs"
-                                    variant="ghost"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setPendingActionUser(user)
-                                      setPendingPromoteRole(member.role === 'admin' ? 'member' : 'admin')
-                                      setShowPromoteDialog(true)
-                                    }}
-                                    className={`h-7 w-7 p-0 rounded-md cursor-pointer ${
-                                      member.role === 'admin' 
-                                        ? 'text-orange-400 hover:text-orange-500 hover:bg-orange-500/10' 
-                                        : 'text-blue-400 hover:text-blue-500 hover:bg-blue-500/10'
+                            <div className="space-y-2">
+                              {poll.options.map((opt: string, idx: number) => {
+                                const optionVotes = poll.votes?.filter((v: any) => v.selected_options?.includes(idx)) || []
+                                const pct = totalVotes > 0 ? Math.round((optionVotes.length / totalVotes) * 100) : 0
+                                const isSelected = myVote?.selected_options?.includes(idx)
+
+                                return (
+                                  <div
+                                    key={idx}
+                                    onClick={() => handleVoteOnPoll(poll.id, idx)}
+                                    className={`relative p-2.5 rounded-xl border flex items-center justify-between overflow-hidden cursor-pointer transition-all hover:bg-white/[0.04] ${
+                                      isSelected ? 'border-primary/50' : 'border-border/50 bg-white/[0.01]'
                                     }`}
-                                    title={member.role === 'admin' ? 'Demote to Member' : 'Promote to Admin'}
                                   >
-                                    {member.role === 'admin' ? <ShieldOff className="w-3.5 h-3.5" /> : <Shield className="w-3.5 h-3.5" />}
-                                  </Button>
-                                )}
-                                {/* Remove */}
-                                <Button
-                                  size="xs"
-                                  variant="ghost"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setPendingActionUser(user)
-                                    setShowRemoveDialog(true)
-                                  }}
-                                  className="text-red-500 hover:text-red-600 hover:bg-red-500/10 h-7 w-7 p-0 rounded-md cursor-pointer"
-                                  title="Remove Member"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </Button>
-                              </div>
-                            )}
+                                    {/* Progress background bar */}
+                                    <div
+                                      className="absolute left-0 top-0 bottom-0 bg-primary/10 transition-all pointer-events-none"
+                                      style={{ width: `${pct}%` }}
+                                    />
+                                    
+                                    <span className="text-xs font-semibold relative z-10">{opt}</span>
+                                    <span className="text-xs font-black relative z-10 text-primary">{pct}%</span>
+                                  </div>
+                                )
+                              })}
+                            </div>
                           </div>
                         )
                       })}
-                    </div>
-                  </div>
-
-                  {/* Pending Requests Section for Owner/Admin */}
-                  {canManage && members.some((m: any) => m.status === 'pending') && (
-                    <div className="space-y-3 pt-4 border-t border-border">
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-yellow-500 flex items-center gap-1.5">
-                        <AlertCircle className="w-4 h-4" />
-                        Pending Approvals
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {members.filter((m: any) => m.status === 'pending').map((member: any) => {
-                          const user = member.user
-                          if (!user) return null
-
-                          return (
-                            <div 
-                              key={user.auth_id}
-                              onClick={() => {
-                                setSelectedProfile(user)
-                                setShowProfileModal(true)
-                              }}
-                              className="p-3 bg-yellow-500/5 border border-yellow-500/20 rounded-xl flex flex-col gap-3 relative overflow-hidden group hover:border-yellow-500/40 transition-all cursor-pointer animate-notif-modal-enter"
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center overflow-hidden shrink-0">
-                                  {user.profile_image ? (
-                                    <img src={user.profile_image} alt={user.username} className="w-full h-full object-cover" />
-                                  ) : (
-                                    <Users className="w-4 h-4 text-yellow-500" />
-                                  )}
-                                </div>
-                                <div className="space-y-0.5 flex-1 min-w-0">
-                                  <span className="text-xs font-bold text-foreground line-clamp-1">
-                                    {user.username}
-                                  </span>
-                                  <p className="text-[9px] text-muted-foreground line-clamp-1">{user.specialization}</p>
-                                  <p className="text-[9px] text-indigo-400 font-semibold">Level {user.current_level}</p>
-                                </div>
-                              </div>
-
-                              <div className="flex gap-2 w-full mt-1">
-                                <Button
-                                  size="xs"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    handleApprove(user.auth_id)
-                                  }}
-                                  className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold text-xs h-8 cursor-pointer"
-                                >
-                                  Approve
-                                </Button>
-                                <Button
-                                  size="xs"
-                                  variant="outline"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    handleReject(user.auth_id)
-                                  }}
-                                  className="flex-1 border-border hover:bg-muted text-red-500 text-xs h-8 cursor-pointer"
-                                >
-                                  Reject
-                                </Button>
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
                     </div>
                   )}
                 </div>
               </TabsContent>
 
-              {/* Tab 4: Settings Tab */}
-              <TabsContent value="settings" className="flex-1 overflow-y-auto p-4 mt-0 focus-visible:outline-none">
+              {/* Tab 4: Daily Challenges */}
+              <TabsContent value="daily" className="h-full mt-0 focus-visible:outline-none flex flex-col">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-2 border-b border-border">
+                    <span className="text-xs font-bold text-muted-foreground">Space Daily Tasks</span>
+                    {canManage && (
+                      <Button
+                        size="sm"
+                        onClick={() => setOpenDcCreator(true)}
+                        className="h-6 text-[10px] bg-primary text-primary-foreground font-bold cursor-pointer rounded-lg"
+                      >
+                        <Plus className="w-3.5 h-3.5 mr-1" />
+                        Add Daily Task
+                      </Button>
+                    )}
+                  </div>
+
+                  {dailyChallenges.length === 0 ? (
+                    <div className="py-12 text-center text-muted-foreground flex flex-col items-center justify-center">
+                      <Trophy className="w-8 h-8 text-muted-foreground/30 mb-2" />
+                      <p className="text-xs">No active daily tasks yet. Define goals to keep members aligned!</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {dailyChallenges.map((challenge: any) => {
+                        const myProgress = challenge.progress?.find((p: any) => p.user_id === currentUserId)
+                        const currentProgressVal = myProgress?.progress || 0
+
+                        return (
+                          <div key={challenge.id} className="p-4 bg-muted/20 border border-border/80 rounded-2xl space-y-3">
+                            <div className="flex items-center justify-between gap-4">
+                              <div>
+                                <h4 className="text-xs font-black text-foreground">{challenge.title}</h4>
+                                <p className="text-[10px] text-muted-foreground mt-0.5">{challenge.description}</p>
+                              </div>
+                              <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 font-bold text-[9px]">
+                                +{challenge.xp_reward} Coins
+                              </Badge>
+                            </div>
+
+                            {/* Progress bar and slider */}
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between text-[10px]">
+                                <span className="text-muted-foreground font-semibold">Your Progress</span>
+                                <span className="font-black text-primary">{currentProgressVal}%</span>
+                              </div>
+                              <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value={currentProgressVal}
+                                onChange={(e) => handleProgressSliderChange(challenge.id, Number(e.target.value))}
+                                className="w-full h-1 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                              />
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              {/* Tab 5: Drive Resources Library */}
+              <TabsContent value="resources" className="h-full mt-0 focus-visible:outline-none flex flex-col">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-2 border-b border-border">
+                    <span className="text-xs font-bold text-muted-foreground">Google Drive Attachments</span>
+                    <Button
+                      size="sm"
+                      onClick={() => router.push('/drive')}
+                      className="h-6 text-[10px] bg-primary text-primary-foreground font-bold cursor-pointer rounded-lg"
+                    >
+                      Browse Chameleon Drive
+                    </Button>
+                  </div>
+
+                  {resources.length === 0 ? (
+                    <div className="py-12 text-center text-muted-foreground flex flex-col items-center justify-center">
+                      <FolderOpen className="w-8 h-8 text-muted-foreground/30 mb-2" />
+                      <p className="text-xs">No Drive files attached. Open Chameleon Drive to link PDFs!</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {resources.map((file: any) => (
+                        <div
+                          key={file.id}
+                          className="p-3 bg-muted/20 border border-border/80 rounded-2xl flex flex-col justify-between gap-3 relative group"
+                        >
+                          <div className="flex items-start gap-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
+                              <FolderOpen className="w-4 h-4 text-red-500" />
+                            </div>
+                            <div className="min-w-0">
+                              <h4 className="text-xs font-bold text-foreground truncate">{file.name}</h4>
+                              <p className="text-[9px] text-muted-foreground mt-0.5">
+                                {file.size ? `${Math.round(Number(file.size) / 1024)} KB` : 'PDF Document'}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 pt-2 border-t border-border/40">
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                incrementResourceViews(file.id)
+                                setPreviewPdfFile(file)
+                              }}
+                              className="flex-1 bg-primary text-white hover:bg-primary/95 text-[10px] h-7 rounded-lg cursor-pointer font-bold"
+                            >
+                              Open Preview
+                            </Button>
+                            
+                            {file.web_view_link && (
+                              <a
+                                href={file.web_view_link}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="shrink-0 h-7 w-7 rounded-lg border border-border flex items-center justify-center hover:bg-white/5 transition-colors"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+                              </a>
+                            )}
+
+                            {canManage && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleRemoveResource(file.id)}
+                                className="text-red-500 hover:bg-red-500/10 shrink-0 h-7 w-7 p-0 rounded-lg cursor-pointer"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              {/* Tab 6: Study Consistency Leaderboard */}
+              <TabsContent value="members" className="flex-1 overflow-y-auto p-2 mt-0 focus-visible:outline-none">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-2 border-b border-border">
+                    <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                      <Trophy className="w-4 h-4 text-yellow-500" />
+                      Consistency Leaderboard
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {leaderboardMembers.map((member: any, index: number) => {
+                      const user = member.user
+                      if (!user) return null
+                      const totalMins = Math.round((member.total_study_time || 0) / 60)
+                      const isTop3 = index < 3
+
+                      return (
+                        <div 
+                          key={user.auth_id}
+                          className="p-3 bg-muted/20 border border-border rounded-xl flex items-center justify-between gap-4 hover:border-primary/20 transition-all cursor-pointer"
+                          onClick={() => {
+                            setSelectedProfile(user)
+                            setShowProfileModal(true)
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${
+                              index === 0 ? 'bg-yellow-500 text-yellow-950' :
+                              index === 1 ? 'bg-slate-300 text-slate-900' :
+                              index === 2 ? 'bg-amber-600 text-amber-50' : 'bg-muted text-muted-foreground'
+                            }`}>
+                              {index + 1}
+                            </div>
+                            
+                            <div className="w-8 h-8 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
+                              {user.profile_image ? (
+                                <img src={user.profile_image} alt={user.username} className="w-full h-full object-cover" />
+                              ) : (
+                                <Users className="w-3.5 h-3.5 text-primary" />
+                              )}
+                            </div>
+
+                            <div>
+                              <h4 className="text-xs font-bold text-foreground flex items-center gap-1">
+                                {user.username}
+                                {member.role === 'creator' && <Crown className="w-3 h-3 text-yellow-500" />}
+                              </h4>
+                              <p className="text-[9px] text-muted-foreground">{user.specialization}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3 text-right">
+                            <div className="flex items-center gap-1 text-[10px] text-amber-500 font-bold bg-amber-500/5 px-2 py-0.5 rounded-full border border-amber-500/10">
+                              <Flame className="w-3.5 h-3.5" />
+                              <span>{member.current_streak || 0}d</span>
+                            </div>
+                            <div>
+                              <span className="text-xs font-black text-foreground block">{totalMins}m</span>
+                              <span className="text-[9px] text-muted-foreground uppercase block font-bold tracking-wider">STUDIED</span>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* Tab 7: Settings Tab */}
+              <TabsContent value="settings" className="flex-1 overflow-y-auto p-2 mt-0 focus-visible:outline-none">
                 {canManage ? (
                   <form onSubmit={handleSaveSettings} className="space-y-4 max-w-md">
                     <div className="space-y-1.5">
@@ -1123,6 +1820,185 @@ export default function StudySpaceClient({
         </Card>
       </div>
 
+      {/* --- LIVE POLL CREATOR DIALOG --- */}
+      <Dialog open={openPollCreator} onOpenChange={setOpenPollCreator}>
+        <DialogContent className="bg-card border-border shadow-2xl max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">Create Room Poll</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-muted-foreground">Poll Question</label>
+              <Input
+                placeholder="What do you think about...?"
+                value={pollQuestion}
+                onChange={e => setPollQuestion(e.target.value)}
+                className="bg-muted/30 border-border text-xs"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-muted-foreground block">Options</label>
+              {pollOptions.map((opt, i) => (
+                <div key={i} className="flex gap-2">
+                  <Input
+                    placeholder={`Option ${i + 1}`}
+                    value={opt}
+                    onChange={e => {
+                      const next = [...pollOptions]
+                      next[i] = e.target.value
+                      setPollOptions(next)
+                    }}
+                    className="bg-muted/30 border-border text-xs flex-1"
+                  />
+                  {pollOptions.length > 2 && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setPollOptions(pollOptions.filter((_, idx) => idx !== i))}
+                      className="text-red-500 px-2 cursor-pointer"
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setPollOptions([...pollOptions, ''])}
+                className="text-[10px] cursor-pointer mt-1"
+              >
+                + Add Option
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="multi-choice-check"
+                checked={pollMultiChoice}
+                onChange={e => setPollMultiChoice(e.target.checked)}
+                className="rounded border-border text-primary focus:ring-primary h-4 w-4 bg-card"
+              />
+              <label htmlFor="multi-choice-check" className="text-xs text-muted-foreground font-semibold">
+                Multiple Choice (Allow voting for multiple options)
+              </label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenPollCreator(false)}>Cancel</Button>
+            <Button onClick={handleCreatePoll} className="bg-primary text-white hover:bg-primary/90 font-semibold text-xs">Create Poll</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- DAILY CHALLENGE CREATOR DIALOG --- */}
+      <Dialog open={openDcCreator} onOpenChange={setOpenDcCreator}>
+        <DialogContent className="bg-card border-border shadow-2xl max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">Add Daily Space Task</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-muted-foreground">Task Title</label>
+              <Input
+                placeholder="Study 30 Minutes today"
+                value={dcTitle}
+                onChange={e => setDcTitle(e.target.value)}
+                className="bg-muted/30 border-border text-xs"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-muted-foreground">Description</label>
+              <Textarea
+                placeholder="Log at least 30 mins inside active sessions..."
+                value={dcDesc}
+                onChange={e => setDcDesc(e.target.value)}
+                className="bg-muted/30 border-border text-xs min-h-[60px]"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenDcCreator(false)}>Cancel</Button>
+            <Button onClick={handleCreateDailyChallenge} className="bg-primary text-white hover:bg-primary/90 font-semibold text-xs">Create Task</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- INLINE CHAT QUIZ CREATOR DIALOG --- */}
+      <Dialog open={openQuizCreator} onOpenChange={setOpenQuizCreator}>
+        <DialogContent className="bg-card border-border shadow-2xl max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">Add Live Chat Quiz</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-muted-foreground">Quiz Question</label>
+              <Input
+                placeholder="What is the derivative of x^2?"
+                value={quizQuestion}
+                onChange={e => setQuizQuestion(e.target.value)}
+                className="bg-muted/30 border-border text-xs"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-muted-foreground block">Options</label>
+              {quizOptions.map((opt, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <Input
+                    placeholder={`Choice ${i + 1}`}
+                    value={opt}
+                    onChange={e => {
+                      const next = [...quizOptions]
+                      next[i] = e.target.value
+                      setQuizOptions(next)
+                    }}
+                    className="bg-muted/30 border-border text-xs flex-1 animate-notif-modal-enter"
+                  />
+                  <input
+                    type="radio"
+                    name="correct-choice-radio"
+                    checked={quizAnswer !== '' && quizAnswer === opt}
+                    onChange={() => setQuizAnswer(opt)}
+                    className="h-4 w-4 text-primary focus:ring-primary bg-card"
+                    title="Mark as correct answer"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenQuizCreator(false)}>Cancel</Button>
+            <Button onClick={handleCreateChatQuiz} className="bg-primary text-white hover:bg-primary/90 font-semibold text-xs">Post Quiz</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* --- PDF VIEWER MODAL PREVIEW --- */}
+      <Dialog open={!!previewPdfFile} onOpenChange={(open) => {
+        if (!open) setPreviewPdfFile(null)
+      }}>
+        <DialogContent className="max-w-4xl h-[85vh] bg-background/95 backdrop-blur-xl border-border p-4 flex flex-col">
+          <DialogHeader className="shrink-0 pb-2 border-b border-border">
+            <DialogTitle className="text-sm font-bold text-foreground">
+              PDF Previewer
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-hidden min-h-0 pt-3">
+            {previewPdfFile && (
+              <PDFViewer
+                initialUrl={`/api/google-drive/download?fileId=${previewPdfFile.file_id}&authId=${currentUserId}`}
+                fileName={previewPdfFile.name}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 3. Preexisting Dialog Modals (Moderation & Confirmations) */}
+      
       {/* Leave Space Verification Dialog */}
       <Dialog open={showLeaveDialog} onOpenChange={(open) => {
         setShowLeaveDialog(open)
@@ -1262,7 +2138,7 @@ export default function StudySpaceClient({
               disabled={isPending}
               className="text-xs font-semibold cursor-pointer"
             >
-              {isPending ? 'Removing...' : 'Remove Member'}
+              Confirm
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1355,11 +2231,12 @@ export default function StudySpaceClient({
                   : 'bg-orange-500 hover:bg-orange-600'
               }`}
             >
-              {isPending ? 'Processing...' : pendingPromoteRole === 'admin' ? 'Promote to Admin' : 'Demote to Member'}
+              Confirm
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
     </div>
   )
 }

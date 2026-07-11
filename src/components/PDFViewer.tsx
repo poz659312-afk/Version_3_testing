@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { FileText, Upload, ZoomIn, ZoomOut, RotateCw } from "lucide-react"
+import { FileText, Upload, ZoomIn, ZoomOut, RotateCw, Plus } from "lucide-react"
 
 // Import pdfjs-dist
 import * as pdfjsLib from "pdfjs-dist"
@@ -16,8 +16,14 @@ if (typeof window !== "undefined" && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
   pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`
 }
 
-export default function PDFViewer() {
-  const [pdfUrl, setPdfUrl] = useState("")
+interface PDFViewerProps {
+  initialUrl?: string
+  fileName?: string
+  onAddToStudySpace?: () => void
+}
+
+export default function PDFViewer({ initialUrl = "", fileName = "", onAddToStudySpace }: PDFViewerProps) {
+  const [pdfUrl, setPdfUrl] = useState(initialUrl)
   const [zoom, setZoom] = useState(1.0)
   const [rotation, setRotation] = useState(0)
   const [pdfDoc, setPdfDoc] = useState<pdfjsLib.PDFDocumentProxy | null>(null)
@@ -32,6 +38,13 @@ export default function PDFViewer() {
       setPdfUrl(url)
     }
   }
+
+  // Update URL if initialUrl changes
+  useEffect(() => {
+    if (initialUrl) {
+      setPdfUrl(initialUrl)
+    }
+  }, [initialUrl])
 
   // Memoize the document loading process
   useEffect(() => {
@@ -65,6 +78,7 @@ export default function PDFViewer() {
 
       const renderContext = {
         canvasContext: context,
+        canvas: canvas,
         viewport: viewport,
       }
 
@@ -89,29 +103,43 @@ export default function PDFViewer() {
   return (
     <div className="h-full flex flex-col">
       <Card className="bg-white/[0.02] border-white/[0.08] backdrop-blur-lg flex-1 flex flex-col">
-        <CardHeader className="pb-4">
-          <CardTitle className=" flex items-center gap-3">
-            <FileText className="w-6 h-6" />
-            PDF Viewer Preview
+        <CardHeader className="pb-4 flex flex-row items-center justify-between flex-wrap gap-4">
+          <CardTitle className="flex items-center gap-3 max-w-[60%]">
+            <FileText className="w-6 h-6 text-primary shrink-0" />
+            <span className="truncate text-sm sm:text-base font-bold">{fileName || "PDF Viewer Preview"}</span>
           </CardTitle>
 
-          <div className="flex gap-3 flex-wrap">
-            <div className="flex-1 min-w-[200px]">
-              <Input
-                type="file"
-                accept=".pdf"
-                onChange={handleFileUpload}
-                className="bg-white/[0.05] border-white/[0.15] "
-              />
-            </div>
+          <div className="flex gap-2 items-center">
+            {onAddToStudySpace && (
+              <Button
+                onClick={onAddToStudySpace}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold cursor-pointer h-9 px-4 rounded-xl flex items-center gap-1.5 shadow-lg shadow-primary/20 shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+                Add to Study Space
+              </Button>
+            )}
+          </div>
+
+          <div className="flex gap-3 flex-wrap w-full">
+            {!initialUrl && (
+              <div className="flex-1 min-w-[200px]">
+                <Input
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleFileUpload}
+                  className="bg-white/[0.05] border-white/[0.15]"
+                />
+              </div>
+            )}
 
             {pdfUrl && (
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full justify-end">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
-                  className="border-white/[0.15]  hover:bg-white/[0.05]"
+                  className="border-white/[0.15] hover:bg-white/[0.05] cursor-pointer"
                 >
                   <ZoomOut className="w-4 h-4" />
                 </Button>
@@ -119,7 +147,7 @@ export default function PDFViewer() {
                   variant="outline"
                   size="sm"
                   onClick={() => setZoom(Math.min(3.0, zoom + 0.25))}
-                  className="border-white/[0.15]  hover:bg-white/[0.05]"
+                  className="border-white/[0.15] hover:bg-white/[0.05] cursor-pointer"
                 >
                   <ZoomIn className="w-4 h-4" />
                 </Button>
@@ -127,7 +155,7 @@ export default function PDFViewer() {
                   variant="outline"
                   size="sm"
                   onClick={() => setRotation((rotation + 90) % 360)}
-                  className="border-white/[0.15]  hover:bg-white/[0.05]"
+                  className="border-white/[0.15] hover:bg-white/[0.05] cursor-pointer"
                 >
                   <RotateCw className="w-4 h-4" />
                 </Button>
@@ -136,7 +164,7 @@ export default function PDFViewer() {
           </div>
         </CardHeader>
 
-        <CardContent className="flex-1 flex flex-col overflow-auto relative items-center justify-center">
+        <CardContent className="flex-1 flex flex-col overflow-auto relative items-center justify-center min-h-[350px]">
           {pdfUrl ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}

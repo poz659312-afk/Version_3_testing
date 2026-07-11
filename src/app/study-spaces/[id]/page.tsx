@@ -52,7 +52,7 @@ export default async function StudySpacePage({ params }: SpacePageProps) {
 
     // Guard: If student is not a member of this room (accessed via direct URL)
     if (!details.isMember) {
-      const isPendingApproval = details.joinStatus === 'pending'
+      const isPendingApproval = details.isPending
 
       if (isPendingApproval) {
         return (

@@ -5,6 +5,19 @@ import { getServerStudentSession } from '@/lib/auth-server'
 import { revalidatePath } from 'next/cache'
 import { resolveDepartmentKey } from '@/lib/department-data-accessor'
 
+function buildDepartmentSlugCandidates(specialization: string): string[] {
+  const raw = (specialization || '').trim().toLowerCase()
+  if (!raw) return []
+
+  const slugified = raw
+    .replace(/&/g, 'and')
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+
+  return Array.from(new Set([raw, slugified]))
+}
+
 /**
  * Helper to validate user session.
  */
@@ -12,19 +25,6 @@ async function checkAuth() {
   const session = await getServerStudentSession()
   if (!session || session.is_banned) {
     throw new Error('Unauthorized. Please log in.')
-  }
-
-  function buildDepartmentSlugCandidates(specialization: string): string[] {
-    const raw = specialization.trim().toLowerCase()
-    if (!raw) return []
-
-    const slugified = raw
-      .replace(/&/g, 'and')
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-
-    return Array.from(new Set([raw, slugified]))
   }
   return session
 }
@@ -105,6 +105,14 @@ export async function getRoomDetails(roomId: string) {
       role,
       joined_at,
       status,
+      total_study_time,
+      current_streak,
+      longest_streak,
+      last_active_at,
+      last_study_date,
+      weekly_study_time,
+      is_focusing,
+      focus_timer_ends_at,
       user:user_id (
         auth_id,
         username,
@@ -156,7 +164,8 @@ export async function getRoomDetails(roomId: string) {
         name,
         questions_count,
         department_slug,
-        subject_id
+        subject_id,
+        term
       )
     `)
     .eq('room_id', roomId)
@@ -177,7 +186,7 @@ export async function getRoomDetails(roomId: string) {
 
     const query = supabase
       .from('quiz_department')
-      .select('code, name, questions_count')
+      .select('code, name, questions_count, subject_id, term, department_slug')
       .eq('level_num', room.level_num)
 
     const { data: quizzesData, error: quizzesError } =
@@ -192,6 +201,74 @@ export async function getRoomDetails(roomId: string) {
     }
   }
 
+  // 6. Fetch Polls
+  const { data: polls, error: pollsError } = await supabase
+    .from('study_room_polls')
+    .select(`
+      *,
+      votes:study_room_poll_votes(*)
+    `)
+    .eq('room_id', roomId)
+    .order('created_at', { ascending: false })
+
+  if (pollsError) {
+    console.error('Failed to fetch polls:', pollsError)
+  }
+
+  // 7. Fetch Daily Challenges
+  const { data: dailyChallenges, error: dcError } = await supabase
+    .from('study_room_daily_challenges')
+    .select(`
+      *,
+      progress:study_room_challenge_progress(*)
+    `)
+    .eq('room_id', roomId)
+    .order('challenge_date', { ascending: false })
+
+  if (dcError) {
+    console.error('Failed to fetch daily challenges:', dcError)
+  }
+
+  // 8. Fetch Chat Quizzes
+  const { data: chatQuizzes, error: chatQuizzesError } = await supabase
+    .from('study_room_quizzes')
+    .select(`
+      *,
+      answers:study_room_quiz_answers(*)
+    `)
+    .eq('room_id', roomId)
+    .order('created_at', { ascending: false })
+
+  if (chatQuizzesError) {
+    console.error('Failed to fetch chat quizzes:', chatQuizzesError)
+  }
+
+  // 9. Fetch Attached Resources
+  const { data: resources, error: resourcesError } = await supabase
+    .from('study_room_resources')
+    .select('*')
+    .eq('room_id', roomId)
+    .order('created_at', { ascending: false })
+
+  if (resourcesError) {
+    console.error('Failed to fetch resources:', resourcesError)
+  }
+
+  // 10. Fetch silent reactions for messages
+  let messageReactions: any[] = []
+  if (messages && messages.length > 0) {
+    const { data: reactionsData, error: reactionsError } = await supabase
+      .from('study_room_message_reactions')
+      .select('*')
+      .in('message_id', messages.map((m: any) => m.id))
+
+    if (reactionsError) {
+      console.error('Failed to fetch reactions:', reactionsError)
+    } else {
+      messageReactions = reactionsData || []
+    }
+  }
+
   const memberRow = members?.find((m: any) => m.user?.auth_id === session.auth_id)
   const isMember = memberRow?.status === 'approved'
   const isPending = memberRow?.status === 'pending'
@@ -202,6 +279,11 @@ export async function getRoomDetails(roomId: string) {
     messages: messages || [],
     challenges: challenges || [],
     availableQuizzes: quizzes || [],
+    polls: polls || [],
+    dailyChallenges: dailyChallenges || [],
+    chatQuizzes: chatQuizzes || [],
+    resources: resources || [],
+    messageReactions: messageReactions || [],
     isMember,
     isPending,
     currentUserId: session.auth_id
@@ -729,5 +811,516 @@ export async function getRoomReportData(roomId: string) {
     }
   } catch (err: any) {
     return { success: false, error: err.message || 'Failed to fetch report data.' }
+  }
+}
+
+/**
+ * Focus Mode Server Actions
+ */
+export async function setFocusStatus(roomId: string, isFocusing: boolean, durationMinutes?: number) {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+
+    let focusTimerEndsAt = null
+    if (isFocusing && durationMinutes) {
+      focusTimerEndsAt = new Date(Date.now() + durationMinutes * 60 * 1000).toISOString()
+    }
+
+    const { error } = await supabase
+      .from('study_room_members')
+      .update({
+        is_focusing: isFocusing,
+        focus_timer_ends_at: focusTimerEndsAt,
+        last_active_at: new Date().toISOString()
+      })
+      .eq('room_id', roomId)
+      .eq('user_id', session.auth_id)
+
+    if (error) {
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+/**
+ * Study session & streaks tracking
+ */
+export async function updateStudyTime(roomId: string, durationSeconds: number) {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+
+    const { data: member, error: fetchError } = await supabase
+      .from('study_room_members')
+      .select('total_study_time, current_streak, longest_streak, last_study_date, weekly_study_time')
+      .eq('room_id', roomId)
+      .eq('user_id', session.auth_id)
+      .single()
+
+    if (fetchError || !member) {
+      return { success: false, error: fetchError?.message || 'Member not found.' }
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0]
+    let currentStreak = member.current_streak || 0
+    let longestStreak = member.longest_streak || 0
+    const lastStudyDateStr = member.last_study_date
+
+    if (!lastStudyDateStr) {
+      currentStreak = 1
+      longestStreak = Math.max(longestStreak, 1)
+    } else {
+      const today = new Date(todayStr)
+      const lastDate = new Date(lastStudyDateStr)
+      const diffTime = Math.abs(today.getTime() - lastDate.getTime())
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+      if (diffDays === 1) {
+        currentStreak += 1
+        longestStreak = Math.max(longestStreak, currentStreak)
+      } else if (diffDays > 1) {
+        currentStreak = 1
+      }
+    }
+
+    const coinsToAward = Math.min(50, Math.floor(durationSeconds / 300))
+    if (coinsToAward > 0) {
+      const { data: userProfile } = await supabase
+        .from('chameleons')
+        .select('coins')
+        .eq('auth_id', session.auth_id)
+        .single()
+      
+      if (userProfile) {
+        await supabase
+          .from('chameleons')
+          .update({ coins: (userProfile.coins || 0) + coinsToAward })
+          .eq('auth_id', session.auth_id)
+      }
+    }
+
+    const { error: updateError } = await supabase
+      .from('study_room_members')
+      .update({
+        total_study_time: (member.total_study_time || 0) + durationSeconds,
+        weekly_study_time: (member.weekly_study_time || 0) + durationSeconds,
+        current_streak: currentStreak,
+        longest_streak: longestStreak,
+        last_study_date: todayStr,
+        last_active_at: new Date().toISOString()
+      })
+      .eq('room_id', roomId)
+      .eq('user_id', session.auth_id)
+
+    if (updateError) {
+      return { success: false, error: updateError.message }
+    }
+
+    return { success: true, coinsAwarded: coinsToAward, currentStreak }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+/**
+ * Toggle quiet reactions on chat messages
+ */
+export async function toggleMessageReaction(messageId: string, emoji: string) {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+
+    const { data: existing } = await supabase
+      .from('study_room_message_reactions')
+      .select('*')
+      .eq('message_id', messageId)
+      .eq('user_id', session.auth_id)
+      .eq('emoji', emoji)
+      .maybeSingle()
+
+    if (existing) {
+      const { error } = await supabase
+        .from('study_room_message_reactions')
+        .delete()
+        .eq('message_id', messageId)
+        .eq('user_id', session.auth_id)
+        .eq('emoji', emoji)
+
+      if (error) return { success: false, error: error.message }
+      return { success: true, action: 'removed' }
+    } else {
+      const { error } = await supabase
+        .from('study_room_message_reactions')
+        .insert({
+          message_id: messageId,
+          user_id: session.auth_id,
+          emoji
+        })
+
+      if (error) return { success: false, error: error.message }
+      return { success: true, action: 'added' }
+    }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+/**
+ * Live Polls
+ */
+export async function createRoomPoll(roomId: string, question: string, options: string[], isMultipleChoice: boolean = false) {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+
+    const { error } = await supabase
+      .from('study_room_polls')
+      .insert({
+        room_id: roomId,
+        created_by: session.auth_id,
+        question,
+        options,
+        is_multiple_choice: isMultipleChoice
+      })
+
+    if (error) return { success: false, error: error.message }
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function voteOnPoll(pollId: string, selectedOptions: number[]) {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+
+    const { error } = await supabase
+      .from('study_room_poll_votes')
+      .upsert({
+        poll_id: pollId,
+        user_id: session.auth_id,
+        selected_options: selectedOptions,
+        created_at: new Date().toISOString()
+      })
+
+    if (error) return { success: false, error: error.message }
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function togglePinPoll(pollId: string, isPinned: boolean) {
+  try {
+    await checkAuth()
+    const supabase = await createServerClient()
+
+    const { error } = await supabase
+      .from('study_room_polls')
+      .update({ is_pinned: isPinned })
+      .eq('id', pollId)
+
+    if (error) return { success: false, error: error.message }
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+/**
+ * Daily Challenge
+ */
+export async function createDailyChallenge(roomId: string, title: string, description: string, xpReward: number = 100) {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+    const todayDate = new Date().toISOString().split('T')[0]
+
+    const { error } = await supabase
+      .from('study_room_daily_challenges')
+      .insert({
+        room_id: roomId,
+        created_by: session.auth_id,
+        title,
+        description,
+        xp_reward: xpReward,
+        challenge_date: todayDate
+      })
+
+    if (error) return { success: false, error: error.message }
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function updateDailyChallengeProgress(challengeId: string, progress: number) {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+    const isCompleted = progress >= 100
+
+    const { error } = await supabase
+      .from('study_room_challenge_progress')
+      .upsert({
+        challenge_id: challengeId,
+        user_id: session.auth_id,
+        progress,
+        is_completed: isCompleted,
+        completed_at: isCompleted ? new Date().toISOString() : null
+      })
+
+    if (error) return { success: false, error: error.message }
+
+    if (isCompleted) {
+      const { data: challenge } = await supabase
+        .from('study_room_daily_challenges')
+        .select('xp_reward')
+        .eq('id', challengeId)
+        .single()
+
+      const reward = challenge?.xp_reward || 100
+
+      const { data: userProfile } = await supabase
+        .from('chameleons')
+        .select('coins')
+        .eq('auth_id', session.auth_id)
+        .single()
+      
+      if (userProfile) {
+        await supabase
+          .from('chameleons')
+          .update({ coins: (userProfile.coins || 0) + reward })
+          .eq('auth_id', session.auth_id)
+      }
+    }
+
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+/**
+ * Quiz Message
+ */
+export async function createChatQuiz(roomId: string, question: string, options: string[], correctAnswer: string, countdownSeconds?: number) {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+
+    let endsAt = null
+    if (countdownSeconds) {
+      endsAt = new Date(Date.now() + countdownSeconds * 1000).toISOString()
+    }
+
+    const { error } = await supabase
+      .from('study_room_quizzes')
+      .insert({
+        room_id: roomId,
+        created_by: session.auth_id,
+        question,
+        options,
+        correct_answer: correctAnswer,
+        countdown_seconds: countdownSeconds,
+        ends_at: endsAt
+      })
+
+    if (error) return { success: false, error: error.message }
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function submitQuizAnswer(quizId: string, answer: string) {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+
+    const { data: quiz, error: quizErr } = await supabase
+      .from('study_room_quizzes')
+      .select('*')
+      .eq('id', quizId)
+      .single()
+
+    if (quizErr || !quiz) {
+      return { success: false, error: 'Quiz not found.' }
+    }
+
+    if (quiz.ends_at && new Date(quiz.ends_at).getTime() < Date.now()) {
+      return { success: false, error: 'This quiz has expired.' }
+    }
+
+    const { data: existing } = await supabase
+      .from('study_room_quiz_answers')
+      .select('*')
+      .eq('quiz_id', quizId)
+      .eq('user_id', session.auth_id)
+      .maybeSingle()
+
+    if (existing) {
+      return { success: false, error: 'You have already submitted an answer for this quiz.' }
+    }
+
+    const isCorrect = quiz.correct_answer === answer
+    const score = isCorrect ? 10 : 0
+
+    const { error } = await supabase
+      .from('study_room_quiz_answers')
+      .insert({
+        quiz_id: quizId,
+        user_id: session.auth_id,
+        answer,
+        is_correct: isCorrect,
+        score,
+        submitted_at: new Date().toISOString()
+      })
+
+    if (error) return { success: false, error: error.message }
+
+    if (isCorrect) {
+      const { data: userProfile } = await supabase
+        .from('chameleons')
+        .select('coins')
+        .eq('auth_id', session.auth_id)
+        .single()
+      
+      if (userProfile) {
+        await supabase
+          .from('chameleons')
+          .update({ coins: (userProfile.coins || 0) + score })
+          .eq('auth_id', session.auth_id)
+      }
+    }
+
+    return { success: true, isCorrect }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+/**
+ * Resource Library Integration
+ */
+export async function getUserAdminRooms() {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+
+    const { data, error } = await supabase
+      .from('study_room_members')
+      .select('room:room_id(*)')
+      .eq('user_id', session.auth_id)
+      .in('role', ['creator', 'admin'])
+      .eq('status', 'approved')
+
+    if (error) {
+      return { success: false, error: error.message }
+    }
+
+    return { success: true, rooms: (data || []).map((m: any) => m.room).filter(Boolean) }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function addDriveResource(
+  roomId: string, 
+  fileId: string, 
+  name: string, 
+  mimeType: string, 
+  size?: string, 
+  webViewLink?: string, 
+  webContentLink?: string,
+  thumbnailLink?: string
+) {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+
+    const { error } = await supabase
+      .from('study_room_resources')
+      .insert({
+        room_id: roomId,
+        file_id: fileId,
+        name,
+        mime_type: mimeType,
+        size,
+        web_view_link: webViewLink,
+        web_content_link: webContentLink,
+        thumbnail_link: thumbnailLink,
+        added_by: session.auth_id
+      })
+
+    if (error) {
+      if (error.code === '23505') {
+        return { success: false, error: 'This resource is already added to this study space.' }
+      }
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function removeRoomResource(roomId: string, resourceId: string) {
+  try {
+    const session = await checkAuth()
+    const supabase = await createServerClient()
+
+    const { data: memberRole } = await supabase
+      .from('study_room_members')
+      .select('role')
+      .eq('room_id', roomId)
+      .eq('user_id', session.auth_id)
+      .single()
+
+    const canManage = memberRole?.role === 'creator' || memberRole?.role === 'admin' || session.is_super_admin
+    if (!canManage) {
+      return { success: false, error: 'Unauthorized. Only managers can remove resources.' }
+    }
+
+    const { error } = await supabase
+      .from('study_room_resources')
+      .delete()
+      .eq('id', resourceId)
+
+    if (error) return { success: false, error: error.message }
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function incrementResourceViews(resourceId: string) {
+  try {
+    await checkAuth()
+    const supabase = await createServerClient()
+
+    const { data: res } = await supabase
+      .from('study_room_resources')
+      .select('views_count')
+      .eq('id', resourceId)
+      .single()
+
+    if (res) {
+      await supabase
+        .from('study_room_resources')
+        .update({ views_count: (res.views_count || 0) + 1 })
+        .eq('id', resourceId)
+    }
+
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
   }
 }

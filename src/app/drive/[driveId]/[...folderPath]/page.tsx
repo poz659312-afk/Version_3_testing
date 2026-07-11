@@ -41,6 +41,9 @@ import {
   Edit,
   Trash2,
   Lock,
+  FolderOpen,
+  Plus,
+  Loader2
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -50,9 +53,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { toast } from "sonner"
 import dynamic from "next/dynamic"
 const AIModal = dynamic(() => import("@/components/AIModal"), { ssr: false })
 const ScrollAnimatedSection = dynamic(() => import("@/components/scroll-animated-section"), { ssr: false })
+const PDFViewer = dynamic(() => import("@/components/PDFViewer"), { ssr: false })
 import { useParams, useRouter } from "next/navigation"
 import { getStudentSession } from "@/lib/auth"
 import {
@@ -269,6 +282,61 @@ export default function DrivePage() {
   const [activeDeleteFile, setActiveDeleteFile] = useState<DriveFile | null>(null);
   const [activeRenameFolder, setActiveRenameFolder] = useState<DriveFile | null>(null);
   const [activeDeleteFolder, setActiveDeleteFolder] = useState<DriveFile | null>(null);
+
+  // Study Space v2 additions
+  const [previewPdfFile, setPreviewPdfFile] = useState<DriveFile | null>(null);
+  const [spaceModalFile, setSpaceModalFile] = useState<DriveFile | null>(null);
+  const [adminRooms, setAdminRooms] = useState<any[]>([]);
+  const [loadingRooms, setLoadingRooms] = useState(false);
+  const [selectedRoomId, setSelectedRoomId] = useState<string>("");
+  const [isAddingResource, setIsAddingResource] = useState(false);
+
+  const handleAddToStudySpace = async (file: DriveFile) => {
+    setSpaceModalFile(file);
+    setLoadingRooms(true);
+    try {
+      const { getUserAdminRooms } = await import("@/app/study-spaces/actions");
+      const res = await getUserAdminRooms();
+      if (res.success && res.rooms) {
+        setAdminRooms(res.rooms);
+      } else {
+        toast.error(res.error || "Failed to load study spaces");
+      }
+    } catch (err) {
+      toast.error("Failed to load study spaces");
+    } finally {
+      setLoadingRooms(false);
+    }
+  };
+
+  const handleConfirmAddToSpace = async () => {
+    if (!spaceModalFile || !selectedRoomId) return;
+    setIsAddingResource(true);
+    try {
+      const { addDriveResource } = await import("@/app/study-spaces/actions");
+      const res = await addDriveResource(
+        selectedRoomId,
+        spaceModalFile.id,
+        spaceModalFile.name,
+        spaceModalFile.mimeType,
+        spaceModalFile.size,
+        spaceModalFile.webViewLink,
+        spaceModalFile.webContentLink,
+        spaceModalFile.thumbnailLink
+      );
+      if (res.success) {
+        toast.success(`"${spaceModalFile.name}" successfully added to Study Space!`);
+        setSpaceModalFile(null);
+        setSelectedRoomId("");
+      } else {
+        toast.error(res.error || "Failed to add resource");
+      }
+    } catch (err) {
+      toast.error("Failed to add resource");
+    } finally {
+      setIsAddingResource(false);
+    }
+  };
 
   // Hash resolution states
   const [notFound, setNotFound] = useState(false)
@@ -501,6 +569,8 @@ export default function DrivePage() {
   const handleView = (file: DriveFile) => {
     if (file.mimeType.includes("folder")) {
       handleFolderClick(file)
+    } else if (file.mimeType.includes("pdf")) {
+      setPreviewPdfFile(file);
     } else {
       // Open all file types in new tab
       if (file.webViewLink) {
@@ -1046,6 +1116,15 @@ export default function DrivePage() {
                                     <Eye className="w-4 h-4 mr-2" />
                                     {isFolder ? "Open" : isPDF ? "View PDF" : "View"}
                                   </DropdownMenuItem>
+                                  {isPDF && (
+                                    <DropdownMenuItem 
+                                      onClick={() => handleAddToStudySpace(file)}
+                                      className="text-primary focus:text-primary focus:bg-primary/10 cursor-pointer"
+                                    >
+                                      <Plus className="w-4 h-4 mr-2" />
+                                      Add to Study Space
+                                    </DropdownMenuItem>
+                                  )}
                                   {!isFolder && (
                                     <DropdownMenuItem 
                                       onClick={() => {
@@ -1143,6 +1222,15 @@ export default function DrivePage() {
                                    Summarize with AI
                                  </DropdownMenuItem>
                                )}
+                              {isPDF && (
+                                <DropdownMenuItem 
+                                  onClick={() => handleAddToStudySpace(file)}
+                                  className="text-primary focus:text-primary focus:bg-primary/10 cursor-pointer"
+                                >
+                                  <Plus className="w-4 h-4 mr-2" />
+                                  Add to Study Space
+                                </DropdownMenuItem>
+                              )}
                               <DropdownMenuItem onClick={() => handleDownload(file)} className="cursor-pointer">
                                 <Download className="w-4 h-4 mr-2" />
                                 Download
@@ -1418,6 +1506,109 @@ export default function DrivePage() {
           </div>
         </div>
       )}
+
+      {/* PDF Preview Modal */}
+      <Dialog open={!!previewPdfFile} onOpenChange={(open) => {
+        if (!open) setPreviewPdfFile(null);
+      }}>
+        <DialogContent className="max-w-4xl h-[85vh] bg-background/95 backdrop-blur-xl border-border p-4 flex flex-col">
+          <DialogHeader className="shrink-0 pb-2 border-b border-border">
+            <DialogTitle className="text-sm font-bold text-foreground">
+              PDF Preview
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-hidden min-h-0 pt-3">
+            {previewPdfFile && (
+              <PDFViewer
+                initialUrl={`/api/google-drive/download?fileId=${previewPdfFile.id}&authId=${userSession?.auth_id}`}
+                fileName={previewPdfFile.name}
+                onAddToStudySpace={() => {
+                  setPreviewPdfFile(null);
+                  handleAddToStudySpace(previewPdfFile);
+                }}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add to Study Space Modal */}
+      <Dialog open={!!spaceModalFile} onOpenChange={(open) => {
+        if (!open) {
+          setSpaceModalFile(null);
+          setAdminRooms([]);
+        }
+      }}>
+        <DialogContent className="bg-card border-border shadow-2xl max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <FolderOpen className="w-5 h-5 text-primary" />
+              Add to Study Space
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground mt-1">
+              Select one of your managed Study Spaces to attach <span className="font-bold text-foreground">{spaceModalFile?.name}</span>.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-4">
+            {loadingRooms ? (
+              <div className="flex justify-center items-center py-6">
+                <Loader2 className="w-6 h-6 text-primary animate-spin" />
+              </div>
+            ) : adminRooms.length === 0 ? (
+              <div className="text-center py-6 text-muted-foreground text-xs">
+                You don't manage any Study Spaces as an Admin. Only Admins can add resources.
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1">
+                {adminRooms.map((room: any) => (
+                  <div
+                    key={room.id}
+                    onClick={() => setSelectedRoomId(room.id)}
+                    className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all hover:bg-white/[0.04] ${
+                      selectedRoomId === room.id 
+                        ? 'border-primary bg-primary/5 shadow-sm' 
+                        : 'border-border/50 bg-white/[0.02]'
+                    }`}
+                  >
+                    <div>
+                      <h4 className="text-xs font-bold text-foreground">{room.name}</h4>
+                      <p className="text-[10px] text-muted-foreground line-clamp-1 mt-0.5">{room.description}</p>
+                    </div>
+                    <Badge variant="outline" className="text-[9px] border-primary/20 bg-primary/5 text-primary shrink-0">
+                      Level {room.level_num}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setSpaceModalFile(null)}
+              className="border-border text-xs"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmAddToSpace}
+              disabled={!selectedRoomId || isAddingResource}
+              className="bg-primary text-white hover:bg-primary/90 text-xs font-semibold"
+            >
+              {isAddingResource ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                  Adding...
+                </>
+              ) : (
+                'Attach Resource'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </UploadProvider>
   )
 }
