@@ -30,6 +30,20 @@ async function checkAuth() {
 }
 
 /**
+ * Helper to check if a user is an approved admin or creator of a room.
+ */
+async function verifyAdminOrCreator(roomId: string, authId: string, supabase: any) {
+  const { data: memberRow } = await supabase
+    .from('study_room_members')
+    .select('role, status')
+    .eq('room_id', roomId)
+    .eq('user_id', authId)
+    .single()
+
+  return memberRow?.status === 'approved' && (memberRow?.role === 'creator' || memberRow?.role === 'admin')
+}
+
+/**
  * Fetch all study spaces matching the student's level and specialization.
  */
 export async function getRoomsList() {
@@ -407,6 +421,36 @@ export async function sendRoomMessage(roomId: string, content: string, isQuestio
   const session = await checkAuth()
   const supabase = await createServerClient()
 
+  // 1. Fetch room settings
+  const { data: room, error: roomError } = await supabase
+    .from('study_rooms')
+    .select('only_admins_can_send_messages, name')
+    .eq('id', roomId)
+    .single()
+
+  if (roomError || !room) {
+    return { success: false, error: 'Study space not found.' }
+  }
+
+  // 2. Fetch member info
+  const { data: memberRow } = await supabase
+    .from('study_room_members')
+    .select('role, status')
+    .eq('room_id', roomId)
+    .eq('user_id', session.auth_id)
+    .single()
+
+  if (!memberRow || memberRow.status !== 'approved') {
+    return { success: false, error: 'Only approved members can send messages.' }
+  }
+
+  const isAdminOrCreator = memberRow.role === 'creator' || memberRow.role === 'admin'
+
+  // 3. Check message restriction
+  if (room.only_admins_can_send_messages && !isAdminOrCreator) {
+    return { success: false, error: 'Only admins can send messages in this chat.' }
+  }
+
   const { error } = await supabase
     .from('study_room_messages')
     .insert({
@@ -420,15 +464,49 @@ export async function sendRoomMessage(roomId: string, content: string, isQuestio
     return { success: false, error: error.message }
   }
 
+  // 4. Look for @username mentions and notify mentioned users
+  const mentionRegex = /@([\w.-]+)/g
+  let match
+  const mentionedUsernames: string[] = []
+  while ((match = mentionRegex.exec(content)) !== null) {
+    mentionedUsernames.push(match[1])
+  }
+
+  if (mentionedUsernames.length > 0) {
+    const { data: usersToNotify } = await supabase
+      .from('chameleons')
+      .select('auth_id')
+      .in('username', mentionedUsernames)
+
+    if (usersToNotify && usersToNotify.length > 0) {
+      const notificationsToInsert = usersToNotify
+        .filter(u => u.auth_id !== session.auth_id) // don't notify self
+        .map(u => ({
+          auth_id: u.auth_id,
+          title: 'New Mention',
+          message_content: `you were mentioned by ${session.username || 'someone'} in space ${room.name}`,
+          type: 'mention',
+          provider: 'system',
+          seen: 'false'
+        }))
+
+      if (notificationsToInsert.length > 0) {
+        await supabase.from('Notifications').insert(notificationsToInsert)
+      }
+    }
+  }
+
   return { success: true }
 }
 
-/**
- * Update the shared scratchpad contents.
- */
 export async function updateScratchpad(roomId: string, content: string) {
-  await checkAuth()
+  const session = await checkAuth()
   const supabase = await createServerClient()
+
+  const isAdmin = await verifyAdminOrCreator(roomId, session.auth_id, supabase)
+  if (!isAdmin) {
+    return { success: false, error: 'Unauthorized. Only admins can edit the notes.' }
+  }
 
   const { error } = await supabase
     .from('study_rooms')
@@ -457,15 +535,9 @@ export async function startQuizChallenge(roomId: string, quizCode: string) {
     return { success: false, error: 'Please select a quiz before starting a challenge.' }
   }
 
-  const { data: memberRow, error: memberError } = await supabase
-    .from('study_room_members')
-    .select('status')
-    .eq('room_id', roomId)
-    .eq('user_id', session.auth_id)
-    .single()
-
-  if (memberError || memberRow?.status !== 'approved') {
-    return { success: false, error: 'Only approved members can launch quiz battles.' }
+  const isAdmin = await verifyAdminOrCreator(roomId, session.auth_id, supabase)
+  if (!isAdmin) {
+    return { success: false, error: 'Unauthorized. Only admins can launch quiz battles.' }
   }
 
   const { data: quizRow, error: quizError } = await supabase
@@ -623,7 +695,8 @@ export async function updateRoomSettings(
   name: string, 
   description: string, 
   visibility: string, 
-  joinApproval: string
+  joinApproval: string,
+  onlyAdminsCanSendMessages: boolean = false
 ) {
   try {
     const session = await checkAuth()
@@ -649,6 +722,7 @@ export async function updateRoomSettings(
         description,
         visibility,
         join_approval: joinApproval,
+        only_admins_can_send_messages: onlyAdminsCanSendMessages,
         updated_at: new Date().toISOString()
       })
       .eq('id', roomId)
@@ -965,6 +1039,11 @@ export async function createRoomPoll(roomId: string, question: string, options: 
     const session = await checkAuth()
     const supabase = await createServerClient()
 
+    const isAdmin = await verifyAdminOrCreator(roomId, session.auth_id, supabase)
+    if (!isAdmin) {
+      return { success: false, error: 'Unauthorized. Only admins can create polls.' }
+    }
+
     const { error } = await supabase
       .from('study_room_polls')
       .insert({
@@ -1028,6 +1107,11 @@ export async function createDailyChallenge(roomId: string, title: string, descri
     const session = await checkAuth()
     const supabase = await createServerClient()
     const todayDate = new Date().toISOString().split('T')[0]
+
+    const isAdmin = await verifyAdminOrCreator(roomId, session.auth_id, supabase)
+    if (!isAdmin) {
+      return { success: false, error: 'Unauthorized. Only admins can create daily challenges.' }
+    }
 
     const { error } = await supabase
       .from('study_room_daily_challenges')
@@ -1101,6 +1185,11 @@ export async function createChatQuiz(roomId: string, question: string, options: 
   try {
     const session = await checkAuth()
     const supabase = await createServerClient()
+
+    const isAdmin = await verifyAdminOrCreator(roomId, session.auth_id, supabase)
+    if (!isAdmin) {
+      return { success: false, error: 'Unauthorized. Only admins can create quiz battles.' }
+    }
 
     const { data: quizData, error } = await supabase
       .from('study_room_quizzes')
@@ -1245,6 +1334,11 @@ export async function addDriveResource(
   try {
     const session = await checkAuth()
     const supabase = await createServerClient()
+
+    const isAdmin = await verifyAdminOrCreator(roomId, session.auth_id, supabase)
+    if (!isAdmin) {
+      return { success: false, error: 'Unauthorized. Only admins can import resources.' }
+    }
 
     const { error } = await supabase
       .from('study_room_resources')
