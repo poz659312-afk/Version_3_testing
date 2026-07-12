@@ -1491,7 +1491,7 @@ export default function StudySpaceClient({
                 return (
                   <div 
                     key={msg.id} 
-                    className={`flex gap-2.5 items-start max-w-[95%] sm:max-w-[90%] ${isSelf ? 'flex-row-reverse self-end ml-auto' : 'self-start mr-auto'}`}
+                    className={`flex gap-2 items-start w-full ${isSelf ? 'flex-row-reverse' : ''}`}
                   >
                     <div className="w-7 h-7 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0 mt-1 cursor-pointer" title={msg.user?.username || 'Student'}>
                       {msg.user?.profile_image ? (
@@ -1516,9 +1516,9 @@ export default function StudySpaceClient({
                       </div>
                       
                       <div 
-                        className={`p-2.5 rounded-2xl text-xs border shadow-sm leading-relaxed relative group ${
+                        className={`p-2.5 rounded-2xl text-xs border shadow-sm leading-relaxed relative group break-words max-w-[72vw] sm:max-w-[260px] ${
                           msg.content.startsWith('[QUIZ:')
-                            ? 'bg-indigo-500/5 border-indigo-500/20 text-foreground w-[260px] sm:w-[340px]'
+                            ? 'bg-indigo-500/5 border-indigo-500/20 text-foreground w-[72vw] sm:w-[340px] max-w-[72vw] sm:max-w-[340px]'
                             : msg.is_question 
                               ? 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200' 
                               : isSelf 
