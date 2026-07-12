@@ -2175,95 +2175,217 @@ export default function StudySpaceClient({
               </TabsContent>
 
               {/* Tab 7: Settings Tab */}
-              <TabsContent value="settings" className="flex-1 overflow-y-auto p-2 mt-0 focus-visible:outline-none" data-lenis-prevent>
+              <TabsContent value="settings" className="flex-1 overflow-y-auto p-2 mt-0 focus-visible:outline-none space-y-5" data-lenis-prevent>
                 {canManage ? (
-                  <form onSubmit={handleSaveSettings} className="space-y-4 max-w-md">
-                    <div className="space-y-1.5">
-                      <label htmlFor="settings-name" className="text-xs font-semibold text-muted-foreground">Space Name</label>
-                      <Input 
-                        id="settings-name"
-                        value={settingsName}
-                        onChange={e => setSettingsName(e.target.value)}
-                        className="bg-muted/30 border-border text-xs"
-                        disabled={isSavingSettings || isPending}
-                        maxLength={60}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label htmlFor="settings-desc" className="text-xs font-semibold text-muted-foreground">Description</label>
-                      <Textarea 
-                        id="settings-desc"
-                        value={settingsDesc}
-                        onChange={e => setSettingsDesc(e.target.value)}
-                        className="bg-muted/30 border-border text-xs min-h-[80px]"
-                        disabled={isSavingSettings || isPending}
-                        maxLength={180}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label htmlFor="settings-visibility" className="text-xs font-semibold text-muted-foreground">Visibility</label>
-                        <select 
-                          id="settings-visibility"
-                          value={settingsVisibility}
-                          onChange={e => setSettingsVisibility(e.target.value)}
-                          className="w-full bg-muted/30 border border-border rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
-                          disabled={isSavingSettings || isPending}
-                        >
-                          <option value="public">Public</option>
-                          <option value="private">Private</option>
-                        </select>
+                  <>
+                    {/* ── Pending Join Requests ── */}
+                    {members.filter((m: any) => m.status === 'pending').length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-1.5 pb-1 border-b border-border">
+                          <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                          <span className="text-xs font-bold text-amber-500">
+                            Pending Requests ({members.filter((m: any) => m.status === 'pending').length})
+                          </span>
+                        </div>
+                        <div className="space-y-2">
+                          {members
+                            .filter((m: any) => m.status === 'pending')
+                            .map((m: any) => (
+                              <div key={m.user?.auth_id} className="flex items-center justify-between gap-3 p-2.5 bg-amber-500/5 border border-amber-500/20 rounded-xl">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <div className="w-7 h-7 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
+                                    {m.user?.profile_image
+                                      ? <img src={m.user.profile_image} alt={m.user.username} className="w-full h-full object-cover" />
+                                      : <span className="text-[10px] font-bold text-muted-foreground">{(m.user?.username || 'S').substring(0, 1).toUpperCase()}</span>
+                                    }
+                                  </div>
+                                  <div className="min-w-0">
+                                    <p className="text-xs font-bold text-foreground truncate">{m.user?.username || 'Unknown'}</p>
+                                    <p className="text-[9px] text-muted-foreground truncate">{m.user?.specialization || ''}</p>
+                                  </div>
+                                </div>
+                                <div className="flex gap-1.5 shrink-0">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleApprove(m.user?.auth_id)}
+                                    className="h-7 px-2.5 text-[10px] bg-green-500 hover:bg-green-600 text-white font-bold cursor-pointer"
+                                  >
+                                    <UserCheck className="w-3 h-3 mr-1" /> Approve
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={() => handleReject(m.user?.auth_id)}
+                                    className="h-7 px-2.5 text-[10px] font-bold cursor-pointer"
+                                  >
+                                    Reject
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ── Active Members Management ── */}
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-1.5 pb-1 border-b border-border">
+                        <Users className="w-3.5 h-3.5 text-primary" />
+                        <span className="text-xs font-bold text-muted-foreground">
+                          Members ({members.filter((m: any) => m.status === 'approved').length})
+                        </span>
                       </div>
                       <div className="space-y-1.5">
-                        <label htmlFor="settings-approval" className="text-xs font-semibold text-muted-foreground">Join Setting</label>
-                        <select 
-                          id="settings-approval"
-                          value={settingsJoinApproval}
-                          onChange={e => setSettingsJoinApproval(e.target.value)}
-                          className="w-full bg-muted/30 border border-border rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
-                          disabled={isSavingSettings || isPending}
-                        >
-                          <option value="immediate">Immediate</option>
-                          <option value="requires_approval">Needs Approval</option>
-                        </select>
+                        {members
+                          .filter((m: any) => m.status === 'approved')
+                          .map((m: any) => {
+                            const isSelf = m.user?.auth_id === currentUserId
+                            const isCreator = m.role === 'creator'
+                            return (
+                              <div key={m.user?.auth_id} className="flex items-center justify-between gap-2 p-2.5 bg-muted/20 border border-border rounded-xl">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <div className="w-7 h-7 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
+                                    {m.user?.profile_image
+                                      ? <img src={m.user.profile_image} alt={m.user.username} className="w-full h-full object-cover" />
+                                      : <span className="text-[10px] font-bold text-muted-foreground">{(m.user?.username || 'S').substring(0, 1).toUpperCase()}</span>
+                                    }
+                                  </div>
+                                  <div className="min-w-0">
+                                    <p className="text-xs font-bold text-foreground truncate flex items-center gap-1">
+                                      {m.user?.username || 'Unknown'}
+                                      {isCreator && <Crown className="w-3 h-3 text-yellow-500 shrink-0" />}
+                                      {m.role === 'admin' && !isCreator && <Shield className="w-3 h-3 text-blue-400 shrink-0" />}
+                                    </p>
+                                    <p className="text-[9px] text-muted-foreground capitalize">{isCreator ? 'Owner' : m.role}</p>
+                                  </div>
+                                </div>
+                                {!isSelf && !isCreator && (
+                                  <div className="flex gap-1.5 shrink-0">
+                                    {isOwner && (
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => {
+                                          setPendingActionUser(m)
+                                          setPendingPromoteRole(m.role === 'admin' ? 'member' : 'admin')
+                                          setShowPromoteDialog(true)
+                                        }}
+                                        className="h-7 px-2 text-[10px] border-border cursor-pointer"
+                                      >
+                                        {m.role === 'admin' ? <ShieldOff className="w-3 h-3" /> : <Shield className="w-3 h-3" />}
+                                      </Button>
+                                    )}
+                                    <Button
+                                      size="sm"
+                                      variant="destructive"
+                                      onClick={() => {
+                                        setPendingActionUser(m)
+                                        setShowRemoveDialog(true)
+                                      }}
+                                      className="h-7 px-2 text-[10px] cursor-pointer"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })}
                       </div>
                     </div>
-                    
-                    <div className="pt-4 border-t border-border/60 flex flex-wrap items-center justify-between gap-4">
-                      <div className="flex gap-2">
-                        <Button 
-                          type="submit"
-                          disabled={isSavingSettings || isPending}
-                          size="sm"
-                          className="bg-primary text-white text-xs font-semibold cursor-pointer"
-                        >
-                          {isSavingSettings ? 'Saving...' : 'Save Settings'}
-                        </Button>
-                        {isOwner && (
-                          <Button 
+
+                    {/* ── Space Settings Form ── */}
+                    <div className="space-y-3 pt-1 border-t border-border/60">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Space Settings</span>
+                      <form onSubmit={handleSaveSettings} className="space-y-4 max-w-md">
+                        <div className="space-y-1.5">
+                          <label htmlFor="settings-name" className="text-xs font-semibold text-muted-foreground">Space Name</label>
+                          <Input
+                            id="settings-name"
+                            value={settingsName}
+                            onChange={e => setSettingsName(e.target.value)}
+                            className="bg-muted/30 border-border text-xs"
+                            disabled={isSavingSettings || isPending}
+                            maxLength={60}
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label htmlFor="settings-desc" className="text-xs font-semibold text-muted-foreground">Description</label>
+                          <Textarea
+                            id="settings-desc"
+                            value={settingsDesc}
+                            onChange={e => setSettingsDesc(e.target.value)}
+                            className="bg-muted/30 border-border text-xs min-h-[80px]"
+                            disabled={isSavingSettings || isPending}
+                            maxLength={180}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <label htmlFor="settings-visibility" className="text-xs font-semibold text-muted-foreground">Visibility</label>
+                            <select
+                              id="settings-visibility"
+                              value={settingsVisibility}
+                              onChange={e => setSettingsVisibility(e.target.value)}
+                              className="w-full bg-muted/30 border border-border rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                              disabled={isSavingSettings || isPending}
+                            >
+                              <option value="public">Public</option>
+                              <option value="private">Private</option>
+                            </select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="settings-approval" className="text-xs font-semibold text-muted-foreground">Join Setting</label>
+                            <select
+                              id="settings-approval"
+                              value={settingsJoinApproval}
+                              onChange={e => setSettingsJoinApproval(e.target.value)}
+                              className="w-full bg-muted/30 border border-border rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                              disabled={isSavingSettings || isPending}
+                            >
+                              <option value="immediate">Immediate</option>
+                              <option value="requires_approval">Needs Approval</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="pt-4 border-t border-border/60 flex flex-wrap items-center justify-between gap-4">
+                          <div className="flex gap-2">
+                            <Button
+                              type="submit"
+                              disabled={isSavingSettings || isPending}
+                              size="sm"
+                              className="bg-primary text-white text-xs font-semibold cursor-pointer"
+                            >
+                              {isSavingSettings ? 'Saving...' : 'Save Settings'}
+                            </Button>
+                            {isOwner && (
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                onClick={() => setShowDeleteDialog(true)}
+                                disabled={isPending}
+                                size="sm"
+                                className="text-xs font-semibold cursor-pointer"
+                              >
+                                Delete Study Space
+                              </Button>
+                            )}
+                          </div>
+                          <Button
                             type="button"
-                            variant="destructive"
-                            onClick={() => setShowDeleteDialog(true)}
+                            variant="outline"
+                            onClick={() => setShowLeaveDialog(true)}
                             disabled={isPending}
                             size="sm"
-                            className="text-xs font-semibold cursor-pointer"
+                            className="text-xs font-semibold cursor-pointer border-red-500/20 text-red-405 hover:bg-red-500/10 shrink-0"
                           >
-                            Delete Study Space
+                            Leave Space
                           </Button>
-                        )}
-                      </div>
-                      <Button 
-                        type="button"
-                        variant="outline"
-                        onClick={() => setShowLeaveDialog(true)}
-                        disabled={isPending}
-                        size="sm"
-                        className="text-xs font-semibold cursor-pointer border-red-500/20 text-red-405 hover:bg-red-500/10 shrink-0"
-                      >
-                        Leave Space
-                      </Button>
+                        </div>
+                      </form>
                     </div>
-                  </form>
+                  </>
                 ) : (
                   <div className="space-y-4 max-w-md">
                     <Card className="bg-muted/20 border-border">
