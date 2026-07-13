@@ -16,9 +16,16 @@ import {
   BookOpen, 
   Sparkles,
   ArrowRight,
-  Loader2
+  Loader2,
+  GraduationCap,
+  Layers
 } from 'lucide-react'
 import { createStudyRoom, joinStudyRoom } from './actions'
+import { cn } from '@/lib/utils'
+import { SpotlightCard } from '@/components/react-bits/spotlight-card'
+import { BlurText } from '@/components/react-bits/blur-text'
+import BorderGlow from '@/components/BorderGlow'
+
 
 interface StudySpacesDirectoryClientProps {
   initialRooms: any[]
@@ -125,162 +132,211 @@ export default function StudySpacesDirectoryClient({
 
   return (
     <div className="space-y-8 premium-container">
-      <section className="ss-mesh-hero relative overflow-hidden rounded-3xl border border-border/70 p-5 sm:p-7 lg:p-9 shadow-xl">
-        <div className="absolute -top-24 right-0 h-64 w-64 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-28 left-0 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col gap-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="space-y-3">
-              <Badge className="w-fit bg-primary/10 text-primary border-primary/25 flex items-center gap-1.5 px-3 py-1 text-[11px]">
-                <Sparkles className="w-3.5 h-3.5 text-primary" />
-                Collaborative Learning Hub
-              </Badge>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-foreground">Study Teams & Spaces</h1>
-              <p className="text-muted-foreground text-sm sm:text-base max-w-2xl leading-relaxed">
-                Browse, join, or create study spaces to collaborate on summaries, chat with peers, and solve quizzes together.
-              </p>
+      <BorderGlow
+        animated={true}
+        glowColor="99 102 241"
+        colors={['#6366f1', '#a855f7', '#3b82f6']}
+        borderRadius={24}
+        backgroundColor="transparent"
+        className="ss-mesh-hero shadow-xl w-full"
+      >
+        <section className="relative overflow-hidden p-5 sm:p-7 lg:p-9">
+          <div className="absolute -top-24 right-0 h-64 w-64 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-28 left-0 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+          
+          <div className="relative z-10 flex flex-col gap-6">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="space-y-3">
+                <Badge className="w-fit bg-primary/10 text-primary border-primary/25 flex items-center gap-1.5 px-3 py-1 text-[11px]">
+                  <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+                  Collaborative Learning Hub
+                </Badge>
+                <BlurText
+                  text="Study Teams & Spaces"
+                  delay={100}
+                  animateBy="word"
+                  direction="top"
+                  className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-foreground"
+                />
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="text-muted-foreground text-sm sm:text-base max-w-2xl leading-relaxed"
+                >
+                  Browse, join, or create study spaces to collaborate on summaries, chat with peers, and solve quizzes together.
+                </motion.p>
+              </div>
+
+              {isAdmin && (
+                <Dialog open={openCreate} onOpenChange={setOpenCreate}>
+                  <DialogTrigger asChild>
+                    <Button className="ss-btn-shimmer text-white font-semibold shadow-lg hover:shadow-primary/20 transition-all cursor-pointer h-10 sm:h-11 px-4 sm:px-5">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Study Space
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-card border-border shadow-2xl">
+                    <form onSubmit={handleCreateRoom}>
+                      <DialogHeader>
+                        <DialogTitle className="text-lg font-bold">Create a Study Space</DialogTitle>
+                        <DialogDescription className="text-xs mt-1 text-muted-foreground">
+                          This space will be listed in the global directory and visible to all registered students.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-1.5">
+                          <label htmlFor="room-name" className="text-xs font-semibold text-muted-foreground">Room Name</label>
+                          <Input 
+                            id="room-name"
+                            placeholder="e.g. Data Science Exam Prep Group" 
+                            value={newRoomName} 
+                            onChange={e => setNewRoomName(e.target.value)}
+                            disabled={isPending}
+                            className="bg-muted/30 border-border text-sm"
+                            maxLength={60}
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label htmlFor="room-desc" className="text-xs font-semibold text-muted-foreground">Description (Optional)</label>
+                          <Input 
+                            id="room-desc"
+                            placeholder="e.g. Reviewing neural networks and final term quizzes together." 
+                            value={newRoomDesc} 
+                            onChange={e => setNewRoomDesc(e.target.value)}
+                            disabled={isPending}
+                            className="bg-muted/30 border-border text-sm"
+                            maxLength={180}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1.5">
+                            <label htmlFor="room-visibility" className="text-xs font-semibold text-muted-foreground">Visibility</label>
+                            <select 
+                              id="room-visibility"
+                              value={newRoomVisibility}
+                              onChange={e => setNewRoomVisibility(e.target.value)}
+                              disabled={isPending}
+                              className="w-full bg-muted/30 border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                            >
+                              <option value="public">Public</option>
+                              <option value="private">Private</option>
+                            </select>
+                          </div>
+                          <div className="space-y-1.5">
+                            <label htmlFor="room-approval" className="text-xs font-semibold text-muted-foreground">Join Setting</label>
+                            <select 
+                              id="room-approval"
+                              value={newRoomJoinApproval}
+                              onChange={e => setNewRoomJoinApproval(e.target.value)}
+                              disabled={isPending}
+                              className="w-full bg-muted/30 border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                            >
+                              <option value="immediate">Immediate</option>
+                              <option value="requires_approval">Needs Approval</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => setOpenCreate(false)} 
+                          disabled={isPending}
+                          className="border-border hover:bg-muted text-sm cursor-pointer"
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          type="submit" 
+                          disabled={isPending}
+                          className="bg-gradient-to-r from-primary to-secondary text-white font-semibold cursor-pointer"
+                        >
+                          {isPending ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Creating...
+                            </>
+                          ) : (
+                            'Create Space'
+                          )}
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
 
-            {isAdmin && (
-              <Dialog open={openCreate} onOpenChange={setOpenCreate}>
-                <DialogTrigger asChild>
-                  <Button className="ss-btn-shimmer text-white font-semibold shadow-lg hover:shadow-primary/20 transition-all cursor-pointer h-10 sm:h-11 px-4 sm:px-5">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Study Space
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-card border-border shadow-2xl">
-                <form onSubmit={handleCreateRoom}>
-                  <DialogHeader>
-                    <DialogTitle className="text-lg font-bold">Create a Study Space</DialogTitle>
-                    <DialogDescription className="text-xs mt-1 text-muted-foreground">
-                      This space will be listed in the global directory and visible to all registered students.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-1.5">
-                      <label htmlFor="room-name" className="text-xs font-semibold text-muted-foreground">Room Name</label>
-                      <Input 
-                        id="room-name"
-                        placeholder="e.g. Data Science Exam Prep Group" 
-                        value={newRoomName} 
-                        onChange={e => setNewRoomName(e.target.value)}
-                        disabled={isPending}
-                        className="bg-muted/30 border-border text-sm"
-                        maxLength={60}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label htmlFor="room-desc" className="text-xs font-semibold text-muted-foreground">Description (Optional)</label>
-                      <Input 
-                        id="room-desc"
-                        placeholder="e.g. Reviewing neural networks and final term quizzes together." 
-                        value={newRoomDesc} 
-                        onChange={e => setNewRoomDesc(e.target.value)}
-                        disabled={isPending}
-                        className="bg-muted/30 border-border text-sm"
-                        maxLength={180}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label htmlFor="room-visibility" className="text-xs font-semibold text-muted-foreground">Visibility</label>
-                        <select 
-                          id="room-visibility"
-                          value={newRoomVisibility}
-                          onChange={e => setNewRoomVisibility(e.target.value)}
-                          disabled={isPending}
-                          className="w-full bg-muted/30 border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
-                        >
-                          <option value="public">Public</option>
-                          <option value="private">Private</option>
-                        </select>
-                      </div>
-                      <div className="space-y-1.5">
-                        <label htmlFor="room-approval" className="text-xs font-semibold text-muted-foreground">Join Setting</label>
-                        <select 
-                          id="room-approval"
-                          value={newRoomJoinApproval}
-                          onChange={e => setNewRoomJoinApproval(e.target.value)}
-                          disabled={isPending}
-                          className="w-full bg-muted/30 border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
-                        >
-                          <option value="immediate">Immediate</option>
-                          <option value="requires_approval">Needs Approval</option>
-                        </select>
-                      </div>
-                    </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <SpotlightCard
+                spotlightColor="rgba(99, 102, 241, 0.1)"
+                className="ss-glass-card rounded-2xl border border-border/40 hover:border-indigo-500/30 transition-all duration-300 shadow-md"
+              >
+                <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Matched Spaces</p>
+                    <p className="text-2xl font-black text-foreground mt-1">{filteredRooms.length}</p>
                   </div>
-                  <DialogFooter>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => setOpenCreate(false)} 
-                      disabled={isPending}
-                      className="border-border hover:bg-muted text-sm cursor-pointer"
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      type="submit" 
-                      disabled={isPending}
-                      className="bg-gradient-to-r from-primary to-secondary text-white font-semibold cursor-pointer"
-                    >
-                      {isPending ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Creating...
-                        </>
-                      ) : (
-                        'Create Space'
-                      )}
-                    </Button>
-                  </DialogFooter>
-                </form>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
+                  <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400">
+                    <BookOpen className="w-5 h-5" />
+                  </div>
+                </div>
+              </SpotlightCard>
+              
+              <SpotlightCard
+                spotlightColor="rgba(168, 85, 247, 0.1)"
+                className="ss-glass-card rounded-2xl border border-border/40 hover:border-purple-500/30 transition-all duration-300 shadow-md"
+              >
+                <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Joined by You</p>
+                    <p className="text-2xl font-black text-foreground mt-1">{joinedRoomsCount}</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400">
+                    <Users className="w-5 h-5" />
+                  </div>
+                </div>
+              </SpotlightCard>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <Card className="ss-glass-card rounded-2xl">
-              <CardContent className="p-4 sm:p-5">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Matched Spaces</p>
-                <p className="text-2xl font-black text-foreground mt-1">{filteredRooms.length}</p>
-              </CardContent>
-            </Card>
-            <Card className="ss-glass-card rounded-2xl">
-              <CardContent className="p-4 sm:p-5">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Joined by You</p>
-                <p className="text-2xl font-black text-foreground mt-1">{joinedRoomsCount}</p>
-              </CardContent>
-            </Card>
-            <Card className="ss-glass-card rounded-2xl">
-              <CardContent className="p-4 sm:p-5">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Pending Requests</p>
-                <p className="text-2xl font-black text-foreground mt-1">{pendingRoomsCount}</p>
-              </CardContent>
-            </Card>
+              <SpotlightCard
+                spotlightColor="rgba(59, 130, 246, 0.1)"
+                className="ss-glass-card rounded-2xl border border-border/40 hover:border-blue-500/30 transition-all duration-300 shadow-md"
+              >
+                <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">Pending Requests</p>
+                    <p className="text-2xl font-black text-foreground mt-1">{pendingRoomsCount}</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                </div>
+              </SpotlightCard>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </BorderGlow>
 
       <section className="rounded-2xl border border-border/70 bg-card/60 backdrop-blur-sm p-3 sm:p-4">
         <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-center">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+          <div className="relative flex-1 group">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input 
               placeholder="Search study spaces by name or description..." 
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="pl-9 bg-background/80 border-border text-sm h-10"
+              className="pl-9 bg-background/80 border-border/80 focus-visible:ring-primary/50 text-sm h-10 transition-all duration-200"
             />
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline" className="text-[11px] h-7 px-2.5 border-border bg-muted/40">
+            <Badge variant="outline" className="text-[11px] h-7 px-2.5 border-border bg-muted/40 flex items-center gap-1.5 text-muted-foreground font-medium">
+              <GraduationCap className="w-3.5 h-3.5 text-primary" />
               {userSpecialization}
             </Badge>
-            <Badge variant="outline" className="text-[11px] h-7 px-2.5 border-border bg-muted/40">
+            <Badge variant="outline" className="text-[11px] h-7 px-2.5 border-border bg-muted/40 flex items-center gap-1.5 text-muted-foreground font-medium">
+              <Layers className="w-3.5 h-3.5 text-secondary" />
               Level {userLevel}
             </Badge>
           </div>
@@ -303,68 +359,95 @@ export default function StudySpacesDirectoryClient({
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
+              className="h-full"
             >
-              <Card className="ss-glass-card rounded-2xl h-full flex flex-col justify-between group">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <CardTitle className="text-base font-bold group-hover:text-primary transition-colors line-clamp-1">
-                      {room.name}
-                    </CardTitle>
-                    <Badge className="bg-muted text-muted-foreground border-border text-[10px] font-medium flex items-center gap-1 h-5 py-0 px-2 shrink-0">
-                      <Users className="w-3 h-3 text-muted-foreground" />
-                      {room.memberCount}
-                    </Badge>
-                  </div>
-                  <CardDescription className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem] mt-1.5">
-                    {room.description || 'No description provided.'}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pb-3 pt-0">
-                  <div className="flex flex-wrap gap-1.5">
-                    <Badge variant="outline" className="text-[9px] py-0 h-4 border-indigo-500/20 bg-indigo-500/5 text-indigo-400 font-semibold">
-                      {room.specialization}
-                    </Badge>
-                    <Badge variant="outline" className="text-[9px] py-0 h-4 border-purple-500/20 bg-purple-500/5 text-purple-400 font-semibold">
-                      Level {room.level_num}
-                    </Badge>
-                    <Badge variant="outline" className={`text-[9px] py-0 h-4 font-semibold ${
-                      room.visibility === 'private' 
-                        ? 'border-yellow-500/20 bg-yellow-500/5 text-yellow-400' 
-                        : 'border-blue-500/20 bg-blue-500/5 text-blue-400'
-                    }`}>
-                      {room.visibility === 'private' ? 'Private' : 'Public'}
-                    </Badge>
-                    {room.join_approval === 'requires_approval' && (
-                      <Badge variant="outline" className="text-[9px] py-0 h-4 border-red-500/20 bg-red-500/5 text-red-400 font-semibold">
-                        Approval Req.
+              <SpotlightCard
+                role="button"
+                tabIndex={0}
+                aria-label={`${room.name}. Specialization: ${room.specialization}. Level ${room.level_num}. Member count: ${room.memberCount}. Status: ${
+                  room.joinStatus === 'approved'
+                    ? 'Joined. Click to enter.'
+                    : room.joinStatus === 'pending'
+                      ? 'Pending approval.'
+                      : room.join_approval === 'requires_approval'
+                        ? 'Requires approval. Click to request access.'
+                        : 'Public group. Click to join.'
+                }`}
+                onClick={() => handleJoinRoom(room.id, room.name, room.isJoined, room.joinStatus)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleJoinRoom(room.id, room.name, room.isJoined, room.joinStatus);
+                  }
+                }}
+                className="ss-glass-card rounded-2xl h-full flex flex-col justify-between group cursor-pointer border border-border/40 hover:border-indigo-500/50 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-indigo-500/5"
+                spotlightColor="rgba(99, 102, 241, 0.12)"
+              >
+                <div className="flex flex-col h-full justify-between">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <CardTitle className="text-base font-bold group-hover:text-primary transition-colors line-clamp-1">
+                        {room.name}
+                      </CardTitle>
+                      <Badge className="bg-muted text-muted-foreground border-border text-[10px] font-medium flex items-center gap-1 h-5 py-0 px-2 shrink-0">
+                        <Users className="w-3 h-3 text-muted-foreground" />
+                        {room.memberCount}
                       </Badge>
-                    )}
-                  </div>
-                </CardContent>
-                <CardFooter className="pt-3 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>
-                    Created {new Date(room.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                  </span>
-                  <Button 
-                    size="sm" 
-                    variant={room.joinStatus === 'approved' ? "outline" : (room.joinStatus === 'pending' ? "secondary" : "default")}
-                    disabled={isPending}
-                    onClick={() => handleJoinRoom(room.id, room.name, room.isJoined, room.joinStatus)}
-                    className="h-8 w-full sm:w-auto text-xs font-semibold cursor-pointer border-border hover:bg-muted group/btn"
-                  >
-                    {room.joinStatus === 'approved' ? (
-                      <>
-                        Enter Space
-                        <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover/btn:translate-x-0.5" />
-                      </>
-                    ) : room.joinStatus === 'pending' ? (
-                      'Pending Approval'
-                    ) : (
-                      room.join_approval === 'requires_approval' ? 'Request Access' : 'Join Group'
-                    )}
-                  </Button>
-                </CardFooter>
-              </Card>
+                    </div>
+                    <CardDescription className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem] mt-1.5">
+                      {room.description || 'No description provided.'}
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent className="pb-3 pt-0">
+                    <div className="flex flex-wrap gap-1.5">
+                      <Badge variant="outline" className="text-[9px] py-0 h-4 border-indigo-500/20 bg-indigo-500/5 text-indigo-400 font-semibold">
+                        {room.specialization}
+                      </Badge>
+                      <Badge variant="outline" className="text-[9px] py-0 h-4 border-purple-500/20 bg-purple-500/5 text-purple-400 font-semibold">
+                        Level {room.level_num}
+                      </Badge>
+                      <Badge variant="outline" className={`text-[9px] py-0 h-4 font-semibold ${
+                        room.visibility === 'private' 
+                          ? 'border-yellow-500/20 bg-yellow-500/5 text-yellow-400' 
+                          : 'border-blue-500/20 bg-blue-500/5 text-blue-400'
+                      }`}>
+                        {room.visibility === 'private' ? 'Private' : 'Public'}
+                      </Badge>
+                      {room.join_approval === 'requires_approval' && (
+                        <Badge variant="outline" className="text-[9px] py-0 h-4 border-red-500/20 bg-red-500/5 text-red-400 font-semibold">
+                          Approval Req.
+                        </Badge>
+                      )}
+                    </div>
+                  </CardContent>
+
+                  <CardFooter className="pt-3 border-t border-border/60 flex flex-row items-center justify-between gap-3">
+                    <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>
+                      Created {new Date(room.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    </span>
+                    <div className={cn(
+                      "inline-flex items-center justify-center rounded-lg text-xs font-semibold h-8 px-3 transition-all duration-300 border shadow-xs select-none",
+                      room.joinStatus === 'approved'
+                        ? "border-border bg-background text-foreground group-hover:bg-primary group-hover:text-white group-hover:border-primary"
+                        : room.joinStatus === 'pending'
+                          ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
+                          : "border-primary bg-primary text-primary-foreground group-hover:shadow-md group-hover:shadow-primary/20"
+                    )}>
+                      {room.joinStatus === 'approved' ? (
+                        <>
+                          Enter Space
+                          <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform group-hover:translate-x-0.5" />
+                        </>
+                      ) : room.joinStatus === 'pending' ? (
+                        'Pending Approval'
+                      ) : (
+                        room.join_approval === 'requires_approval' ? 'Request Access' : 'Join Group'
+                      )}
+                    </div>
+                  </CardFooter>
+                </div>
+              </SpotlightCard>
             </motion.div>
           ))}
         </div>

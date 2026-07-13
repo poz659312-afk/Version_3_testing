@@ -38,7 +38,6 @@ function buildBoxShadow(glowColor: string, intensity: number): string {
 }
 
 function easeOutCubic(x: number) { return 1 - Math.pow(1 - x, 3); }
-function easeInCubic(x: number) { return x * x * x; }
 
 interface AnimateOpts {
   start?: number; end?: number; duration?: number; delay?: number;
@@ -119,12 +118,116 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
   const [edgeProximity, setEdgeProximity] = useState(0);
   const [sweepActive, setSweepActive] = useState(false);
 
+  // IntersectionObserver for tracking visibility
+  const [isInViewport, setIsInViewport] = useState(false);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsInViewport(entry.isIntersecting);
+    });
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  // Update rect on resize or scroll
+  const updateRect = useCallback(() => {
+    if (cardRef.current) {
+      rectRef.current = cardRef.current.getBoundingClientRect();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isInViewport) return;
+    window.addEventListener('resize', updateRect);
+    window.addEventListener('scroll', updateRect, true);
+    updateRect();
+    return () => {
+      window.removeEventListener('resize', updateRect);
+      window.removeEventListener('scroll', updateRect, true);
+    };
+  }, [isInViewport, updateRect]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    if (!rectRef.current) {
+      rectRef.current = cardRef.current.getBoundingClientRect();
+    }
+    const rect = rectRef.current;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const dx = x - rect.width / 2;
+    const dy = y - rect.height / 2;
+    const angleRad = Math.atan2(dy, dx);
+    let angle = (angleRad * 180) / Math.PI + 90;
+    if (angle < 0) angle += 360;
+    setCursorAngle(angle);
+
+    const distFromLeft = x;
+    const distFromRight = rect.width - x;
+    const distFromTop = y;
+    const distFromBottom = rect.height - y;
+    const minDist = Math.min(distFromLeft, distFromRight, distFromTop, distFromBottom);
+
+    const prox = Math.max(0, Math.min(100, 100 - (minDist / edgeSensitivity) * 100));
+    setEdgeProximity(prox);
+  }, [edgeSensitivity]);
+
+  // Periodic sweep animation when visibility triggers or on mount
+  useEffect(() => {
+    if (!isInViewport) return;
+    const timer = setTimeout(() => {
+      setSweepActive(true);
+      animateValue({
+        start: 0,
+        end: 360,
+        duration: 2000,
+        onUpdate: (v) => {
+          setCursorAngle(v);
+          setEdgeProximity(80);
+        },
+        onEnd: () => {
+          setSweepActive(false);
+          setEdgeProximity(0);
+        }
+      });
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [isInViewport]);
+
+  const borderBg = useMemo(() => buildMeshGradients(colors), [colors]);
+  const fillBg = useMemo(() => buildMeshGradients(colors), [colors]);
+
+  const isVisible = isHovered || sweepActive;
+  const colorSensitivity = edgeSensitivity + 20;
+
+  const borderOpacity = isVisible
+    ? Math.max(0, (edgeProximity - colorSensitivity) / (100 - colorSensitivity))
+    : 0;
+
+  const glowOpacity = isVisible
+    ? Math.max(0, (edgeProximity - edgeSensitivity) / (100 - edgeSensitivity))
+    : 0;
+
+  const boxShadow = useMemo(() => {
+    return buildBoxShadow(glowColor, glowIntensity * (edgeProximity / 100));
+  }, [glowColor, glowIntensity, edgeProximity]);
+
+  const angleDeg = cursorAngle;
+
   return (
     <div
       ref={cardRef}
       onPointerMove={handlePointerMove}
       onPointerEnter={() => setIsHovered(true)}
-      onPointerLeave={() => setIsHovered(false)}
+      onPointerLeave={() => {
+        setIsHovered(false);
+        rectRef.current = null;
+      }}
       className={`relative grid isolate border border-white/15 ${className}`}
       style={{
         background: backgroundColor,
@@ -144,8 +247,8 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
             ...borderBg,
           ].join(', '),
           opacity: borderOpacity,
-          maskImage: `conic-gradient(from ${angleDeg} at center, black ${coneSpread}%, transparent ${coneSpread + 15}%, transparent ${100 - coneSpread - 15}%, black ${100 - coneSpread}%)`,
-          WebkitMaskImage: `conic-gradient(from ${angleDeg} at center, black ${coneSpread}%, transparent ${coneSpread + 15}%, transparent ${100 - coneSpread - 15}%, black ${100 - coneSpread}%)`,
+          maskImage: `conic-gradient(from ${angleDeg}deg at center, black ${coneSpread}%, transparent ${coneSpread + 15}%, transparent ${100 - coneSpread - 15}%, black ${100 - coneSpread}%)`,
+          WebkitMaskImage: `conic-gradient(from ${angleDeg}deg at center, black ${coneSpread}%, transparent ${coneSpread + 15}%, transparent ${100 - coneSpread - 15}%, black ${100 - coneSpread}%)`,
           transition: isVisible ? 'opacity 0.25s ease-out' : 'opacity 0.75s ease-in-out',
         }}
       />
@@ -163,7 +266,7 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
             'radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%)',
             'radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%)',
             'radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%)',
-            `conic-gradient(from ${angleDeg} at center, transparent 5%, black 15%, black 85%, transparent 95%)`,
+            `conic-gradient(from ${angleDeg}deg at center, transparent 5%, black 15%, black 85%, transparent 95%)`,
           ].join(', '),
           WebkitMaskImage: [
             'linear-gradient(to bottom, black, black)',
@@ -172,14 +275,14 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
             'radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%)',
             'radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%)',
             'radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%)',
-            `conic-gradient(from ${angleDeg} at center, transparent 5%, black 15%, black 85%, transparent 95%)`,
+            `conic-gradient(from ${angleDeg}deg at center, transparent 5%, black 15%, black 85%, transparent 95%)`,
           ].join(', '),
           maskComposite: 'subtract, add, add, add, add, add',
           WebkitMaskComposite: 'source-out, source-over, source-over, source-over, source-over, source-over',
           opacity: borderOpacity * fillOpacity,
           mixBlendMode: 'soft-light',
           transition: isVisible ? 'opacity 0.25s ease-out' : 'opacity 0.75s ease-in-out',
-        } as React.CSSProperties}
+        }}
       />
 
       {/* outer glow */}
@@ -187,12 +290,12 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
         className="absolute pointer-events-none z-[1] rounded-[inherit]"
         style={{
           inset: `${-glowRadius}px`,
-          maskImage: `conic-gradient(from ${angleDeg} at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
-          WebkitMaskImage: `conic-gradient(from ${angleDeg} at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
+          maskImage: `conic-gradient(from ${angleDeg}deg at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
+          WebkitMaskImage: `conic-gradient(from ${angleDeg}deg at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
           opacity: glowOpacity,
           mixBlendMode: 'plus-lighter',
           transition: isVisible ? 'opacity 0.25s ease-out' : 'opacity 0.75s ease-in-out',
-        } as React.CSSProperties}
+        }}
       >
         <span
           className="absolute rounded-[inherit]"
