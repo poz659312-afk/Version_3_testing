@@ -6,7 +6,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { Moon, Sun, Menu, X, LogIn, UserPlus, BrainCircuit, SquareUserRound, LogOut, Home, HelpCircle, ChevronDown, ShoppingBag, BookOpen } from "lucide-react"
+import { Moon, Sun, Menu, X, LogIn, UserPlus,BookMarked, BrainCircuit, SquareUserRound, LogOut, Home, HelpCircle, ChevronDown, ShoppingBag, BookOpen } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { getStudentSession } from "@/lib/auth"
@@ -23,8 +23,7 @@ const navItems = [
   { name: "Home", href: "/", icon: Home },
   { name: "Store", href: "/store", icon: ShoppingBag },
   { name: "Specializations", href: "#", icon: SquareUserRound },
-  { name: "About", href: "/about", icon: HelpCircle  },
-  { name: "Explo", href: "/explo", icon: BrainCircuit, target: "_blank" }
+  { name: "Study Spaces", href: "/study-spaces", icon: BookMarked  },
 ]
 
 function NavClock() {
