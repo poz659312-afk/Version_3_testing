@@ -343,7 +343,7 @@ export default function StudySpacesDirectoryClient({
                 </CardContent>
                 <CardFooter className="pt-3 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>
-                    Created {new Date(room.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    Created {new Date(room.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                   </span>
                   <Button 
                     size="sm" 
