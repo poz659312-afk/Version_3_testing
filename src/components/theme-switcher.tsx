@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Moon, Sun, Palette } from "lucide-react"
-import { useTheme } from "next-themes"
+import { useTheme } from "@/components/theme-provider"
 import { useColorTheme, ColorTheme } from "@/components/color-theme-provider"
 
 import { Button } from "@/components/ui/button"
@@ -51,7 +51,7 @@ export function ThemeSwitcher() {
   if (!mounted) {
     return (
       <Button variant="ghost" size="icon" className="relative shrink-0 text-foreground/70">
-        <Palette className="w-5 h-5 transition-all" />
+        <Palette className="w-5 h-5 transition-transform duration-300 hover:rotate-45 active:scale-90" />
         <span className="sr-only">Toggle theme</span>
       </Button>
     )
@@ -61,7 +61,7 @@ export function ThemeSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative shrink-0 text-foreground/70 hover: hover:bg-muted">
-          <Palette className="w-5 h-5 transition-all" />
+          <Palette className="w-5 h-5 transition-transform duration-300 hover:rotate-45 active:scale-90" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>

@@ -1614,3 +1614,14 @@ html.lenis-stopped body {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--muted-foreground) / 0.15) transparent;
 }
+
+/* Custom View Transition styles for seamless full-page fade */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.28s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+
+

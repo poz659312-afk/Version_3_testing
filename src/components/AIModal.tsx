@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useLenis } from "lenis/react";
 import { useColorTheme } from "@/components/color-theme-provider";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/theme-provider";
 import { useRouter } from "next/navigation";
 import { getStudentSession } from "@/lib/auth";
 

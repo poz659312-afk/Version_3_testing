@@ -24,7 +24,7 @@ import dynamic from 'next/dynamic'
 const AdBanner = dynamic(() => import("@/components/AdBanner"), { ssr: false })
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
-import { useTheme } from "next-themes"
+import { useTheme } from "@/components/theme-provider"
 import { useColorTheme } from "@/components/color-theme-provider"
 import AvatarBorder from "@/components/visual-effects/avatar-border"
 

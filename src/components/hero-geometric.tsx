@@ -5,7 +5,7 @@ import { Pacifico } from "next/font/google"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { useEffect, useState } from "react"
-import { useTheme } from "next-themes"
+import { useTheme } from "@/components/theme-provider"
 import dynamic from "next/dynamic"
 
 const Grainient = dynamic(() => import("./Grainient"), { ssr: false })

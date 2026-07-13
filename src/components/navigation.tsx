@@ -16,7 +16,7 @@ import { NotificationBell } from "./notification-bell"
 import { useLenis } from "lenis/react"
 // ThemeSwitcher and extra icons removed (not used here)
 import { User } from "@/lib/types"
-import { useTheme } from "next-themes"
+import { useTheme } from "@/components/theme-provider"
 import AvatarBorder from "./visual-effects/avatar-border"
 
 const navItems = [
