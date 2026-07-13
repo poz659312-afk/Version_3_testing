@@ -169,6 +169,144 @@ export default function StudySpaceClient({
   const [chatTab, setChatTab] = useState('all') // 'all' | 'questions'
   const [chatInput, setChatInput] = useState('')
   const [isQuestionInput, setIsQuestionInput] = useState(false)
+
+  // --- MENTIONS STATE & HELPERS ---
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [suggestionQuery, setSuggestionQuery] = useState('')
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0)
+
+  const approvedMembers = useMemo(() => {
+    return members.filter((m: any) => m.status === 'approved' && m.user)
+  }, [members])
+
+  const filteredSuggestions = useMemo(() => {
+    const list = [
+      {
+        user: {
+          username: 'all',
+          profile_image: null,
+          specialization: 'Mention everyone in this space'
+        }
+      },
+      ...approvedMembers
+    ]
+    if (!suggestionQuery) return list
+    return list.filter((m: any) => 
+      m.user?.username?.toLowerCase().includes(suggestionQuery.toLowerCase())
+    )
+  }, [approvedMembers, suggestionQuery])
+
+  const handleMentionClick = (username: string) => {
+    const matchedMember = members.find((m: any) => m.user?.username?.toLowerCase() === username.toLowerCase())
+    if (matchedMember?.user) {
+      setSelectedProfile(matchedMember.user)
+      setShowProfileModal(true)
+    }
+  }
+
+  const renderMessageContent = (content: string) => {
+    const mentionRegex = /@([\w.-]+)/g
+    const parts = []
+    let lastIndex = 0
+    let match
+
+    while ((match = mentionRegex.exec(content)) !== null) {
+      const matchIndex = match.index
+      const username = match[1]
+
+      if (matchIndex > lastIndex) {
+        parts.push(content.slice(lastIndex, matchIndex))
+      }
+
+      if (username.toLowerCase() === 'all') {
+        parts.push(
+          <span key={matchIndex} className="text-amber-400 font-bold bg-amber-400/10 px-1 py-0.5 rounded">
+            @all
+          </span>
+        )
+      } else {
+        const matchedMember = members.find((m: any) => m.user?.username?.toLowerCase() === username.toLowerCase())
+        if (matchedMember?.user) {
+          parts.push(
+            <button
+              key={matchIndex}
+              type="button"
+              onClick={() => handleMentionClick(username)}
+              className="font-semibold px-1 py-0.5 rounded cursor-pointer transition-colors text-sky-400 hover:text-sky-300 bg-sky-400/10 hover:bg-sky-400/20"
+            >
+              @{username}
+            </button>
+          )
+        } else {
+          parts.push(`@${username}`)
+        }
+      }
+
+      lastIndex = mentionRegex.lastIndex
+    }
+
+    if (lastIndex < content.length) {
+      parts.push(content.slice(lastIndex))
+    }
+
+    return parts.length > 0 ? parts : content
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    setChatInput(val)
+
+    const caretPos = e.target.selectionStart || 0
+    const textBeforeCaret = val.slice(0, caretPos)
+    const lastAtIdx = textBeforeCaret.lastIndexOf('@')
+
+    if (lastAtIdx !== -1 && (lastAtIdx === 0 || textBeforeCaret[lastAtIdx - 1] === ' ')) {
+      const query = textBeforeCaret.slice(lastAtIdx + 1)
+      if (query.includes(' ')) {
+        setShowSuggestions(false)
+      } else {
+        setSuggestionQuery(query)
+        setShowSuggestions(true)
+        setSelectedSuggestionIndex(0)
+      }
+    } else {
+      setShowSuggestions(false)
+    }
+  }
+
+  const selectSuggestion = (username: string) => {
+    const val = chatInput
+    const lastAtIdx = val.lastIndexOf('@')
+    if (lastAtIdx !== -1) {
+      const beforeAt = val.slice(0, lastAtIdx)
+      const afterAt = val.slice(lastAtIdx)
+      const spaceIdx = afterAt.indexOf(' ')
+      const restOfText = spaceIdx !== -1 ? afterAt.slice(spaceIdx) : ''
+      const newText = beforeAt + '@' + username + (restOfText || ' ')
+      setChatInput(newText)
+    }
+    setShowSuggestions(false)
+  }
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (showSuggestions && filteredSuggestions.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        setSelectedSuggestionIndex(prev => (prev + 1) % filteredSuggestions.length)
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        setSelectedSuggestionIndex(prev => (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length)
+      } else if (e.key === 'Enter') {
+        e.preventDefault()
+        const selected = filteredSuggestions[selectedSuggestionIndex]
+        selectSuggestion(selected.user.username)
+      } else if (e.key === 'Escape') {
+        e.preventDefault()
+        setShowSuggestions(false)
+      }
+    }
+  }
+
   const [scratchpad, setScratchpad] = useState(room.scratchpad_content || '')
   const [showLeaveDialog, setShowLeaveDialog] = useState(false)
   const [confirmLeave, setConfirmLeave] = useState(false)
@@ -286,6 +424,17 @@ export default function StudySpaceClient({
       chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
   }, [messages, chatTab])
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handleOutsideClick = () => {
+      setShowSuggestions(false)
+    }
+    document.addEventListener('click', handleOutsideClick)
+    return () => {
+      document.removeEventListener('click', handleOutsideClick)
+    }
+  }, [])
 
   // --- STUDY TRACKER STOPWATCH ---
   useEffect(() => {
@@ -871,6 +1020,7 @@ export default function StudySpaceClient({
     const messageContent = chatInput
     const isQuestion = isQuestionInput
     
+    setShowSuggestions(false)
     setChatInput('')
     setIsQuestionInput(false)
 
@@ -1588,7 +1738,7 @@ export default function StudySpaceClient({
                                   QUESTION
                                 </Badge>
                               )}
-                              <p>{msg.content}</p>
+                              <p className="whitespace-pre-wrap">{renderMessageContent(msg.content)}</p>
                             </>
                           )
                         })()}
@@ -1641,20 +1791,66 @@ export default function StudySpaceClient({
           
           <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-border bg-muted/20 shrink-0">
             <div className="flex gap-2 items-center">
-              <Input 
-                placeholder={
-                  room.only_admins_can_send_messages && !canManage 
-                    ? "Only admins can send messages in this chat..." 
-                    : isQuestionInput 
-                      ? "Type your study question..." 
-                      : "Send a message..."
-                }
-                value={chatInput}
-                onChange={e => setChatInput(e.target.value)}
-                className="bg-card border-border text-xs flex-1 rounded-xl h-9"
-                maxLength={400}
-                disabled={room.only_admins_can_send_messages && !canManage}
-              />
+              <div className="relative flex-1">
+                {showSuggestions && filteredSuggestions.length > 0 && (
+                  <div className="absolute bottom-full mb-2 left-0 w-full max-h-48 overflow-y-auto bg-card/95 border border-border/80 rounded-2xl shadow-2xl z-50 p-1.5 backdrop-blur-md" data-lenis-prevent>
+                    <div className="text-[10px] font-bold text-muted-foreground px-2 py-1 uppercase tracking-wider border-b border-border/40">
+                      Mention Space Members
+                    </div>
+                    {filteredSuggestions.map((suggestion: any, index: number) => {
+                      const isSelected = index === selectedSuggestionIndex
+                      const user = suggestion.user
+                      return (
+                        <div
+                          key={user.username}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            selectSuggestion(user.username);
+                          }}
+                          className={`flex items-center gap-2 p-2 rounded-xl text-xs cursor-pointer transition-all ${
+                            isSelected 
+                              ? 'bg-primary text-primary-foreground font-bold' 
+                              : 'text-foreground hover:bg-muted/50'
+                          }`}
+                        >
+                          <div className="w-5 h-5 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
+                            {user.profile_image ? (
+                              <img src={user.profile_image} alt={user.username} className="w-full h-full object-cover" />
+                            ) : (
+                              <Users className="w-3 h-3 text-muted-foreground" />
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <span className="font-semibold block truncate">
+                              @{user.username}
+                            </span>
+                            {user.specialization && (
+                              <span className={`text-[9px] block truncate ${isSelected ? 'text-primary-foreground/75' : 'text-muted-foreground'}`}>
+                                {user.specialization}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+                <Input 
+                  placeholder={
+                    room.only_admins_can_send_messages && !canManage 
+                      ? "Only admins can send messages in this chat..." 
+                      : isQuestionInput 
+                        ? "Type your study question..." 
+                        : "Send a message..."
+                  }
+                  value={chatInput}
+                  onChange={handleInputChange}
+                  onKeyDown={handleInputKeyDown}
+                  className="bg-card border-border text-xs w-full rounded-xl h-9 animate-none"
+                  maxLength={400}
+                  disabled={room.only_admins_can_send_messages && !canManage}
+                />
+              </div>
               <Button 
                 type="submit" 
                 size="icon" 
