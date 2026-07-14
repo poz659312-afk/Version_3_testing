@@ -18,6 +18,7 @@ import {
   Users, 
   MessageSquare, 
   ArrowLeft, 
+  ArrowDown, 
   Send, 
   BookOpen, 
   Award, 
@@ -121,6 +122,7 @@ export default function StudySpaceClient({
   const [room, setRoom] = useState(initialDetails?.room || {})
   const [members, setMembers] = useState(initialDetails?.members || [])
   const [messages, setMessages] = useState(initialDetails?.messages || [])
+  const [showScrollButton, setShowScrollButton] = useState(false)
   const [challenges, setChallenges] = useState(initialDetails?.challenges || [])
   const [polls, setPolls] = useState<any[]>(initialDetails?.polls || [])
   const [dailyChallenges, setDailyChallenges] = useState<any[]>(initialDetails?.dailyChallenges || [])
@@ -416,18 +418,42 @@ export default function StudySpaceClient({
   // Auto-scroll chat inside container to bottom (prevents browser viewport scroll shifts)
   const isFirstScrollRef = useRef(true)
   useEffect(() => {
+    const scroll = () => {
+      const container = chatContainerRef.current
+      if (!container) return
+      if (isFirstScrollRef.current) {
+        container.scrollTop = container.scrollHeight
+        isFirstScrollRef.current = false
+      } else {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: 'smooth'
+        })
+      }
+    }
+
+    // Scroll immediately and after a short paint delay to handle DOM rendering correctly
+    scroll()
+    const timer = setTimeout(scroll, 100)
+    return () => clearTimeout(timer)
+  }, [messages, chatTab])
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
+    // Show button if user has scrolled up by more than 200px from the bottom
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 200
+    setShowScrollButton(!isNearBottom)
+  }
+
+  const handleScrollToBottom = () => {
     const container = chatContainerRef.current
-    if (!container) return
-    if (isFirstScrollRef.current) {
-      container.scrollTop = container.scrollHeight
-      isFirstScrollRef.current = false
-    } else {
+    if (container) {
       container.scrollTo({
         top: container.scrollHeight,
         behavior: 'smooth'
       })
     }
-  }, [messages, chatTab])
+  }
 
   // Close suggestions on outside click
   useEffect(() => {
@@ -1629,169 +1655,197 @@ export default function StudySpaceClient({
             </div>
           </CardHeader>
           
-          <CardContent ref={chatContainerRef} className="flex-1 overflow-y-auto ss-chat-scrollbar p-3 sm:p-4 space-y-3" data-lenis-prevent>
+          <div className="flex-1 relative min-h-0">
+            <CardContent 
+              ref={chatContainerRef} 
+              onScroll={handleScroll}
+              className="h-full overflow-y-auto ss-chat-scrollbar p-3 sm:p-4 space-y-3" 
+              data-lenis-prevent
+            >
 
-            {displayedMessages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-10">
-                <HelpCircle className="w-10 h-10 text-muted-foreground/30 mb-2" />
-                <p className="text-xs">
-                  {chatTab === 'questions' 
-                    ? 'No questions posted on the Q&A wall yet.' 
-                    : 'No messages yet. Say hello to get started!'}
-                </p>
-              </div>
-            ) : (
-              displayedMessages.map((msg: any) => {
-                const isSelf = msg.user_id === currentUserId
-                const msgReactions = messageReactions.filter(r => r.message_id === msg.id)
-                
-                return (
-                  <div 
-                    key={msg.id} 
-                    className={`flex gap-2 items-start w-full ${isSelf ? 'flex-row-reverse' : ''}`}
-                  >
-                    <div className="w-7 h-7 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0 mt-1 cursor-pointer" title={msg.user?.username || 'Student'}>
-                      {msg.user?.profile_image ? (
-                        <img src={msg.user.profile_image} alt={msg.user.username} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-[10px] font-bold text-muted-foreground">
-                          {(msg.user?.username || 'S').substring(0, 1).toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className={`flex flex-col ${isSelf ? 'items-end' : 'items-start'}`}>
-                      <div className={`flex items-center gap-1.5 mb-0.5 ${isSelf ? 'flex-row-reverse' : ''}`}>
-                        <span className="text-[9px] text-muted-foreground font-semibold px-1">
-                          {msg.user?.username || 'Student'}
-                        </span>
-                        {msg.created_at && (
-                          <span className="text-[8px] text-muted-foreground/60 font-medium">
-                            {formatMessageTime(msg.created_at)}
+              {displayedMessages.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-10">
+                  <HelpCircle className="w-10 h-10 text-muted-foreground/30 mb-2" />
+                  <p className="text-xs">
+                    {chatTab === 'questions' 
+                      ? 'No questions posted on the Q&A wall yet.' 
+                      : 'No messages yet. Say hello to get started!'}
+                  </p>
+                </div>
+              ) : (
+                displayedMessages.map((msg: any) => {
+                  const isSelf = msg.user_id === currentUserId
+                  const msgReactions = messageReactions.filter(r => r.message_id === msg.id)
+                  
+                  return (
+                    <div 
+                      key={msg.id} 
+                      className={`flex gap-2 items-start w-full ${isSelf ? 'flex-row-reverse' : ''}`}
+                    >
+                      <div className="w-7 h-7 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0 mt-1 cursor-pointer" title={msg.user?.username || 'Student'}>
+                        {msg.user?.profile_image ? (
+                          <img src={msg.user.profile_image} alt={msg.user.username} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-[10px] font-bold text-muted-foreground">
+                            {(msg.user?.username || 'S').substring(0, 1).toUpperCase()}
                           </span>
                         )}
                       </div>
-                      
-                      <div 
-                        className={`p-2.5 rounded-2xl text-xs border shadow-sm leading-relaxed relative group break-words max-w-[72vw] sm:max-w-[260px] ${
-                          msg.content.startsWith('[QUIZ:')
-                            ? 'bg-indigo-500/5 border-indigo-500/20 text-foreground w-[72vw] sm:w-[340px] max-w-[72vw] sm:max-w-[340px]'
-                            : msg.is_question 
-                              ? 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200' 
-                              : isSelf 
-                                ? 'bg-primary text-primary-foreground border-primary/20' 
-                                : 'bg-muted/40 border-border text-foreground'
-                        }`}
-                      >
-                        {(() => {
-                          const quizMatch = msg.content.match(/^\[QUIZ:([\w-]+)\] (.*)/)
-                          if (quizMatch) {
-                            const quizId = quizMatch[1]
-                            const q = chatQuizzes.find((x: any) => x.id === quizId)
-                            if (!q) {
+
+                      <div className={`flex flex-col ${isSelf ? 'items-end' : 'items-start'}`}>
+                        <div className={`flex items-center gap-1.5 mb-0.5 ${isSelf ? 'flex-row-reverse' : ''}`}>
+                          <span className="text-[9px] text-muted-foreground font-semibold px-1">
+                            {msg.user?.username || 'Student'}
+                          </span>
+                          {msg.created_at && (
+                            <span className="text-[8px] text-muted-foreground/60 font-medium">
+                              {formatMessageTime(msg.created_at)}
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div 
+                          className={`p-2.5 rounded-2xl text-xs border shadow-sm leading-relaxed relative group break-words max-w-[72vw] sm:max-w-[260px] ${
+                            msg.content.startsWith('[QUIZ:')
+                              ? 'bg-indigo-500/5 border-indigo-500/20 text-foreground w-[72vw] sm:w-[340px] max-w-[72vw] sm:max-w-[340px]'
+                              : msg.is_question 
+                                ? 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200' 
+                                : isSelf 
+                                  ? 'bg-primary text-primary-foreground border-primary/20' 
+                                  : 'bg-muted/40 border-border text-foreground'
+                          }`}
+                        >
+                          {(() => {
+                            const quizMatch = msg.content.match(/^\[QUIZ:([\w-]+)\] (.*)/)
+                            if (quizMatch) {
+                              const quizId = quizMatch[1]
+                              const q = chatQuizzes.find((x: any) => x.id === quizId)
+                              if (!q) {
+                                return (
+                                  <div className="p-1 flex items-center gap-2 text-indigo-400">
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    <span className="text-[10px] font-semibold">Loading Quiz Battle...</span>
+                                  </div>
+                                )
+                              }
+                              
+                              const myAnswer = q.answers?.find((a: any) => a.user_id === currentUserId)
+                              const isExpired = isQuizExpired(q)
+                              
                               return (
-                                <div className="p-1 flex items-center gap-2 text-indigo-400">
-                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                  <span className="text-[10px] font-semibold">Loading Quiz Battle...</span>
+                                <div className="space-y-2 min-w-[200px] sm:min-w-[280px]">
+                                  <div className="flex items-center justify-between gap-4">
+                                    <span className="text-[9px] font-black text-indigo-400 flex items-center gap-1">
+                                      <BrainCircuit className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
+                                      QUIZ BATTLE
+                                    </span>
+                                    <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${isExpired ? 'bg-muted text-muted-foreground' : 'bg-indigo-500/10 text-indigo-400'}`}>
+                                      {isExpired ? 'Expired' : 'Active'}
+                                    </span>
+                                  </div>
+                                  <h4 className="text-xs font-bold text-foreground leading-relaxed">{q.question}</h4>
+                                  <div className="grid grid-cols-2 gap-1.5 pt-1">
+                                    {q.options.map((opt: string, idx: number) => {
+                                      const isCorrectChoice = opt === q.correct_answer
+                                      const hasVotedThis = myAnswer?.answer === opt
+                                      return (
+                                        <Button
+                                          key={idx}
+                                          size="sm"
+                                          variant={hasVotedThis ? (isCorrectChoice ? 'default' : 'destructive') : 'outline'}
+                                          disabled={!!myAnswer || isExpired}
+                                          onClick={() => handleSubmitQuizAnswer(q.id, opt)}
+                                          className="h-7 text-[9px] font-semibold text-left justify-start px-2.5 rounded-lg cursor-pointer"
+                                        >
+                                          {opt}
+                                        </Button>
+                                      )
+                                    })}
+                                  </div>
                                 </div>
                               )
                             }
                             
-                            const myAnswer = q.answers?.find((a: any) => a.user_id === currentUserId)
-                            const isExpired = isQuizExpired(q)
-                            
                             return (
-                              <div className="space-y-2 min-w-[200px] sm:min-w-[280px]">
-                                <div className="flex items-center justify-between gap-4">
-                                  <span className="text-[9px] font-black text-indigo-400 flex items-center gap-1">
-                                    <BrainCircuit className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
-                                    QUIZ BATTLE
-                                  </span>
-                                  <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${isExpired ? 'bg-muted text-muted-foreground' : 'bg-indigo-500/10 text-indigo-400'}`}>
-                                    {isExpired ? 'Expired' : 'Active'}
-                                  </span>
-                                </div>
-                                <h4 className="text-xs font-bold text-foreground leading-relaxed">{q.question}</h4>
-                                <div className="grid grid-cols-2 gap-1.5 pt-1">
-                                  {q.options.map((opt: string, idx: number) => {
-                                    const isCorrectChoice = opt === q.correct_answer
-                                    const hasVotedThis = myAnswer?.answer === opt
-                                    return (
-                                      <Button
-                                        key={idx}
-                                        size="sm"
-                                        variant={hasVotedThis ? (isCorrectChoice ? 'default' : 'destructive') : 'outline'}
-                                        disabled={!!myAnswer || isExpired}
-                                        onClick={() => handleSubmitQuizAnswer(q.id, opt)}
-                                        className="h-7 text-[9px] font-semibold text-left justify-start px-2.5 rounded-lg cursor-pointer"
-                                      >
-                                        {opt}
-                                      </Button>
-                                    )
-                                  })}
-                                </div>
-                              </div>
+                              <>
+                                {msg.is_question && (
+                                  <Badge className="bg-amber-500 text-white font-semibold text-[8px] h-4 py-0 px-1 mb-1.5 flex items-center gap-0.5 w-fit">
+                                    <HelpCircle className="w-2.5 h-2.5" />
+                                    QUESTION
+                                  </Badge>
+                                )}
+                                <p className="whitespace-pre-wrap">{renderMessageContent(msg.content)}</p>
+                              </>
                             )
-                          }
-                          
-                          return (
-                            <>
-                              {msg.is_question && (
-                                <Badge className="bg-amber-500 text-white font-semibold text-[8px] h-4 py-0 px-1 mb-1.5 flex items-center gap-0.5 w-fit">
-                                  <HelpCircle className="w-2.5 h-2.5" />
-                                  QUESTION
-                                </Badge>
-                              )}
-                              <p className="whitespace-pre-wrap">{renderMessageContent(msg.content)}</p>
-                            </>
-                          )
-                        })()}
+                          })()}
 
-                        {/* Quiet reaction popover */}
-                        <div className="absolute top-[-14px] right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 bg-card border border-border/80 px-1.5 py-0.5 rounded-lg shadow-md">
-                          {['👍', '❤️', '🔥', '🚀', '🎉', '🦎', '👎'].map(emoji => (
-                            <button
-                              key={emoji}
-                              type="button"
-                              onClick={() => handleMessageReaction(msg.id, emoji)}
-                              className="hover:scale-125 transition-transform text-xs cursor-pointer"
-                            >
-                              {emoji}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Displayed reactions */}
-                      {msgReactions.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-1.5">
-                          {Array.from(new Set(msgReactions.map(r => r.emoji))).map(emoji => {
-                            const count = msgReactions.filter(r => r.emoji === emoji).length
-                            const reactedByMe = msgReactions.some(r => r.emoji === emoji && r.user_id === currentUserId)
-                            return (
+                          {/* Quiet reaction popover */}
+                          <div className="absolute top-[-14px] right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 bg-card border border-border/80 px-1.5 py-0.5 rounded-lg shadow-md">
+                            {['👍', '❤️', '🔥', '🚀', '🎉', '🦎', '👎'].map(emoji => (
                               <button
                                 key={emoji}
+                                type="button"
                                 onClick={() => handleMessageReaction(msg.id, emoji)}
-                                className={`inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
-                                  reactedByMe 
-                                    ? 'bg-primary/10 border-primary text-primary' 
-                                    : 'bg-muted/30 border-border text-muted-foreground'
-                                }`}
+                                className="hover:scale-125 transition-transform text-xs cursor-pointer"
                               >
-                                <span>{emoji}</span>
-                                <span>{count}</span>
+                                {emoji}
                               </button>
-                            )
-                          })}
+                            ))}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                )
-              })
-            )}
 
-          </CardContent>
+                        {/* Displayed reactions */}
+                        {msgReactions.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {Array.from(new Set(msgReactions.map(r => r.emoji))).map(emoji => {
+                              const count = msgReactions.filter(r => r.emoji === emoji).length
+                              const reactedByMe = msgReactions.some(r => r.emoji === emoji && r.user_id === currentUserId)
+                              return (
+                                <button
+                                  key={emoji}
+                                  onClick={() => handleMessageReaction(msg.id, emoji)}
+                                  className={`inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
+                                    reactedByMe 
+                                      ? 'bg-primary/10 border-primary text-primary' 
+                                      : 'bg-muted/30 border-border text-muted-foreground'
+                                  }`}
+                                >
+                                  <span>{emoji}</span>
+                                  <span>{count}</span>
+                                </button>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+
+            </CardContent>
+
+            <AnimatePresence>
+              {showScrollButton && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="absolute bottom-4 right-4 z-40"
+                >
+                  <Button
+                    type="button"
+                    onClick={handleScrollToBottom}
+                    size="icon"
+                    className="rounded-full w-9 h-9 bg-primary/95 text-primary-foreground hover:bg-primary shadow-lg border border-border cursor-pointer transition-colors"
+                    aria-label="Scroll to bottom"
+                  >
+                    <ArrowDown className="w-5 h-5" />
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           
           <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-border bg-muted/20 shrink-0">
             <div className="flex gap-2 items-center">
