@@ -23,7 +23,6 @@ import {
 import { createStudyRoom, joinStudyRoom } from './actions'
 import { cn } from '@/lib/utils'
 import { ShinyText } from '@/components/react-bits/shiny-text'
-import { TiltedCard } from '@/components/react-bits/tilted-card'
 
 
 interface StudySpacesDirectoryClientProps {
@@ -339,7 +338,7 @@ export default function StudySpacesDirectoryClient({
               transition={{ duration: 0.3, delay: index * 0.05 }}
               className="h-full"
             >
-              <TiltedCard
+              <div
                 role="button"
                 tabIndex={0}
                 aria-label={`${room.name}. Specialization: ${room.specialization}. Level ${room.level_num}. Member count: ${room.memberCount}. Status: ${
@@ -358,11 +357,9 @@ export default function StudySpacesDirectoryClient({
                     handleJoinRoom(room.id, room.name, room.isJoined, room.joinStatus);
                   }
                 }}
-                className="relative overflow-hidden rounded-2xl h-full flex flex-col justify-between group cursor-pointer border border-white/[0.06] bg-[#0c0816]/50 backdrop-blur-xl hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none transition-all duration-300 shadow-md hover:shadow-xl hover:shadow-primary/5"
-                maxRotate={6}
-                scale={1.015}
+                className="relative overflow-hidden rounded-2xl h-full flex flex-col justify-between group cursor-pointer border border-white/[0.06] bg-[#0c0816]/50 backdrop-blur-xl hover:border-primary/50 hover:bg-[#0f0a1c]/60 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none hover:-translate-y-1 transition-all duration-300 ease-out shadow-md hover:shadow-2xl hover:shadow-primary/5"
               >
-                <div className="flex flex-col h-full justify-between p-6">
+                <div className="flex flex-col h-full justify-between p-6 relative z-10">
                   <div className="space-y-4">
                     <div className="flex items-start justify-between gap-4">
                       <h3 className="text-base font-bold group-hover:text-primary transition-colors line-clamp-1 text-foreground">
@@ -426,7 +423,10 @@ export default function StudySpacesDirectoryClient({
                     </div>
                   </div>
                 </div>
-              </TiltedCard>
+
+                {/* Decorative background watermark icon */}
+                <GraduationCap className="absolute -right-6 -bottom-6 w-32 h-32 text-foreground/[0.02] group-hover:text-primary/[0.05] group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none z-0" />
+              </div>
             </motion.div>
           ))}
         </div>
