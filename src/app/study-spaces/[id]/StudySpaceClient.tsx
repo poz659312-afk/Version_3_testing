@@ -369,7 +369,7 @@ export default function StudySpaceClient({
   // Collaboration references
   const isEditingRef = useRef(false)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const chatBottomRef = useRef<HTMLDivElement>(null)
+  const chatContainerRef = useRef<HTMLDivElement>(null)
   
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -413,15 +413,19 @@ export default function StudySpaceClient({
     }
   }
 
-  // Auto-scroll chat to bottom
-  // On initial mount: instant jump. On new messages: smooth scroll.
+  // Auto-scroll chat inside container to bottom (prevents browser viewport scroll shifts)
   const isFirstScrollRef = useRef(true)
   useEffect(() => {
+    const container = chatContainerRef.current
+    if (!container) return
     if (isFirstScrollRef.current) {
-      chatBottomRef.current?.scrollIntoView({ behavior: 'instant' })
+      container.scrollTop = container.scrollHeight
       isFirstScrollRef.current = false
     } else {
-      chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+      })
     }
   }, [messages, chatTab])
 
@@ -1625,7 +1629,7 @@ export default function StudySpaceClient({
             </div>
           </CardHeader>
           
-          <CardContent className="flex-1 overflow-y-auto ss-chat-scrollbar p-3 sm:p-4 space-y-3" data-lenis-prevent>
+          <CardContent ref={chatContainerRef} className="flex-1 overflow-y-auto ss-chat-scrollbar p-3 sm:p-4 space-y-3" data-lenis-prevent>
 
             {displayedMessages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-10">
@@ -1786,7 +1790,7 @@ export default function StudySpaceClient({
                 )
               })
             )}
-            <div ref={chatBottomRef} />
+
           </CardContent>
           
           <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-border bg-muted/20 shrink-0">
