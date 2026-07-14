@@ -1566,7 +1566,7 @@ export default function StudySpaceClient({
               variant="outline"
               size="sm"
               onClick={() => router.push(`/study-spaces/${roomId}/report`)}
-              className="border-border hover:bg-muted text-xs h-10 px-4 rounded-2xl cursor-pointer flex items-center gap-1.5"
+              className="border-border hover:bg-primary hover:text-white text-xs h-10 px-4 rounded-2xl cursor-pointer flex items-center gap-1.5 "
             >
               <Award className="w-4 h-4 text-primary" />
               Report
@@ -1745,7 +1745,7 @@ export default function StudySpaceClient({
 
                         {/* Quiet reaction popover */}
                         <div className="absolute top-[-14px] right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 bg-card border border-border/80 px-1.5 py-0.5 rounded-lg shadow-md">
-                          {['👍', '❤️', '🔥', '🚀', '🎉'].map(emoji => (
+                          {['👍', '❤️', '🔥', '🚀', '🎉', '🦎', '👎'].map(emoji => (
                             <button
                               key={emoji}
                               type="button"
@@ -2493,7 +2493,7 @@ export default function StudySpaceClient({
                                           setPendingPromoteRole(m.role === 'admin' ? 'member' : 'admin')
                                           setShowPromoteDialog(true)
                                         }}
-                                        className="h-7 px-2 text-[10px] border-border cursor-pointer"
+                                        className="h-7 px-2 text-[10px] border-border cursor-pointer hover:bg-primary hover:text-white"
                                       >
                                         {m.role === 'admin' ? <ShieldOff className="w-3 h-3" /> : <Shield className="w-3 h-3" />}
                                       </Button>
@@ -3056,7 +3056,7 @@ export default function StudySpaceClient({
         <DialogContent className="bg-card border-border shadow-2xl max-w-sm">
           <DialogHeader>
             <DialogTitle className={`text-lg font-bold flex items-center gap-2 ${pendingPromoteRole === 'admin' ? 'text-blue-400' : 'text-orange-400'}`}>
-              {pendingPromoteRole === 'admin' ? <Shield className="w-5 h-5" /> : <ShieldOff className="w-5 h-5" />}
+              {pendingPromoteRole === 'admin' ? <Shield className="w-5 h-5 hover:text-white" /> : <ShieldOff className="w-5 h-5 hover:text-white" />}
               {pendingPromoteRole === 'admin' ? 'Promote to Admin' : 'Demote to Member'}
             </DialogTitle>
             <DialogDescription className="text-xs mt-1 text-muted-foreground">
