@@ -130,10 +130,10 @@ export default function StudySpacesDirectoryClient({
 
   return (
     <div className="space-y-8 premium-container">
-      <section className="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0c0816]/70 backdrop-blur-md p-6 sm:p-8 lg:p-10 shadow-2xl">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
-        <div className="absolute top-0 right-1/4 w-80 h-80 rounded-full bg-primary/10 blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 left-1/4 w-80 h-80 rounded-full bg-indigo-500/10 blur-[100px] pointer-events-none" />
+      <section className="relative overflow-hidden rounded-2xl border border-border/60 dark:border-white/[0.06] bg-card/40 dark:bg-[#0c0816]/70 backdrop-blur-md p-6 sm:p-8 lg:p-10 shadow-2xl">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000004_1px,transparent_1px),linear-gradient(to_bottom,#00000004_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+        <div className="absolute top-0 right-1/4 w-80 h-80 rounded-full bg-primary/5 dark:bg-primary/10 blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-80 h-80 rounded-full bg-indigo-500/5 dark:bg-indigo-500/10 blur-[100px] pointer-events-none" />
 
         <div className="relative z-10 flex flex-col gap-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -257,7 +257,7 @@ export default function StudySpacesDirectoryClient({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="relative overflow-hidden rounded-xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-md p-5 transition-all duration-300 hover:border-indigo-500/30 hover:bg-white/[0.04] hover:-translate-y-0.5 group">
+            <div className="relative overflow-hidden rounded-xl border border-border/60 dark:border-white/[0.05] bg-card/60 dark:bg-white/[0.02] backdrop-blur-md p-5 transition-all duration-300 hover:border-indigo-500/30 hover:bg-muted/50 dark:hover:bg-white/[0.04] hover:-translate-y-0.5 group shadow-sm">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Matched Spaces</p>
@@ -269,7 +269,7 @@ export default function StudySpacesDirectoryClient({
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-md p-5 transition-all duration-300 hover:border-purple-500/30 hover:bg-white/[0.04] hover:-translate-y-0.5 group">
+            <div className="relative overflow-hidden rounded-xl border border-border/60 dark:border-white/[0.05] bg-card/60 dark:bg-white/[0.02] backdrop-blur-md p-5 transition-all duration-300 hover:border-purple-500/30 hover:bg-muted/50 dark:hover:bg-white/[0.04] hover:-translate-y-0.5 group shadow-sm">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Joined by You</p>
@@ -281,7 +281,7 @@ export default function StudySpacesDirectoryClient({
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-md p-5 transition-all duration-300 hover:border-blue-500/30 hover:bg-white/[0.04] hover:-translate-y-0.5 group">
+            <div className="relative overflow-hidden rounded-xl border border-border/60 dark:border-white/[0.05] bg-card/60 dark:bg-white/[0.02] backdrop-blur-md p-5 transition-all duration-300 hover:border-blue-500/30 hover:bg-muted/50 dark:hover:bg-white/[0.04] hover:-translate-y-0.5 group shadow-sm">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Pending Requests</p>
@@ -296,7 +296,7 @@ export default function StudySpacesDirectoryClient({
         </div>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.06] bg-card/40 backdrop-blur-sm p-4">
+      <section className="rounded-2xl border border-border/80 dark:border-white/[0.06] bg-card/40 backdrop-blur-sm p-4">
         <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-center">
           <div className="relative flex-1 group">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
@@ -308,11 +308,11 @@ export default function StudySpacesDirectoryClient({
             />
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline" className="text-[11px] h-7 px-2.5 border-white/[0.08] bg-muted/40 flex items-center gap-1.5 text-muted-foreground font-medium">
+            <Badge variant="outline" className="text-[11px] h-7 px-2.5 border-border bg-muted/40 flex items-center gap-1.5 text-muted-foreground font-medium">
               <GraduationCap className="w-3.5 h-3.5 text-primary" />
               {userSpecialization}
             </Badge>
-            <Badge variant="outline" className="text-[11px] h-7 px-2.5 border-white/[0.08] bg-muted/40 flex items-center gap-1.5 text-muted-foreground font-medium">
+            <Badge variant="outline" className="text-[11px] h-7 px-2.5 border-border bg-muted/40 flex items-center gap-1.5 text-muted-foreground font-medium">
               <Layers className="w-3.5 h-3.5 text-secondary" />
               Level {userLevel}
             </Badge>
@@ -321,7 +321,7 @@ export default function StudySpacesDirectoryClient({
       </section>
 
       {filteredRooms.length === 0 ? (
-        <Card className="bg-card border-white/[0.06] shadow-md py-16 sm:py-20 flex flex-col items-center justify-center text-center rounded-2xl">
+        <Card className="bg-card border-border shadow-md py-16 sm:py-20 flex flex-col items-center justify-center text-center rounded-2xl">
           <BookOpen className="w-12 h-12 text-muted-foreground/40 mb-4" />
           <CardTitle className="text-lg sm:text-xl font-bold text-foreground">No Study Spaces Found</CardTitle>
           <CardDescription className="text-xs sm:text-sm text-muted-foreground max-w-sm mt-1">
@@ -357,7 +357,7 @@ export default function StudySpacesDirectoryClient({
                     handleJoinRoom(room.id, room.name, room.isJoined, room.joinStatus);
                   }
                 }}
-                className="relative overflow-hidden rounded-2xl h-full flex flex-col justify-between group cursor-pointer border border-white/[0.06] bg-[#0c0816]/50 backdrop-blur-xl hover:border-primary/50 hover:bg-[#0f0a1c]/60 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none hover:-translate-y-1 transition-all duration-300 ease-out shadow-md hover:shadow-2xl hover:shadow-primary/5"
+                className="relative overflow-hidden rounded-2xl h-full flex flex-col justify-between group cursor-pointer border border-border/50 dark:border-white/[0.06] bg-card/45 dark:bg-[#0c0816]/50 backdrop-blur-xl hover:border-primary/50 hover:bg-muted/40 dark:hover:bg-[#0f0a1c]/60 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none hover:-translate-y-1 transition-all duration-300 ease-out shadow-md hover:shadow-2xl hover:shadow-primary/5"
               >
                 <div className="flex flex-col h-full justify-between p-6 relative z-10">
                   <div className="space-y-4">
@@ -365,7 +365,7 @@ export default function StudySpacesDirectoryClient({
                       <h3 className="text-base font-bold group-hover:text-primary transition-colors line-clamp-1 text-foreground">
                         {room.name}
                       </h3>
-                      <Badge className="bg-white/[0.04] text-muted-foreground border-white/[0.08] text-[10px] font-medium flex items-center gap-1 h-5 py-0 px-2 shrink-0">
+                      <Badge className="bg-muted border-border/85 dark:bg-white/[0.04] dark:border-white/[0.08] text-[10px] font-medium flex items-center gap-1 h-5 py-0 px-2 shrink-0">
                         <Users className="w-3 h-3 text-muted-foreground" />
                         {room.memberCount}
                       </Badge>
@@ -396,7 +396,7 @@ export default function StudySpacesDirectoryClient({
                     )}
                   </div>
 
-                  <div className="w-full h-px bg-white/[0.06] my-2" />
+                  <div className="w-full h-px bg-border/60 dark:bg-white/[0.06] my-2" />
 
                   <div className="pt-2 flex flex-row items-center justify-between gap-3">
                     <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>
@@ -405,7 +405,7 @@ export default function StudySpacesDirectoryClient({
                     <div className={cn(
                       "inline-flex items-center justify-center rounded-lg text-xs font-semibold h-8 px-3 transition-all duration-300 border shadow-xs select-none",
                       room.joinStatus === 'approved'
-                        ? "border-white/[0.08] bg-white/[0.02] text-foreground group-hover:bg-primary group-hover:text-white group-hover:border-primary"
+                        ? "border-border bg-muted/30 dark:border-white/[0.08] dark:bg-white/[0.02] text-foreground group-hover:bg-primary group-hover:text-white group-hover:border-primary"
                         : room.joinStatus === 'pending'
                           ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
                           : "border-primary bg-primary text-primary-foreground group-hover:shadow-md group-hover:shadow-primary/20"
@@ -425,7 +425,7 @@ export default function StudySpacesDirectoryClient({
                 </div>
 
                 {/* Decorative background watermark icon */}
-                <GraduationCap className="absolute -right-6 -bottom-6 w-32 h-32 text-foreground/[0.02] group-hover:text-primary/[0.05] group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none z-0" />
+                <GraduationCap className="absolute -right-6 -bottom-6 w-32 h-32 text-foreground/[0.015] group-hover:text-primary/[0.04] dark:text-foreground/[0.02] dark:group-hover:text-primary/[0.05] group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none z-0" />
               </div>
             </motion.div>
           ))}
