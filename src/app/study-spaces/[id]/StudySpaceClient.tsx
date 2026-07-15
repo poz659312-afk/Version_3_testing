@@ -258,6 +258,26 @@ export default function StudySpaceClient({
     const val = e.target.value
     setChatInput(val)
 
+    // Broadcast typing status
+    if (val.trim().length > 0) {
+      if (!isTypingSentRef.current) {
+        broadcastTyping(true)
+      }
+      if (typingBroadcastTimeoutRef.current) {
+        clearTimeout(typingBroadcastTimeoutRef.current)
+      }
+      typingBroadcastTimeoutRef.current = setTimeout(() => {
+        broadcastTyping(false)
+      }, 3000)
+    } else {
+      if (isTypingSentRef.current) {
+        broadcastTyping(false)
+        if (typingBroadcastTimeoutRef.current) {
+          clearTimeout(typingBroadcastTimeoutRef.current)
+        }
+      }
+    }
+
     const caretPos = e.target.selectionStart || 0
     const textBeforeCaret = val.slice(0, caretPos)
     const lastAtIdx = textBeforeCaret.lastIndexOf('@')
@@ -373,6 +393,27 @@ export default function StudySpaceClient({
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   
+  // Typing indicator refs and state
+  const typingChannelRef = useRef<any>(null)
+  const typingBroadcastTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isTypingSentRef = useRef(false)
+  const [typingUsers, setTypingUsers] = useState<{ userId: string; username: string }[]>([])
+
+  const broadcastTyping = (isTyping: boolean) => {
+    if (typingChannelRef.current && currentUserId && currentMember?.user?.username) {
+      typingChannelRef.current.send({
+        type: 'broadcast',
+        event: 'typing',
+        payload: {
+          userId: currentUserId,
+          username: currentMember.user.username,
+          isTyping
+        }
+      })
+      isTypingSentRef.current = isTyping
+    }
+  }
+
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const lastSavedContentRef = useRef(room.scratchpad_content || '')
@@ -525,6 +566,29 @@ export default function StudySpaceClient({
   // --- REAL-TIME SUBSCRIPTIONS ---
   useEffect(() => {
     const supabase = createClient()
+
+    // 0. Typing indicator channel
+    const typingChannel = supabase.channel(`room-typing-${roomId}`, {
+      config: {
+        broadcast: { self: false }
+      }
+    })
+
+    typingChannel
+      .on('broadcast', { event: 'typing' }, (payload: any) => {
+        const { userId, username, isTyping } = payload.payload
+        setTypingUsers((prev) => {
+          if (isTyping) {
+            if (prev.some(u => u.userId === userId)) return prev
+            return [...prev, { userId, username }]
+          } else {
+            return prev.filter(u => u.userId !== userId)
+          }
+        })
+      })
+      .subscribe()
+
+    typingChannelRef.current = typingChannel
 
     // 1. Messages and Message Reactions Channel
     const messageChannel = supabase
@@ -880,6 +944,7 @@ export default function StudySpaceClient({
       supabase.removeChannel(dcChannel)
       supabase.removeChannel(quizzesChannel)
       supabase.removeChannel(resourcesChannel)
+      if (typingChannel) supabase.removeChannel(typingChannel)
     }
   }, [roomId, members, isFocusing])
 
@@ -1053,6 +1118,19 @@ export default function StudySpaceClient({
     setShowSuggestions(false)
     setChatInput('')
     setIsQuestionInput(false)
+
+    // Clear typing status immediately
+    if (isTypingSentRef.current) {
+      broadcastTyping(false)
+    }
+    if (typingBroadcastTimeoutRef.current) {
+      clearTimeout(typingBroadcastTimeoutRef.current)
+    }
+
+    // Force immediate scroll to bottom
+    setTimeout(() => {
+      handleScrollToBottom()
+    }, 50)
 
     // Optimistic insert
     const optimisticMsgId = 'optimistic-' + Math.random().toString()
@@ -1779,40 +1857,48 @@ export default function StudySpaceClient({
                             )
                           })()}
 
-                          {/* Quiet reaction popover */}
+                          {/* Quiet reaction popover with spring rotation hover */}
                           <div className="absolute top-[-14px] right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 bg-card border border-border/80 px-1.5 py-0.5 rounded-lg shadow-md">
                             {['👍', '❤️', '🔥', '🚀', '🎉', '🦎', '👎'].map(emoji => (
-                              <button
+                              <motion.button
                                 key={emoji}
                                 type="button"
+                                whileHover={{ scale: 1.35, rotate: [0, -8, 8, 0] }}
+                                whileTap={{ scale: 0.9 }}
+                                transition={{ type: 'spring', stiffness: 450, damping: 15 }}
                                 onClick={() => handleMessageReaction(msg.id, emoji)}
-                                className="hover:scale-125 transition-transform text-xs cursor-pointer"
+                                className="text-xs cursor-pointer p-0.5 focus:outline-none"
                               >
                                 {emoji}
-                              </button>
+                              </motion.button>
                             ))}
                           </div>
                         </div>
 
-                        {/* Displayed reactions */}
+                        {/* Displayed reactions with smooth spring bounce interactions */}
                         {msgReactions.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-1.5">
                             {Array.from(new Set(msgReactions.map(r => r.emoji))).map(emoji => {
                               const count = msgReactions.filter(r => r.emoji === emoji).length
                               const reactedByMe = msgReactions.some(r => r.emoji === emoji && r.user_id === currentUserId)
                               return (
-                                <button
+                                <motion.button
                                   key={emoji}
+                                  whileHover={{ scale: 1.15 }}
+                                  whileTap={{ scale: 0.9 }}
+                                  initial={{ scale: 0.8, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  transition={{ type: 'spring', stiffness: 350, damping: 18 }}
                                   onClick={() => handleMessageReaction(msg.id, emoji)}
-                                  className={`inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
+                                  className={`inline-flex items-center gap-1.5 text-[9px] px-2 py-0.5 rounded-full border transition-colors cursor-pointer select-none ${
                                     reactedByMe 
-                                      ? 'bg-primary/10 border-primary text-primary' 
-                                      : 'bg-muted/30 border-border text-muted-foreground'
+                                      ? 'bg-primary/10 border-primary text-primary font-semibold' 
+                                      : 'bg-muted/30 border-border text-muted-foreground hover:bg-muted'
                                   }`}
                                 >
                                   <span>{emoji}</span>
                                   <span>{count}</span>
-                                </button>
+                                </motion.button>
                               )
                             })}
                           </div>
@@ -1823,6 +1909,26 @@ export default function StudySpaceClient({
                 })
               )}
 
+              {/* Typing indicator with pulsing bouncing animation dots */}
+              <AnimatePresence>
+                {typingUsers.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    className="flex items-center gap-2 text-[10px] text-muted-foreground px-2 py-1 bg-muted/40 w-fit rounded-lg border border-border/40 mt-1"
+                  >
+                    <span className="flex gap-0.5 items-center">
+                      <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </span>
+                    <span>
+                      {typingUsers.map(u => u.username).join(', ')} {typingUsers.length === 1 ? 'is typing...' : 'are typing...'}
+                    </span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </CardContent>
 
             <AnimatePresence>
