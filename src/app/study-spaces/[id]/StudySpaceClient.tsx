@@ -49,8 +49,12 @@ import {
   Pause,
   ExternalLink,
   ChevronRight,
-  Settings
+  Settings,
+  Edit3,
+  Eye,
+  FileText
 } from 'lucide-react'
+import SummaryRenderer from '@/components/SummaryRenderer'
 import { 
   getRoomDetails, 
   leaveStudyRoom, 
@@ -131,6 +135,7 @@ export default function StudySpaceClient({
   const [messageReactions, setMessageReactions] = useState<any[]>(initialDetails?.messageReactions || [])
   const [availableQuizzes] = useState(initialDetails?.availableQuizzes || [])
   const currentUserId = initialDetails?.currentUserId
+  const [isEditingNotes, setIsEditingNotes] = useState(false)
 
   const isOwner = room.created_by === currentUserId
 
@@ -2127,7 +2132,7 @@ export default function StudySpaceClient({
             <CardContent className="flex-1 overflow-y-auto p-3 sm:p-4" data-lenis-prevent>
               
               {/* Tab 1: Scratchpad */}
-              <TabsContent value="notes" className="h-full mt-0 focus-visible:outline-none flex flex-col">
+              <TabsContent value="notes" className="h-full mt-0 focus-visible:outline-none flex flex-col relative">
                 <div className="flex items-center justify-between pb-2 mb-2 border-b border-border shrink-0">
                   <span className="text-[10px] text-muted-foreground font-bold flex items-center gap-1">
                     <Sparkles className="w-3.5 h-3.5 text-primary" />
@@ -2160,18 +2165,71 @@ export default function StudySpaceClient({
                     )}
                   </div>
                 </div>
-                <Textarea 
-                  placeholder={
-                    !canManage 
-                      ? "Only admins can edit notes in this space." 
-                      : "Collaborate on summaries, outline lectures, or copy notes here. Click Save or click out to sync changes with group members!"
-                  }
-                  value={scratchpad}
-                  onChange={handleScratchpadChange}
-                  onBlur={() => canManage && saveScratchpadContent(scratchpad)}
-                  className="w-full flex-1 border-none focus-visible:ring-0 resize-none bg-muted/15 rounded-2xl p-3.5 text-xs leading-relaxed"
-                  readOnly={!canManage}
-                />
+
+                <div className="flex-1 relative flex flex-col min-h-0">
+                  {/* Floating Action Button for Admins */}
+                  {canManage && (
+                    <div className="absolute top-2.5 right-2.5 z-30">
+                      {!isEditingNotes ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => setIsEditingNotes(true)}
+                          className="h-7 text-[10px] bg-background/90 hover:bg-background border border-border/80 shadow-md backdrop-blur-sm text-foreground flex items-center gap-1 px-2.5 rounded-lg cursor-pointer transition-all active:scale-95"
+                        >
+                          <Edit3 className="w-3 h-3 text-primary" />
+                          Edit Notes
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => {
+                            setIsEditingNotes(false)
+                            saveScratchpadContent(scratchpad)
+                          }}
+                          className="h-7 text-[10px] bg-primary text-primary-foreground hover:bg-primary/90 shadow-md flex items-center gap-1 px-2.5 rounded-lg cursor-pointer transition-all active:scale-95"
+                        >
+                          <Eye className="w-3 h-3" />
+                          View Preview
+                        </Button>
+                      )}
+                    </div>
+                  )}
+
+                  {!isEditingNotes ? (
+                    <div className="flex-1 overflow-y-auto bg-muted/15 border border-border/20 rounded-2xl p-4 min-h-[220px] ss-chat-scrollbar" data-lenis-prevent>
+                      {scratchpad.trim() ? (
+                        <SummaryRenderer content={scratchpad} className="text-[11px] leading-relaxed text-foreground select-text" />
+                      ) : (
+                        <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-16">
+                          <FileText className="w-10 h-10 text-muted-foreground/30 mb-2" />
+                          <p className="text-xs">No notes added yet.</p>
+                          {canManage && (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="link"
+                              onClick={() => setIsEditingNotes(true)}
+                              className="text-primary text-xs font-semibold mt-2 cursor-pointer"
+                            >
+                              Start writing notes
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Textarea 
+                      placeholder="Collaborate on summaries, outline lectures, or copy notes here. Markdown is fully supported! Click 'View Preview' or click out to sync changes with group members."
+                      value={scratchpad}
+                      onChange={handleScratchpadChange}
+                      onBlur={() => canManage && saveScratchpadContent(scratchpad)}
+                      className="w-full flex-1 border-none focus-visible:ring-0 resize-none bg-muted/15 border border-border/20 rounded-2xl p-4 text-xs leading-relaxed font-mono ss-chat-scrollbar"
+                      readOnly={!canManage}
+                    />
+                  )}
+                </div>
               </TabsContent>
               
               {/* Tab 2: Quiz Battles */}
