@@ -23,6 +23,7 @@ import {
 import { createStudyRoom, joinStudyRoom, getRoomsList } from './actions'
 import { cn } from '@/lib/utils'
 import { ShinyText } from '@/components/react-bits/shiny-text'
+import { createClient } from '@/lib/supabase/client'
 
 
 interface StudySpacesDirectoryClientProps {
@@ -48,14 +49,51 @@ export default function StudySpacesDirectoryClient({
     setMounted(true)
   }, [])
 
+  // Sync rooms state when initialRooms changes on the server
   useEffect(() => {
-    // Hidden background auto-refresh every 12 seconds to poll newly created spaces or member updates
+    setRooms(initialRooms || [])
+  }, [initialRooms])
+
+  useEffect(() => {
+    const supabase = createClient()
+
+    // Hidden background auto-refresh every 12 seconds querying Supabase directly (bypasses Server Actions & Next.js cache)
     const interval = setInterval(async () => {
       try {
-        const freshRooms = await getRoomsList()
-        if (freshRooms && Array.isArray(freshRooms)) {
-          setRooms(freshRooms)
+        const { data: sessionData } = await supabase.auth.getSession()
+        const userSession = sessionData?.session?.user
+        if (!userSession) return
+
+        const { data: roomsData, error: roomsError } = await supabase
+          .from('study_rooms')
+          .select(`
+            *,
+            study_room_members (
+              user_id,
+              status
+            )
+          `)
+          .order('created_at', { ascending: false })
+
+        if (roomsError) {
+          console.warn('Failed to fetch rooms in background:', roomsError)
+          return
         }
+
+        const freshRooms = (roomsData || []).map((room: any) => {
+          const approvedMembers = room.study_room_members?.filter((m: any) => m.status === 'approved') || []
+          const memberRow = room.study_room_members?.find((m: any) => m.user_id === userSession.id)
+          const joinStatus = memberRow ? memberRow.status : 'none'
+
+          return {
+            ...room,
+            memberCount: approvedMembers.length,
+            joinStatus,
+            isJoined: joinStatus === 'approved'
+          }
+        })
+
+        setRooms(freshRooms)
       } catch (err) {
         console.warn('Background rooms sync failed:', err)
       }
