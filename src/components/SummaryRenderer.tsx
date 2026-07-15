@@ -16,6 +16,33 @@ interface SummaryRendererProps {
 }
 
 export default function SummaryRenderer({ content, className }: SummaryRendererProps) {
+  // Pre-process custom color and highlight tags (BBCode style and link style)
+  const processedContent = (() => {
+    if (!content) return ''
+    let text = content
+    
+    // 1. Link-style color: [text](color:red) or [text](color:#ff0055)
+    text = text.replace(/\[([^\]]+)\]\(color:([^\)]+)\)/g, '<span style="color: $2">$1</span>')
+    
+    // 2. Link-style bg: [text](bg:yellow) or [text](bg:#ff0055)
+    text = text.replace(/\[([^\]]+)\]\(bg:([^\)]+)\)/g, '<span style="background-color: $2; padding: 2px 6px; border-radius: 4px;">$1</span>')
+
+    // 3. BBCode-style [color=red]text[/color]
+    text = text.replace(/\[color=([^\]]+)\]([\s\S]*?)\[\/color\]/gi, '<span style="color: $1">$2</span>')
+
+    // 4. BBCode-style [bg=yellow]text[/bg]
+    text = text.replace(/\[bg=([^\]]+)\]([\s\S]*?)\[\/bg\]/gi, '<span style="background-color: $1; padding: 2px 6px; border-radius: 4px;">$2</span>')
+
+    // 5. Named BBCode tags: [red]text[/red], [blue]text[/blue], [yellow]text[/yellow], [green]text[/green], [orange]text[/orange], [purple]text[/purple], [pink]text[/pink], [emerald]text[/emerald], [sky]text[/sky], [indigo]text[/indigo], [rose]text[/rose]
+    const commonColors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'gray', 'emerald', 'sky', 'indigo', 'rose']
+    commonColors.forEach(color => {
+      const regex = new RegExp(`\\[${color}\\]([\\s\\S]*?)\\[\\/${color}\\]`, 'gi')
+      text = text.replace(regex, `<span style="color: ${color}">$1</span>`)
+    })
+
+    return text
+  })()
+
   return (
     <div className={cn("prose prose-invert max-w-none text-gray-300 select-text", className)} dir="rtl">
       <style jsx global>{`
@@ -288,7 +315,7 @@ export default function SummaryRenderer({ content, className }: SummaryRendererP
           },
         }}
       >
-        {content}
+        {processedContent}
       </ReactMarkdown>
     </div>
   )
