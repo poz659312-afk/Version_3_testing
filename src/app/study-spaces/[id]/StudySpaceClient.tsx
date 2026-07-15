@@ -55,7 +55,6 @@ import {
   FileText
 } from 'lucide-react'
 import SummaryRenderer from '@/components/SummaryRenderer'
-import EditorToolbar from '@/components/EditorToolbar'
 import { 
   getRoomDetails, 
   leaveStudyRoom, 
@@ -444,6 +443,44 @@ export default function StudySpaceClient({
   const [isSaving, setIsSaving] = useState(false)
   const lastSavedContentRef = useRef(room.scratchpad_content || '')
   const notesTextareaRef = useRef<HTMLTextAreaElement>(null)
+
+  const insertText = (before: string, after: string = '', defaultValue: string = '') => {
+    const textarea = notesTextareaRef.current
+    if (!textarea) return
+
+    textarea.focus()
+    const startPos = textarea.selectionStart
+    const endPos = textarea.selectionEnd
+    const selectedText = textarea.value.substring(startPos, endPos)
+    const textToInsert = before + (selectedText || defaultValue) + after
+
+    try {
+      const success = document.execCommand('insertText', false, textToInsert)
+      if (success) {
+        setScratchpad(textarea.value)
+        isEditingRef.current = true
+        setHasUnsavedChanges(textarea.value !== lastSavedContentRef.current)
+        return
+      }
+    } catch (e) {
+      console.warn('execCommand failed, falling back to manual replacement:', e)
+    }
+
+    const newValue = 
+      textarea.value.substring(0, startPos) + 
+      textToInsert + 
+      textarea.value.substring(endPos)
+
+    setScratchpad(newValue)
+    isEditingRef.current = true
+    setHasUnsavedChanges(newValue !== lastSavedContentRef.current)
+
+    setTimeout(() => {
+      textarea.focus()
+      const newCursorPos = startPos + before.length + (selectedText || defaultValue).length + after.length
+      textarea.setSelectionRange(newCursorPos, newCursorPos)
+    }, 50)
+  }
 
   // Sound Synth Helper
   const playSystemSound = (type: 'message' | 'focus-end' | 'success') => {
@@ -2223,21 +2260,163 @@ export default function StudySpaceClient({
                     </div>
                   ) : (
                     <div className="flex-1 flex flex-col min-h-0 relative bg-muted/15 border border-border/20 rounded-2xl overflow-hidden">
-                      <EditorToolbar 
-                        textareaRef={notesTextareaRef}
-                        onChange={(val) => {
-                          setScratchpad(val)
-                          isEditingRef.current = true
-                          setHasUnsavedChanges(val !== lastSavedContentRef.current)
-                          
-                          if (typingTimeoutRef.current) {
-                            clearTimeout(typingTimeoutRef.current)
-                          }
-                          typingTimeoutRef.current = setTimeout(() => {
-                            isEditingRef.current = false
-                          }, 3000)
-                        }}
-                      />
+                      {/* Primitive Formatting Toolbar */}
+                      <div className="flex flex-wrap items-center gap-1 p-2 border-b border-border/20 bg-muted/10">
+                        {/* Basic formatting */}
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('**', '**', 'Bold')
+                          }}
+                          className="h-7 w-7 text-muted-foreground hover:text-foreground rounded px-0 text-xs font-bold"
+                          title="Bold"
+                        >
+                          B
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('*', '*', 'Italic')
+                          }}
+                          className="h-7 w-7 text-muted-foreground hover:text-foreground rounded px-0 text-xs italic"
+                          title="Italic"
+                        >
+                          I
+                        </Button>
+
+                        <div className="h-4 w-px bg-border/20 mx-1" />
+
+                        {/* Colors */}
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('[red]', '[/red]', 'Red Text')
+                          }}
+                          className="h-7 text-[10px] text-red-400 hover:text-red-300 rounded px-1.5 flex items-center gap-1 hover:bg-red-500/5 font-semibold"
+                          title="Red Text"
+                        >
+                          <div className="w-2 h-2 rounded-full bg-red-500" />
+                          Red
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('[blue]', '[/blue]', 'Blue Text')
+                          }}
+                          className="h-7 text-[10px] text-blue-400 hover:text-blue-300 rounded px-1.5 flex items-center gap-1 hover:bg-blue-500/5 font-semibold"
+                          title="Blue Text"
+                        >
+                          <div className="w-2 h-2 rounded-full bg-blue-500" />
+                          Blue
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('[green]', '[/green]', 'Green Text')
+                          }}
+                          className="h-7 text-[10px] text-emerald-400 hover:text-emerald-300 rounded px-1.5 flex items-center gap-1 hover:bg-emerald-500/5 font-semibold"
+                          title="Green Text"
+                        >
+                          <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                          Green
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('[yellow]', '[/yellow]', 'Yellow Text')
+                          }}
+                          className="h-7 text-[10px] text-yellow-400 hover:text-yellow-300 rounded px-1.5 flex items-center gap-1 hover:bg-yellow-500/5 font-semibold"
+                          title="Yellow Text"
+                        >
+                          <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                          Yellow
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('[orange]', '[/orange]', 'Orange Text')
+                          }}
+                          className="h-7 text-[10px] text-orange-400 hover:text-orange-300 rounded px-1.5 flex items-center gap-1 hover:bg-orange-500/5 font-semibold"
+                          title="Orange Text"
+                        >
+                          <div className="w-2 h-2 rounded-full bg-orange-500" />
+                          Orange
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('[purple]', '[/purple]', 'Purple Text')
+                          }}
+                          className="h-7 text-[10px] text-purple-400 hover:text-purple-300 rounded px-1.5 flex items-center gap-1 hover:bg-purple-500/5 font-semibold"
+                          title="Purple Text"
+                        >
+                          <div className="w-2 h-2 rounded-full bg-purple-500" />
+                          Purple
+                        </Button>
+
+                        <div className="h-4 w-px bg-border/20 mx-1" />
+
+                        {/* Highlight */}
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('[bg=yellow]', '[/bg]', 'Highlighted Text')
+                          }}
+                          className="h-7 text-[10px] text-yellow-400 hover:text-yellow-300 rounded px-1.5 hover:bg-yellow-500/5 font-semibold"
+                          title="Highlight"
+                        >
+                          Highlight
+                        </Button>
+
+                        <div className="h-4 w-px bg-border/20 mx-1" />
+
+                        {/* Math */}
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('$', '$', 'f(x) = x^2')
+                          }}
+                          className="h-7 text-[10px] text-violet-400 hover:text-violet-300 rounded px-1.5 flex items-center gap-0.5 hover:bg-violet-500/5 font-semibold font-mono"
+                          title="Math Formula"
+                        >
+                          ∑ Math
+                        </Button>
+                      </div>
                       <Textarea 
                         ref={notesTextareaRef}
                         placeholder="Collaborate on summaries, outline lectures, or copy notes here. Markdown is fully supported! Click 'View Preview' or click out to sync changes with group members."
