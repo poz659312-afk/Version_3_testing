@@ -55,6 +55,7 @@ import {
   FileText
 } from 'lucide-react'
 import SummaryRenderer from '@/components/SummaryRenderer'
+import EditorToolbar from '@/components/EditorToolbar'
 import { 
   getRoomDetails, 
   leaveStudyRoom, 
@@ -442,6 +443,7 @@ export default function StudySpaceClient({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const lastSavedContentRef = useRef(room.scratchpad_content || '')
+  const notesTextareaRef = useRef<HTMLTextAreaElement>(null)
 
   // Sound Synth Helper
   const playSystemSound = (type: 'message' | 'focus-end' | 'success') => {
@@ -2220,14 +2222,24 @@ export default function StudySpaceClient({
                       )}
                     </div>
                   ) : (
-                    <Textarea 
-                      placeholder="Collaborate on summaries, outline lectures, or copy notes here. Markdown is fully supported! Click 'View Preview' or click out to sync changes with group members."
-                      value={scratchpad}
-                      onChange={handleScratchpadChange}
-                      onBlur={() => canManage && saveScratchpadContent(scratchpad)}
-                      className="w-full flex-1 border-none focus-visible:ring-0 resize-none bg-muted/15 border border-border/20 rounded-2xl p-4 text-xs leading-relaxed font-mono ss-chat-scrollbar"
-                      readOnly={!canManage}
-                    />
+                    <div className="flex-1 flex flex-col min-h-0 relative bg-muted/15 border border-border/20 rounded-2xl overflow-hidden">
+                      <EditorToolbar 
+                        textareaRef={notesTextareaRef}
+                        onChange={(val) => {
+                          setScratchpad(val)
+                          setHasUnsavedChanges(true)
+                        }}
+                      />
+                      <Textarea 
+                        ref={notesTextareaRef}
+                        placeholder="Collaborate on summaries, outline lectures, or copy notes here. Markdown is fully supported! Click 'View Preview' or click out to sync changes with group members."
+                        value={scratchpad}
+                        onChange={handleScratchpadChange}
+                        onBlur={() => canManage && saveScratchpadContent(scratchpad)}
+                        className="w-full flex-1 border-none focus-visible:ring-0 resize-none bg-transparent p-4 text-xs leading-relaxed font-mono ss-chat-scrollbar"
+                        readOnly={!canManage}
+                      />
+                    </div>
                   )}
                 </div>
               </TabsContent>
