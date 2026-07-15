@@ -3114,14 +3114,18 @@ export default function StudySpaceClient({
                   <span className="text-muted-foreground font-medium">Email Address:</span>
                   <span className="font-semibold text-foreground break-all">{selectedProfile.email || 'N/A'}</span>
                 </div>
-                <div className="flex justify-between border-b border-border/40 pb-1.5">
-                  <span className="text-muted-foreground font-medium">Phone Number:</span>
-                  <span className="font-semibold text-foreground">{selectedProfile.phone_number || 'N/A'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground font-medium">Coins Balance:</span>
-                  <span className="font-semibold text-yellow-500">{selectedProfile.coins || 0} Coins</span>
-                </div>
+                {(selectedProfile.auth_id === currentUserId || currentMember?.role === 'admin' || currentMember?.role === 'creator') && (
+                  <div className="flex justify-between border-b border-border/40 pb-1.5">
+                    <span className="text-muted-foreground font-medium">Phone Number:</span>
+                    <span className="font-semibold text-foreground">{selectedProfile.phone_number || 'N/A'}</span>
+                  </div>
+                )}
+                {selectedProfile.auth_id === currentUserId && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground font-medium">Coins Balance:</span>
+                    <span className="font-semibold text-yellow-500">{selectedProfile.coins || 0} Coins</span>
+                  </div>
+                )}
               </div>
               <DialogFooter className="pt-2">
                 <Button 
