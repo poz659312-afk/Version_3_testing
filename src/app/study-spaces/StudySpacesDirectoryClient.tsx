@@ -20,7 +20,7 @@ import {
   GraduationCap,
   Layers
 } from 'lucide-react'
-import { createStudyRoom, joinStudyRoom } from './actions'
+import { createStudyRoom, joinStudyRoom, getRoomsList } from './actions'
 import { cn } from '@/lib/utils'
 import { ShinyText } from '@/components/react-bits/shiny-text'
 
@@ -46,6 +46,22 @@ export default function StudySpacesDirectoryClient({
 
   useEffect(() => {
     setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    // Hidden background auto-refresh every 12 seconds to poll newly created spaces or member updates
+    const interval = setInterval(async () => {
+      try {
+        const freshRooms = await getRoomsList()
+        if (freshRooms && Array.isArray(freshRooms)) {
+          setRooms(freshRooms)
+        }
+      } catch (err) {
+        console.warn('Background rooms sync failed:', err)
+      }
+    }, 12000)
+
+    return () => clearInterval(interval)
   }, [])
   
   // Dialog state

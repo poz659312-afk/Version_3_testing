@@ -414,6 +414,17 @@ export default function StudySpaceClient({
     }
   }
 
+  // Refs for stabilizing subscriptions dependency array
+  const membersRef = useRef(members)
+  useEffect(() => {
+    membersRef.current = members
+  }, [members])
+
+  const isFocusingRef = useRef(isFocusing)
+  useEffect(() => {
+    isFocusingRef.current = isFocusing
+  }, [isFocusing])
+
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const lastSavedContentRef = useRef(room.scratchpad_content || '')
@@ -598,7 +609,7 @@ export default function StudySpaceClient({
         { event: 'INSERT', schema: 'public', table: 'study_room_messages', filter: `room_id=eq.${roomId}` },
         (payload: any) => {
           const senderId = payload.new.user_id
-          const sender = members.find((m: any) => m.user?.auth_id === senderId)
+          const sender = membersRef.current.find((m: any) => m.user?.auth_id === senderId)
           const username = sender?.user?.username || 'Anonymous Student'
           const profile_image = sender?.user?.profile_image || null
 
@@ -627,7 +638,7 @@ export default function StudySpaceClient({
               return true
             })
             // Play sound if not focusing
-            if (!isFocusing && senderId !== currentUserId) {
+            if (!isFocusingRef.current && senderId !== currentUserId) {
               playSystemSound('message')
             }
             return [...filtered, newMsg]
@@ -946,7 +957,7 @@ export default function StudySpaceClient({
       supabase.removeChannel(resourcesChannel)
       if (typingChannel) supabase.removeChannel(typingChannel)
     }
-  }, [roomId, members, isFocusing])
+  }, [roomId])
 
   // --- ACTIONS HANDLERS ---
   
@@ -1734,10 +1745,10 @@ export default function StudySpaceClient({
           </CardHeader>
           
           <div className="flex-1 relative min-h-0">
-            <CardContent 
+            <div 
               ref={chatContainerRef} 
               onScroll={handleScroll}
-              className="h-full overflow-y-auto ss-chat-scrollbar p-3 sm:p-4 space-y-3" 
+              className="px-6 flex-1 h-full overflow-y-auto ss-chat-scrollbar p-3 sm:p-4 space-y-3" 
               data-lenis-prevent
             >
 
@@ -1929,7 +1940,7 @@ export default function StudySpaceClient({
                   </motion.div>
                 )}
               </AnimatePresence>
-            </CardContent>
+            </div>
 
             <AnimatePresence>
               {showScrollButton && (
