@@ -207,7 +207,16 @@ export default function StudySpaceClient({
   }
 
   const renderMessageContent = (content: string) => {
-    const mentionRegex = /@([\w.-]+)/g
+    if (!content) return content
+
+    // Escape regex characters helper and fetch room member usernames
+    const escapedUsernames = ['all', ...members.map((m: any) => m.user?.username).filter(Boolean)]
+      .map(u => u.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .sort((a, b) => b.length - a.length)
+
+    if (escapedUsernames.length === 0) return content
+
+    const mentionRegex = new RegExp(`@(${escapedUsernames.join('|')})`, 'gi')
     const parts = []
     let lastIndex = 0
     let match
@@ -236,7 +245,7 @@ export default function StudySpaceClient({
               onClick={() => handleMentionClick(username)}
               className="font-semibold px-1 py-0.5 rounded cursor-pointer transition-colors text-sky-400 hover:text-sky-300 bg-sky-400/10 hover:bg-sky-400/20"
             >
-              @{username}
+              @{matchedMember.user.username}
             </button>
           )
         } else {

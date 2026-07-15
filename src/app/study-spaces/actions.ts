@@ -465,34 +465,45 @@ export async function sendRoomMessage(roomId: string, content: string, isQuestio
   }
 
   // 4. Look for @username mentions and notify mentioned users
-  const mentionRegex = /@([\w.-]+)/g
-  let match
+  const { data: memberRows } = await supabase
+    .from('study_room_members')
+    .select('user_id, user:user_id(username)')
+    .eq('room_id', roomId)
+
+  const membersList = (memberRows || []).map((m: any) => ({
+    userId: m.user_id,
+    username: m.user?.username
+  })).filter(m => m.username)
+
+  const escapedUsernames = membersList
+    .map(m => m.username.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .sort((a, b) => b.length - a.length)
+
   const mentionedUsernames: string[] = []
-  while ((match = mentionRegex.exec(content)) !== null) {
-    mentionedUsernames.push(match[1])
+  if (escapedUsernames.length > 0) {
+    const mentionRegex = new RegExp(`@(${escapedUsernames.join('|')})`, 'gi')
+    let match
+    while ((match = mentionRegex.exec(content)) !== null) {
+      mentionedUsernames.push(match[1].toLowerCase())
+    }
   }
 
   if (mentionedUsernames.length > 0) {
-    const { data: usersToNotify } = await supabase
-      .from('chameleons')
-      .select('auth_id')
-      .in('username', mentionedUsernames)
+    const usersToNotify = membersList.filter(m => 
+      mentionedUsernames.includes(m.username.toLowerCase()) && m.userId !== session.auth_id
+    )
 
-    if (usersToNotify && usersToNotify.length > 0) {
-      const notificationsToInsert = usersToNotify
-        .filter(u => u.auth_id !== session.auth_id) // don't notify self
-        .map(u => ({
-          auth_id: u.auth_id,
-          title: 'New Mention',
-          message_content: `you were mentioned by ${session.username || 'someone'} in space ${room.name}`,
-          type: 'mention',
-          provider: 'system',
-          seen: 'false'
-        }))
+    if (usersToNotify.length > 0) {
+      const notificationsToInsert = usersToNotify.map(u => ({
+        auth_id: u.userId,
+        title: 'New Mention',
+        message_content: `you were mentioned by ${session.username || 'someone'} in space ${room.name}`,
+        type: 'mention',
+        provider: 'system',
+        seen: 'false'
+      }))
 
-      if (notificationsToInsert.length > 0) {
-        await supabase.from('Notifications').insert(notificationsToInsert)
-      }
+      await supabase.from('Notifications').insert(notificationsToInsert)
     }
   }
 
