@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { 
@@ -51,14 +51,49 @@ export default function EditorToolbar({
   // Diagrams Helper State
   const [showDiagramHelper, setShowDiagramHelper] = useState(false)
 
+  // Track selection to prevent losing it on dropdown/popover clicks
+  const selectionRef = useRef({ start: 0, end: 0 })
+
+  useEffect(() => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    const saveSelection = () => {
+      if (document.activeElement === textarea) {
+        selectionRef.current = {
+          start: textarea.selectionStart,
+          end: textarea.selectionEnd
+        }
+      }
+    }
+
+    textarea.addEventListener('keyup', saveSelection)
+    textarea.addEventListener('mouseup', saveSelection)
+    textarea.addEventListener('blur', saveSelection)
+    textarea.addEventListener('focus', saveSelection)
+
+    return () => {
+      textarea.removeEventListener('keyup', saveSelection)
+      textarea.removeEventListener('mouseup', saveSelection)
+      textarea.removeEventListener('blur', saveSelection)
+      textarea.removeEventListener('focus', saveSelection)
+    }
+  }, [textareaRef])
+
   // Insert markdown helper function
   const insertText = (before: string, after: string = '', defaultValue: string = '') => {
     const textarea = textareaRef.current
     if (!textarea) return
 
-    textarea.focus()
-    const startPos = textarea.selectionStart
-    const endPos = textarea.selectionEnd
+    // Get selection from ref if the textarea is not active, otherwise from the textarea itself
+    let startPos = textarea.selectionStart
+    let endPos = textarea.selectionEnd
+    
+    if (document.activeElement !== textarea) {
+      startPos = selectionRef.current.start
+      endPos = selectionRef.current.end
+    }
+
     const selectedText = textarea.value.substring(startPos, endPos)
     const textToInsert = before + (selectedText || defaultValue) + after
 
@@ -69,6 +104,9 @@ export default function EditorToolbar({
       const success = document.execCommand('insertText', false, textToInsert)
       if (success) {
         onChange(textarea.value)
+        // Update selection ref
+        const nextPos = startPos + textToInsert.length
+        selectionRef.current = { start: nextPos, end: nextPos }
         return
       }
     } catch (e) {
@@ -87,6 +125,7 @@ export default function EditorToolbar({
       textarea.focus()
       const newCursorPos = startPos + before.length + (selectedText || defaultValue).length + after.length
       textarea.setSelectionRange(newCursorPos, newCursorPos)
+      selectionRef.current = { start: newCursorPos, end: newCursorPos }
     }, 50)
   }
 

@@ -2227,7 +2227,15 @@ export default function StudySpaceClient({
                         textareaRef={notesTextareaRef}
                         onChange={(val) => {
                           setScratchpad(val)
-                          setHasUnsavedChanges(true)
+                          isEditingRef.current = true
+                          setHasUnsavedChanges(val !== lastSavedContentRef.current)
+                          
+                          if (typingTimeoutRef.current) {
+                            clearTimeout(typingTimeoutRef.current)
+                          }
+                          typingTimeoutRef.current = setTimeout(() => {
+                            isEditingRef.current = false
+                          }, 3000)
                         }}
                       />
                       <Textarea 
