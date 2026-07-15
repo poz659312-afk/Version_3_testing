@@ -273,30 +273,30 @@ export default function EditorToolbar({
   ]
 
   const fontFamilies = [
-    { name: 'Cairo (Arabic)', value: 'Cairo, var(--font-cairo), sans-serif' },
-    { name: 'Outfit (English Headers)', value: 'Outfit, var(--font-outfit), sans-serif' },
-    { name: 'Rubik (Modern Arabic)', value: 'Rubik, var(--font-rubik), sans-serif' },
-    { name: 'Noto Arabic', value: 'Noto_Sans_Arabic, var(--font-noto-arabic), sans-serif' },
-    { name: 'Rock Salt (Comic/Handwritten)', value: 'Rock_Salt, var(--font-rock-salt), cursive' },
-    { name: 'Monospace', value: 'Roboto_Mono, var(--font-geist-mono), monospace' },
+    { name: 'Cairo (Arabic)', value: 'cairo' },
+    { name: 'Outfit (English Headers)', value: 'outfit' },
+    { name: 'Rubik (Modern Arabic)', value: 'rubik' },
+    { name: 'Noto Arabic', value: 'noto' },
+    { name: 'Rock Salt (Comic/Handwritten)', value: 'rock-salt' },
+    { name: 'Monospace', value: 'mono' },
   ]
 
   const fontSizes = [
-    { name: 'Small (12px)', value: '12px' },
-    { name: 'Normal (16px)', value: '16px' },
-    { name: 'Medium (20px)', value: '20px' },
-    { name: 'Large (24px)', value: '24px' },
-    { name: 'Huge (32px)', value: '32px' },
+    { name: 'Small (12px)', value: 'sm' },
+    { name: 'Normal (16px)', value: '' },
+    { name: 'Medium (20px)', value: 'md' },
+    { name: 'Large (24px)', value: 'lg' },
+    { name: 'Huge (32px)', value: 'xl' },
   ]
 
   const fontColors = [
     { name: 'Default', value: '' },
-    { name: 'Violet Glow', value: '#c084fc' },
-    { name: 'Fuchsia Glow', value: '#f472b6' },
-    { name: 'Electric Blue', value: '#60a5fa' },
-    { name: 'Emerald Mint', value: '#34d399' },
-    { name: 'Sunset Gold', value: '#fbbf24' },
-    { name: 'Neon Red', value: '#f87171' },
+    { name: 'Violet Glow', value: 'violet' },
+    { name: 'Fuchsia Glow', value: 'fuchsia' },
+    { name: 'Electric Blue', value: 'blue' },
+    { name: 'Emerald Mint', value: 'emerald' },
+    { name: 'Sunset Gold', value: 'gold' },
+    { name: 'Neon Red', value: 'red' },
   ]
 
   const formattingSnippets = [
@@ -332,9 +332,9 @@ export default function EditorToolbar({
         </Button>
       ))}
 
-      {/* Font Family Dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      {/* Font Family Popover */}
+      <Popover>
+        <PopoverTrigger asChild>
           <Button
             type="button"
             variant="ghost"
@@ -344,26 +344,28 @@ export default function EditorToolbar({
             <span>Font</span>
             <ChevronDown className="w-3 h-3" />
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-zinc-950 border-white/10 text-white z-50">
+        </PopoverTrigger>
+        <PopoverContent className="w-56 bg-zinc-950 border-white/10 text-white p-1 z-50 flex flex-col gap-0.5" align="start">
           {fontFamilies.map((font, idx) => (
-            <DropdownMenuItem
+            <Button
               key={idx}
-              onSelect={(e) => {
+              variant="ghost"
+              size="sm"
+              onMouseDown={(e) => {
                 e.preventDefault()
-                insertText(`<span style="font-family: ${font.value}">`, '</span>', 'text')
+                insertText(`<span data-font="${font.value}">`, '</span>', 'text')
               }}
-              className="text-xs hover:bg-violet-600 focus:bg-violet-600 cursor-pointer"
+              className="justify-start text-xs hover:bg-violet-600 focus:bg-violet-600 cursor-pointer text-left h-8 font-normal text-gray-300 hover:text-white border-none"
             >
               {font.name}
-            </DropdownMenuItem>
+            </Button>
           ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </PopoverContent>
+      </Popover>
 
-      {/* Font Size Dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      {/* Font Size Popover */}
+      <Popover>
+        <PopoverTrigger asChild>
           <Button
             type="button"
             variant="ghost"
@@ -373,26 +375,32 @@ export default function EditorToolbar({
             <span>Size</span>
             <ChevronDown className="w-3 h-3" />
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-zinc-950 border-white/10 text-white z-50">
+        </PopoverTrigger>
+        <PopoverContent className="w-56 bg-zinc-950 border-white/10 text-white p-1 z-50 flex flex-col gap-0.5" align="start">
           {fontSizes.map((size, idx) => (
-            <DropdownMenuItem
+            <Button
               key={idx}
-              onSelect={(e) => {
+              variant="ghost"
+              size="sm"
+              onMouseDown={(e) => {
                 e.preventDefault()
-                insertText(`<span style="font-size: ${size.value}">`, '</span>', 'text')
+                if (size.value) {
+                  insertText(`<span data-size="${size.value}">`, '</span>', 'text')
+                } else {
+                  insertText('<span>', '</span>', 'text')
+                }
               }}
-              className="text-xs hover:bg-violet-600 focus:bg-violet-600 cursor-pointer"
+              className="justify-start text-xs hover:bg-violet-600 focus:bg-violet-600 cursor-pointer text-left h-8 font-normal text-gray-300 hover:text-white border-none"
             >
               {size.name}
-            </DropdownMenuItem>
+            </Button>
           ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </PopoverContent>
+      </Popover>
 
-      {/* Font Color Dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      {/* Font Color Popover */}
+      <Popover>
+        <PopoverTrigger asChild>
           <Button
             type="button"
             variant="ghost"
@@ -403,27 +411,41 @@ export default function EditorToolbar({
             <span>Color</span>
             <ChevronDown className="w-3 h-3" />
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-zinc-950 border-white/10 text-white z-50">
+        </PopoverTrigger>
+        <PopoverContent className="w-56 bg-zinc-950 border-white/10 text-white p-1 z-50 flex flex-col gap-0.5" align="start">
           {fontColors.map((color, idx) => (
-            <DropdownMenuItem
+            <Button
               key={idx}
-              onSelect={(e) => {
+              variant="ghost"
+              size="sm"
+              onMouseDown={(e) => {
                 e.preventDefault()
                 if (color.value) {
-                  insertText(`<span style="color: ${color.value}">`, '</span>', 'colored text')
+                  insertText(`<span data-color="${color.value}">`, '</span>', 'colored text')
                 } else {
                   insertText('<span>', '</span>', 'text')
                 }
               }}
-              className="text-xs hover:bg-violet-600 focus:bg-violet-600 cursor-pointer flex items-center gap-2"
+              className="justify-start text-xs hover:bg-violet-600 focus:bg-violet-600 cursor-pointer text-left h-8 font-normal text-gray-300 hover:text-white flex items-center gap-2 border-none"
             >
-              {color.value && <div className="w-3.5 h-3.5 rounded-full border border-white/20" style={{ backgroundColor: color.value }} />}
+              {color.value && (
+                <div 
+                  className="w-3 h-3 rounded-full border border-white/20" 
+                  style={{ 
+                    backgroundColor: color.value === 'violet' ? '#c084fc' :
+                                     color.value === 'fuchsia' ? '#f472b6' :
+                                     color.value === 'blue' ? '#60a5fa' :
+                                     color.value === 'emerald' ? '#34d399' :
+                                     color.value === 'gold' ? '#fbbf24' :
+                                     color.value === 'red' ? '#f87171' : 'transparent'
+                  }} 
+                />
+              )}
               {color.name}
-            </DropdownMenuItem>
+            </Button>
           ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </PopoverContent>
+      </Popover>
 
       <div className="h-4 w-px bg-white/10 my-auto mx-1" />
 
