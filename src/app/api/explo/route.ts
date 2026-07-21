@@ -1,21 +1,41 @@
 import { NextResponse } from "next/server";
+import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
-    const { messages, stream = false } = await req.json();
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: "OpenRouter API key is not configured on the server" }, { status: 500 });
+    }
 
-    console.log("Explo AI: Sending request to OpenRouter...");
+    const identifier = getRequestIdentifier(req);
+    const rateLimit = checkRateLimit(identifier, RateLimitTier.AI);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        {
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": rateLimit.limit.toString(),
+            "X-RateLimit-Remaining": rateLimit.remaining.toString(),
+            "X-RateLimit-Reset": rateLimit.reset.toString(),
+          },
+        }
+      );
+    }
+
+    const { messages, stream = false } = await req.json();
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer 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`,
+        "Authorization": `Bearer ${apiKey}`,
         "HTTP-Referer": "https://chameleon-nu.vercel.app",
         "X-Title": "Explo AI",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-flash-1.5", // More available and faster for vision tasks
+        model: "google/gemini-flash-1.5",
         messages: messages,
         stream: stream,
       }),
@@ -33,7 +53,6 @@ export async function POST(req: Request) {
     }
 
     const data = await response.json();
-    console.log("Explo AI: Received response from OpenRouter");
     return NextResponse.json(data);
   } catch (error) {
     console.error("Explo API Internal Error:", error);

@@ -14,27 +14,25 @@ const FAST_CHAT_MODEL = "google/gemini-2.5-flash-lite"; // Optimized for fast, s
 
 // Helper function to handle fetch retries with exponential backoff for high concurrency
 async function fetchWithRetry(url: string, options: any, retries = 3, delay = 1000) {
-  let lastStatus = 0;
+  let lastResponse: Response | null = null;
   for (let i = 0; i < retries; i++) {
     try {
       const response = await fetch(url, options);
-      if (response.ok) return response;
-
-      lastStatus = response.status;
-      if (response.status === 429 || response.status >= 500) {
-        console.warn(`[AI Route Retry] Request failed with status ${response.status}. Retrying in ${delay}ms...`);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        delay *= 2;
+      lastResponse = response;
+      if (response.status === 429) {
+        const retryAfterHeader = response.headers.get('retry-after');
+        const waitMs = retryAfterHeader ? parseInt(retryAfterHeader, 10) * 1000 : delay * Math.pow(2, i);
+        console.warn(`[AI API] Rate limited (429), retrying in ${waitMs}ms (attempt ${i + 1}/${retries})...`);
+        await new Promise(res => setTimeout(res, waitMs));
         continue;
       }
       return response;
     } catch (err) {
       if (i === retries - 1) throw err;
-      await new Promise(resolve => setTimeout(resolve, delay));
-      delay *= 2;
+      await new Promise(res => setTimeout(res, delay * Math.pow(2, i)));
     }
   }
-  throw new Error(`Failed after maximum retries. Last status code: ${lastStatus}`);
+  return lastResponse || fetch(url, options);
 }
 
 // Lightweight chunk summarizer with semantic caching and graceful degradation
