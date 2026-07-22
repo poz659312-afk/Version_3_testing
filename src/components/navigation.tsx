@@ -595,7 +595,7 @@ export default function Navigation() {
                           Login
                         </Button>
                       </Link>
-                      <Link href="/auth?mode=signup" onClick={() => setIsOpen(false)}>
+                      <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
                         <Button className="w-full justify-start bg-primary text-primary-foreground hover:bg-primary/90 border-0">
                           <UserPlus className="w-4 h-4 mr-2" />
                           Sign Up
