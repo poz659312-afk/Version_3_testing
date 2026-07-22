@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef, useCallback, useDeferredValue } from "react";
+import Image from "next/image";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -1333,10 +1334,17 @@ export default function DriveRootPage() {
 
               {!loading && !error && filteredFiles.length === 0 && (
                 <div
-                  className="text-center py-32"
+                  className="text-center py-20"
                 >
-                  <div className="size-24 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-8 animate-pulse">
-                    <Folder className="w-10 h-10 text-muted-foreground/50" />
+                  <div className="relative mx-auto mb-6 w-44 h-44 flex items-center justify-center">
+                    <Image 
+                      src="/images/chameleon/11_chameleon_sleeping.png" 
+                      alt="Sleeping Chameleon Mascot" 
+                      width={160} 
+                      height={160} 
+                      className="object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.15)] animate-pulse select-none"
+                      priority
+                    />
                   </div>
                   <h3 className="text-2xl font-black italic tracking-tighter uppercase mb-2">
                     No Files Found

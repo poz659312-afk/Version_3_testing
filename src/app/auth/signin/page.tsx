@@ -142,56 +142,72 @@ export default function SignInPage() {
           </div>
         </motion.div>
 
-        <div className="w-full max-w-xl mx-auto flex flex-col items-center text-center">
+        <motion.div 
+          layout="position"
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className={`w-full mx-auto flex flex-col items-center transition-all duration-700 ${
+            step === 0 ? "max-w-4xl lg:max-w-5xl" : "max-w-xl"
+          }`}
+        >
           <AnimatePresence mode="wait">
           {/* STATE 0: Welcome Splash */}
           {step === 0 && (
             <motion.div 
               key="welcome"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, y: -30 }}
-              className="w-full space-y-6 lg:space-y-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="w-full flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16 text-center md:text-left"
             >
-              {/* Lottie Chameleon Animation */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="mx-auto w-32 h-32 md:w-40 md:h-40 relative mb-[-1.5rem]"
+              {/* Mascot on the left */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, x: -120 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="w-full md:w-[400px] flex-shrink-0 flex justify-center"
               >
-                {/* @ts-ignore */}
-                <dotlottie-player
-                  src="https://lottie.host/e113f2b9-9e85-47b2-9743-cf4e30fb43f4/y9usFgethv.lottie"
-                  background="transparent"
-                  speed="1"
-                  style={{ width: '100%', height: '100%' }}
-                  loop
-                  autoplay
+                <Image 
+                  src="/images/chameleon/02_chameleon_waving.png" 
+                  alt="Chameleon Mascot" 
+                  width={400} 
+                  height={400} 
+                  className="object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.25)] select-none w-[260px] h-[260px] md:w-[400px] md:h-[400px]"
+                  priority
                 />
               </motion.div>
 
-              <div className="space-y-2 lg:space-y-4">
-                 <h1 className="text-5xl lg:text-6xl xl:text-8xl font-black italic tracking-tighter leading-[0.9]">
-                    Return to <br className="hidden xl:block" /><span className="text-primary">Core.</span>
-                 </h1>
-                 <p className="text-lg lg:text-xl text-muted-foreground font-medium tracking-wide max-w-sm mx-auto">
-                    Ready to continue sculpting your digital workspace? The era awaits your return.
-                 </p>
-              </div>
-              
-              <div className="flex flex-col items-center gap-4 lg:gap-6 pt-2">
-                <Button 
-                  onClick={() => setStep(1)}
-                  className="h-16 lg:h-20 px-10 lg:px-14 rounded-full text-xl md:text-2xl font-black italic tracking-tighter bg-foreground text-background hover:scale-105 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_-15px_rgba(255,255,255,0.1)] transition-all shrink-0"
-                >
-                  I am Ready <ArrowRight className="ml-3 size-6 lg:size-7" />
-                </Button>
+              {/* Content on the right */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, x: 120 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="w-full md:w-[500px] flex-shrink-0 flex flex-col items-center md:items-start space-y-8"
+              >
+                <div className="space-y-4">
+                   <h1 className="text-5xl lg:text-6xl xl:text-8xl font-black italic tracking-tighter leading-[0.9]">
+                      Return to <br className="hidden xl:block" /><span className="text-primary">Core.</span>
+                   </h1>
+                   <p className="text-lg lg:text-xl text-muted-foreground font-medium tracking-wide">
+                      Ready to continue sculpting your digital workspace? The era awaits your return.
+                   </p>
+                </div>
                 
-                <Link href="/" className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-[10px] lg:text-xs font-black uppercase tracking-[0.3em] transition-colors mt-2">
-                  <Home className="size-3" /> Back to Surface
-                </Link>
-              </div>
+                <div className="flex flex-col items-center md:items-start gap-4 lg:gap-6 pt-2">
+                  <Button 
+                    onClick={() => setStep(1)}
+                    className="h-16 lg:h-20 px-10 lg:px-14 rounded-full text-xl md:text-2xl font-black italic tracking-tighter bg-foreground text-background hover:scale-105 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_-15px_rgba(255,255,255,0.1)] transition-all shrink-0 w-fit"
+                  >
+                    I am Ready <ArrowRight className="ml-3 size-6 lg:size-7" />
+                  </Button>
+                  
+                  <Link href="/" className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-[10px] lg:text-xs font-black uppercase tracking-[0.3em] transition-colors mt-2">
+                    <Home className="size-3" /> Back to Surface
+                  </Link>
+                </div>
+              </motion.div>
             </motion.div>
           )}
 
@@ -267,7 +283,7 @@ export default function SignInPage() {
             </motion.div>
           )}
         </AnimatePresence>
-        </div>
+        </motion.div>
       </div>
     </div>
   )

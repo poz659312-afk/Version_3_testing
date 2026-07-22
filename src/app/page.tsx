@@ -240,7 +240,7 @@ export default function HomePage() {
                       <div className="w-full h-full flex items-center justify-center overflow-visible relative z-10">
                          <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-secondary/10 rounded-full blur-3xl -z-10"></div>
                          <Image
-                           src="/images/Neuri/ai.png"
+                           src="/images/chameleon/05_chameleon_laptop.png"
                            alt="E-Learning"
                            width={450}
                            height={450}
@@ -579,43 +579,60 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="w-full py-12 border-t border-border bg-background/50 backdrop-blur-md">
         <div className="container mx-auto px-4 space-y-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center md:text-left">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start text-center md:text-left">
+              {/* Brand info */}
+              <div className="md:col-span-4 space-y-3">
                 <div className="text-2xl font-black italic tracking-tighter text-foreground/80 rock-salt mb-2">Chameleon<span className="text-primary text-xl">.</span></div>
-                <p className="text-muted-foreground text-sm max-w-xs">
+                <p className="text-muted-foreground text-sm max-w-xs mx-auto md:mx-0">
                     Empowering learners worldwide with cutting-edge education.
                 </p>
               </div>
-              <div>
-                <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Platform</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li><Link href="/specialization" className="hover:text-foreground transition-colors">Specializations</Link></li>
-                  <li><Link href="/youtube" className="hover:text-foreground transition-colors">YouTube</Link></li>
-                  <li><Link href="/store" className="hover:text-foreground transition-colors">Store</Link></li>
-                  {user?.is_super_admin && (
-                    <li>
-                      <Link href="/admin" className="text-red-500 font-bold hover:text-red-400 transition-colors flex items-center gap-1.5">
-                        <Shield className="w-3.5 h-3.5 animate-pulse" />
-                        Admin Console
-                      </Link>
-                    </li>
-                  )}
-                </ul>
+
+              {/* Links columns - closer to each other */}
+              <div className="md:col-span-5 grid grid-cols-3 gap-4 text-center md:text-left">
+                <div>
+                  <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Platform</h4>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li><Link href="/specialization" className="hover:text-foreground transition-colors">Specializations</Link></li>
+                    <li><Link href="/youtube" className="hover:text-foreground transition-colors">YouTube</Link></li>
+                    <li><Link href="/store" className="hover:text-foreground transition-colors">Store</Link></li>
+                    {user?.is_super_admin && (
+                      <li>
+                        <Link href="/admin" className="text-red-500 font-bold hover:text-red-400 transition-colors flex items-center gap-1.5">
+                          <Shield className="w-3.5 h-3.5 animate-pulse" />
+                          Admin Console
+                        </Link>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Company</h4>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li><Link href="/about" className="hover:text-foreground transition-colors">About Us</Link></li>
+                    <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
+                    <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Connect</h4>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li><a href="mailto:tokyo9900777@gmail.com" className="hover:text-foreground transition-colors">Contact Us</a></li>
+                    <li><a href="https://youtube.com/@ChameleonFCDS" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">YouTube Channel</a></li>
+                  </ul>
+                </div>
               </div>
-              <div>
-                <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Company</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li><Link href="/about" className="hover:text-foreground transition-colors">About Us</Link></li>
-                  <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
-                  <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Connect</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li><a href="mailto:tokyo9900777@gmail.com" className="hover:text-foreground transition-colors">Contact Us</a></li>
-                  <li><a href="https://youtube.com/@ChameleonFCDS" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">YouTube Channel</a></li>
-                </ul>
+
+              {/* Chameleon Avatar Mascot */}
+              <div className="md:col-span-3 flex justify-center md:justify-end items-center">
+                <Image 
+                  src="/images/chameleon/10_chameleon_success.png" 
+                  alt="Chameleon Mascot" 
+                  width={200} 
+                  height={200}
+                  className="object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.25)] select-none mb-[-120px]"
+                  priority
+                />
               </div>
             </div>
             <div className="border-t border-border/40 pt-8 text-xs text-muted-foreground text-center">
