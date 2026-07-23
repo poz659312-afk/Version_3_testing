@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
-
-// Create a Supabase client with service role for admin operations
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { createAdminClient } from "@/lib/supabase/admin"
 
 // Verify cron secret for security
 const CRON_SECRET = process.env.CRON_SECRET
 
 export async function GET(request: NextRequest) {
   try {
+    // 1. Verify service role key is configured in environment variables
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error("SUPABASE_SERVICE_ROLE_KEY is missing from environment variables")
+      return NextResponse.json(
+        { error: "Internal Server Error: SUPABASE_SERVICE_ROLE_KEY is missing from server environment variables" },
+        { status: 500 }
+      )
+    }
+
     // Verify the request is from Vercel Cron (optional but recommended)
     const authHeader = request.headers.get("authorization")
     const cronHeader = request.headers.get("x-cron-secret")
@@ -21,6 +24,8 @@ export async function GET(request: NextRequest) {
       console.log("Unauthorized cron request attempt")
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
+
+    const supabaseAdmin = createAdminClient()
 
     const now = new Date()
     console.log(`🗑️ Processing account deletions at ${now.toISOString()}`)
