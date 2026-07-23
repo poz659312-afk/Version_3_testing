@@ -598,7 +598,7 @@ export default function HomePage() {
                     <li><Link href="/store" className="hover:text-foreground transition-colors">Store</Link></li>
                     {user?.is_super_admin && (
                       <li>
-                        <Link href="/admin" className="text-red-500 font-bold hover:text-red-400 transition-colors flex items-center gap-1.5">
+                        <Link href="/admin" className="text-red-500 font-bold hover:text-red-400 transition-colors inline-flex items-center gap-1.5">
                           <Shield className="w-3.5 h-3.5 animate-pulse" />
                           Admin Console
                         </Link>
@@ -630,7 +630,7 @@ export default function HomePage() {
                   alt="Chameleon Mascot" 
                   width={200} 
                   height={200}
-                  className="object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.25)] select-none mb-[-120px]"
+                  className="object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.25)] select-none mb-0 md:mb-[-120px]"
                   priority
                 />
               </div>
