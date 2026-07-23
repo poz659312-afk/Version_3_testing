@@ -56,15 +56,21 @@ export async function GET(request: NextRequest) {
       
       // Check if user already exists in our database using admin client (bypasses RLS)
       const adminSupabase = createAdminClient()
-      const { data: existingUser, error: dbError } = await adminSupabase
+      const { data: existingUser, error: dbError } = (await adminSupabase
         .from("chameleons")
-        .select("auth_id")
+        .select("auth_id, is_banned")
         .eq("auth_id", session.user.id)
-        .single()
+        .single()) as any
 
       console.log('Database query result:', !!existingUser, dbError?.message)
 
       if (existingUser) {
+        if (existingUser.is_banned) {
+          console.warn('Banned user tried to log in via OAuth. Revoking session.')
+          await supabase.auth.signOut({ scope: 'global' })
+          return NextResponse.redirect(`${origin}/auth/signin?error=banned`)
+        }
+
         // Handle forgot password flow
         if (isForgotPassword) {
           console.log('Forgot password flow - redirecting to reset password')

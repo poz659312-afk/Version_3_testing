@@ -189,6 +189,7 @@ export async function updateUserProfile(
     is_admin?: boolean
     specialization?: string | null
     current_level?: number | null
+    is_banned?: boolean
   }
 ) {
   const admin = await checkSuperAdmin()
@@ -197,7 +198,7 @@ export async function updateUserProfile(
   // 1. Fetch current target user state
   const { data: targetUser, error: fetchError } = await supabase
     .from('chameleons')
-    .select('username, email, is_admin, specialization, current_level')
+    .select('username, email, is_admin, specialization, current_level, is_banned')
     .eq('auth_id', targetAuthId)
     .single()
 
@@ -245,7 +246,8 @@ export async function updateUserProfile(
     .update({
       is_admin: updates.is_admin !== undefined ? updates.is_admin : targetUser.is_admin,
       specialization: newSpec,
-      current_level: newLevel
+      current_level: newLevel,
+      is_banned: updates.is_banned !== undefined ? updates.is_banned : targetUser.is_banned
     })
     .eq('auth_id', targetAuthId)
 
@@ -253,9 +255,20 @@ export async function updateUserProfile(
     return { success: false, error: `Failed to update user profile: ${updateError.message}` }
   }
 
+  // If user is being banned, immediately revoke all active sessions in Supabase Auth
+  if (updates.is_banned === true && !targetUser.is_banned) {
+    try {
+      console.log(`Banning user: immediately signing out all sessions for ${targetAuthId}`)
+      await supabase.auth.admin.signOut(targetAuthId, 'global')
+    } catch (signOutErr) {
+      console.error('Error signing out banned user:', signOutErr)
+    }
+  }
+
   // 4. Log the action
   const changeDetails = {
     is_admin: { before: targetUser.is_admin, after: updates.is_admin !== undefined ? updates.is_admin : targetUser.is_admin },
+    is_banned: { before: targetUser.is_banned, after: updates.is_banned !== undefined ? updates.is_banned : targetUser.is_banned },
     specialization: { before: oldSpec, after: newSpec },
     current_level: { before: oldLevel, after: newLevel },
     driveSync: driveSyncResult

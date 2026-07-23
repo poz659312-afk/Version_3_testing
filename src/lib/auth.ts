@@ -117,6 +117,12 @@ export async function getStudentSession(forceRefresh = false): Promise<StudentUs
       return null
     }
 
+    if (userData.is_banned) {
+      console.warn('User is banned. Initiating logout.')
+      await clearStudentSession()
+      return null
+    }
+
     const sessionData: StudentUser = {
       auth_id: userData.auth_id,
       username: userData.username,

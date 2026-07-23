@@ -391,6 +391,7 @@ export default function AdminDashboardClient({
   const [editAdmin, setEditAdmin] = useState(false)
   const [editSpec, setEditSpec] = useState<string>('')
   const [editLevel, setEditLevel] = useState<string>('')
+  const [editBanned, setEditBanned] = useState(false)
 
   // Confirmation Dialog States
   const [showConfirm, setShowConfirm] = useState(false)
@@ -760,6 +761,7 @@ export default function AdminDashboardClient({
     setEditAdmin(user.is_admin)
     setEditSpec(user.specialization || 'None')
     setEditLevel(user.current_level ? String(user.current_level) : 'None')
+    setEditBanned(user.is_banned || false)
   }
 
   // Handle Save (Trigger Folder Access Preview)
@@ -799,7 +801,8 @@ export default function AdminDashboardClient({
         const res = await updateUserProfile(editingUser.auth_id, {
           is_admin: editAdmin,
           specialization: specVal,
-          current_level: levelVal
+          current_level: levelVal,
+          is_banned: editBanned
         })
 
         if (res.success) {
@@ -819,7 +822,8 @@ export default function AdminDashboardClient({
             ...u,
             is_admin: editAdmin,
             specialization: specVal,
-            current_level: levelVal
+            current_level: levelVal,
+            is_banned: editBanned
           } : u))
           
           // Re-fetch logs to display in table
@@ -1192,7 +1196,7 @@ export default function AdminDashboardClient({
                             )}
                           </TableCell>
                           <TableCell>
-                            <div className="flex gap-1.5 items-center">
+                            <div className="flex gap-1.5 items-center flex-wrap">
                               {u.is_super_admin && (
                                 <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Super Admin</Badge>
                               )}
@@ -1200,6 +1204,9 @@ export default function AdminDashboardClient({
                                 <Badge className="bg-primary/20 text-primary border-primary/30">Admin</Badge>
                               ) : (
                                 <Badge variant="secondary" className="opacity-40">Student</Badge>
+                              )}
+                              {u.is_banned && (
+                                <Badge variant="destructive" className="bg-destructive/20 text-destructive border-destructive/30 animate-pulse">Banned</Badge>
                               )}
                             </div>
                           </TableCell>
@@ -2672,6 +2679,21 @@ export default function AdminDashboardClient({
                   checked={editAdmin}
                   onCheckedChange={setEditAdmin}
                   disabled={editingUser.is_super_admin} // Don't let demote super admins easily
+                />
+              </div>
+
+              {/* Ban Account toggle */}
+              <div className="flex items-center justify-between bg-destructive/5 border border-destructive/20 p-3 rounded-lg">
+                <div className="space-y-0.5">
+                  <div className="text-sm font-semibold text-destructive">Ban Account</div>
+                  <div className="text-xs text-muted-foreground">
+                    Instantly blocks user from accessing the platform.
+                  </div>
+                </div>
+                <Switch
+                  checked={editBanned}
+                  onCheckedChange={setEditBanned}
+                  disabled={editingUser.is_super_admin} // Don't let ban super admins
                 />
               </div>
             </div>

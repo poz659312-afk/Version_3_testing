@@ -34,7 +34,18 @@ export default function SignInPage() {
 
   useEffect(() => {
     setMounted(true)
-  }, [])
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search)
+      const errorParam = params.get("error")
+      if (errorParam === "banned") {
+        setError("Your account has been banned. Please contact support.")
+        addToast("Your account has been banned. Please contact support.", "error")
+      } else if (errorParam === "callback_error") {
+        setError("Authentication failed. Please try again.")
+        addToast("Authentication failed. Please try again.", "error")
+      }
+    }
+  }, [addToast])
 
   const handleGoogleSignIn = async () => {
     setLoading(true)
