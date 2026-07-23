@@ -213,14 +213,14 @@ export default function HomePage() {
           <HeroGeometric badge="Chameleon FCDS" title1="Master Your" title2="Future Skills">
             <div className="flex flex-col items-center w-full max-w-5xl">
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 z-20 relative">
-                <Link href="/specialization">
+                <Link href={user ? "#specializations" : "/auth/signin"}>
                     <Button size="lg" className="rounded-full h-12 px-8 text-base shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-shadow">
                     Start Learning Today
                     <ArrowRight className="ml-2 size-4" />
                     </Button>
                 </Link>
-                <Link href="/specialization">
-                    <Button size="lg" variant="outline" className="rounded-full h-12 px-8 text-base bg-background/50 backdrop-blur-sm border-primary/20 hover:bg-primary/5 transition-colors">
+                <Link href="#specializations">
+                    <Button size="lg" variant="outline" className="rounded-full h-12 px-8 text-base border-primary/30 text-foreground bg-background/30 backdrop-blur-sm hover:bg-primary/10 transition-colors">
                     View All Courses
                     </Button>
                 </Link>
@@ -332,7 +332,7 @@ export default function HomePage() {
         </section>
 
         {/* Specializations Section (How It Works) */}
-        <ScrollAnimatedSection animation="fadeIn" className="w-full py-20 md:py-32 relative overflow-hidden">
+        <ScrollAnimatedSection id="specializations" animation="fadeIn" className="w-full py-20 md:py-32 relative overflow-hidden">
           <div className="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-black bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_40%,transparent_100%)]"></div>
 
           <div className="container mx-auto px-4 md:px-6 relative">
