@@ -2049,12 +2049,12 @@ export default function ProfilePage() {
                       <p className="text-muted-foreground text-[11px] leading-relaxed mb-4">
                         Activating this will instantly pause the entire platform. All users visiting any page will be forced back to the homepage `/`, and the homepage will display a maintenance interface.
                       </p>
-                      <div className="flex items-center justify-between bg-black/20 p-3 rounded-lg border border-border/50">
-                        <div>
-                          <p className="text-xs font-bold text-foreground">Current Platform State</p>
-                          <p className="text-[10px] text-muted-foreground">Toggle to pause or resume all services</p>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-black/20 p-4 rounded-xl border border-border/50 gap-4">
+                        <div className="space-y-1">
+                          <p className="text-sm font-bold text-foreground whitespace-nowrap">Current Platform State</p>
+                          <p className="text-xs text-muted-foreground">Toggle to pause or resume all services</p>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 self-end sm:self-auto">
                           <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${platformPaused ? 'bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse' : 'bg-green-500/20 text-green-400 border border-green-500/30'}`}>
                             {platformPaused ? 'PAUSED' : 'ACTIVE'}
                           </span>
