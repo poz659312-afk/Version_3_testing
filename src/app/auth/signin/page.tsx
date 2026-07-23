@@ -131,8 +131,16 @@ export default function SignInPage() {
           className="w-full max-w-md relative z-10"
         >
           <div className="bg-card border border-red-500/20 rounded-[32px] p-8 md:p-10 shadow-[0_20px_50px_rgba(239,68,68,0.08)] flex flex-col items-center text-center space-y-6">
-            <div className="size-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center animate-pulse text-red-500">
-              <AlertCircle className="size-10" />
+            <div className="w-[180px] h-[180px] flex items-center justify-center relative">
+              <div className="absolute inset-0 bg-red-500/5 rounded-full blur-xl pointer-events-none" />
+              <Image 
+                src="/images/chameleon/17_chameleon_contact_support.png" 
+                alt="Contact Support Mascot" 
+                width={180} 
+                height={180} 
+                className="object-contain drop-shadow-[0_10px_25px_rgba(239,68,68,0.15)]"
+                priority
+              />
             </div>
             
             <div className="space-y-2">

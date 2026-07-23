@@ -163,13 +163,18 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Icon */}
+          {/* Mascot Image */}
           <div className="flex justify-center">
-            <div className="relative">
-              <div className="absolute -inset-4 bg-amber-500/10 rounded-full blur-lg animate-pulse" />
-              <div className="size-20 rounded-3xl bg-black border-2 border-amber-500/20 flex items-center justify-center relative text-amber-500 shadow-xl">
-                <Lock className="size-9" />
-              </div>
+            <div className="w-[180px] h-[180px] flex items-center justify-center relative">
+              <div className="absolute inset-0 bg-amber-500/5 rounded-full blur-xl pointer-events-none" />
+              <Image 
+                src="/images/chameleon/12_chameleon_confused.png" 
+                alt="Confused Mascot" 
+                width={180} 
+                height={180} 
+                className="object-contain drop-shadow-[0_10px_25px_rgba(245,158,11,0.15)]"
+                priority
+              />
             </div>
           </div>
 
