@@ -25,6 +25,7 @@ import { useTheme } from "@/components/theme-provider"
 
 export default function SignInPage() {
   const router = useRouter()
+  const [isBanned, setIsBanned] = useState(false)
   const [step, setStep] = useState(0) // 0: Splash, 1: Process
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -38,14 +39,23 @@ export default function SignInPage() {
       const params = new URLSearchParams(window.location.search)
       const errorParam = params.get("error")
       if (errorParam === "banned") {
+        setIsBanned(true)
         setError("Your account has been banned. Please contact support.")
-        addToast("Your account has been banned. Please contact support.", "error")
+        
+        // Clean URL parameter to prevent looping
+        const url = new URL(window.location.href)
+        url.searchParams.delete("error")
+        window.history.replaceState({}, "", url.pathname)
       } else if (errorParam === "callback_error") {
         setError("Authentication failed. Please try again.")
         addToast("Authentication failed. Please try again.", "error")
+        
+        const url = new URL(window.location.href)
+        url.searchParams.delete("error")
+        window.history.replaceState({}, "", url.pathname)
       }
     }
-  }, [addToast])
+  }, [])
 
   const handleGoogleSignIn = async () => {
     setLoading(true)
@@ -108,6 +118,52 @@ export default function SignInPage() {
   }
 
   if (!mounted) return null
+
+  if (isBanned) {
+    return (
+      <div className="min-h-screen w-full bg-background flex items-center justify-center p-4 relative overflow-hidden font-sans">
+        {/* Dynamic Aura Background */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] bg-red-500/10 rounded-full blur-[140px]" />
+          <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03] dark:opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-full max-w-md relative z-10"
+        >
+          <div className="bg-card border border-red-500/20 rounded-[32px] p-8 md:p-10 shadow-[0_20px_50px_rgba(239,68,68,0.08)] flex flex-col items-center text-center space-y-6">
+            <div className="size-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center animate-pulse text-red-500">
+              <AlertCircle className="size-10" />
+            </div>
+            
+            <div className="space-y-2">
+              <h2 className="text-2xl font-black text-foreground tracking-tight italic uppercase font-outfit">Access Revoked</h2>
+              <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-red-500/80 font-outfit">Security Protocol Warning</p>
+            </div>
+            
+            <p className="text-muted-foreground text-sm leading-relaxed font-outfit">
+              Your account has been suspended for violating platform policies. If you believe this is a mistake, please contact administration.
+            </p>
+            
+            <div className="w-full pt-4">
+              <Link href="/" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full h-12 rounded-2xl font-bold border-red-500/20 hover:bg-red-500/10 hover:text-red-400 text-foreground transition-all duration-300 flex items-center justify-center gap-2 font-outfit"
+                >
+                  <Home className="size-4" />
+                  Back to Home
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-[100dvh] w-full bg-background text-foreground selection:bg-primary/30 relative font-sans flex flex-col overflow-x-hidden">

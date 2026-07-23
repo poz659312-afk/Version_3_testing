@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import dynamic from "next/dynamic"
+import { isPlatformPaused, checkBypass } from "@/lib/maintenance"
+import { ShieldAlert, Lock, AlertTriangle } from "lucide-react"
 
 const ScrollAnimatedSection = dynamic(() => import("@/components/scroll-animated-section"), { ssr: true })
 // Lottie animation removed from homepage for performance; use static fallback instead
@@ -50,9 +52,20 @@ export default function HomePage() {
   const [user, setUser] = useState<any>(null)
   const [username, setUsername] = useState<string>("")
   const [userLevel, setUserLevel] = useState<number>(1)
+  const [isPaused, setIsPaused] = useState(false)
 
   useEffect(() => {
     const loadSession = async () => {
+      // 1. Check maintenance/platform pause first
+      const hasBypass = checkBypass()
+      if (!hasBypass) {
+        const paused = await isPlatformPaused()
+        if (paused) {
+          setIsPaused(true)
+          return
+        }
+      }
+
       const session = await getStudentSession()
       if (session) {
         setUser(session)
@@ -125,6 +138,66 @@ export default function HomePage() {
       glowColor: "rgba(236, 72, 153, 0.6)",
     },
   ];
+
+  if (isPaused) {
+    return (
+      <div className="min-h-screen w-full bg-black text-white flex items-center justify-center p-4 relative overflow-hidden font-outfit">
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 bg-grid-white/[0.01] bg-[size:32px_32px] pointer-events-none" />
+
+        {/* Dynamic color spots */}
+        <div className="absolute top-[20%] left-[20%] w-[350px] h-[350px] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-[20%] right-[20%] w-[350px] h-[350px] bg-secondary/10 rounded-full blur-[100px] pointer-events-none" />
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="w-full max-w-lg relative z-10 text-center space-y-8"
+        >
+          {/* Logo / Badge */}
+          <div className="flex justify-center">
+            <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-1.5 rounded-full backdrop-blur-md shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">Security Override Protocol</span>
+            </div>
+          </div>
+
+          {/* Icon */}
+          <div className="flex justify-center">
+            <div className="relative">
+              <div className="absolute -inset-4 bg-amber-500/10 rounded-full blur-lg animate-pulse" />
+              <div className="size-20 rounded-3xl bg-black border-2 border-amber-500/20 flex items-center justify-center relative text-amber-500 shadow-xl">
+                <Lock className="size-9" />
+              </div>
+            </div>
+          </div>
+
+          {/* Heading */}
+          <div className="space-y-3">
+            <h1 className="text-4xl md:text-5xl font-black italic tracking-tighter uppercase font-outfit bg-gradient-to-r from-white via-neutral-300 to-neutral-500 bg-clip-text text-transparent">
+              Chameleon Paused
+            </h1>
+            <p className="text-[11px] uppercase tracking-[0.3em] font-extrabold text-amber-500/80">
+              System Suspension Active
+            </p>
+          </div>
+
+          {/* Description */}
+          <p className="text-neutral-400 text-sm md:text-base max-w-md mx-auto leading-relaxed">
+            The platform has been temporarily paused by the administration. All services and academic tracking pathways are currently suspended. Please return at a later time.
+          </p>
+
+          {/* Futuristic Terminal footer */}
+          <div className="pt-8 border-t border-white/5 max-w-sm mx-auto text-center">
+            <span className="text-[9px] font-mono tracking-widest text-neutral-600 uppercase">
+              NODE ID: CHAMELEON_SECURE_V3 // TERMINATED
+            </span>
+          </div>
+        </motion.div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-[100dvh] flex-col overflow-hidden w-full relative">

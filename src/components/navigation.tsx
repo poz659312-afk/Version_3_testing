@@ -18,6 +18,7 @@ import { useLenis } from "lenis/react"
 import { User } from "@/lib/types"
 import { useTheme } from "@/components/theme-provider"
 import AvatarBorder from "./visual-effects/avatar-border"
+import { isPlatformPaused, checkBypass } from "@/lib/maintenance"
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
@@ -103,6 +104,21 @@ export default function Navigation() {
   const [user, setUser] = useState<User | null>(null)
   const [isSpecializationsOpen, setIsSpecializationsOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+
+  useEffect(() => {
+    const checkPause = async () => {
+      const hasBypass = checkBypass()
+      if (hasBypass) {
+        setIsPaused(false)
+        return
+      }
+      
+      const paused = await isPlatformPaused()
+      setIsPaused(paused)
+    }
+    checkPause()
+  }, [pathname])
 
   const specializations = [
     {
@@ -299,7 +315,7 @@ export default function Navigation() {
   }
 
   // Hide completely on quiz interface and auth pages
-  if (pathname?.startsWith("/quiz/") || pathname?.startsWith("/auth")) {
+  if (pathname?.startsWith("/quiz/") || pathname?.startsWith("/auth") || isPaused) {
     return null
   }
 

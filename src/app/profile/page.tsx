@@ -8,7 +8,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles, MousePointer, Search, ChevronUp, ChevronDown, Trash2, Plus } from "lucide-react"
+import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles, MousePointer, Search, ChevronUp, ChevronDown, Trash2, Plus, ShieldAlert, Loader2 } from "lucide-react"
+import { isPlatformPaused, setPlatformPauseState } from "@/lib/maintenance"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
@@ -669,6 +670,36 @@ export default function ProfilePage() {
   const [showSeconds, setShowSeconds] = useState<boolean>(true)
   const [showDate, setShowDate] = useState<boolean>(true)
   const [currentTime, setCurrentTime] = useState(new Date())
+  const [platformPaused, setPlatformPaused] = useState(false)
+  const [togglingPause, setTogglingPause] = useState(false)
+
+  useEffect(() => {
+    if (userData?.email === 'tokyo9900777@gmail.com') {
+      const getPause = async () => {
+        const paused = await isPlatformPaused()
+        setPlatformPaused(paused)
+      }
+      getPause()
+    }
+  }, [userData])
+
+  const handleTogglePlatformPause = async () => {
+    setTogglingPause(true)
+    const nextState = !platformPaused
+    const success = await setPlatformPauseState(nextState)
+    if (success) {
+      setPlatformPaused(nextState)
+      addToast(
+        nextState 
+          ? "Platform paused successfully! All services are suspended." 
+          : "Platform resumed successfully! All services are active.", 
+        "success"
+      )
+    } else {
+      addToast("Failed to toggle platform state. Try again.", "error")
+    }
+    setTogglingPause(false)
+  }
 
   useEffect(() => {
     // Sync time format and settings with storage
@@ -1998,6 +2029,55 @@ export default function ProfilePage() {
                   <h3 className="text-red-500 font-bold mb-2 font-outfit flex items-center gap-2"><Shield className="w-4 h-4"/> DELETION SCHEDULED</h3>
                   <p className="font-outfit text-sm text-foreground">Your account is queued for termination on: <span className="font-bold">{new Date(userData.deletion_scheduled_at).toLocaleDateString()}</span>. Proceed with cancellation below if this was a mistake.</p>
                 </div>
+              )}
+
+              {userData?.email === "tokyo9900777@gmail.com" && (
+                <Card className="bg-background border-amber-500/30 shadow-lg shadow-amber-500/5 mb-6">
+                  <CardHeader className="pb-6 border-b border-border/50">
+                    <CardTitle className="text-xl font-outfit font-extrabold tracking-tight text-amber-500 flex items-center gap-2">
+                      <ShieldAlert className="w-5 h-5"/> Owner Override Protocol
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground font-outfit uppercase text-[10px] tracking-[0.1em]">
+                      Chameleon platform override control
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 pt-6">
+                    <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 font-outfit">
+                      <p className="text-foreground text-sm mb-2">
+                        ⚠️ <span className="italic font-bold text-amber-500">PAUSE CHAMELEON PLATFORM</span> 
+                      </p>
+                      <p className="text-muted-foreground text-[11px] leading-relaxed mb-4">
+                        Activating this will instantly pause the entire platform. All users visiting any page will be forced back to the homepage `/`, and the homepage will display a maintenance interface.
+                      </p>
+                      <div className="flex items-center justify-between bg-black/20 p-3 rounded-lg border border-border/50">
+                        <div>
+                          <p className="text-xs font-bold text-foreground">Current Platform State</p>
+                          <p className="text-[10px] text-muted-foreground">Toggle to pause or resume all services</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${platformPaused ? 'bg-red-500/20 text-red-400 border border-red-500/30 animate-pulse' : 'bg-green-500/20 text-green-400 border border-green-500/30'}`}>
+                            {platformPaused ? 'PAUSED' : 'ACTIVE'}
+                          </span>
+                          <Button
+                            variant={platformPaused ? 'destructive' : 'outline'}
+                            onClick={handleTogglePlatformPause}
+                            disabled={togglingPause}
+                            size="sm"
+                            className="font-bold"
+                          >
+                            {togglingPause ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : platformPaused ? (
+                              'Resume Chameleon'
+                            ) : (
+                              'Pause Chameleon'
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               )}
 
               <Card className="bg-background border-red-500/30 shadow-lg shadow-red-500/5">
