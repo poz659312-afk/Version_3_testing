@@ -212,15 +212,15 @@ export default function HomePage() {
         <section className="w-full relative overflow-hidden">
           <HeroGeometric badge="Chameleon FCDS" title1="Master Your" title2="Future Skills">
             <div className="flex flex-col items-center w-full max-w-5xl">
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 z-20 relative">
-                <Link href={user ? "#specializations" : "/auth/signin"}>
-                    <Button size="lg" className="rounded-full h-12 px-8 text-base shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-shadow">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 justify-center mb-16 z-20 relative w-full max-w-md px-4 sm:px-0">
+                <Link href={user ? "#specializations" : "/auth/signin"} className="w-full">
+                    <Button size="lg" className="w-full rounded-full h-12 px-8 text-base shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-shadow">
                     Start Learning Today
                     <ArrowRight className="ml-2 size-4" />
                     </Button>
                 </Link>
-                <Link href="#specializations">
-                    <Button size="lg" variant="outline" className="rounded-full h-12 px-8 text-base border-primary/30 text-foreground bg-background/30 backdrop-blur-sm hover:bg-primary/10 transition-colors">
+                <Link href="#specializations" className="w-full">
+                    <Button size="lg" variant="outline" className="w-full rounded-full h-12 px-8 text-base border-primary/30 text-foreground bg-background/30 backdrop-blur-sm hover:bg-primary/10 transition-colors">
                     View All Courses
                     </Button>
                 </Link>
