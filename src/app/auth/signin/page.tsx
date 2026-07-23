@@ -41,11 +41,7 @@ export default function SignInPage() {
       if (errorParam === "banned") {
         setIsBanned(true)
         setError("Your account has been banned. Please contact support.")
-        
-        // Clean URL parameter to prevent looping
-        const url = new URL(window.location.href)
-        url.searchParams.delete("error")
-        window.history.replaceState({}, "", url.pathname)
+        // Do NOT clear error=banned from URL to ensure Banned screen remains active across re-renders
       } else if (errorParam === "callback_error") {
         setError("Authentication failed. Please try again.")
         addToast("Authentication failed. Please try again.", "error")
