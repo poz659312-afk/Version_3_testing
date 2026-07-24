@@ -556,7 +556,7 @@ export async function startQuizChallenge(roomId: string, quizCode: string) {
 
   const { data: quizRow, error: quizError } = await supabase
     .from('quiz_department')
-    .select('code')
+    .select('name, code')
     .eq('code', cleanQuizCode)
     .single()
 
@@ -564,7 +564,7 @@ export async function startQuizChallenge(roomId: string, quizCode: string) {
     return { success: false, error: 'Selected quiz was not found. Please choose another quiz.' }
   }
 
-  const { error } = await supabase
+  const { data: challengeRow, error: challengeError } = await supabase
     .from('study_room_challenges')
     .insert({
       room_id: roomId,
@@ -572,10 +572,22 @@ export async function startQuizChallenge(roomId: string, quizCode: string) {
       status: 'pending',
       started_by: session.auth_id
     })
+    .select('id')
+    .single()
 
-  if (error) {
-    return { success: false, error: error.message }
+  if (challengeError || !challengeRow) {
+    return { success: false, error: challengeError?.message || 'Failed to start challenge' }
   }
+
+  // Insert a message referencing the new challenge so it appears in the chat stream
+  await supabase
+    .from('study_room_messages')
+    .insert({
+      room_id: roomId,
+      user_id: session.auth_id,
+      content: `[CHALLENGE:${challengeRow.id}] Started a Quiz Battle: ${quizRow.name}`,
+      is_question: false
+    })
 
   revalidatePath(`/study-spaces/${roomId}`)
   return { success: true }

@@ -1878,14 +1878,60 @@ export default function StudySpaceClient({
                           className={`p-2.5 rounded-2xl text-xs border shadow-sm leading-relaxed relative group break-words max-w-[72vw] sm:max-w-[260px] ${
                             msg.content.startsWith('[QUIZ:')
                               ? 'bg-indigo-500/5 border-indigo-500/20 text-foreground w-[72vw] sm:w-[340px] max-w-[72vw] sm:max-w-[340px]'
-                              : msg.is_question 
-                                ? 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200' 
-                                : isSelf 
-                                  ? 'bg-primary text-primary-foreground border-primary/20' 
-                                  : 'bg-muted/40 border-border text-foreground'
+                              : msg.content.startsWith('[CHALLENGE:')
+                                ? 'bg-rose-500/5 border-rose-500/20 text-foreground w-[72vw] sm:w-[340px] max-w-[72vw] sm:max-w-[340px]'
+                                : msg.is_question 
+                                  ? 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200' 
+: isSelf 
+                                    ? 'bg-primary text-primary-foreground border-primary/20' 
+                                    : 'bg-muted/40 border-border text-foreground'
                           }`}
                         >
-                          {(() => {
+                           {(() => {
+                            const challengeMatch = msg.content.match(/^\[CHALLENGE:([\w-]+)\] (.*)/)
+                            if (challengeMatch) {
+                              const challengeId = challengeMatch[1]
+                              const c = challenges.find((x: any) => x.id === challengeId)
+                              if (!c) {
+                                return (
+                                  <div className="p-1 flex items-center gap-2 text-rose-400">
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    <span className="text-[10px] font-semibold">Loading Quiz Battle...</span>
+                                  </div>
+                                )
+                              }
+                              
+                              const quizLink = `/quiz/${c.quiz?.department_slug}/${c.quiz?.subject_id}/${c.quiz_code}?roomId=${roomId}&challengeId=${c.id}`
+                              const isCompleted = c.status === 'completed'
+                              
+                              return (
+                                <div className="space-y-2 min-w-[200px] sm:min-w-[280px]">
+                                  <div className="flex items-center justify-between gap-4">
+                                    <span className="text-[9px] font-black text-rose-500 flex items-center gap-1">
+                                      <Swords className="w-3.5 h-3.5 text-rose-500 animate-bounce" />
+                                      QUIZ CHALLENGE BATTLE
+                                    </span>
+                                    <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${isCompleted ? 'bg-green-500/10 text-green-500' : 'bg-rose-500/10 text-rose-500'}`}>
+                                      {isCompleted ? 'Completed' : 'Active'}
+                                    </span>
+                                  </div>
+                                  <h4 className="text-xs font-bold text-foreground leading-relaxed">{c.quiz?.name || 'Quiz'}</h4>
+                                  <p className="text-[10px] text-muted-foreground">
+                                    {c.quiz?.questions_count} Questions • Started by {c.starter?.username || 'Student'}
+                                  </p>
+                                  
+                                  <Button
+                                    size="sm"
+                                    disabled={isCompleted}
+                                    onClick={() => router.push(quizLink)}
+                                    className="w-full bg-rose-500 text-white hover:bg-rose-600 font-bold text-[10px] h-7 px-3.5 cursor-pointer rounded-lg mt-1"
+                                  >
+                                    {isCompleted ? 'Battle Ended' : 'Solve Quiz & Win!'}
+                                  </Button>
+                                </div>
+                              )
+                            }
+
                             const quizMatch = msg.content.match(/^\[QUIZ:([\w-]+)\] (.*)/)
                             if (quizMatch) {
                               const quizId = quizMatch[1]
