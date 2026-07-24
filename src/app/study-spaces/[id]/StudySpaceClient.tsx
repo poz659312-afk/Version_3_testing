@@ -1000,6 +1000,33 @@ export default function StudySpaceClient({
       )
       .subscribe()
 
+    // 8. Quiz Challenges / Battles
+    const challengesChannel = supabase
+      .channel('room-challenges-v2')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'study_room_challenges', filter: `room_id=eq.${roomId}` },
+        (payload: any) => {
+          getRoomDetails(roomId).then(d => setChallenges(d.challenges))
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'study_room_challenges', filter: `room_id=eq.${roomId}` },
+        (payload: any) => {
+          getRoomDetails(roomId).then(d => setChallenges(d.challenges))
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'study_room_challenges', filter: `room_id=eq.${roomId}` },
+        (payload: any) => {
+          const deleted = payload.old
+          setChallenges((prev: any[]) => prev.filter(c => c.id !== deleted.id))
+        }
+      )
+      .subscribe()
+
     return () => {
       supabase.removeChannel(messageChannel)
       supabase.removeChannel(scratchpadChannel)
@@ -1008,6 +1035,7 @@ export default function StudySpaceClient({
       supabase.removeChannel(dcChannel)
       supabase.removeChannel(quizzesChannel)
       supabase.removeChannel(resourcesChannel)
+      supabase.removeChannel(challengesChannel)
       if (typingChannel) supabase.removeChannel(typingChannel)
     }
   }, [roomId])
@@ -2510,7 +2538,7 @@ export default function StudySpaceClient({
                   ) : (
                     <div className="space-y-3">
                       {challenges.map((c: any) => {
-                        const quizLink = `/quiz/${c.quiz?.department_slug}/${c.quiz?.subject_id}/${c.quiz_code}`
+                        const quizLink = `/quiz/${c.quiz?.department_slug}/${c.quiz?.subject_id}/${c.quiz_code}?roomId=${roomId}&challengeId=${c.id}`
                         return (
                           <div 
                             key={c.id}

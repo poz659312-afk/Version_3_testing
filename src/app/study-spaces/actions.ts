@@ -161,6 +161,9 @@ export async function getRoomDetails(roomId: string) {
       quiz_code,
       status,
       created_at,
+      starter:started_by (
+        username
+      ),
       quiz:quiz_department (
         name,
         questions_count,

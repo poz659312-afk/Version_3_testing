@@ -708,6 +708,23 @@ export default function QuizInterface({
       if (error) {
         console.error("Error saving quiz data to Supabase:", error.message);
       } else {
+        // Check if this was a study space challenge/battle, and mark it as completed
+        if (typeof window !== "undefined") {
+          const urlParams = new URLSearchParams(window.location.search)
+          const challengeId = urlParams.get("challengeId")
+          if (challengeId) {
+            console.log("Updating study space challenge status to completed for:", challengeId)
+            const { error: challengeError } = await supabase
+              .from("study_room_challenges")
+              .update({ status: "completed" })
+              .eq("id", challengeId)
+            
+            if (challengeError) {
+              console.error("Error completing quiz battle challenge:", challengeError.message)
+            }
+          }
+        }
+
         // Update attempts count after successful submission
         setAttemptsToday(prev => prev + 1);
         setMaxAttemptsReached(attemptsToday + 1 >= 5);
