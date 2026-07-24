@@ -108,7 +108,11 @@ export default function Navigation() {
 
   useEffect(() => {
     const checkPause = async () => {
-      const hasBypass = checkBypass()
+      const { getStudentSession } = await import('@/lib/auth')
+      const session = await getStudentSession()
+      const isOwner = session?.email === 'tokyo9900777@gmail.com'
+      
+      const hasBypass = checkBypass() || isOwner
       if (hasBypass) {
         setIsPaused(false)
         return

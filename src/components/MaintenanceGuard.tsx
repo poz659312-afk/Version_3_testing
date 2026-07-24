@@ -11,17 +11,22 @@ export function MaintenanceGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const checkMaintenance = async () => {
-      // 1. Check if user is bypassing (reads window.location.search internally)
-      const hasBypass = checkBypass()
+      // 1. Check if the current user is the owner (owner always bypasses maintenance mode)
+      const { getStudentSession } = await import('@/lib/auth')
+      const session = await getStudentSession()
+      const isOwner = session?.email === 'tokyo9900777@gmail.com'
+
+      // 2. Check if user has bypass (local override key)
+      const hasBypass = checkBypass() || isOwner
       if (hasBypass) {
         setLoading(false)
         return
       }
 
-      // 2. Fetch platform pause status from DB
+      // 3. Fetch platform pause status from DB
       const paused = await isPlatformPaused()
 
-      // 3. If paused and not on homepage, redirect to homepage "/"
+      // 4. If paused and not on homepage, redirect to homepage "/"
       if (paused && pathname !== "/") {
         router.push("/")
       } else {

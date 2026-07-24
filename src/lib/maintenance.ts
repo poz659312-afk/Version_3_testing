@@ -8,8 +8,15 @@ export const BYPASS_KEY = "chameleon-override-2026"
 export function checkBypass(): boolean {
   if (typeof window === 'undefined') return false
   
-  // Check URL params
   const params = new URLSearchParams(window.location.search)
+  
+  // Allow clearing bypass state via clear_bypass parameter
+  if (params.get("clear_bypass") === "true") {
+    localStorage.removeItem("chameleon_bypass")
+    return false
+  }
+  
+  // Check URL params
   if (params.get("passkey") === BYPASS_KEY) {
     localStorage.setItem("chameleon_bypass", "true")
     return true
@@ -30,21 +37,31 @@ export function clearBypass() {
 
 /**
  * Checks if the platform is paused (Chameleon Paused) globally.
- * Queries the Registrations JSON column for owner 'tokyo9900777@gmail.com'.
+ * Uses secure server-side fetching or API route to completely bypass client-side RLS constraints.
  */
 export async function isPlatformPaused(): Promise<boolean> {
   try {
-    const supabase = createBrowserClient()
-    const { data, error } = await supabase
-      .from('chameleons')
-      .select('Registrations')
-      .eq('email', 'tokyo9900777@gmail.com')
-      .maybeSingle()
+    // Server-side (SSR / Server Component): Import and use admin client directly
+    if (typeof window === 'undefined') {
+      const { createAdminClient } = await import('@/lib/supabase/admin')
+      const supabase = createAdminClient()
+      const { data, error } = await supabase
+        .from('chameleons')
+        .select('Registrations')
+        .eq('email', 'tokyo9900777@gmail.com')
+        .maybeSingle()
+        
+      if (error || !data) return false
       
-    if (error || !data) return false
-    
-    const regs = data.Registrations as any
-    return regs?.pause_chameleon === true
+      const regs = (data as any)?.Registrations
+      return regs?.pause_chameleon === true
+    }
+
+    // Client-side (Browser): Call our secure API endpoint that bypasses RLS
+    const res = await fetch('/api/platform-status', { cache: 'no-store' })
+    if (!res.ok) return false
+    const data = await res.json()
+    return data.paused === true
   } catch (err) {
     console.error("Error checking platform pause status:", err)
     return false

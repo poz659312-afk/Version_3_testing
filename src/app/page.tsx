@@ -56,8 +56,11 @@ export default function HomePage() {
 
   useEffect(() => {
     const loadSession = async () => {
-      // 1. Check maintenance/platform pause first
-      const hasBypass = checkBypass()
+      // Get session first to check if user is the owner
+      const session = await getStudentSession()
+      const isOwner = session?.email === 'tokyo9900777@gmail.com'
+      
+      const hasBypass = checkBypass() || isOwner
       if (!hasBypass) {
         const paused = await isPlatformPaused()
         if (paused) {
@@ -66,7 +69,6 @@ export default function HomePage() {
         }
       }
 
-      const session = await getStudentSession()
       if (session) {
         setUser(session)
         setUsername(session.username)
