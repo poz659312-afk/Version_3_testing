@@ -656,7 +656,7 @@ export default function StudySpaceClient({
 
     // 1. Messages and Message Reactions Channel
     const messageChannel = supabase
-      .channel('room-messages-v2')
+      .channel(`room-messages-${roomId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_messages', filter: `room_id=eq.${roomId}` },
@@ -720,7 +720,7 @@ export default function StudySpaceClient({
 
     // 2. Scratchpad update channel
     const scratchpadChannel = supabase
-      .channel('room-scratchpad-v2')
+      .channel(`room-scratchpad-${roomId}`)
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'study_rooms', filter: `id=eq.${roomId}` },
@@ -737,7 +737,7 @@ export default function StudySpaceClient({
 
     // 3. Member changes (focus, streaks, time tracking)
     const membersChannel = supabase
-      .channel('room-members-v2')
+      .channel(`room-members-${roomId}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'study_room_members', filter: `room_id=eq.${roomId}` },
@@ -774,7 +774,7 @@ export default function StudySpaceClient({
 
     // 4. Polls & Votes
     const pollsChannel = supabase
-      .channel('room-polls-v2')
+      .channel(`room-polls-${roomId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_polls', filter: `room_id=eq.${roomId}` },
@@ -874,7 +874,7 @@ export default function StudySpaceClient({
 
     // 5. Daily Challenges
     const dcChannel = supabase
-      .channel('room-dc-v2')
+      .channel(`room-dc-${roomId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_daily_challenges', filter: `room_id=eq.${roomId}` },
@@ -938,7 +938,7 @@ export default function StudySpaceClient({
 
     // 6. Quizzes
     const quizzesChannel = supabase
-      .channel('room-quizzes-v2')
+      .channel(`room-quizzes-${roomId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_quizzes', filter: `room_id=eq.${roomId}` },
@@ -978,7 +978,7 @@ export default function StudySpaceClient({
 
     // 7. Resources
     const resourcesChannel = supabase
-      .channel('room-resources-v2')
+      .channel(`room-resources-${roomId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_resources', filter: `room_id=eq.${roomId}` },
@@ -1002,7 +1002,7 @@ export default function StudySpaceClient({
 
     // 8. Quiz Challenges / Battles
     const challengesChannel = supabase
-      .channel('room-challenges-v2')
+      .channel(`room-challenges-${roomId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_challenges', filter: `room_id=eq.${roomId}` },
