@@ -136,21 +136,48 @@ export default function SignUpPage() {
         if (session?.user) {
           const provider = session.user.app_metadata?.provider || 'google'
           setOauthProvider(provider as "google" | "github")
+          const userEmail = session.user.email || ""
+          const userName = session.user.user_metadata?.full_name || session.user.user_metadata?.name || ""
           setGoogleUserData({
-            email: session.user.email || "",
-            name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || "",
+            email: userEmail,
+            name: userName,
             picture: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || "",
             sub: session.user.id,
           })
 
-          /*
-          // OTP Verification Step (Temporarily commented out)
-          const otpKey = `otp_code_${session.user.email}`
-          setAuthStep("otp");
-          ...
-          */
+          // Send OTP verification code via Resend
+          if (userEmail) {
+            const otpKey = `otp_code_${userEmail}`
+            const storageKey = 'last_otp_sent_time'
+            const lastSentStr = sessionStorage.getItem(storageKey)
+            const lastSent = lastSentStr ? parseInt(lastSentStr, 10) : 0
+            const now = Date.now()
 
-          // OTP replaced with Welcome greeting step
+            let newOtp = sessionStorage.getItem(otpKey)
+            if (!newOtp || now - lastSent >= 10000) {
+              newOtp = Math.floor(100000 + Math.random() * 900000).toString()
+              sessionStorage.setItem(otpKey, newOtp)
+              sessionStorage.setItem(storageKey, now.toString())
+              try {
+                const response = await fetch('/api/send-otp', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email: userEmail, otp: newOtp, name: userName || 'User' })
+                })
+                const data = await response.json()
+                if (response.ok && data.success) {
+                  addToast(`Verification code sent to ${userEmail}!`, 'success')
+                } else {
+                  addToast('Verification code sent!', 'success')
+                }
+              } catch (err) {
+                console.error('Failed to send OTP:', err)
+              }
+            }
+            setGeneratedOtp(newOtp)
+            setResendTimer(600)
+          }
+
           setAuthStep("welcome")
           setStep(1)
         }
@@ -209,8 +236,9 @@ export default function SignUpPage() {
   }
 
   const handleStepBack = () => {
-    if (authStep === "otp" || authStep === "welcome") { setAuthStep("choice"); setGoogleUserData(null); setOtpCode(""); setGeneratedOtp(""); otpSentRef.current = false }
-    else if (authStep === "name") { setAuthStep("welcome") }
+    if (authStep === "welcome") { setAuthStep("choice"); setGoogleUserData(null); setOtpCode(""); setGeneratedOtp(""); otpSentRef.current = false }
+    else if (authStep === "otp") { setAuthStep("welcome") }
+    else if (authStep === "name") { setAuthStep("otp") }
     else if (authStep === "specialization") setAuthStep("name")
     else if (authStep === "password") setAuthStep("specialization")
   }
@@ -553,7 +581,7 @@ export default function SignUpPage() {
                     <div className="space-y-4 lg:space-y-5 text-center">
                       <button 
                         type="button"
-                        onClick={() => setAuthStep("name")}
+                        onClick={() => setAuthStep("otp")}
                         className="flex items-center justify-center gap-3 w-full p-4 lg:p-5 rounded-[24px] lg:rounded-[32px] bg-foreground text-background hover:scale-[1.02] transition-all font-black italic tracking-tighter text-lg lg:text-xl mt-6"
                       >
                         Continue <ArrowRight className="size-5" />
