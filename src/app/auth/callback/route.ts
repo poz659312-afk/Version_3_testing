@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     
     if (error) {
       console.error('Auth callback error:', error)
-      return NextResponse.redirect(`${origin}/auth?error=callback_error`)
+      return NextResponse.redirect(`${origin}/auth/signin?error=callback_error`)
     }
 
     // Get the current session after exchange
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
         if (isForgotPassword) {
           console.log('Forgot password flow - redirecting to reset password')
           const emailParam = encodeURIComponent(session.user.email || '')
-          return NextResponse.redirect(`${origin}/auth?step=reset-password&mode=forgot-password&email=${emailParam}`)
+          return NextResponse.redirect(`${origin}/auth/signin?step=reset-password&mode=forgot-password&email=${emailParam}`)
         }
         
         console.log('Existing user found, redirecting to main page')
@@ -86,12 +86,12 @@ export async function GET(request: NextRequest) {
         // Handle forgot password for non-existing user
         if (isForgotPassword) {
           console.log('Forgot password - no account found with this email')
-          return NextResponse.redirect(`${origin}/auth?error=no_account&mode=forgot-password`)
+          return NextResponse.redirect(`${origin}/auth/signin?error=no_account&mode=forgot-password`)
         }
         
         console.log('New user, redirecting to profile completion')
         // New user - redirect to complete profile
-        return NextResponse.redirect(`${origin}/auth?step=name&mode=signup`)
+        return NextResponse.redirect(`${origin}/auth/signup?step=name&mode=signup`)
       }
     } else {
       console.log('No session found after exchange')
@@ -100,5 +100,5 @@ export async function GET(request: NextRequest) {
 
   console.log('No code or session, redirecting to auth')
   // If no code or session, redirect to auth
-  return NextResponse.redirect(`${origin}/auth`)
+  return NextResponse.redirect(`${origin}/auth/signin`)
 }
