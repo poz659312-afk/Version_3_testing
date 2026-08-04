@@ -115,7 +115,7 @@ export default function SignUpPage() {
     const stepParam = searchParams.get("step")
     if (stepParam === "name" || stepParam === "name-phone") {
       setStep(1)
-      setAuthStep("otp")
+      setAuthStep("name")
     }
   }, [searchParams])
 
@@ -129,7 +129,7 @@ export default function SignUpPage() {
       const stepParam = searchParams.get("step")
       if ((stepParam === "name" || stepParam === "name-phone") && !googleUserData && !otpSentRef.current) {
         otpSentRef.current = true
-        // Clean URL to prevent multiple OTP sends on page refresh, navigation, or clicking "Go back"
+        // Clean URL to prevent multiple execution on page refresh or navigation
         router.replace('/auth/signup')
         const supabase = createBrowserClient()
         const { data: { session } } = await supabase.auth.getSession()
@@ -142,18 +142,18 @@ export default function SignUpPage() {
             picture: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || "",
             sub: session.user.id,
           })
-          const otpKey = `otp_code_${session.user.email}`
 
+          /*
+          // OTP Verification Step (Temporarily commented out)
+          const otpKey = `otp_code_${session.user.email}`
           setAuthStep("otp");
           
-          // Prevent double-sending due to Next.js remount race conditions
           const storageKey = 'last_otp_sent_time'
           const lastSentStr = sessionStorage.getItem(storageKey)
           const lastSent = lastSentStr ? parseInt(lastSentStr, 10) : 0
           const now = Date.now()
 
           if (now - lastSent < 10000) {
-            // Sent within the last 10 seconds (duplicate execution or refresh)
             let currentOtp = sessionStorage.getItem(otpKey)
             if (!currentOtp) {
               currentOtp = Math.floor(100000 + Math.random() * 900000).toString()
@@ -177,6 +177,10 @@ export default function SignUpPage() {
               else setError('Failed to send verification code.')
             } catch (err) { setError('Failed to send verification code.') }
           }
+          */
+
+          // OTP verification disabled temporarily - proceed directly to name step
+          setAuthStep("name")
           setStep(1)
         }
       }
