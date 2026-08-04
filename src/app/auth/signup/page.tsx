@@ -432,7 +432,7 @@ export default function SignUpPage() {
               )}
               {authStep === "name" && (
                 <div className="space-y-2 lg:space-y-4 text-center">
-                  <h2 className="text-4xl lg:text-5xl font-black italic tracking-tighter">Welcome, Explorer.</h2>
+                  <h2 className="text-4xl lg:text-5xl font-black italic tracking-tighter">Welcome, {googleUserData?.name || "Explorer"}.</h2>
                   <p className="text-base lg:text-lg text-muted-foreground max-w-sm mx-auto">Authenticated via [{googleUserData?.email}]. Let&apos;s finalize your digital identity.</p>
                 </div>
               )}
