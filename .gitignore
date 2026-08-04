@@ -41,3 +41,5 @@ next-env.d.ts
 /public/drive-tree.html
 /push-changes.ps1
 /push-changes.sh
+
+/scratch
