@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     }
 
     // Resolve host dynamically for image URLs
-    const host = request.headers.get('host') || 'chameleon-nu.vercel.app'
+    const host = request.headers.get('host') || 'chameleon-nu.tech'
     const protocol = host.includes('localhost') ? 'http' : 'https'
     const baseUrl = `${protocol}://${host}`
     const displayName = name ? name.trim() : 'Learner'
@@ -214,7 +214,7 @@ export async function POST(request: Request) {
     // Send email using Resend
     console.log('Attempting to send email via Resend...')
     const { data, error } = await resend.emails.send({
-      from: 'Chameleon Team <noreply@chameleon-nu.vercel.app>',
+      from: 'Chameleon Team <noreply@chameleon-nu.tech>',
       to: [email], // Send to user's email
       subject: `${otp} is your Chameleon verification code`,
       html: emailHtml,
