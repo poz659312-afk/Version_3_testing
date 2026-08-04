@@ -77,7 +77,7 @@ function CustomDropdown({
   )
 }
 
-type AuthStep = "choice" | "otp" | "name" | "specialization" | "password" | "complete"
+type AuthStep = "choice" | "otp" | "welcome" | "name" | "specialization" | "password" | "complete"
 type GoogleUserData = { email: string; name: string; picture: string; sub: string }
 
 export default function SignUpPage() {
@@ -115,7 +115,7 @@ export default function SignUpPage() {
     const stepParam = searchParams.get("step")
     if (stepParam === "name" || stepParam === "name-phone") {
       setStep(1)
-      setAuthStep("name")
+      setAuthStep("welcome")
     }
   }, [searchParams])
 
@@ -147,40 +147,11 @@ export default function SignUpPage() {
           // OTP Verification Step (Temporarily commented out)
           const otpKey = `otp_code_${session.user.email}`
           setAuthStep("otp");
-          
-          const storageKey = 'last_otp_sent_time'
-          const lastSentStr = sessionStorage.getItem(storageKey)
-          const lastSent = lastSentStr ? parseInt(lastSentStr, 10) : 0
-          const now = Date.now()
-
-          if (now - lastSent < 10000) {
-            let currentOtp = sessionStorage.getItem(otpKey)
-            if (!currentOtp) {
-              currentOtp = Math.floor(100000 + Math.random() * 900000).toString()
-              sessionStorage.setItem(otpKey, currentOtp)
-            }
-            setGeneratedOtp(currentOtp)
-            setResendTimer(600)
-          } else {
-            const newOtp = Math.floor(100000 + Math.random() * 900000).toString()
-            sessionStorage.setItem(otpKey, newOtp)
-            setGeneratedOtp(newOtp)
-            sessionStorage.setItem(storageKey, now.toString())
-            setResendTimer(600)
-            try {
-              const response = await fetch('/api/send-otp', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: session.user.email, otp: newOtp, name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || 'User' })
-              })
-              const data = await response.json()
-              if (response.ok && data.success) { setTimeout(() => addToast('Verification code sent!', 'success'), 0) }
-              else setError('Failed to send verification code.')
-            } catch (err) { setError('Failed to send verification code.') }
-          }
+          ...
           */
 
-          // OTP verification disabled temporarily - proceed directly to name step
-          setAuthStep("name")
+          // OTP replaced with Welcome greeting step
+          setAuthStep("welcome")
           setStep(1)
         }
       }
@@ -238,8 +209,8 @@ export default function SignUpPage() {
   }
 
   const handleStepBack = () => {
-    if (authStep === "otp") { setAuthStep("choice"); setGoogleUserData(null); setOtpCode(""); setGeneratedOtp(""); otpSentRef.current = false }
-    else if (authStep === "name") { setAuthStep("choice"); setGoogleUserData(null) }
+    if (authStep === "otp" || authStep === "welcome") { setAuthStep("choice"); setGoogleUserData(null); setOtpCode(""); setGeneratedOtp(""); otpSentRef.current = false }
+    else if (authStep === "name") { setAuthStep("welcome") }
     else if (authStep === "specialization") setAuthStep("name")
     else if (authStep === "password") setAuthStep("specialization")
   }
@@ -439,6 +410,26 @@ export default function SignUpPage() {
                   <p className="text-base lg:text-lg text-muted-foreground max-w-sm mx-auto">We sent a verification code to {googleUserData?.email}</p>
                 </div>
               )}
+              {authStep === "welcome" && (
+                <div className="space-y-2 lg:space-y-4 text-center flex flex-col items-center">
+                  <div className="flex justify-center mb-2">
+                    <Image 
+                      src="/images/chameleon/09_chameleon_idea.png"
+                      alt="Chameleon Welcome"
+                      width={120}
+                      height={120}
+                      className="w-28 lg:w-32 h-auto object-contain select-none pointer-events-none border-none shadow-none"
+                      priority
+                    />
+                  </div>
+                  <h2 className="text-4xl lg:text-5xl font-black italic tracking-tighter">
+                    Greetings, {googleUserData?.name || "Explorer"}! 👋
+                  </h2>
+                  <p className="text-base lg:text-lg text-muted-foreground max-w-sm mx-auto">
+                    Authenticated via [{googleUserData?.email || "Email"}]. We&apos;re excited to have you join us.
+                  </p>
+                </div>
+              )}
               {authStep === "name" && (
                 <div className="space-y-2 lg:space-y-4 text-center">
                   <h2 className="text-4xl lg:text-5xl font-black italic tracking-tighter">Welcome, Explorer.</h2>
@@ -554,6 +545,26 @@ export default function SignUpPage() {
                           <button type="button" onClick={handleResendOtp} className="text-sm font-bold text-primary hover:text-primary/80 transition-colors">Resend code</button>
                         )}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Welcome Greeting Step */}
+                  {authStep === "welcome" && (
+                    <div className="space-y-4 lg:space-y-5 text-center">
+                      <button 
+                        type="button"
+                        onClick={() => setAuthStep("name")}
+                        className="flex items-center justify-center gap-3 w-full p-4 lg:p-5 rounded-[24px] lg:rounded-[32px] bg-foreground text-background hover:scale-[1.02] transition-all font-black italic tracking-tighter text-lg lg:text-xl mt-6"
+                      >
+                        Continue <ArrowRight className="size-5" />
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={handleStepBack} 
+                        className="text-neutral-500 hover:text-foreground transition-colors inline-flex items-center gap-2 text-sm font-bold mx-auto block pt-4"
+                      >
+                        <ArrowLeft className="size-4" /> Go back
+                      </button>
                     </div>
                   )}
 
