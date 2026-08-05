@@ -56,9 +56,7 @@ export default function StudySpacesDirectoryClient({
 
   useEffect(() => {
     const supabase = createClient()
-
-    // Hidden background auto-refresh every 12 seconds querying Supabase directly (bypasses Server Actions & Next.js cache)
-    const interval = setInterval(async () => {
+    const fetchFreshRooms = async () => {
       try {
         const { data: sessionData } = await supabase.auth.getSession()
         const userSession = sessionData?.session?.user
@@ -75,10 +73,7 @@ export default function StudySpacesDirectoryClient({
           `)
           .order('created_at', { ascending: false })
 
-        if (roomsError) {
-          console.warn('Failed to fetch rooms in background:', roomsError)
-          return
-        }
+        if (roomsError) return
 
         const freshRooms = (roomsData || []).map((room: any) => {
           const approvedMembers = room.study_room_members?.filter((m: any) => m.status === 'approved') || []
@@ -95,11 +90,31 @@ export default function StudySpacesDirectoryClient({
 
         setRooms(freshRooms)
       } catch (err) {
-        console.warn('Background rooms sync failed:', err)
+        console.warn('Realtime rooms sync failed:', err)
       }
-    }, 12000)
+    }
 
-    return () => clearInterval(interval)
+    const channel = supabase
+      .channel('study-spaces-directory')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'study_rooms' },
+        () => {
+          fetchFreshRooms()
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'study_room_members' },
+        () => {
+          fetchFreshRooms()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
   
   // Dialog state

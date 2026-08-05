@@ -44,8 +44,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Refresh user session only on document requests (HTML pages) that have auth cookies
-  // to avoid hitting Supabase Auth rate limits (429) on parallel data/fetch requests
+  // Refresh user session only on protected route document requests that have auth cookies
   let response = NextResponse.next({
     request,
   })
@@ -54,10 +53,13 @@ export async function middleware(request: NextRequest) {
   const isHtmlPage = acceptHeader.includes('text/html')
   const hasAuthCookie = request.cookies.getAll().some(cookie => cookie.name.includes('auth-token'))
 
+  const PROTECTED_PREFIXES = ['/profile', '/admin', '/study-spaces', '/drive', '/store', '/quiz', '/settings', '/dashboard']
+  const isProtectedRoute = PROTECTED_PREFIXES.some(prefix => pathname.startsWith(prefix))
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  if (isHtmlPage && hasAuthCookie && supabaseUrl && supabaseAnonKey) {
+  if (isProtectedRoute && isHtmlPage && hasAuthCookie && supabaseUrl && supabaseAnonKey) {
     try {
       const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
         cookies: {

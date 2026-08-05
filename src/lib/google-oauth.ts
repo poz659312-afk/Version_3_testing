@@ -79,7 +79,6 @@ export async function refreshAccessToken(authId: string): Promise<string | null>
       .single()
 
     if (error || !adminData?.refresh_token) {
-      console.error('No refresh token found for user:', authId)
       return null
     }
 
@@ -88,7 +87,6 @@ export async function refreshAccessToken(authId: string): Promise<string | null>
     const { credentials } = await oauth2Client.refreshAccessToken()
 
     if (!credentials.access_token) {
-      console.error('Failed to refresh access token')
       return null
     }
 
@@ -98,11 +96,9 @@ export async function refreshAccessToken(authId: string): Promise<string | null>
       token_expiry: credentials.expiry_date ? new Date(credentials.expiry_date).toISOString() : undefined,
     })
 
-    console.log('✅ Access token refreshed successfully for user:', authId)
     return credentials.access_token
 
   } catch (error) {
-    console.error('Error refreshing access token:', error)
     return null
   }
 }
@@ -158,11 +154,8 @@ export async function storeUserTokens(
     })
 
   if (error) {
-    console.error('Error storing admin tokens:', error)
     throw new Error('Failed to store tokens')
   }
-
-  console.log(`✅ Tokens stored in admins table for user ${authId}`)
 }
 
 /**
@@ -218,21 +211,17 @@ export async function getValidAccessToken(authId: string): Promise<string | null
     const tokens = await getUserTokens(authId)
     
     if (!tokens?.access_token) {
-      console.error('No access token found for user:', authId)
       return null
     }
 
     // Check if token is expired
     if (isTokenExpired(tokens.token_expiry)) {
-      console.log('Token expired, refreshing for user:', authId)
       return await refreshAccessToken(authId)
     }
 
-    console.log('🔑 TOKEN DEBUG - User', authId, 'has valid token')
     return tokens.access_token
 
   } catch (error) {
-    console.error('Error getting valid access token:', error)
     return null
   }
 }
@@ -263,12 +252,10 @@ export async function refreshAllAdminTokens(): Promise<{
       .not('refresh_token', 'is', null)
 
     if (error) {
-      console.error('Error fetching admins:', error)
       throw new Error('Failed to fetch admins')
     }
 
     if (!admins || admins.length === 0) {
-      console.log('No admins with refresh tokens found')
       return {
         refreshedCount: 0,
         failedCount: 0,
@@ -276,8 +263,6 @@ export async function refreshAllAdminTokens(): Promise<{
         results: []
       }
     }
-
-    console.log(`📋 Found ${admins.length} admins with refresh tokens`)
 
     let refreshedCount = 0
     let failedCount = 0
@@ -302,7 +287,6 @@ export async function refreshAllAdminTokens(): Promise<{
           isTokenExpired(admin.token_expiry)
 
         if (!needsRefresh) {
-          console.log(`⏭️ Token for ${admin.auth_id} is still valid, skipping`)
           results.push({
             auth_id: admin.auth_id,
             status: 'skipped',
@@ -310,8 +294,6 @@ export async function refreshAllAdminTokens(): Promise<{
           })
           continue
         }
-
-        console.log(`🔄 Refreshing token for ${admin.auth_id} (${admin.google_email})`)
         
         // Refresh the token
         const newAccessToken = await refreshAccessToken(admin.auth_id)
@@ -320,7 +302,6 @@ export async function refreshAllAdminTokens(): Promise<{
           throw new Error('No access token received from refresh')
         }
 
-        console.log(`✅ Successfully refreshed token for ${admin.auth_id}`)
         refreshedCount++
 
         results.push({
@@ -329,7 +310,6 @@ export async function refreshAllAdminTokens(): Promise<{
         })
 
       } catch (adminError) {
-        console.error(`❌ Failed to refresh token for ${admin.auth_id}:`, adminError)
         failedCount++
 
         results.push({
@@ -340,8 +320,6 @@ export async function refreshAllAdminTokens(): Promise<{
       }
     }
 
-    console.log(`📊 Batch refresh completed: ${refreshedCount} successful, ${failedCount} failed`)
-
     return {
       refreshedCount,
       failedCount,
@@ -350,7 +328,6 @@ export async function refreshAllAdminTokens(): Promise<{
     }
 
   } catch (error) {
-    console.error('Critical error in refreshAllAdminTokens:', error)
     throw error
   }
 }
@@ -370,9 +347,7 @@ export async function revokeUserAccess(authId: string): Promise<boolean> {
       // Revoke with Google
       try {
         await oauth2Client.revokeToken(tokens.access_token)
-      } catch (error) {
-        console.error('Error revoking token with Google:', error)
-      }
+      } catch (error) {}
     }
 
     // Clear tokens in admins table  
@@ -390,13 +365,11 @@ export async function revokeUserAccess(authId: string): Promise<boolean> {
       .eq('auth_id', authId)
 
     if (error) {
-      console.error('Error clearing admin tokens:', error)
       return false
     }
 
     return true
   } catch (error) {
-    console.error('Error revoking user access:', error)
     return false
   }
 }

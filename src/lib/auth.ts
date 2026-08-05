@@ -71,85 +71,103 @@ function setCachedSession(userData: StudentUser): void {
  * Clear cached user data
  */
 export function clearSessionCache(): void {
-  if (typeof window === "undefined") return
-  sessionStorage.removeItem(SESSION_CACHE_KEY)
+  if (typeof window === 'undefined') return
+  try {
+    sessionStorage.removeItem(SESSION_CACHE_KEY)
+  } catch (e) {
+    console.error('Failed to clear session cache:', e)
+  }
 }
+
+// Module-level in-flight promise cache to deduplicate parallel getStudentSession calls
+let inFlightSessionPromise: Promise<StudentUser | null> | null = null
 
 /**
  * Get current authenticated user from Supabase Auth + app database
- * Uses sessionStorage cache to minimize database requests
- * @param forceRefresh - Skip cache and fetch fresh data from database
+ * Uses sessionStorage cache + in-flight promise deduplication to minimize network requests.
  */
 export async function getStudentSession(forceRefresh = false): Promise<StudentUser | null> {
-  if (typeof window === "undefined") return null
-
-  try {
-    const supabase = createBrowserClient()
-    
-    // Use getSession() — validates JWT locally without a network round-trip
-    // getUser() makes a network call to Supabase Auth every time
-    const { data: { session }, error: authError } = await supabase.auth.getSession()
-    
-    if (authError || !session?.user) {
-      clearSessionCache()
-      return null
-    }
-    const user = session.user
-
-    // Check cache first unless force refresh
-    if (!forceRefresh) {
-      const cached = getCachedSession()
-      if (cached && cached.auth_id === user.id) {
-        return cached
-      }
-    }
-
-    // Fetch fresh user data from chameleons table — select ONLY needed columns to minimize egress
-    const { data: userData, error: dbError } = await supabase
-      .from('chameleons')
-      .select('auth_id, username, phone_number, specialization, age, current_level, is_admin, is_banned, created_at, profile_image, email, coins, inventory, Registrations, is_super_admin')
-      .eq('auth_id', user.id)
-      .single()
-
-    if (dbError || !userData) {
-      console.error('Failed to fetch user data:', dbError)
-      clearSessionCache()
-      return null
-    }
-
-    if (userData.is_banned) {
-      console.warn('User is banned. Initiating logout.')
-      await clearStudentSession()
-      return null
-    }
-
-    const sessionData: StudentUser = {
-      auth_id: userData.auth_id,
-      username: userData.username,
-      phone_number: userData.phone_number,
-      specialization: userData.specialization,
-      age: userData.age,
-      current_level: userData.current_level,
-      is_admin: userData.is_admin,
-      is_banned: userData.is_banned,
-      created_at: userData.created_at,
-      profile_image: userData.profile_image,
-      email: userData.email,
-      coins: userData.coins || 0,
-      inventory: userData.inventory || [],
-      Registrations: userData.Registrations || null,
-      is_super_admin: userData.is_super_admin || false
-    }
-
-    // Cache the session data
-    setCachedSession(sessionData)
-
-    return sessionData
-  } catch (error) {
-    console.error('Error getting student session:', error)
-    clearSessionCache()
-    return null
+  if (forceRefresh) {
+    inFlightSessionPromise = null
+  } else if (inFlightSessionPromise) {
+    return inFlightSessionPromise
   }
+
+  inFlightSessionPromise = (async () => {
+    try {
+      if (!forceRefresh) {
+        const cached = getCachedSession()
+        if (cached) return cached
+      }
+
+      const supabase = createBrowserClient()
+      
+      // Use getSession() — validates JWT locally without a network round-trip
+      const { data: { session }, error: authError } = await supabase.auth.getSession()
+      
+      if (authError || !session?.user) {
+        clearSessionCache()
+        return null
+      }
+
+      const user = session.user
+
+      // Check cache again after getSession in case another caller populated it
+      if (!forceRefresh) {
+        const cached = getCachedSession()
+        if (cached && cached.auth_id === user.id) {
+          return cached
+        }
+      }
+
+      // Fetch fresh user data from chameleons table — select ONLY needed columns to minimize egress
+      const { data: userData, error: dbError } = await supabase
+        .from('chameleons')
+        .select('auth_id, username, phone_number, specialization, age, current_level, is_admin, is_banned, created_at, profile_image, email, coins, inventory, Registrations, is_super_admin')
+        .eq('auth_id', user.id)
+        .single()
+
+      if (dbError || !userData) {
+        clearSessionCache()
+        return null
+      }
+
+      // If user is banned, logout immediately
+      if (userData.is_banned) {
+        await clearStudentSession()
+        return null
+      }
+
+      const sessionData: StudentUser = {
+        auth_id: userData.auth_id,
+        username: userData.username,
+        phone_number: userData.phone_number,
+        specialization: userData.specialization,
+        age: userData.age,
+        current_level: userData.current_level,
+        is_admin: userData.is_admin,
+        is_banned: userData.is_banned,
+        created_at: userData.created_at,
+        profile_image: userData.profile_image,
+        email: userData.email,
+        coins: userData.coins || 0,
+        inventory: userData.inventory || [],
+        Registrations: userData.Registrations || null,
+        is_super_admin: userData.is_super_admin || false
+      }
+
+      setCachedSession(sessionData)
+      return sessionData
+    } catch (error) {
+      console.error('Error getting student session:', error)
+      clearSessionCache()
+      return null
+    } finally {
+      inFlightSessionPromise = null
+    }
+  })()
+
+  return inFlightSessionPromise
 }
 
 /**
@@ -157,6 +175,8 @@ export async function getStudentSession(forceRefresh = false): Promise<StudentUs
  * This replaces the old localStorage-based clearStudentSession()
  */
 export async function clearStudentSession(): Promise<void> {
+  inFlightSessionPromise = null
+  clearSessionCache()
   if (typeof window !== "undefined") {
     try {
       const supabase = createBrowserClient()

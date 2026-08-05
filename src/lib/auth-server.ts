@@ -1,12 +1,13 @@
+import { cache } from 'react';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { StudentUser } from './auth';
 
 /**
  * Get current authenticated user from Supabase Auth + app database (SERVER SIDE)
  * Use this in API routes and Server Components ONLY.
- * This file contains server-only imports (next/headers).
+ * Memoized using React.cache() to deduplicate requests within the same SSR render lifecycle.
  */
-export async function getServerStudentSession(): Promise<StudentUser | null> {
+export const getServerStudentSession = cache(async (): Promise<StudentUser | null> => {
   try {
     const supabase = await createServerSupabaseClient();
     
@@ -48,4 +49,4 @@ export async function getServerStudentSession(): Promise<StudentUser | null> {
     console.error('Error getting server student session:', error);
     return null;
   }
-}
+})
