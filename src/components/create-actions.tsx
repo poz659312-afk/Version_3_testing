@@ -550,19 +550,19 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
               </div>
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-slate-200/60 dark:border-white/10 max-w-sm shadow-lg dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden rounded-2xl p-6">
-            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary via-primary/80 to-accent" />
+          <DialogContent className="bg-background/95 dark:bg-card/95 backdrop-blur-2xl border border-border max-w-sm shadow-2xl rounded-3xl p-6 overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary via-accent to-primary" />
             
-            <div className="flex flex-col items-center text-center pt-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/30 flex items-center justify-center mb-4 text-primary shadow-[0_8px_30px_rgba(var(--primary),0.15)] animate-bounce duration-1000">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center mb-3">
                 <Plus className="w-6 h-6" />
               </div>
               
-              <DialogHeader className="items-center text-center">
-                <DialogTitle className="text-2xl font-black italic tracking-tight bg-gradient-to-r from-primary via-primary/85 to-accent bg-clip-text text-transparent uppercase">
+              <DialogHeader className="items-center text-center space-y-1">
+                <DialogTitle className="text-xl font-bold tracking-tight text-foreground">
                   Create New
                 </DialogTitle>
-                <DialogDescription className="text-slate-600 dark:text-muted-foreground/80 font-medium mt-1">
+                <DialogDescription className="text-xs text-muted-foreground font-medium">
                   Choose what you&apos;d like to create
                 </DialogDescription>
               </DialogHeader>
@@ -571,27 +571,33 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
             <div className="grid gap-3 py-4 mt-2">
               <DialogClose asChild>
                 <Button
-                  onClick={() => {
-                    setShowCreateFolder(true)
-                  }}
-                  className="bg-primary/5 hover:bg-primary/10 dark:bg-primary/10 dark:hover:bg-primary/20 border border-primary/20 hover:border-primary/45 text-slate-800 dark:text-primary hover:text-slate-900 dark:hover:text-primary-foreground/90 rounded-xl py-3 justify-start px-4 h-12 font-semibold transition-all duration-300 hover:scale-[1.02] w-full"
+                  onClick={() => setShowCreateFolder(true)}
+                  className="bg-muted/30 hover:bg-muted/70 border border-border/80 text-foreground rounded-xl py-3 justify-start px-4 h-14 font-semibold transition-all duration-200 hover:scale-[1.01] w-full"
                   variant="outline"
                 >
-                  <FolderPlus className="w-5 h-5 mr-3 text-primary" />
-                  New Folder
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center mr-3 shrink-0">
+                    <FolderPlus className="w-5 h-5" />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-bold text-sm text-foreground">New Folder</div>
+                    <div className="text-[11px] text-muted-foreground font-normal">Create a new subfolder in this location</div>
+                  </div>
                 </Button>
               </DialogClose>
               
               <DialogClose asChild>
                 <Button
-                  onClick={() => {
-                    setShowUploadDialog(true)
-                  }}
-                  className="bg-accent/5 hover:bg-accent/10 dark:bg-accent/10 dark:hover:bg-accent/20 border border-accent/20 hover:border-accent/45 text-slate-800 dark:text-accent hover:text-slate-900 dark:hover:text-accent-foreground/90 rounded-xl py-3 justify-start px-4 h-12 font-semibold transition-all duration-300 hover:scale-[1.02] w-full"
+                  onClick={() => setShowUploadDialog(true)}
+                  className="bg-muted/30 hover:bg-muted/70 border border-border/80 text-foreground rounded-xl py-3 justify-start px-4 h-14 font-semibold transition-all duration-200 hover:scale-[1.01] w-full"
                   variant="outline"
                 >
-                  <Upload className="w-5 h-5 mr-3 text-accent" />
-                  Upload Files
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center mr-3 shrink-0">
+                    <Upload className="w-5 h-5" />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-bold text-sm text-foreground">Upload Files</div>
+                    <div className="text-[11px] text-muted-foreground font-normal">Upload documents or files to Drive</div>
+                  </div>
                 </Button>
               </DialogClose>
             </div>
@@ -638,19 +644,19 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
 
       {/* File Upload Dialog with Drag & Drop */}
       <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
-        <DialogContent className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-slate-200/60 dark:border-white/10 max-w-2xl shadow-lg dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden rounded-2xl p-6">
-          <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500" />
+        <DialogContent className="bg-background/95 dark:bg-card/95 backdrop-blur-2xl border border-border max-w-2xl shadow-2xl rounded-3xl p-6 overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary via-accent to-primary" />
           
-          <div className="flex flex-col items-center text-center pt-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 dark:from-purple-500/15 dark:to-pink-500/15 border border-purple-500/30 flex items-center justify-center mb-4 text-purple-500 dark:text-purple-400 shadow-[0_8px_30px_rgba(168,85,247,0.15)] animate-bounce duration-1000">
+          <div className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center mb-3">
               <CloudUpload className="w-6 h-6" />
             </div>
             
-            <DialogHeader className="items-center text-center">
-              <DialogTitle className="text-2xl font-black italic tracking-tight bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent uppercase">
+            <DialogHeader className="items-center text-center space-y-1">
+              <DialogTitle className="text-xl font-bold tracking-tight text-foreground">
                 Upload Files
               </DialogTitle>
-              <DialogDescription className="text-slate-600 dark:text-muted-foreground/80 font-medium mt-1">
+              <DialogDescription className="text-xs text-muted-foreground font-medium">
                 Drag and drop files here or click to browse
               </DialogDescription>
             </DialogHeader>
@@ -866,19 +872,19 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
           setShowCreateFolder(open)
         }
       }}>
-        <DialogContent className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-slate-200/60 dark:border-white/10 max-w-md shadow-lg dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden rounded-2xl p-6">
-          <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500" />
+        <DialogContent className="bg-background/95 dark:bg-card/95 backdrop-blur-2xl border border-border max-w-md shadow-2xl rounded-3xl p-6 overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400" />
           
-          <div className="flex flex-col items-center text-center pt-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 dark:from-blue-500/15 dark:to-indigo-500/15 border border-blue-500/30 flex items-center justify-center mb-4 text-blue-500 dark:text-blue-400 shadow-[0_8px_30px_rgba(59,130,246,0.15)] animate-bounce duration-1000">
+          <div className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3">
               <FolderPlus className="w-6 h-6" />
             </div>
             
-            <DialogHeader className="items-center text-center">
-              <DialogTitle className="text-2xl font-black italic tracking-tight bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500 bg-clip-text text-transparent uppercase">
+            <DialogHeader className="items-center text-center space-y-1">
+              <DialogTitle className="text-xl font-bold tracking-tight text-foreground">
                 Create New Folder
               </DialogTitle>
-              <DialogDescription className="text-slate-600 dark:text-muted-foreground/80 font-medium mt-1">
+              <DialogDescription className="text-xs text-muted-foreground font-medium">
                 Enter a name for your new folder
               </DialogDescription>
             </DialogHeader>

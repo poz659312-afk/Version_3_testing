@@ -158,7 +158,7 @@ export function FileActions({ fileId, fileName, onDeleted, onRenamed }: FileActi
 
       {/* Rename Dialog */}
       <Dialog open={showRenameDialog} onOpenChange={setShowRenameDialog}>
-        <DialogContent className="/90 backdrop-blur-xl border-border  max-w-md">
+        <DialogContent className="bg-background/95 dark:bg-card/95 backdrop-blur-2xl border border-border max-w-md shadow-2xl rounded-3xl p-6 overflow-hidden">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
               Rename File
@@ -247,7 +247,7 @@ export function FileActions({ fileId, fileName, onDeleted, onRenamed }: FileActi
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="/90 backdrop-blur-xl border-red-500/20  max-w-md">
+        <AlertDialogContent className="bg-background/95 dark:bg-card/95 backdrop-blur-2xl border border-border max-w-md shadow-2xl rounded-3xl p-6 overflow-hidden">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-xl font-semibold bg-gradient-to-r from-red-400 to-red-500 bg-clip-text text-transparent flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-500" />
@@ -444,7 +444,7 @@ export function FolderActions({ folderId, folderName, onDeleted, onRenamed }: Fo
 
       {/* Rename Dialog */}
       <Dialog open={showRenameDialog} onOpenChange={setShowRenameDialog}>
-        <DialogContent className="/90 backdrop-blur-xl border-border  max-w-md">
+        <DialogContent className="bg-background/95 dark:bg-card/95 backdrop-blur-2xl border border-border max-w-md shadow-2xl rounded-3xl p-6 overflow-hidden">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
               Rename Folder
@@ -529,7 +529,7 @@ export function FolderActions({ folderId, folderName, onDeleted, onRenamed }: Fo
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent className="/90 backdrop-blur-xl border-border  max-w-md">
+        <AlertDialogContent className="bg-background/95 dark:bg-card/95 backdrop-blur-2xl border border-border max-w-md shadow-2xl rounded-3xl p-6 overflow-hidden">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-xl font-semibold text-red-400 flex items-center gap-2">
               <AlertTriangle className="w-5 h-5" />
@@ -642,20 +642,20 @@ export function RenameFileDialog({ fileId, fileName, isOpen, onClose, onRenamed 
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
-      <DialogContent className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-slate-200/60 dark:border-white/10 max-w-md shadow-lg dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden rounded-2xl p-6">
-        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-amber-400 via-orange-500 to-yellow-400" />
+      <DialogContent className="bg-background/95 dark:bg-card/95 backdrop-blur-2xl border border-border max-w-md shadow-2xl rounded-3xl p-6 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400" />
         
-        <div className="flex flex-col items-center text-center pt-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/15 dark:to-orange-500/15 border border-amber-500/30 flex items-center justify-center mb-4 text-amber-500 dark:text-amber-400 shadow-[0_8px_30px_rgb(245,158,11,0.15)] animate-bounce duration-1000">
+        <div className="flex flex-col items-center text-center">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3">
             <Edit className="w-6 h-6" />
           </div>
           
-          <DialogHeader className="items-center text-center">
-            <DialogTitle className="text-2xl font-black italic tracking-tight bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 bg-clip-text text-transparent uppercase">
+          <DialogHeader className="items-center text-center space-y-1">
+            <DialogTitle className="text-xl font-bold tracking-tight text-foreground">
               Rename File
             </DialogTitle>
-            <DialogDescription className="text-slate-600 dark:text-muted-foreground/80 font-medium mt-1">
-              Enter a new name for "{fileName}"
+            <DialogDescription className="text-xs text-muted-foreground font-medium">
+              Enter a new name for &quot;{fileName}&quot;
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -786,20 +786,20 @@ export function DeleteFileDialog({ fileId, fileName, isOpen, onClose, onDeleted 
 
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
-      <AlertDialogContent className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-slate-200/60 dark:border-red-500/15 max-w-md shadow-lg dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden rounded-2xl p-6">
-        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-rose-500 via-red-500 to-orange-600" />
+      <AlertDialogContent className="bg-background/95 dark:bg-card/95 backdrop-blur-2xl border border-border max-w-md shadow-2xl rounded-3xl p-6 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-red-500 via-rose-500 to-amber-500" />
         
-        <div className="flex flex-col items-center text-center pt-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-500/10 to-rose-500/10 border border-red-500/30 flex items-center justify-center mb-4 text-red-500 shadow-[0_8px_30px_rgb(239,68,68,0.15)] animate-pulse">
+        <div className="flex flex-col items-center text-center">
+          <div className="w-12 h-12 rounded-2xl bg-destructive/10 border border-destructive/20 text-destructive flex items-center justify-center mb-3">
             <AlertTriangle className="w-6 h-6" />
           </div>
           
-          <AlertDialogHeader className="items-center text-center">
-            <AlertDialogTitle className="text-2xl font-black italic tracking-tight bg-gradient-to-r from-rose-500 via-red-500 to-orange-500 bg-clip-text text-transparent uppercase">
+          <AlertDialogHeader className="items-center text-center space-y-1">
+            <AlertDialogTitle className="text-xl font-bold tracking-tight text-foreground">
               Delete File
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-600 dark:text-muted-foreground/80 font-medium mt-2 max-w-xs leading-relaxed">
-              Are you sure you want to delete <span className="text-slate-900 dark:text-foreground font-bold break-all">"{fileName}"</span>? This action is permanent and cannot be undone.
+            <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
+              Are you sure you want to delete <span className="font-bold text-foreground break-all">&quot;{fileName}&quot;</span>? This action is permanent and cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
         </div>
@@ -914,20 +914,20 @@ export function RenameFolderDialog({ folderId, folderName, isOpen, onClose, onRe
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
-      <DialogContent className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-slate-200/60 dark:border-white/10 max-w-md shadow-lg dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden rounded-2xl p-6">
-        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400" />
+      <DialogContent className="bg-background/95 dark:bg-card/95 backdrop-blur-2xl border border-border max-w-md shadow-2xl rounded-3xl p-6 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400" />
         
-        <div className="flex flex-col items-center text-center pt-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/10 to-indigo-500/10 dark:from-blue-500/15 dark:to-indigo-500/15 border border-blue-500/30 flex items-center justify-center mb-4 text-blue-500 dark:text-blue-400 shadow-[0_8px_30px_rgb(59,130,246,0.15)] animate-bounce duration-1000">
+        <div className="flex flex-col items-center text-center">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3">
             <Edit className="w-6 h-6" />
           </div>
           
-          <DialogHeader className="items-center text-center">
-            <DialogTitle className="text-2xl font-black italic tracking-tight bg-gradient-to-r from-blue-500 via-indigo-455 to-cyan-500 bg-clip-text text-transparent uppercase">
+          <DialogHeader className="items-center text-center space-y-1">
+            <DialogTitle className="text-xl font-bold tracking-tight text-foreground">
               Rename Folder
             </DialogTitle>
-            <DialogDescription className="text-slate-600 dark:text-muted-foreground/80 font-medium mt-1">
-              Enter a new name for "{folderName}"
+            <DialogDescription className="text-xs text-muted-foreground font-medium">
+              Enter a new name for &quot;{folderName}&quot;
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -1058,23 +1058,22 @@ export function DeleteFolderDialog({ folderId, folderName, isOpen, onClose, onDe
 
   return (
     <AlertDialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
-      <AlertDialogContent className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-slate-200/60 dark:border-red-500/15 max-w-md shadow-lg dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden rounded-2xl p-6">
-        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-rose-500 via-red-500 to-orange-600" />
+      <AlertDialogContent className="bg-background/95 dark:bg-card/95 backdrop-blur-2xl border border-border max-w-md shadow-2xl rounded-3xl p-6 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-red-500 via-rose-500 to-amber-500" />
         
-        <div className="flex flex-col items-center text-center pt-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-500/10 to-rose-500/10 border border-red-500/30 flex items-center justify-center mb-4 text-red-500 shadow-[0_8px_30px_rgb(239,68,68,0.15)] animate-pulse">
+        <div className="flex flex-col items-center text-center">
+          <div className="w-12 h-12 rounded-2xl bg-destructive/10 border border-destructive/20 text-destructive flex items-center justify-center mb-3">
             <AlertTriangle className="w-6 h-6" />
           </div>
           
-          <AlertDialogHeader className="items-center text-center">
-            <AlertDialogTitle className="text-2xl font-black italic tracking-tight bg-gradient-to-r from-rose-500 via-red-500 to-orange-500 bg-clip-text text-transparent uppercase">
+          <AlertDialogHeader className="items-center text-center space-y-1">
+            <AlertDialogTitle className="text-xl font-bold tracking-tight text-foreground">
               Delete Folder
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-600 dark:text-muted-foreground/80 font-medium mt-2 max-w-xs leading-relaxed">
-              Are you sure you want to delete the folder <span className="text-slate-900 dark:text-foreground font-bold break-all">"{folderName}"</span>? 
-              <br />
-              <span className="text-red-800 dark:text-red-400/90 text-xs font-semibold block mt-3 bg-red-500/5 dark:bg-red-500/10 border border-red-500/20 p-3 rounded-xl leading-relaxed">
-                Warning: This will permanently delete the folder and all files and subfolders inside it.
+            <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed">
+              Are you sure you want to delete <span className="font-bold text-foreground break-all">&quot;{folderName}&quot;</span>?
+              <span className="text-destructive font-semibold block mt-2 bg-destructive/10 border border-destructive/20 p-2.5 rounded-xl">
+                Warning: This will permanently delete the folder and all files inside it.
               </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
