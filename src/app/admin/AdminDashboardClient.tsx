@@ -1087,11 +1087,11 @@ export default function AdminDashboardClient({
             <CardHeader className="pb-4">
               <CardTitle>User Directory</CardTitle>
               <CardDescription>
-                Search and manage students' roles, specializations, and levels.
+                Search and manage students' platform roles and account access privileges.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Search & Filters Row */}
+              {/* Search Row */}
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -1102,45 +1102,6 @@ export default function AdminDashboardClient({
                     className="pl-10 bg-muted/30 border-border"
                   />
                 </div>
-                
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex items-center gap-2 bg-muted/30 px-3 py-1.5 rounded-lg border border-border">
-                    <Filter className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground font-medium">Filter:</span>
-                  </div>
-
-                  {/* Specialization Select */}
-                  <Select value={specFilter} onValueChange={(val) => {
-                    setSpecFilter(val)
-                    setPage(1)
-                  }}>
-                    <SelectTrigger className="w-[180px] bg-muted/20 border-border">
-                      <SelectValue placeholder="Specialization" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ALL">All Specializations</SelectItem>
-                      {SPECIALIZATIONS.map(s => (
-                        <SelectItem key={s} value={s}>{s}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  {/* Level Select */}
-                  <Select value={levelFilter} onValueChange={(val) => {
-                    setLevelFilter(val)
-                    setPage(1)
-                  }}>
-                    <SelectTrigger className="w-[130px] bg-muted/20 border-border">
-                      <SelectValue placeholder="Academic Level" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ALL">All Levels</SelectItem>
-                      {LEVELS.map(l => (
-                        <SelectItem key={l} value={String(l)}>Level {l}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
 
               {/* Users Table */}
@@ -1150,8 +1111,6 @@ export default function AdminDashboardClient({
                     <TableRow>
                       <TableHead>User</TableHead>
                       <TableHead>Email</TableHead>
-                      <TableHead>Specialization</TableHead>
-                      <TableHead>Level</TableHead>
                       <TableHead>Admin Status</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -1159,7 +1118,7 @@ export default function AdminDashboardClient({
                   <TableBody>
                     {isLoading ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-12">
+                        <TableCell colSpan={4} className="text-center py-12">
                           <div className="flex items-center justify-center gap-2 text-muted-foreground">
                             <Loader2 className="w-5 h-5 animate-spin text-primary" />
                             <span className="text-sm font-medium">Loading user data...</span>
@@ -1168,8 +1127,8 @@ export default function AdminDashboardClient({
                       </TableRow>
                     ) : users.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
-                          No users found matching your filters.
+                        <TableCell colSpan={4} className="text-center py-10 text-muted-foreground">
+                          No users found matching your search.
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -1177,24 +1136,6 @@ export default function AdminDashboardClient({
                         <TableRow key={u.auth_id} className="hover:bg-muted/10 transition-colors">
                           <TableCell className="font-semibold">{u.username || 'No Username'}</TableCell>
                           <TableCell className="text-muted-foreground text-sm">{u.email || 'No Email'}</TableCell>
-                          <TableCell>
-                            {u.specialization ? (
-                              <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5">
-                                {u.specialization}
-                              </Badge>
-                            ) : (
-                              <span className="text-muted-foreground text-xs italic">Unassigned</span>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {u.current_level ? (
-                              <Badge variant="secondary" className="bg-neutral-800 text-neutral-300">
-                                Level {u.current_level}
-                              </Badge>
-                            ) : (
-                              <span className="text-muted-foreground text-xs italic">Unassigned</span>
-                            )}
-                          </TableCell>
                           <TableCell>
                             <div className="flex gap-1.5 items-center flex-wrap">
                               {u.is_super_admin && (
@@ -2615,7 +2556,7 @@ export default function AdminDashboardClient({
               Manage User: {editingUser?.username}
             </DialogTitle>
             <DialogDescription>
-              Modify this student's platform privileges and Google Drive folder mappings.
+              Modify this student's platform privileges and account status.
             </DialogDescription>
           </DialogHeader>
 
@@ -2633,38 +2574,6 @@ export default function AdminDashboardClient({
                     Drive Sync Disabled
                   </Badge>
                 )}
-              </div>
-
-              {/* Specialization select */}
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-muted-foreground">Specialization</label>
-                <Select value={editSpec} onValueChange={setEditSpec}>
-                  <SelectTrigger className="bg-muted/10 border-border">
-                    <SelectValue placeholder="Select Specialization" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="None">None (General)</SelectItem>
-                    {SPECIALIZATIONS.map(s => (
-                      <SelectItem key={s} value={s}>{s}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Academic level select */}
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-muted-foreground">Academic Level</label>
-                <Select value={editLevel} onValueChange={setEditLevel}>
-                  <SelectTrigger className="bg-muted/10 border-border">
-                    <SelectValue placeholder="Select Level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="None">None (Unassigned)</SelectItem>
-                    {LEVELS.map(l => (
-                      <SelectItem key={l} value={String(l)}>Level {l}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
 
               {/* Admin Privileges toggle */}
