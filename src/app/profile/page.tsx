@@ -1476,8 +1476,8 @@ export default function ProfilePage() {
                     </div>
 
                     {/* Right Column: Chameleon Reading Mascot */}
-                    <div className="w-full lg:w-64 flex items-center justify-center shrink-0 p-2">
-                      <div className="relative w-44 h-44 sm:w-52 sm:h-52 lg:w-60 lg:h-60 transition-transform duration-300 hover:scale-105">
+                    <div className="w-full lg:w-[360px] flex items-center justify-center shrink-0 p-2">
+                      <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-[360px] lg:h-[360px]">
                         <Image
                           src="/images/chameleon/04_chameleon_reading.png"
                           alt="Chameleon Reading"
