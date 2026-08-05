@@ -1366,7 +1366,7 @@ export default function ProfilePage() {
               </motion.div>
 
               {/* Profile Edit Action Card */}
-              <Card className="bg-card border-border shadow-xl h-full">
+              <Card className="bg-card border-border shadow-xl h-full overflow-hidden">
                 <CardHeader className="text-center pb-6">
                   <CardTitle className="text-2xl font-outfit font-extrabold italic tracking-tight text-foreground">
                     Identity <span className="text-primary">Attributes</span>
@@ -1380,95 +1380,111 @@ export default function ProfilePage() {
                 </CardHeader>
 
                 <CardContent className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 border border-border transition-all hover:bg-muted">
-                      <div className="p-3 rounded-full bg-primary/10">
-                        <Mail className="w-5 h-5 text-primary" />
+                  <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-8">
+                    {/* Left Column: Cards Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1 w-full">
+                      <div className="flex items-center gap-3.5 p-4 rounded-xl bg-muted/40 border border-border/80 transition-all hover:bg-muted/70">
+                        <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                          <Mail className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-outfit font-semibold">Access Endpoint</p>
+                          <p className="text-foreground font-medium font-outfit truncate text-sm">{userData.email || 'Not provided'}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-outfit">Access Endpoint</p>
-                        <p className="text-foreground font-medium font-outfit">{userData.email || 'Not provided'}</p>
+                      
+                      <div className="flex items-center gap-3.5 p-4 rounded-xl bg-muted/40 border border-border/80 transition-all hover:bg-muted/70">
+                        <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                          <Phone className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-outfit font-semibold">Secure Comms</p>
+                          <p className="text-foreground font-medium font-outfit truncate text-sm">{userData.phone_number || 'Not provided'}</p>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 border border-border transition-all hover:bg-muted">
-                      <div className="p-3 rounded-full bg-primary/10">
-                        <Phone className="w-5 h-5 text-primary" />
+                      
+                      <div className="flex items-center gap-3.5 p-4 rounded-xl bg-muted/40 border border-border/80 transition-all hover:bg-muted/70">
+                        <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                          <User className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <Label htmlFor="username" className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1 font-outfit font-semibold">Designation</Label>
+                          {isEditing ? (
+                            <>
+                              <Input
+                                id="username"
+                                name="username"
+                                value={editForm.username}
+                                onChange={handleInputChange}
+                                className={`bg-background border-2 border-border text-foreground focus:border-primary focus:ring-primary/20 font-outfit h-9 text-sm ${validationErrors.username ? 'border-red-500' : ''}`}
+                              />
+                              {validationErrors.username && (
+                                <p className="text-red-500 text-xs mt-1 font-outfit">{validationErrors.username}</p>
+                              )}
+                            </>
+                          ) : (
+                            <p className="text-foreground font-medium font-outfit truncate text-sm">{userData.username}</p>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-outfit">Secure Comms</p>
-                        <p className="text-foreground font-medium font-outfit">{userData.phone_number || 'Not provided'}</p>
+
+                      <div className="flex items-center gap-3.5 p-4 rounded-xl bg-muted/40 border border-border/80 transition-all hover:bg-muted/70">
+                        <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                          <Calendar className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <Label htmlFor="age" className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1 font-outfit font-semibold">Cycle Count</Label>
+                          {isEditing ? (
+                            <>
+                              <Input
+                                id="age"
+                                name="age"
+                                type="number"
+                                value={editForm.age}
+                                onChange={handleInputChange}
+                                className={`bg-background border-2 border-border text-foreground focus:border-primary focus:ring-primary/20 font-outfit h-9 text-sm ${validationErrors.age ? 'border-red-500' : ''}`}
+                              />
+                              {validationErrors.age && (
+                                <p className="text-red-500 text-xs mt-1 font-outfit">{validationErrors.age}</p>
+                              )}
+                            </>
+                          ) : (
+                            <p className="text-foreground font-medium font-outfit truncate text-sm">{userData.age}</p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 border border-border transition-all hover:bg-muted">
-                      <div className="p-3 rounded-full bg-primary/10">
-                        <User className="w-5 h-5 text-primary" />
+
+                      <div className="flex items-center gap-3.5 p-4 rounded-xl bg-muted/40 border border-border/80 transition-all hover:bg-muted/70">
+                        <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                          <BookOpen className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-outfit font-semibold">Core Class</p>
+                          <p className="text-foreground font-medium font-outfit truncate text-sm">{userData.specialization}</p>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <Label htmlFor="username" className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1 font-outfit">Designation</Label>
-                        {isEditing ? (
-                          <>
-                            <Input
-                              id="username"
-                              name="username"
-                              value={editForm.username}
-                              onChange={handleInputChange}
-                              className={`bg-background border-2 border-border text-foreground focus:border-primary focus:ring-primary/20 font-outfit ${validationErrors.username ? 'border-red-500' : ''}`}
-                            />
-                            {validationErrors.username && (
-                              <p className="text-red-500 text-xs mt-1 font-outfit">{validationErrors.username}</p>
-                            )}
-                          </>
-                        ) : (
-                          <p className="text-foreground font-medium font-outfit">{userData.username}</p>
-                        )}
+
+                      <div className="flex items-center gap-3.5 p-4 rounded-xl bg-muted/40 border border-border/80 transition-all hover:bg-muted/70">
+                        <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                          <GraduationCap className="w-5 h-5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-outfit font-semibold">Authority Level</p>
+                          <p className="text-foreground font-medium font-outfit truncate text-sm">Level {userData.current_level}</p>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 border border-border transition-all hover:bg-muted">
-                      <div className="p-3 rounded-full bg-primary/10">
-                        <Calendar className="w-5 h-5 text-primary" />
-                      </div>
-                      <div className="flex-1">
-                        <Label htmlFor="age" className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1 font-outfit">Cycle Count</Label>
-                        {isEditing ? (
-                          <>
-                            <Input
-                              id="age"
-                              name="age"
-                              type="number"
-                              value={editForm.age}
-                              onChange={handleInputChange}
-                              className={`bg-background border-2 border-border text-foreground focus:border-primary focus:ring-primary/20 font-outfit ${validationErrors.age ? 'border-red-500' : ''}`}
-                            />
-                            {validationErrors.age && (
-                              <p className="text-red-500 text-xs mt-1 font-outfit">{validationErrors.age}</p>
-                            )}
-                          </>
-                        ) : (
-                          <p className="text-foreground font-medium font-outfit">{userData.age}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 border border-border transition-all hover:bg-muted">
-                      <div className="p-3 rounded-full bg-primary/10">
-                        <BookOpen className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-outfit">Core Class</p>
-                        <p className="text-foreground font-medium font-outfit">{userData.specialization}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 border border-border transition-all hover:bg-muted">
-                      <div className="p-3 rounded-full bg-primary/10">
-                        <GraduationCap className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-outfit">Authority Level</p>
-                        <p className="text-foreground font-medium font-outfit">Level {userData.current_level}</p>
+                    {/* Right Column: Chameleon Reading Mascot */}
+                    <div className="w-full lg:w-64 flex items-center justify-center shrink-0 p-2">
+                      <div className="relative w-44 h-44 sm:w-52 sm:h-52 lg:w-60 lg:h-60 transition-transform duration-300 hover:scale-105">
+                        <Image
+                          src="/images/chameleon/04_chameleon_reading.png"
+                          alt="Chameleon Reading"
+                          fill
+                          className="object-contain drop-shadow-xl"
+                          priority
+                        />
                       </div>
                     </div>
                   </div>
@@ -1478,14 +1494,14 @@ export default function ProfilePage() {
                       <Button 
                         onClick={handleCancelEdit}
                         variant="outline"
-                        className="rounded-full transition-all px-8"
+                        className="rounded-full transition-all px-8 cursor-pointer"
                       >
                         <X className="w-4 h-4 mr-2" /> Abort
                       </Button>
                       <Button 
                         onClick={handleSaveEdit}
                         disabled={isSaving}
-                        className="rounded-full bg-primary min-w-[120px] text-primary-foreground font-bold shadow-md transition-all"
+                        className="rounded-full bg-primary min-w-[120px] text-primary-foreground font-bold shadow-md transition-all cursor-pointer"
                       >
                         {isSaving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="w-4 h-4 mr-2" />} Sync
                       </Button>
@@ -1495,7 +1511,7 @@ export default function ProfilePage() {
                       <Button 
                         onClick={handleEdit}
                         variant="secondary"
-                        className="rounded-full min-w-[200px] font-outfit font-bold transition-all"
+                        className="rounded-full min-w-[200px] font-outfit font-bold transition-all cursor-pointer"
                       >
                         <Edit3 className="w-4 h-4 mr-2" /> Modify Attributes
                       </Button>
