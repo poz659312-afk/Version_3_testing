@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   generator: "Chameleon v3.0",
 }
 
-export default function RootLayout({
+export default function MarlineLayout({
   children,
 }: {
   children: React.ReactNode

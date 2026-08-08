@@ -53,10 +53,10 @@ export default function NotFound() {
         <div className="pt-12 border-t border-zinc-900/50 max-w-lg mx-auto">
           <p className="text-[10px] uppercase tracking-widest text-zinc-600 mb-6 font-bold">Suggested Destinations</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <Link href="/explo" className="p-3 rounded-xl border border-zinc-900 hover:border-zinc-800 bg-zinc-950/30 transition-all group">
+            <Link href="/marline" className="p-3 rounded-xl border border-zinc-900 hover:border-zinc-800 bg-zinc-950/30 transition-all group">
               <div className="flex items-center justify-center gap-2">
                 <Compass className="w-3 h-3 text-zinc-500 group-hover:text-blue-400" />
-                <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200">Explo</span>
+                <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200">Marline AI</span>
               </div>
             </Link>
             <Link href="/Tournment" className="p-3 rounded-xl border border-zinc-900 hover:border-zinc-800 bg-zinc-950/30 transition-all group">

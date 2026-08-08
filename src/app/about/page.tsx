@@ -236,7 +236,7 @@ export default function AboutPage() {
                 <Brain className="w-6 h-6 text-accent" />
                 <span className="font-medium text-accent font-rubik">AI-Powered Assistance</span>
               </div>
-              <p className="text-foreground/70 text-sm mb-3 font-rubik">Intelligent chatbot (ExploAI) providing instant answers to student queries.</p>
+              <p className="text-foreground/70 text-sm mb-3 font-rubik">Intelligent chatbot (Marline AI) providing instant answers to student queries.</p>
               <div className="flex flex-wrap gap-2">
                 <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">24/7 Support</Badge>
                 <Badge className="bg-accent/20 text-accent border border-accent/30 text-xs font-rubik">Smart Responses</Badge>
