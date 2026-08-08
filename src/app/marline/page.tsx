@@ -82,6 +82,17 @@ export default function MarlineAssistantPage() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const isUserScrolledUpRef = useRef<boolean>(false)
+
+  // Pre-load Web Speech API voices
+  useEffect(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices()
+      }
+    }
+  }, [])
 
   // Initialize Chat Sessions
   useEffect(() => {
@@ -117,9 +128,19 @@ export default function MarlineAssistantPage() {
     }
   }, [sessions])
 
-  // Scroll to bottom on new message
+  // Track User Scroll Position (Prevent Forced Auto-Scroll when user scrolls up)
+  const handleContainerScroll = () => {
+    if (!scrollContainerRef.current) return
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 120
+    isUserScrolledUpRef.current = !isNearBottom
+  }
+
+  // Smart Auto-Scroll: Only scroll to bottom if user HAS NOT manually scrolled up
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    if (!isUserScrolledUpRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
   }, [sessions, activeSessionId, isLoading])
 
   const activeSession = sessions.find((s) => s.id === activeSessionId) || sessions[0]
@@ -160,7 +181,42 @@ export default function MarlineAssistantPage() {
     }
   }
 
-  // Text-To-Speech Toggle
+  // Helper for selecting top-quality female voice
+  const getBestFemaleVoice = (isArabic: boolean): SpeechSynthesisVoice | null => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return null
+    const voices = window.speechSynthesis.getVoices()
+    if (!voices || voices.length === 0) return null
+
+    if (isArabic) {
+      const arFemaleKeywords = [
+        "laila", "zariyah", "salma", "tarana", "maryam", "zeina", "hoda", "samira", "nour",
+        "arabic (female)", "arabic female", "ar-sa", "ar-eg", "ar-ae"
+      ]
+      for (const kw of arFemaleKeywords) {
+        const match = voices.find(
+          (v) => v.lang.toLowerCase().startsWith("ar") && v.name.toLowerCase().includes(kw)
+        )
+        if (match) return match
+      }
+      const anyAr = voices.find((v) => v.lang.toLowerCase().startsWith("ar"))
+      if (anyAr) return anyAr
+    }
+
+    const enFemaleKeywords = [
+      "zira", "samantha", "aria", "jenny", "karen", "victoria", "susan", "hazel",
+      "female", "woman", "en-us-female"
+    ]
+    for (const kw of enFemaleKeywords) {
+      const match = voices.find(
+        (v) => v.lang.toLowerCase().startsWith("en") && v.name.toLowerCase().includes(kw)
+      )
+      if (match) return match
+    }
+
+    return voices.find((v) => v.lang.toLowerCase().startsWith("en")) || null
+  }
+
+  // Text-To-Speech Toggle with High-Quality Female Voice
   const handleSpeak = (text: string, msgId: string) => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return
 
@@ -171,9 +227,19 @@ export default function MarlineAssistantPage() {
     }
 
     window.speechSynthesis.cancel()
-    const cleanText = text.replace(/```[\s\S]*?```/g, "كود برمجي").replace(/[#*`$_]/g, "")
+    const cleanText = text.replace(/```[\s\S]*?```/g, "كود برمجي").replace(/[#*`$_~>]/g, "")
+    const isArabic = /[\u0600-\u06FF]/.test(cleanText)
+
     const utterance = new SpeechSynthesisUtterance(cleanText)
-    utterance.lang = /[\u0600-\u06FF]/.test(cleanText) ? "ar-SA" : "en-US"
+    utterance.lang = isArabic ? "ar-SA" : "en-US"
+    utterance.pitch = 1.08 // Elegant female tone
+    utterance.rate = 0.96  // Smooth, natural reading speed
+
+    const femaleVoice = getBestFemaleVoice(isArabic)
+    if (femaleVoice) {
+      utterance.voice = femaleVoice
+    }
+
     utterance.onend = () => setIsSpeaking(null)
     utterance.onerror = () => setIsSpeaking(null)
 
@@ -196,6 +262,9 @@ export default function MarlineAssistantPage() {
   const handleSend = async (customPrompt?: string) => {
     const textToSend = customPrompt || input
     if (!textToSend.trim() || isLoading) return
+
+    // Reset user scroll state on new prompt so view auto-scrolls down for new prompt
+    isUserScrolledUpRef.current = false
 
     const userMsg: Message = {
       id: "msg-" + Date.now(),
@@ -475,7 +544,12 @@ export default function MarlineAssistantPage() {
         </header>
 
         {/* Messages Container / Welcome View */}
-        <div className="flex-1 overflow-y-auto marline-scroll overscroll-contain p-4 md:p-6 space-y-6 scroll-smooth" data-lenis-prevent="true">
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleContainerScroll}
+          className="flex-1 overflow-y-auto marline-scroll overscroll-contain p-4 md:p-6 space-y-6 scroll-smooth"
+          data-lenis-prevent="true"
+        >
           {messages.length === 0 ? (
             /* Welcome View */
             <div className="max-w-2xl mx-auto my-auto py-8 text-center flex flex-col items-center justify-center space-y-6">
