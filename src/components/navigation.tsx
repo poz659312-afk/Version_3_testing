@@ -299,8 +299,8 @@ export default function Navigation() {
     }
   }
 
-  // Hide completely on quiz interface and auth pages
-  if (pathname?.startsWith("/quiz/") || pathname?.startsWith("/auth")) {
+  // Hide completely on quiz interface, auth pages, and Marline/Explo assistant pages
+  if (pathname?.startsWith("/quiz/") || pathname?.startsWith("/auth") || pathname?.startsWith("/marline") || pathname?.startsWith("/explo")) {
     return null
   }
 
