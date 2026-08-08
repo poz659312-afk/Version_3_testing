@@ -41,9 +41,9 @@ function CodeBlock({ language, codeText, children }: { language: string; codeTex
   }
 
   return (
-    <div className="my-4 rounded-2xl overflow-hidden border border-border/80 bg-slate-950 text-slate-100 shadow-xl font-mono text-xs dir-ltr">
+    <div dir="ltr" className="my-4 rounded-2xl overflow-hidden border border-border/80 bg-slate-950 text-slate-100 shadow-xl font-mono text-xs text-left">
       {/* Code Header */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-slate-400 select-none">
+      <div dir="ltr" className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-slate-400 select-none text-left">
         <div className="flex items-center gap-2">
           <Terminal className="w-3.5 h-3.5 text-primary" />
           <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-300">
@@ -70,9 +70,9 @@ function CodeBlock({ language, codeText, children }: { language: string; codeTex
       </div>
 
       {/* Code Content */}
-      <div className="p-4 overflow-x-auto text-[13px] leading-relaxed select-text">
-        <pre className="font-mono">
-          <code>{children || codeText}</code>
+      <div dir="ltr" className="p-4 overflow-x-auto text-[13px] leading-relaxed select-text text-left dir-ltr">
+        <pre dir="ltr" className="font-mono text-left">
+          <code dir="ltr" className="font-mono text-left">{children || codeText}</code>
         </pre>
       </div>
     </div>
@@ -97,7 +97,8 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
 
             return (
               <code
-                className="px-1.5 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-mono text-xs font-semibold"
+                dir="ltr"
+                className="px-1.5 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-primary font-mono text-xs font-semibold inline-block text-left"
                 {...props}
               >
                 {children}
