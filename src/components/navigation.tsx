@@ -23,7 +23,7 @@ const navItems = [
   { name: "Store", href: "/store", icon: ShoppingBag },
   { name: "Specializations", href: "#", icon: SquareUserRound },
   { name: "Study Spaces", href: "/study-spaces", icon: BookMarked  },
-  { name: "Marline", href: "/marline", icon: Ai },
+  { name: "Marline", href: "/marline", icon: BrainCircuit },
 ]
 
 function NavClock() {
