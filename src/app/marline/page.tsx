@@ -313,7 +313,7 @@ export default function MarlineAssistantPage() {
           </Button>
 
           {/* Sessions List */}
-          <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 pl-1">
+          <div className="flex-1 overflow-y-auto marline-scroll overscroll-contain space-y-1.5 pr-1 pl-1" data-lenis-prevent="true">
             <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider px-2 pt-2 mb-1">
               سجل المحادثات
             </div>
@@ -425,7 +425,7 @@ export default function MarlineAssistantPage() {
         </header>
 
         {/* Messages Container / Welcome View */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 scroll-smooth">
+        <div className="flex-1 overflow-y-auto marline-scroll overscroll-contain p-4 md:p-6 space-y-6 scroll-smooth" data-lenis-prevent="true">
           {messages.length === 0 ? (
             /* Welcome View */
             <div className="max-w-2xl mx-auto my-auto py-8 text-center flex flex-col items-center justify-center space-y-6">
