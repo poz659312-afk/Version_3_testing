@@ -408,7 +408,7 @@ export default function MarlineAssistantPage() {
                 <span className="font-extrabold text-base tracking-tight text-foreground flex items-center gap-1.5">
                   Marline <span className="text-primary text-xs bg-primary/10 px-1.5 py-0.5 rounded-md border border-primary/20">AI</span>
                 </span>
-                <p className="text-[10px] text-muted-foreground">Chameleon Companion</p>
+                <p className="text-[10px] text-muted-foreground">ChameleonFCDS Companion</p>
               </div>
             </Link>
 
