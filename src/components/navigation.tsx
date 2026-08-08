@@ -20,10 +20,10 @@ import { useTheme } from "@/components/theme-provider"
 import AvatarBorder from "./visual-effects/avatar-border"
 
 const navItems = [
-  { name: "Home", href: "/", icon: Home },
   { name: "Store", href: "/store", icon: ShoppingBag },
   { name: "Specializations", href: "#", icon: SquareUserRound },
   { name: "Study Spaces", href: "/study-spaces", icon: BookMarked  },
+  { name: "Marline", href: "/marline", icon: Ai },
 ]
 
 function NavClock() {
