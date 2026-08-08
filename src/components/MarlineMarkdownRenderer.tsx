@@ -17,12 +17,22 @@ interface MarlineMarkdownRendererProps {
   className?: string
 }
 
-function CodeBlock({ language, code }: { language: string; code: string }) {
+// Safely extract plain text from React nodes for clipboard copy
+function extractText(node: any): string {
+  if (!node) return ""
+  if (typeof node === "string") return node
+  if (typeof node === "number") return String(node)
+  if (Array.isArray(node)) return node.map(extractText).join("")
+  if (node.props && node.props.children) return extractText(node.props.children)
+  return ""
+}
+
+function CodeBlock({ language, codeText, children }: { language: string; codeText: string; children: React.ReactNode }) {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(code)
+      await navigator.clipboard.writeText(codeText)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
@@ -62,7 +72,7 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
       {/* Code Content */}
       <div className="p-4 overflow-x-auto text-[13px] leading-relaxed select-text">
         <pre className="font-mono">
-          <code>{code}</code>
+          <code>{children || codeText}</code>
         </pre>
       </div>
     </div>
@@ -76,13 +86,13 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[[rehypeKatex, { strict: false }], rehypeRaw, rehypeHighlight]}
         components={{
-          // Custom Code Block Renderer
+          // Custom Code Block Renderer fixing [object Object] bug
           code({ node, inline, className, children, ...props }: any) {
             const match = /language-(\w+)/.exec(className || "")
-            const codeString = String(children).replace(/\n$/, "")
+            const plainCodeText = extractText(children).replace(/\n$/, "")
 
-            if (!inline && (match || codeString.includes("\n"))) {
-              return <CodeBlock language={match ? match[1] : "text"} code={codeString} />
+            if (!inline && (match || plainCodeText.includes("\n"))) {
+              return <CodeBlock language={match ? match[1] : "text"} codeText={plainCodeText} children={children} />
             }
 
             return (
