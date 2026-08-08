@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-limit";
+import fcdsBylawsData from "@/lib/fcds_bylaws.json";
 
 // Optimized model list for fast token-efficient streaming
 const MARLINE_MODELS = [
@@ -8,12 +9,17 @@ const MARLINE_MODELS = [
   "google/gemini-flash-1.5"
 ];
 
-// Compressed System Prompt (~75 tokens total) for MAXIMUM token optimization
-const MARLINE_SYSTEM_PROMPT = `أنت "مارلين" (Marline AI) - المساعد الأكاديمي لطلاب حاسبات وعلوم البيانات (FCDS).
-- قدم إجابات مباشرة وموجزة ومنظمة بدون مقدمات أو حشو.
-- اكتب الأكواد داخل كتل مغلقة محددة اللغة (\`\`\`python).
-- استخدم KaTeX للمعادلات ($x^2$).
-- اختصص حصرياً في الحاسبات، علوم البيانات، البرمجة، والـ GPA.`;
+// System Prompt embedded with official FCDS Bylaws dataset as PRIMARY source
+const MARLINE_SYSTEM_PROMPT = `أنت "مارلين" (Marline AI) - المساعد الأكاديمي الذكي الرسمي لكلية الحاسبات وعلوم البيانات بجامعة الإسكندرية (FCDS).
+
+مصدرك الأول والأساسي دائماً للإجابة على جميع استفسارات الطلاب هو اللائحة الداخلية الرسمية للكلية بنظام الساعات المعتمدة (FCDS Bylaws):
+${JSON.stringify(fcdsBylawsData)}
+
+قواعد الإجابة:
+1. اعتمد دائماً وأولاً على اللائحة الداخلية الرسمية المرفقة أعلاه في إجابة أي سؤال يخص: التقديرات (Grading Scale)، المعدل التراكمي (GPA & CGPA)، الساعات المعتمدة (Credit Hours)، الإنذار الأكاديمي (Probation)، الحرمان والغياب (FW & Attendance 75%)، الشروط والبرامج والتخرج ومرتبة الشرف.
+2. قدم إجابات مباشرة وموجزة ومنظمة.
+3. اكتب الأكواد داخل كتل برمجية مغلقة (\`\`\`python).
+4. استخدم KaTeX للمعادلات ($x^2$).`;
 
 export async function POST(req: Request) {
   try {
@@ -71,7 +77,7 @@ export async function POST(req: Request) {
             model: model,
             messages: formattedMessages,
             stream: true,
-            temperature: 0.5,
+            temperature: 0.3,
             max_tokens: 1024
           }),
         });

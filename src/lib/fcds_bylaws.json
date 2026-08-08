@@ -1,0 +1,154 @@
+{
+  "faculty": {
+    "name_ar": "كلية الحاسبات وعلوم البيانات",
+    "name_en": "Faculty of Computers and Data Science (FCDS)",
+    "university_ar": "جامعة الإسكندرية",
+    "university_en": "Alexandria University",
+    "bylaws_date": "مارس 2019 (قرار مجلس الجامعة بتاريخ 31 مارس 2019)",
+    "degree_granted": "درجة البكالوريوس في الحاسبات وعلوم البيانات"
+  },
+  "academic_departments": [
+    {
+      "name_ar": "قسم الحوسبة ونظم المعلومات",
+      "name_en": "Computing and Information Systems Department"
+    },
+    {
+      "name_ar": "قسم علوم وتحليلات البيانات",
+      "name_en": "Data Sciences and Analytics Department"
+    }
+  ],
+  "academic_programs": [
+    {
+      "code": "01",
+      "name_ar": "برنامج الحوسبة وعلوم البيانات (البرنامج العام)",
+      "name_en": "Computing & Data Sciences (General Program)"
+    },
+    {
+      "code": "02",
+      "name_ar": "برنامج تحليلات الأعمال",
+      "name_en": "Business Analytics"
+    },
+    {
+      "code": "03",
+      "name_ar": "برنامج النظم الذكية",
+      "name_en": "Intelligent Systems"
+    },
+    {
+      "code": "04",
+      "name_ar": "برنامج تحليلات الوسائط الإعلامية",
+      "name_en": "Media Analytics"
+    },
+    {
+      "code": "05",
+      "name_ar": "برنامج تحليلات ومعلوماتية الرعاية الصحية",
+      "name_en": "Healthcare Informatics and Data Analytics"
+    },
+    {
+      "code": "06",
+      "name_ar": "برنامج الأمن السيبراني",
+      "name_en": "Cybersecurity"
+    }
+  ],
+  "study_system": {
+    "system_name": "نظام الساعات المعتمدة (Credit Hours System)",
+    "duration_years": 4,
+    "semesters": "8 فصول دراسية أساسية (خريف وربيع) + فصول صيفية اختيارية (8 أسابيع)",
+    "semester_duration_weeks": 15,
+    "language": "اللغة الإنجليزية هي لغة الدراسة الرسمية بالكلية",
+    "total_credit_hours_required": 140,
+    "graduation_min_cgpa": 2.00,
+    "min_semesters_for_graduation": 7
+  },
+  "credit_hours_distribution": {
+    "university_requirements": {
+      "total_hours": 10,
+      "compulsory_hours": 4,
+      "compulsory_courses": [
+        "التفكير الناقد Critical Thinking (2 ساعة معتمدة)",
+        "الابتكار وريادة الأعمال Innovation & Entrepreneurship (2 ساعة معتمدة)"
+      ],
+      "elective_hours": 6,
+      "non_credit_graduation_requirements": [
+        "حقوق الإنسان ومكافحة الفساد",
+        "خدمة المجتمع وتنمية البيئة",
+        "التربية العسكرية"
+      ]
+    },
+    "faculty_requirements": {
+      "total_hours": 60,
+      "compulsory_hours": 48,
+      "compulsory_courses_count": 16,
+      "elective_hours": 12,
+      "elective_courses_count": 4
+    },
+    "program_requirements": {
+      "total_hours": 70,
+      "compulsory_hours": 58,
+      "field_training_hours": 4,
+      "elective_hours": 12
+    }
+  },
+  "grading_system": {
+    "max_score_per_course": 100,
+    "written_exam_range": "من 50 إلى 70 درجة",
+    "oral_exam_max": "10 درجات (إن وجد)",
+    "grades_scale": [
+      { "grade": "A", "percentage": "90% فأكثر", "points": 4.000, "status": "ممتاز مرتفع" },
+      { "grade": "A-", "percentage": "من 85% إلى أقل من 90%", "points": 3.666, "status": "ممتاز" },
+      { "grade": "B+", "percentage": "من 80% إلى أقل من 85%", "points": 3.333, "status": "جيد جداً مرتفع" },
+      { "grade": "B", "percentage": "من 75% إلى أقل من 80%", "points": 3.000, "status": "جيد جداً" },
+      { "grade": "B-", "percentage": "من 70% إلى أقل من 75%", "points": 2.666, "status": "جيد مرتفع" },
+      { "grade": "C+", "percentage": "من 65% إلى أقل من 70%", "points": 2.333, "status": "جيد" },
+      { "grade": "C", "percentage": "من 60% إلى أقل من 65%", "points": 2.000, "status": "مقبول مرتفع" },
+      { "grade": "C-", "percentage": "من 56% إلى أقل من 60%", "points": 1.666, "status": "مقبول" },
+      { "grade": "D+", "percentage": "من 53% إلى أقل من 56%", "points": 1.333, "status": "ضعيف مرتفع" },
+      { "grade": "D", "percentage": "من 50% إلى أقل من 53%", "points": 1.000, "status": "ضعيف (الحد الأدنى للنجاح)" },
+      { "grade": "F", "percentage": "أقل من 50% إجمالي أو أقل من 30% بالتحريري", "points": 0.000, "status": "راسب لائحي" },
+      { "grade": "Abs", "percentage": "غائب عن التحريري بغير عذر مقبول", "points": 0.000, "status": "غائب ورسوب" }
+    ],
+    "special_symbols": {
+      "W": "Withdrawal - منسحب بموافقة المرشد قبل الموعد النهائي (لا تؤثر على المعدل)",
+      "FW": "Forced Withdrawal - منسحب إجبارياً ورسوب بسبب تجاوز نسبة الغياب 25%",
+      "I": "Incomplete - غير مكتمل (عذر قهري مقبول بالامتحان النهائي بشرط الحصول على 60% بعمل السنة)",
+      "IP": "In-Progress - تقدير ممتد لمقرر يدرس على فصلين",
+      "S": "Satisfactory - مستوى مرضي",
+      "U": "Unsatisfactory - مستوى غير مرضي (يجب إعادة المقرر)"
+    }
+  },
+  "academic_load": {
+    "min_hours_regular": 12,
+    "max_hours_regular": 19,
+    "max_hours_exceptional": 21,
+    "exceptional_conditions": "للطالب صاحب المعدل التراكمي CGPA >= 3.333 أو حالات التخرج في الترم الأخير",
+    "probation_student_max": 12,
+    "summer_semester_max": 9
+  },
+  "attendance_and_absence": {
+    "min_attendance_percentage": 75,
+    "first_warning_absence": 15,
+    "second_warning_absence": 20,
+    "forced_withdrawal_absence": 25,
+    "consequence_over_25": "يُحرم الطالب من امتحان النهائي ويُرصد له FW (راسب إجبارياً) وتوجب عليه إعادة دراسة المقرر"
+  },
+  "academic_probation_and_dismissal": {
+    "probation_trigger": "يعتبر الطالب متعثراً ويتبع للمراقبة الأكاديمية (Probation) إذا قل معدله التراكمي CGPA عن 1.666 بنهاية الفصل الثاني أو أقل من 2.000 بأي فصل دراسي تالٍ",
+    "probation_restrictions": "لا يسمح له بالتسجيل في أكثر من 12 ساعة معتمدة بالترم",
+    "probation_removal": "ترفع المراقبة الأكاديمية إذا حقق الطالب معدلاً تراكمياً CGPA >= 2.000",
+    "dismissal_rule": "يُفصل الطالب من الكلية نهائياً إذا حصل على معدل تراكمي CGPA أقل من 2.000 بعد 3 فصول دراسية متتالية أو 4 فصول دراسية متفرقة"
+  },
+  "graduation_honors": {
+    "title_ar": "مرتبة الشرف",
+    "conditions": [
+      "أن يستكمل متطلبات التخرج في مدة لا تزيد عن 9 فصول دراسية أساسية.",
+      "ألا يقل معدله الفصلي GPA عن 3.333 في أي فصل من فصول دراسته.",
+      "ألا يقل معدله التراكمي العام CGPA عند التخرج عن 3.666.",
+      "ألا يكون قد حصل على تقدير رسوب (F أو FW أو U) في أي مقرر طوال فترة دراسته.",
+      "ألا تكون قد وقعت عليه أي عقوبة تأديبية خلال دراسته."
+    ]
+  },
+  "course_add_drop_withdraw": {
+    "add_drop_period": "من بداية الأسبوع الثاني وحتى نهاية الأسبوع الثالث من الفصل الدراسي الأساسي (أو نهاية الأسبوع الأول بالصيفي).",
+    "withdrawal_period": "من بداية الأسبوع الرابع وحتى نهاية الأسبوع الـ 12 من الترم الرئيسي (أو الأسبوع 6 بالصيفي)، بشرط عدم تجاوز غياب 25% وألا يقل العبء الدراسي عن 12 ساعة.",
+    "leave_of_absence_max": "يجوز إيقاف القيد بحد أقصى 4 فصول دراسية أساسية (منفصلة أو متصلة)."
+  }
+}
