@@ -662,8 +662,17 @@ export default function MarlineAssistantPage() {
                         <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base font-rubik">
                           {message.content}
                         </p>
-                      ) : (
+                      ) : message.content ? (
                         <MarlineMarkdownRenderer content={message.content} />
+                      ) : (
+                        <div className="flex items-center gap-3 text-muted-foreground py-1">
+                          <div className="flex gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
+                            <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
+                            <span className="w-2 h-2 rounded-full bg-primary animate-bounce" />
+                          </div>
+                          <span className="text-xs font-semibold font-rubik text-foreground/80">مارلين تفكر وتُحلل الإجابة...</span>
+                        </div>
                       )}
                     </div>
 
@@ -675,7 +684,7 @@ export default function MarlineAssistantPage() {
                     >
                       <span>{message.timestamp}</span>
 
-                      {message.role === "assistant" && (
+                      {message.role === "assistant" && message.content && (
                         <div className="flex items-center gap-1 mr-2 border-r border-border/60 pr-2">
                           <button
                             onClick={() => handleCopyMessage(message.content, message.id)}
@@ -711,32 +720,6 @@ export default function MarlineAssistantPage() {
                   )}
                 </motion.div>
               ))}
-
-              {/* Loading / Thinking Indicator */}
-              {isLoading && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex gap-3 md:gap-4 justify-start"
-                >
-                  <div className="relative w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 p-0.5 shrink-0 overflow-hidden shadow-inner animate-pulse">
-                    <Image
-                      src="/images/chameleon/03_chameleon_thinking.png"
-                      alt="Marline Thinking"
-                      fill
-                      className="object-contain p-0.5"
-                    />
-                  </div>
-                  <div className="p-4 rounded-3xl rounded-tr-sm bg-card/90 border border-border/80 text-muted-foreground flex items-center gap-3 shadow-md">
-                    <div className="flex gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
-                      <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
-                      <span className="w-2 h-2 rounded-full bg-primary animate-bounce" />
-                    </div>
-                    <span className="text-xs font-semibold font-rubik text-foreground/80">مارلين تفكر وتُحلل الإجابة...</span>
-                  </div>
-                </motion.div>
-              )}
 
               <div ref={messagesEndRef} />
             </div>
