@@ -1,31 +1,19 @@
 import { NextResponse } from "next/server";
 import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-limit";
 
+// Optimized model list for fast token-efficient streaming
 const MARLINE_MODELS = [
   "google/gemini-2.5-flash",
   "meta-llama/llama-3.3-70b-instruct",
   "google/gemini-flash-1.5"
 ];
 
-const MARLINE_SYSTEM_PROMPT = `أنت "مارلين" (Marline AI) - المساعد الذكي والمرافق الأكاديمي المخصص حصرياً لطلاب كلية الحاسبات والمعلومات وعلوم البيانات (Faculty of Computers and Data Science - FCDS).
-
-التخصص والدور (Specialization Boundary):
-- أنت متخصص حصرياً وأساسياً في كلية الحاسبات وعلوم البيانات وكل ما يتعلق بالمناهج، المواد، والتخصصات الخاصة بالكلية:
-  1. علوم الحاسب (Computer Science - CS)
-  2. علوم البيانات (Data Science - DS)
-  3. الذكاء الاصطناعي والنظم الذكية (Artificial Intelligence & Intelligent Systems - AI)
-  4. الأمن السيبراني (Cybersecurity)
-  5. تحليلات الأعمال والوسائط (Business & Media Analytics)
-  6. المعلوماتية الطبية (Healthcare Informatics)
-  7. البرمجة (Python, C++, Java, JavaScript, SQL, Assembly, etc.) والخوارزميات، وهيكلة البيانات (Data Structures)، ونظم التشغيل، وتصميم قواعد البيانات والشبكات.
-  8. حاسبة المعدل التراكمي (GPA)، توزيع الساعات المعتمدة، والإرشاد الأكاديمي للكلية.
-
-شخصيتك وقواعد الإجابة:
-- أنت خبير، ودود، ومشجع للطالب، تجيب بدقة عالية مع تنظيم ممتاز للمعلومات.
-- بالنسبة للأكواد البرمجية: اكتبها دائماً داخل كتل برمجية مغلقة موضحاً اسم اللغة (مثل \`\`\`python أو \`\`\`cpp).
-- بالنسبة للمعادلات الرياضيات والفيزياء: استخدم KaTeX (مثل $$ E = mc^2 $$ للمعادلات المستقلة و $x^2$ للمعادلات المدمجة).
-- استخدم GFM Markdown بالتنسيق الكامل (عناوين، نقاط، نصوص عريضة).
-- إذا سألك الطالب عن موضوع خارج نطاق كلية الحاسبات والمعلومات، الإرشاد الأكاديمي، أو البرمجة، وجهه بلباقة واحترافية للتركيز على مجالات وتخصصات كلية الحاسبات.`;
+// Compressed System Prompt (~75 tokens total) for MAXIMUM token optimization
+const MARLINE_SYSTEM_PROMPT = `أنت "مارلين" (Marline AI) - المساعد الأكاديمي لطلاب حاسبات وعلوم البيانات (FCDS).
+- قدم إجابات مباشرة وموجزة ومنظمة بدون مقدمات أو حشو.
+- اكتب الأكواد داخل كتل مغلقة محددة اللغة (\`\`\`python).
+- استخدم KaTeX للمعادلات ($x^2$).
+- اختصص حصرياً في الحاسبات، علوم البيانات، البرمجة، والـ GPA.`;
 
 export async function POST(req: Request) {
   try {
@@ -50,17 +38,25 @@ export async function POST(req: Request) {
       );
     }
 
-    const { messages, stream = false } = await req.json();
+    const { messages } = await req.json();
 
-    // Ensure system prompt is at the top
+    // TOKEN OPTIMIZATION: Keep System Prompt + last 4 messages ONLY to save ~80% context tokens
+    const recentMessages = (messages || [])
+      .filter((m: any) => m.role !== "system")
+      .slice(-4)
+      .map((m: any) => ({
+        role: m.role,
+        content: typeof m.content === "string" ? m.content.slice(0, 1500) : m.content
+      }));
+
     const formattedMessages = [
       { role: "system", content: MARLINE_SYSTEM_PROMPT },
-      ...(messages || []).filter((m: any) => m.role !== "system")
+      ...recentMessages
     ];
 
     let lastErrorText = "";
 
-    // Try models in fallback order
+    // Try streaming with fallback models
     for (const model of MARLINE_MODELS) {
       try {
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -68,31 +64,37 @@ export async function POST(req: Request) {
           headers: {
             "Authorization": `Bearer ${apiKey}`,
             "HTTP-Referer": "https://chameleon-v3.vercel.app",
-            "X-Title": "Marline AI Assistant",
+            "X-Title": "Marline AI Stream",
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             model: model,
             messages: formattedMessages,
-            stream: stream,
-            temperature: 0.7,
-            max_tokens: 2048
+            stream: true,
+            temperature: 0.5,
+            max_tokens: 1024
           }),
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          return NextResponse.json(data);
+        if (response.ok && response.body) {
+          // Return SSE ReadableStream directly to frontend
+          return new Response(response.body, {
+            headers: {
+              "Content-Type": "text/event-stream",
+              "Cache-Control": "no-cache, no-transform",
+              "Connection": "keep-alive",
+            },
+          });
         } else {
           lastErrorText = await response.text();
-          console.warn(`Marline AI model ${model} failed (${response.status}):`, lastErrorText);
+          console.warn(`Marline AI model ${model} stream failed (${response.status}):`, lastErrorText);
         }
       } catch (err) {
-        console.warn(`Marline AI fetch error for model ${model}:`, err);
+        console.warn(`Marline AI stream fetch error for model ${model}:`, err);
       }
     }
 
-    return NextResponse.json({ error: lastErrorText || "All AI model attempts failed" }, { status: 500 });
+    return NextResponse.json({ error: lastErrorText || "All AI model stream attempts failed" }, { status: 500 });
   } catch (error) {
     console.error("Marline API Internal Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

@@ -192,7 +192,7 @@ export default function MarlineAssistantPage() {
     }
   }
 
-  // Send Message Logic
+  // Send Message Logic with Real-Time SSE Token Streaming
   const handleSend = async (customPrompt?: string) => {
     const textToSend = customPrompt || input
     if (!textToSend.trim() || isLoading) return
@@ -204,13 +204,25 @@ export default function MarlineAssistantPage() {
       timestamp: new Date().toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" })
     }
 
-    // Update session title if first message
     const updatedTitle = messages.length === 0 ? textToSend.trim().slice(0, 25) + "..." : activeSession.title
-
     const updatedMessages = [...messages, userMsg]
 
+    // Placeholder message for streaming tokens live
+    const assistantMsgId = "msg-" + (Date.now() + 1)
+    const assistantPlaceholder: Message = {
+      id: assistantMsgId,
+      role: "assistant",
+      content: "",
+      timestamp: new Date().toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" }),
+      emotion: "/images/chameleon/03_chameleon_thinking.png"
+    }
+
     setSessions((prev) =>
-      prev.map((s) => (s.id === activeSessionId ? { ...s, title: updatedTitle, messages: updatedMessages } : s))
+      prev.map((s) =>
+        s.id === activeSessionId
+          ? { ...s, title: updatedTitle, messages: [...updatedMessages, assistantPlaceholder] }
+          : s
+      )
     )
 
     if (!customPrompt) setInput("")
@@ -226,38 +238,76 @@ export default function MarlineAssistantPage() {
         })
       })
 
-      const data = await response.json()
-
       if (!response.ok) {
-        throw new Error(data.error || "عذراً، تعذر الاتصال بـ Marline AI")
+        const errData = await response.json().catch(() => ({}))
+        throw new Error(errData.error || `خطأ في الاتصال بالسيرفر (${response.status})`)
       }
 
-      const replyContent = data.choices?.[0]?.message?.content || "عذراً، لم أتمكن من الحصول على إجابة مناسبة."
-      const emotion = getMarlineEmotion(replyContent)
-
-      const assistantMsg: Message = {
-        id: "msg-" + (Date.now() + 1),
-        role: "assistant",
-        content: replyContent,
-        timestamp: new Date().toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" }),
-        emotion: emotion
+      if (!response.body) {
+        throw new Error("لم يتم استلام Stream من السيرفر")
       }
 
-      setSessions((prev) =>
-        prev.map((s) => (s.id === activeSessionId ? { ...s, messages: [...updatedMessages, assistantMsg] } : s))
-      )
-      setCurrentHeaderEmotion(emotion)
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let accumulatedText = ""
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value, { stream: true })
+        const lines = chunk.split("\n")
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const jsonStr = line.slice(6).trim()
+            if (jsonStr === "[DONE]") continue
+            try {
+              const parsed = JSON.parse(jsonStr)
+              const deltaContent = parsed.choices?.[0]?.delta?.content || ""
+              if (deltaContent) {
+                accumulatedText += deltaContent
+                const currentEmotion = getMarlineEmotion(accumulatedText)
+
+                // Update assistant message content token-by-token live
+                setSessions((prev) =>
+                  prev.map((s) => {
+                    if (s.id !== activeSessionId) return s
+                    const newMsgs = s.messages.map((m) =>
+                      m.id === assistantMsgId ? { ...m, content: accumulatedText, emotion: currentEmotion } : m
+                    )
+                    return { ...s, messages: newMsgs }
+                  })
+                )
+                setCurrentHeaderEmotion(currentEmotion)
+              }
+            } catch (e) {
+              // Ignore partial JSON chunks
+            }
+          }
+        }
+      }
+
+      if (!accumulatedText.trim()) {
+        throw new Error("لم أتمكن من الحصول على إجابة من الذكاء الاصطناعي.")
+      }
+
+      const finalEmotion = getMarlineEmotion(accumulatedText)
+      setCurrentHeaderEmotion(finalEmotion)
     } catch (error: any) {
-      console.error("Marline Send Error:", error)
-      const errorMsg: Message = {
-        id: "msg-" + (Date.now() + 1),
-        role: "assistant",
-        content: `⚠️ **حدث خطأ:** ${error.message || "عذراً، حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."}`,
-        timestamp: new Date().toLocaleTimeString("ar-EG", { hour: "2-digit", minute: "2-digit" }),
-        emotion: "/images/chameleon/08_chameleon_angry.png"
-      }
+      console.error("Marline Streaming Error:", error)
+      const errorContent = `⚠️ **حدث خطأ:** ${error.message || "عذراً، حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."}`
+      
       setSessions((prev) =>
-        prev.map((s) => (s.id === activeSessionId ? { ...s, messages: [...updatedMessages, errorMsg] } : s))
+        prev.map((s) => {
+          if (s.id !== activeSessionId) return s
+          const newMsgs = s.messages.map((m) =>
+            m.id === assistantMsgId
+              ? { ...m, content: errorContent, emotion: "/images/chameleon/08_chameleon_angry.png" }
+              : m
+          )
+          return { ...s, messages: newMsgs }
+        })
       )
       setCurrentHeaderEmotion("/images/chameleon/08_chameleon_angry.png")
     } finally {
