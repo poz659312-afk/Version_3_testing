@@ -518,7 +518,7 @@ export default function MarlineAssistantPage() {
                 </Badge>
               </div>
               <p className="text-[11px] text-muted-foreground">
-                {isLoading ? "جاري التفكير والإجابة..." : "جاهز ومستعد لجميع استفساراتك الأكاديمية"}
+                {isLoading ? "جاري التفكير والإجابة..." : "جاهزة ومستعدة لجميع استفساراتك الأكاديمية"}
               </p>
             </div>
           </div>
@@ -575,7 +575,7 @@ export default function MarlineAssistantPage() {
                   أهلاً بك! أنا <span className="text-primary">مارلين (Marline)</span> 👋
                 </h2>
                 <p className="text-sm md:text-base text-muted-foreground max-w-lg leading-relaxed font-rubik">
-                  رفيقك الذكي المخصص لكلية الحاسبات وعلوم البيانات. يمكنني كتابة الأكواد، شرح المفاهيم، حل المسائل، وحساب معدلك الأكاديمي!
+                  رفيقتك الذكية المخصصة لكلية الحاسبات وعلوم البيانات. يمكنني كتابة الأكواد، شرح المفاهيم، حل المسائل، وحساب معدلك الأكاديمي!
                 </p>
               </div>
 
@@ -733,7 +733,7 @@ export default function MarlineAssistantPage() {
                       <span className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
                       <span className="w-2 h-2 rounded-full bg-primary animate-bounce" />
                     </div>
-                    <span className="text-xs font-semibold font-rubik text-foreground/80">مارلين يفكر ويُحلل الإجابة...</span>
+                    <span className="text-xs font-semibold font-rubik text-foreground/80">مارلين تفكر وتُحلل الإجابة...</span>
                   </div>
                 </motion.div>
               )}
