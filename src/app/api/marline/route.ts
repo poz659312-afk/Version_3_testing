@@ -2,30 +2,25 @@ import { NextResponse } from "next/server";
 import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-limit";
 import fcdsBylawsData from "@/lib/fcds_bylaws.json";
 
-// Optimized model list for fast token-efficient streaming
+// Optimized model list for fast token-efficient streaming at scale (3000+ students)
 const MARLINE_MODELS = [
+  "google/gemini-2.5-flash-lite",
   "google/gemini-2.5-flash",
-  "meta-llama/llama-3.3-70b-instruct",
-  "google/gemini-flash-1.5"
+  "meta-llama/llama-3.3-70b-instruct"
 ];
 
-// System Prompt with Marline's official female persona, platform awareness & founder info
-const MARLINE_SYSTEM_PROMPT = `أنتِ "مارلين" (Marline AI) - المساعدة الأكاديمية الذكية والرفيقة الرسمية لطلاب موقع ChameleonFCDS وكلية الحاسبات وعلوم البيانات بجامعة الإسكندرية.
+// System Prompt with Marline's academic guide persona, ultra token-efficient & complete outputs
+const MARLINE_SYSTEM_PROMPT = `أنتِ "مارلين" (Marline AI) - المرشد والمساعد الأكاديمي المباشر لطلاب موقع ChameleonFCDS وكلية الحاسبات وعلوم البيانات بجامعة الإسكندرية.
 
-هوية المنصة والمؤسس (Platform & Founder Knowledge):
-- المنصة: أنتِ المساعدة الذكية المباشرة لموقع "ChameleonFCDS".
-- مؤسس وصاحب الموقع: "Levi Ackerman" (واسمه الحقيقي: "عبدالرحمن أحمد").
-- شخصيتك: أنتِ أنثى، متميزة، ذكية جداً، ودودة، ومشجعة.
-- عند مخاطبة الطلاب، استخدمي صيغة محترمة وشاملة للمذكر والمؤنث معاً (مثل: "أهلاً بك عزيزي / عزيزتي الطالب / الطالبة").
+قواعد التوفير والإجابة الإلزامية (مخصصة لخدمة 3000 طالب بكفاءة عالية):
+1. إجابات مختصرة ومباشرة (Ultra-Concise): أجيبي فوراً بالخلاصة والمطلوب بدون أي مقدمات ترحيبية مكررة، وبدون إعادة كتابة سؤال الطالب، وبدون خاتمة طويلة.
+2. عدم التوقف أو التعطيل في المنتصف (Never Cut Off): اكتبي الإجابة بأسلوب مركز ومختصر مع الالتزام التام بإكمال الجملة الأخيرة دائمًا وعدم ترك الرد بترًا أو معطلاً في المنتصف.
+3. التخصص الأكاديمي (Academic Scope): دورك هو الإرشاد الأكاديمي والجامعي والتوضيح المباشر. إذا كان السؤال خارج هذا النطاق، وجّهي الطالب بلطف وباختصار شديد للتركيز على الجانب الأكاديمي.
+4. الاعتماد على اللائحة الرسمية: اعتمادي على اللائحة الداخلية الرسمية المرفقة أدناه في أسئلة (التقديرات، GPA، الساعات المعتمدة، الإنذار الأكاديمي، الغياب 75%، والتخرج).
+5. الأكواد والمعادلات: إن طُلب كود أو معادلة، اكتبي أقصر حل برمجي ممكن ومباشر دون شرح مطول.
 
-مصدرك الأول والأساسي دائماً للإجابة على جميع استفسارات الطلاب هو اللائحة الداخلية الرسمية للكلية بنظام الساعات المعتمدة (FCDS Bylaws):
-${JSON.stringify(fcdsBylawsData)}
-
-قواعد الإجابة:
-1. اعتمدي دائماً وأولاً على اللائحة الداخلية الرسمية المرفقة أعلاه في إجابة أي سؤال يخص: التقديرات (Grading Scale)، المعدل التراكمي (GPA & CGPA)، الساعات المعتمدة (Credit Hours)، الإنذار الأكاديمي (Probation)، الحرمان والغياب (FW & Attendance 75%)، الشروط والبرامج والتخرج ومرتبة الشرف.
-2. قدمي إجابات مباشرة وموجزة ومنظمة بدون حشو.
-3. اكتبي الأكواد البرمجية داخل كتل مغلقة (\`\`\`python).
-4. استخدمي KaTeX للمعادلات ($x^2$).`;
+اللائحة الداخلية للكلية (FCDS Bylaws):
+${JSON.stringify(fcdsBylawsData)}`;
 
 export async function POST(req: Request) {
   try {
@@ -52,13 +47,13 @@ export async function POST(req: Request) {
 
     const { messages } = await req.json();
 
-    // TOKEN OPTIMIZATION: Keep System Prompt + last 4 messages ONLY to save ~80% context tokens
+    // MAXIMUM TOKEN OPTIMIZATION: Keep System Prompt + last 3 messages ONLY and limit input to 800 chars
     const recentMessages = (messages || [])
       .filter((m: any) => m.role !== "system")
-      .slice(-4)
+      .slice(-3)
       .map((m: any) => ({
         role: m.role,
-        content: typeof m.content === "string" ? m.content.slice(0, 1500) : m.content
+        content: typeof m.content === "string" ? m.content.slice(0, 800) : m.content
       }));
 
     const formattedMessages = [
@@ -83,8 +78,8 @@ export async function POST(req: Request) {
             model: model,
             messages: formattedMessages,
             stream: true,
-            temperature: 0.3,
-            max_tokens: 1024
+            temperature: 0.0,
+            max_tokens: 600
           }),
         });
 
