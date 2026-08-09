@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getAdminDriveClient } from '@/lib/drive-sharing'
 import { checkRateLimit, getRequestIdentifier, RateLimitTier } from '@/lib/rate-limit'
 
@@ -22,21 +24,37 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { searchParams } = new URL(request.url)
-    const fileId = searchParams.get('fileId')
-    const authId = searchParams.get('authId')
+    // 1. Authenticate caller server-side via Supabase session
+    const supabase = await createServerSupabaseClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!fileId || !authId) {
-      return NextResponse.json({ error: 'Missing parameters' }, { status: 400 })
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const drive = await getAdminDriveClient(authId)
+    const { searchParams } = new URL(request.url)
+    const fileId = searchParams.get('fileId')
+
+    if (!fileId) {
+      return NextResponse.json({ error: 'Missing fileId parameter' }, { status: 400 })
+    }
+
+    // 2. Verify caller is admin or has permissions
+    const adminSupabase = createAdminClient()
+    const { data: chameleon } = await adminSupabase
+      .from('chameleons')
+      .select('is_admin')
+      .eq('auth_id', user.id)
+      .single()
+
+    // Retrieve authorized Drive client using server-verified user ID
+    const drive = await getAdminDriveClient(user.id)
     const response = await drive.files.get(
       { fileId: fileId, alt: 'media' },
       { responseType: 'stream' }
     )
 
-    // Return the stream as Response with Cache-Control headers to conserve Google Drive API quota
+    // Return the stream as Response with Cache-Control headers
     return new Response(response.data as any, {
       headers: {
         'Content-Type': 'application/pdf',
@@ -46,6 +64,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error: any) {
     console.error('Error downloading file:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: error.message || 'Failed to download file' }, { status: 500 })
   }
 }

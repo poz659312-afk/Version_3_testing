@@ -56,6 +56,8 @@ export default function StudySpacesDirectoryClient({
 
   useEffect(() => {
     const supabase = createClient()
+    let debounceTimer: NodeJS.Timeout | null = null
+
     const fetchFreshRooms = async () => {
       try {
         const { data: sessionData } = await supabase.auth.getSession()
@@ -94,25 +96,33 @@ export default function StudySpacesDirectoryClient({
       }
     }
 
+    const debouncedFetch = () => {
+      if (debounceTimer) clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(() => {
+        fetchFreshRooms()
+      }, 1500)
+    }
+
     const channel = supabase
       .channel('study-spaces-directory')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'study_rooms' },
         () => {
-          fetchFreshRooms()
+          debouncedFetch()
         }
       )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'study_room_members' },
         () => {
-          fetchFreshRooms()
+          debouncedFetch()
         }
       )
       .subscribe()
 
     return () => {
+      if (debounceTimer) clearTimeout(debounceTimer)
       supabase.removeChannel(channel)
     }
   }, [])

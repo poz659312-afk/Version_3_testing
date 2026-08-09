@@ -13,17 +13,10 @@ export async function GET(request: NextRequest) {
     const providedSecret = request.headers.get('x-cron-secret') || authHeader?.replace('Bearer ', '');
 
     if (!providedSecret || providedSecret !== CRON_SECRET) {
-
       return NextResponse.json(
         {
           success: false,
-          message: 'Unauthorized',
-          debug: {
-            hasAuthHeader: !!authHeader,
-            hasCronSecretHeader: !!request.headers.get('x-cron-secret'),
-            secretProvided: !!providedSecret,
-            secretMatches: providedSecret === CRON_SECRET
-          }
+          message: 'Unauthorized'
         },
         { status: 401 }
       );

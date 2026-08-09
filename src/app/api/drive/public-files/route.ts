@@ -24,7 +24,11 @@ export async function GET(request: NextRequest) {
         supportsAllDrives: true
       })
       
-      return NextResponse.json(response.data)
+      return NextResponse.json(response.data, {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        },
+      })
     }
 
     // Handle folder contents listing
@@ -46,13 +50,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       files: response.data.files || [],
       nextPageToken: response.data.nextPageToken
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+      },
     })
     
   } catch (error) {
     console.error('Error listing public drive files:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     
-    // If it's a permission error, fall back to the authenticated API
     if (errorMessage.includes('permission') || errorMessage.includes('access')) {
       return NextResponse.json(
         { error: 'This content requires authentication. Please contact an administrator.' },

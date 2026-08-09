@@ -1,49 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getValidAccessToken } from '@/lib/google-oauth'
 
-// Check if user has admin access
-async function checkAdminAccess(authId: string) {
+async function checkAdminAccess(userId: string) {
   const supabase = createAdminClient()
 
   const { data: user, error } = await supabase
     .from('chameleons')
     .select('is_admin')
-    .eq('auth_id', authId)
+    .eq('auth_id', userId)
     .single()
 
   if (error || !user) {
-    console.log('No user found or error:', error)
     return { hasAccess: false, isAdmin: false }
   }
 
-  // Check if admin is authorized (has Google tokens)
-  const { data: adminData } = await supabase
-    .from('admins')
+  const { data: adminData } = await (supabase
+    .from('admins') as any)
     .select('authorized')
-    .eq('auth_id', authId)
+    .eq('auth_id', userId)
     .single()
 
-  console.log('User data from DB:', user, 'Admin data:', adminData)
-
-  // User has admin access if they are admin AND authorized
   const hasAccess = user.is_admin && (adminData?.authorized || false)
   return { hasAccess, isAdmin: user.is_admin }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { folderName, parentFolderId, authId } = await request.json()
+    // 1. Authenticate caller server-side
+    const supabase = await createServerSupabaseClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    if (!folderName || !parentFolderId || !authId) {
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const authId = user.id
+    const { folderName, parentFolderId } = await request.json()
+
+    if (!folderName || !parentFolderId) {
       return NextResponse.json(
-        { error: 'Folder name, parent folder ID, and auth ID are required' },
+        { error: 'Folder name and parent folder ID are required' },
         { status: 400 }
       )
     }
 
-    // Check if user has admin access
+    // 2. Check if verified user has admin access
     const { hasAccess } = await checkAdminAccess(authId)
 
     if (!hasAccess) {
@@ -53,7 +57,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get valid access token for the user
+    // 3. Get valid access token for verified user
     const accessToken = await getValidAccessToken(authId)
     if (!accessToken) {
       return NextResponse.json(
@@ -65,7 +69,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Configure OAuth2 client
     const oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET,
@@ -75,7 +78,6 @@ export async function POST(request: NextRequest) {
 
     const drive = google.drive({ version: 'v3', auth: oauth2Client })
 
-    // Search for existing folder
     const response = await drive.files.list({
       q: `name='${folderName}' and '${parentFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
       fields: 'files(id, name, parents)',

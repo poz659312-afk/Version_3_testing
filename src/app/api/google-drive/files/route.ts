@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getAdminDriveClient, getUserAllowedFolderIds } from '@/lib/drive-sharing'
 import { isValidDriveId } from '@/lib/drive-mapping'
@@ -7,19 +8,12 @@ import { DRIVE_ROOT_ID } from '@/lib/drive-tree-data'
 
 // Recursive security check for non-admin folder/file access
 async function isFolderOrFileAccessAllowed(drive: any, targetId: string, authId: string): Promise<boolean> {
-  // 1. Get the allowed folders for this user (suggested or custom)
   const allowedFolderIds = await getUserAllowedFolderIds(authId)
 
-  // 2. If user is allowed to access the root folder, they can access everything
   if (allowedFolderIds.includes(DRIVE_ROOT_ID)) return true
-
-  // 3. Check if targetId is directly allowed
   if (allowedFolderIds.includes(targetId)) return true
-
-  // 4. Check if targetId matches any statically whitelisted drive ID
   if (isValidDriveId(targetId)) return true
 
-  // 5. Otherwise, check parents recursively up to a limit (e.g. 5 levels) to see if they trace back to an allowed folder
   let currentId = targetId
   for (let depth = 0; depth < 5; depth++) {
     try {
@@ -31,12 +25,10 @@ async function isFolderOrFileAccessAllowed(drive: any, targetId: string, authId:
       const parents = response.data.parents
       if (!parents || parents.length === 0) break
 
-      // Check if any parent is allowed or whitelisted
       if (parents.some((p: string) => allowedFolderIds.includes(p) || isValidDriveId(p))) {
         return true
       }
 
-      // Go to first parent
       currentId = parents[0]
     } catch (e) {
       console.error(`Error checking parents for target ${targetId} at depth ${depth}:`, e)
@@ -49,27 +41,24 @@ async function isFolderOrFileAccessAllowed(drive: any, targetId: string, authId:
 
 export async function GET(request: NextRequest) {
   try {
+    // 1. Authenticate caller server-side
+    const supabase = await createServerSupabaseClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { searchParams } = new URL(request.url)
     const pageSize = parseInt(searchParams.get('pageSize') || '20')
     const pageToken = searchParams.get('pageToken')
     const folderId = searchParams.get('folderId')
     const fileId = searchParams.get('fileId')
-    const type = searchParams.get('type') // 'info' for single file info
-    const authIdParam = searchParams.get('authId')
-    
-    const supabase = createAdminClient()
+    const type = searchParams.get('type')
 
-    // Get authId from query params
-    if (!authIdParam) {
-      return NextResponse.json(
-        { error: 'Missing authId parameter' },
-        { status: 400 }
-      )
-    }
+    const authId = user.id
 
-    const authId = authIdParam
-
-    // Configure Google Drive client using fallback admin client
+    // Configure Google Drive client using server-verified user ID
     let drive
     try {
       drive = await getAdminDriveClient(authId)
@@ -85,7 +74,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if requesting user is admin
-    const { data: chameleon } = await supabase
+    const adminSupabase = createAdminClient()
+    const { data: chameleon } = await adminSupabase
       .from('chameleons')
       .select('is_admin')
       .eq('auth_id', authId)

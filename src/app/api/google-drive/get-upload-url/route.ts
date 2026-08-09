@@ -1,56 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getValidAccessToken } from '@/lib/google-oauth'
 
-// Check if user has admin access
-async function checkAdminAccess(authId: string) {
+async function checkAdminAccess(userId: string) {
   const supabase = createAdminClient()
 
   const { data: user, error } = await supabase
     .from('chameleons')
     .select('is_admin')
-    .eq('auth_id', authId)
+    .eq('auth_id', userId)
     .single()
 
   if (error || !user) {
-    console.log('No user found or error:', error)
     return { hasAccess: false, isAdmin: false }
   }
 
-  // Check if admin is authorized (has Google tokens)
-  const { data: adminData } = await supabase
-    .from('admins')
+  const { data: adminData } = await (supabase
+    .from('admins') as any)
     .select('authorized')
-    .eq('auth_id', authId)
+    .eq('auth_id', userId)
     .single()
 
-  console.log('User data from DB:', user, 'Admin data:', adminData)
-
-  // User has admin access if they are admin AND authorized
   const hasAccess = user.is_admin && (adminData?.authorized || false)
   return { hasAccess, isAdmin: user.is_admin }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { fileName, fileSize, mimeType, parentFolderId, authId } = await request.json()
+    // 1. Authenticate caller server-side
+    const supabase = await createServerSupabaseClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    console.log('Generating upload URL for:', {
-      fileName,
-      fileSize,
-      mimeType,
-      parentFolderId,
-      authId
-    })
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
-    if (!fileName || !authId) {
+    const authId = user.id
+    const { fileName, fileSize, mimeType, parentFolderId } = await request.json()
+
+    if (!fileName) {
       return NextResponse.json(
-        { error: 'File name and auth ID are required' },
+        { error: 'File name is required' },
         { status: 400 }
       )
     }
 
-    // Check if user has admin access
+    // 2. Check if verified user has admin access
     const { hasAccess } = await checkAdminAccess(authId)
 
     if (!hasAccess) {
@@ -60,7 +56,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get valid access token for the user
+    // 3. Get valid access token for verified user
     const accessToken = await getValidAccessToken(authId)
     if (!accessToken) {
       return NextResponse.json(
@@ -72,25 +68,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('🔑 TOKEN DEBUG - User', authId, 'getting access token:', {
-      tokenLength: accessToken.length,
-      tokenStart: accessToken.substring(0, 20) + '...',
-      tokenEnd: '...' + accessToken.substring(accessToken.length - 20)
-    })
-
-    // Always use direct multipart upload to avoid server limits (Vercel, etc.)
-    console.log(`File size: ${fileSize} bytes (${(fileSize / (1024 * 1024)).toFixed(2)} MB), using direct multipart upload method`)
-
-    // For multipart uploads, use the standard Google Drive upload URL
     const uploadUrl = `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true`
-
-    console.log('Using multipart upload URL:', uploadUrl)
 
     return NextResponse.json({
       success: true,
       uploadMethod: 'direct',
       uploadUrl: uploadUrl,
-      accessToken: accessToken,
       fileMetadata: {
         name: fileName,
         size: fileSize,
