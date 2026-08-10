@@ -213,7 +213,7 @@ export default function HomePage() {
                         <span style={{ WebkitTextStroke: '1.2px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 dark:border-white/10 border-black/10">Of Learning</span>
                       </h2>
                       <p className="text-xl md:text-2xl text-muted-foreground/80 max-w-xl leading-relaxed font-light italic">
-                        An immersive educational ecosystem designed to bridge the gap between academic theory and global industry mastery.
+                        An immersive educational ecosystem designed to bridge the gap between academic theory and global industry mastery served by <a href="/marline" className="text-primary hover:underline">Marline</a>.
                       </p>
                    </div>
                    
@@ -566,7 +566,7 @@ export default function HomePage() {
           <div className="absolute inset-0 overflow-hidden">
              <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/40 rounded-full blur-[120px] animate-pulse"></div>
              <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-secondary/15 dark:bg-secondary/30 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
-             <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] dark:opacity-10 mix-blend-overlay"></div>
+             <div className="absolute inset-0 bg-[radial-gradient(#00000015_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] opacity-60"></div>
           </div>
 
           <div className="container mx-auto px-4 md:px-6 relative z-10">
