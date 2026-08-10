@@ -250,6 +250,21 @@
       "level_1": "نفس مقررات المستوى الأول المشتركة لجميع طلاب الكلية",
       "level_2_to_4_compulsory_summary": ["Intro to Cybersecurity", "Number Theory", "Cryptography", "Operating Systems Security", "Secure Software Development", "Computer & Network Security", "Data Integrity & Authentication", "Info Security Management", "Social Networks Computing", "Security of Distributed Systems", "Human Security", "Cybersecurity Risk Management", "Digital Forensics", "Law & Cybersecurity", "Project I & II"],
       "program_electives_list": ["AI Security Issues", "Proactive Computer Security", "Software Security Engineering", "Blockchain & Security of Blockchain", "Cloud Computing Security", "Social Networks Analytics", "Internet of Things", "Mobile Computing"]
-    }
+    }  
+  },
+  "graduation_honors": {
+    "title_ar": "مرتبة الشرف",
+    "conditions": [
+      "أن يستكمل متطلبات التخرج في مدة لا تزيد عن 9 فصول دراسية أساسية.",
+      "ألا يقل معدله الفصلي GPA عن 3.333 في أي فصل من فصول دراسته.",
+      "ألا يقل معدله التراكمي العام CGPA عند التخرج عن 3.666.",
+      "ألا يكون قد حصل على تقدير رسوب (F أو FW أو U) في أي مقرر طوال فترة دراسته.",
+      "ألا تكون قد وقعت عليه أي عقوبة تأديبية خلال دراسته."
+    ]
+  },
+  "course_add_drop_withdraw": {
+    "add_drop_period": "من بداية الأسبوع الثاني وحتى نهاية الأسبوع الثالث من الفصل الدراسي الأساسي (أو نهاية الأسبوع الأول بالصيفي).",
+    "withdrawal_period": "من بداية الأسبوع الرابع وحتى نهاية الأسبوع الـ 12 من الترم الرئيسي (أو الأسبوع 6 بالصيفي)، بشرط عدم تجاوز غياب 25% وألا يقل العبء الدراسي عن 12 ساعة.",
+    "leave_of_absence_max": "يجوز إيقاف القيد بحد أقصى 4 فصول دراسية أساسية (منفصلة أو متصلة)."
   }
 }
