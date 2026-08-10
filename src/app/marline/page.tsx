@@ -385,7 +385,7 @@ export default function MarlineAssistantPage() {
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-background text-foreground dir-rtl font-rubik">
+    <div className="flex h-[100dvh] max-h-[100dvh] w-full overflow-hidden bg-background text-foreground dir-rtl font-rubik marline-page fixed inset-0">
       {/* 1. Sidebar Sessions Drawer */}
       <aside
         className={`fixed inset-y-0 right-0 z-50 w-72 bg-card/95 backdrop-blur-2xl border-l border-border/80 p-4 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
@@ -485,9 +485,9 @@ export default function MarlineAssistantPage() {
       )}
 
       {/* 2. Main Chat Workspace */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden bg-background relative">
+      <main className="flex-1 flex flex-col h-[100dvh] max-h-[100dvh] min-h-0 overflow-hidden bg-background relative">
         {/* Top Header Bar */}
-        <header className="h-16 px-4 md:px-6 border-b border-border/80 bg-card/80 backdrop-blur-xl flex items-center justify-between shrink-0 z-10">
+        <header className="h-14 sm:h-16 px-3 sm:px-4 md:px-6 border-b border-border/80 bg-card/80 backdrop-blur-xl flex items-center justify-between shrink-0 z-10">
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
@@ -547,18 +547,18 @@ export default function MarlineAssistantPage() {
         <div
           ref={scrollContainerRef}
           onScroll={handleContainerScroll}
-          className="flex-1 overflow-y-auto marline-scroll overscroll-contain p-4 md:p-6 space-y-6 scroll-smooth"
+          className="flex-1 min-h-0 overflow-y-auto marline-scroll overscroll-contain p-3 sm:p-4 md:p-6 space-y-4 md:space-y-6 scroll-smooth"
           data-lenis-prevent="true"
         >
           {messages.length === 0 ? (
             /* Welcome View */
-            <div className="max-w-2xl mx-auto my-auto py-8 text-center flex flex-col items-center justify-center space-y-6">
+            <div className="max-w-2xl mx-auto my-auto py-4 sm:py-8 text-center flex flex-col items-center justify-center space-y-4 sm:space-y-6">
               {/* Animated Marline Waving Mascot */}
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.4 }}
-                className="relative w-40 h-40 md:w-48 md:h-48"
+                className="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48"
               >
                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse" />
                 <Image
@@ -571,19 +571,19 @@ export default function MarlineAssistantPage() {
               </motion.div>
 
               <div className="space-y-2">
-                <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tight">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-foreground tracking-tight">
                   أهلاً بك! أنا <span className="text-primary">مارلين (Marline)</span> 👋
                 </h2>
-                <p className="text-sm md:text-base text-muted-foreground max-w-lg leading-relaxed font-rubik">
+                <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-lg leading-relaxed font-rubik px-2">
                   رفيقتك الذكية المخصصة لكلية الحاسبات وعلوم البيانات. يمكنني كتابة الأكواد، شرح المفاهيم، حل المسائل، وحساب معدلك الأكاديمي!
                 </p>
               </div>
 
               {/* Quick Action Suggestion Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full pt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 w-full pt-2 sm:pt-4">
                 <button
                   onClick={() => handleSend("اشرح لي مفهوم الـ Object-Oriented Programming (OOP) بأمثلة كود Python")}
-                  className="p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
+                  className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
                 >
                   <div className="flex items-center gap-2 text-primary font-bold text-xs">
                     <Code className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -594,7 +594,7 @@ export default function MarlineAssistantPage() {
 
                 <button
                   onClick={() => handleSend("كيف أستطيع حساب الـ GPA الخاص بي وحساب تأثير المواد على التقدير؟")}
-                  className="p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
+                  className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
                 >
                   <div className="flex items-center gap-2 text-accent font-bold text-xs">
                     <Calculator className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -605,7 +605,7 @@ export default function MarlineAssistantPage() {
 
                 <button
                   onClick={() => handleSend("اعمل لي جدول مذاكرة منظّم وموزّع للمواد الدراسية قبل الامتحانات")}
-                  className="p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
+                  className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
                 >
                   <div className="flex items-center gap-2 text-emerald-500 font-bold text-xs">
                     <BookOpen className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -616,7 +616,7 @@ export default function MarlineAssistantPage() {
 
                 <button
                   onClick={() => handleSend("اعطني 5 أسئلة كويز تفاعلية مع إجاباتها عن قواعد البيانات SQL")}
-                  className="p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
+                  className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
                 >
                   <div className="flex items-center gap-2 text-amber-500 font-bold text-xs">
                     <Lightbulb className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -628,18 +628,18 @@ export default function MarlineAssistantPage() {
             </div>
           ) : (
             /* Chat Messages List */
-            <div className="max-w-4xl mx-auto space-y-6">
+            <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
               {messages.map((message) => (
                 <motion.div
                   key={message.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.25 }}
-                  className={`flex gap-3 md:gap-4 ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex gap-2.5 sm:gap-3 md:gap-4 ${message.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   {/* Assistant Avatar */}
                   {message.role === "assistant" && (
-                    <div className="relative w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 p-0.5 shrink-0 overflow-hidden shadow-inner mt-1">
+                    <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-primary/10 border border-primary/20 p-0.5 shrink-0 overflow-hidden shadow-inner mt-1">
                       <Image
                         src={message.emotion || getMarlineEmotion(message.content)}
                         alt="Marline"
@@ -650,16 +650,16 @@ export default function MarlineAssistantPage() {
                   )}
 
                   {/* Message Bubble Card */}
-                  <div className={`max-w-[88%] md:max-w-[80%] space-y-2`}>
+                  <div className={`max-w-[90%] sm:max-w-[88%] md:max-w-[80%] space-y-1.5 sm:space-y-2`}>
                     <div
-                      className={`p-4 md:p-5 shadow-lg ${
+                      className={`p-3.5 sm:p-4 md:p-5 shadow-lg ${
                         message.role === "user"
                           ? "bg-primary text-primary-foreground rounded-3xl rounded-tl-sm font-medium"
                           : "bg-card/90 dark:bg-card/95 border border-border/80 rounded-3xl rounded-tr-sm text-foreground backdrop-blur-xl"
                       }`}
                     >
                       {message.role === "user" ? (
-                        <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base font-rubik">
+                        <p className="whitespace-pre-wrap leading-relaxed text-xs sm:text-sm md:text-base font-rubik">
                           {message.content}
                         </p>
                       ) : message.content ? (
@@ -678,7 +678,7 @@ export default function MarlineAssistantPage() {
 
                     {/* Bottom Metadata & Action Toolbar */}
                     <div
-                      className={`flex items-center gap-2 text-[11px] text-muted-foreground px-2 ${
+                      className={`flex items-center gap-2 text-[10px] sm:text-[11px] text-muted-foreground px-2 ${
                         message.role === "user" ? "justify-end" : "justify-start"
                       }`}
                     >
@@ -714,8 +714,8 @@ export default function MarlineAssistantPage() {
 
                   {/* User Avatar */}
                   {message.role === "user" && (
-                    <div className="w-9 h-9 rounded-2xl bg-muted border border-border flex items-center justify-center shrink-0 mt-1 text-muted-foreground">
-                      <User className="w-5 h-5" />
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-2xl bg-muted border border-border flex items-center justify-center shrink-0 mt-1 text-muted-foreground">
+                      <User className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
                   )}
                 </motion.div>
@@ -726,9 +726,9 @@ export default function MarlineAssistantPage() {
           )}
         </div>
 
-        {/* 3. Input Dock */}
-        <div className="p-4 md:p-6 border-t border-border/80 bg-card/80 backdrop-blur-xl shrink-0">
-          <div className="max-w-4xl mx-auto space-y-2">
+        {/* 3. Pinned Texting / Input Dock */}
+        <div className="p-2.5 sm:p-4 md:p-6 border-t border-border/80 bg-card/95 backdrop-blur-xl shrink-0 z-20 sticky bottom-0">
+          <div className="max-w-4xl mx-auto space-y-1.5 sm:space-y-2">
             <form
               onSubmit={(e) => {
                 e.preventDefault()
@@ -748,21 +748,21 @@ export default function MarlineAssistantPage() {
                 }}
                 placeholder="اسأل مارلين في الكود، المواد، الـ GPA، أو أي استفسار أكاديمي..."
                 rows={1}
-                className="min-h-[52px] max-h-36 resize-none pr-4 pl-14 py-3.5 rounded-2xl bg-background/80 border-border focus-visible:ring-primary text-foreground text-sm md:text-base font-rubik shadow-inner"
+                className="min-h-[46px] sm:min-h-[52px] max-h-28 sm:max-h-36 resize-none pr-3.5 pl-12 sm:pr-4 sm:pl-14 py-2.5 sm:py-3.5 rounded-2xl bg-background/80 border-border focus-visible:ring-primary text-foreground text-xs sm:text-sm md:text-base font-rubik shadow-inner"
               />
 
               <Button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 rounded-xl w-10 h-10 p-0 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md cursor-pointer transition-all active:scale-95 disabled:opacity-40"
+                className="absolute left-2 top-1/2 -translate-y-1/2 rounded-xl w-8 h-8 sm:w-10 sm:h-10 p-0 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md cursor-pointer transition-all active:scale-95 disabled:opacity-40"
               >
                 <Send className="w-4 h-4 rotate-180" />
               </Button>
             </form>
 
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground px-2">
+            <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-muted-foreground px-1.5 sm:px-2">
               <span className="hidden sm:inline">اضغط Enter للإرسال، Shift + Enter لسطر جديد</span>
-              <span className="text-primary font-semibold flex items-center gap-1">
+              <span className="text-primary font-semibold flex items-center gap-1 mr-auto sm:mr-0">
                 <Sparkles className="w-3 h-3" /> Powered by Marline AI 3.0
               </span>
             </div>

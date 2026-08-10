@@ -300,7 +300,15 @@
 
 /* Apply Rubik font to specific elements if needed */
 .font-rubik {
-  font-family: var(--font-rubik);
+  font-family: var(--font-rubik), 'Rubik', system-ui, sans-serif;
+}
+
+/* Marline page — force Rubik font globally for all elements (Arabic and English) */
+.marline-page,
+.marline-page *,
+[data-marline-page],
+[data-marline-page] * {
+  font-family: 'Rubik', var(--font-rubik), system-ui, -apple-system, sans-serif !important;
 }
 
 /* About page specific font */
