@@ -388,7 +388,7 @@ export default function MarlineAssistantPage() {
     <div className="flex h-[100dvh] max-h-[100dvh] w-full overflow-hidden bg-background text-foreground dir-rtl font-rubik marline-page fixed inset-0">
       {/* 1. Sidebar Sessions Drawer */}
       <aside
-        className={`fixed inset-y-0 right-0 z-50 w-72 bg-card/95 backdrop-blur-2xl border-l border-border/80 p-4 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 right-0 z-[100] w-72 bg-card/95 backdrop-blur-2xl border-l border-border/80 p-4 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
           isSidebarOpen ? "translate-x-0 shadow-2xl" : "translate-x-full lg:translate-x-0"
         }`}
       >
@@ -479,7 +479,7 @@ export default function MarlineAssistantPage() {
       {/* Backdrop overlay for mobile sidebar */}
       {isSidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-[90] bg-black/50 backdrop-blur-sm lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -487,19 +487,21 @@ export default function MarlineAssistantPage() {
       {/* 2. Main Chat Workspace */}
       <main className="flex-1 flex flex-col h-[100dvh] max-h-[100dvh] min-h-0 overflow-hidden bg-background relative">
         {/* Top Header Bar */}
-        <header className="h-14 sm:h-16 px-3 sm:px-4 md:px-6 border-b border-border/80 bg-card/80 backdrop-blur-xl flex items-center justify-between shrink-0 z-10">
-          <div className="flex items-center gap-3">
+        <header className="h-14 sm:h-16 px-2.5 sm:px-4 md:px-6 border-b border-border/80 bg-card/80 backdrop-blur-xl flex items-center justify-between shrink-0 z-10">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            {/* Mobile History / Drawer Button */}
             <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden rounded-xl text-foreground"
+              variant="outline"
+              size="sm"
+              className="lg:hidden rounded-xl border-border/80 bg-muted/40 px-2.5 py-1.5 flex items-center gap-1.5 text-xs font-bold text-foreground cursor-pointer shadow-sm active:scale-95 shrink-0"
               onClick={() => setIsSidebarOpen(true)}
             >
-              <PanelLeft className="w-5 h-5" />
+              <MessageSquare className="w-4 h-4 text-primary shrink-0" />
+              <span className="text-[11px] hidden xs:inline">المحادثات</span>
             </Button>
 
             {/* Marline Dynamic Emotion Avatar */}
-            <div className="relative w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 p-0.5 shrink-0 overflow-hidden shadow-inner">
+            <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-primary/10 border border-primary/20 p-0.5 shrink-0 overflow-hidden shadow-inner">
               <Image
                 src={currentHeaderEmotion}
                 alt="Marline Emotion"
@@ -508,22 +510,34 @@ export default function MarlineAssistantPage() {
               />
             </div>
 
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="font-extrabold text-base md:text-lg tracking-tight text-foreground">
+            <div className="truncate">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h1 className="font-extrabold text-sm sm:text-base md:text-lg tracking-tight text-foreground truncate">
                   Marline <span className="text-primary">AI</span>
                 </h1>
-                <Badge variant="outline" className="text-[10px] bg-primary/10 border-primary/20 text-primary px-2 py-0.5">
-                  FCDS Smart Companion
+                <Badge variant="outline" className="text-[9px] sm:text-[10px] bg-primary/10 border-primary/20 text-primary px-1.5 sm:px-2 py-0.5 shrink-0">
+                  FCDS Companion
                 </Badge>
               </div>
-              <p className="text-[11px] text-muted-foreground">
-                {isLoading ? "جاري التفكير والإجابة..." : "جاهزة ومستعدة لجميع استفساراتك الأكاديمية"}
+              <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
+                {isLoading ? "جاري التفكير والإجابة..." : "المساعد الأكاديمي للكلية"}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Mobile New Chat Button */}
+            <Button
+              variant="default"
+              size="sm"
+              onClick={createNewSession}
+              className="lg:hidden rounded-xl bg-primary text-primary-foreground text-xs font-semibold px-2.5 py-1.5 flex items-center gap-1 shadow-sm cursor-pointer active:scale-95"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="text-[11px]">جديدة</span>
+            </Button>
+
+            {/* Desktop New Chat Button */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -531,7 +545,7 @@ export default function MarlineAssistantPage() {
                     variant="outline"
                     size="sm"
                     onClick={createNewSession}
-                    className="rounded-xl border-border text-xs font-semibold hidden md:flex items-center gap-1.5"
+                    className="rounded-xl border-border text-xs font-semibold hidden lg:flex items-center gap-1.5"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>محادثة جديدة</span>
@@ -746,7 +760,7 @@ export default function MarlineAssistantPage() {
                     handleSend()
                   }
                 }}
-                placeholder="اسأل مارلين في الكود، المواد، الـ GPA، أو أي استفسار أكاديمي..."
+                placeholder="اسأل مارلين عن المواد او نظام ال GPA او اي شي"
                 rows={1}
                 className="min-h-[46px] sm:min-h-[52px] max-h-28 sm:max-h-36 resize-none pr-3.5 pl-12 sm:pr-4 sm:pl-14 py-2.5 sm:py-3.5 rounded-2xl bg-background/80 border-border focus-visible:ring-primary text-foreground text-xs sm:text-sm md:text-base font-rubik shadow-inner"
               />

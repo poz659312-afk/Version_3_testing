@@ -22,7 +22,7 @@ export default function MarlineLayout({
   children: React.ReactNode
 }) {
   return (
-    <div lang="ar" dir="rtl" className={`${rubik.variable} font-[var(--font-rubik)] marline-page antialiased h-[100dvh] max-h-[100dvh] w-full bg-background text-foreground overflow-hidden fixed inset-0`}>
+    <div lang="ar" dir="rtl" className={`${rubik.className} ${rubik.variable} font-rubik marline-page antialiased h-[100dvh] max-h-[100dvh] w-full bg-background text-foreground overflow-hidden fixed inset-0`}>
       {children}
     </div>
   )
