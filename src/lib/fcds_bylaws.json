@@ -252,7 +252,7 @@
       "program_electives_list": ["AI Security Issues", "Proactive Computer Security", "Software Security Engineering", "Blockchain & Security of Blockchain", "Cloud Computing Security", "Social Networks Analytics", "Internet of Things", "Mobile Computing"]
     }  
   },
-  "graduation_honors": {
+  "graduation_honors": { 
     "title_ar": "مرتبة الشرف",
     "conditions": [
       "أن يستكمل متطلبات التخرج في مدة لا تزيد عن 9 فصول دراسية أساسية.",
