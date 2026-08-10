@@ -1,6 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
-@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
@@ -300,15 +300,21 @@
 
 /* Apply Rubik font to specific elements if needed */
 .font-rubik {
-  font-family: var(--font-rubik), 'Rubik', system-ui, sans-serif;
+  font-family: 'Rubik', var(--font-rubik), system-ui, sans-serif !important;
 }
 
 /* Marline page — force Rubik font globally for all elements (Arabic and English) */
 .marline-page,
 .marline-page *,
+.marline-page textarea,
+.marline-page input,
+.marline-page button,
+.marline-page p,
+.marline-page span,
+.marline-page div,
 [data-marline-page],
 [data-marline-page] * {
-  font-family: 'Rubik', var(--font-rubik), system-ui, -apple-system, sans-serif !important;
+  font-family: 'Rubik', var(--font-rubik), 'Cairo', system-ui, -apple-system, sans-serif !important;
 }
 
 /* About page specific font */
