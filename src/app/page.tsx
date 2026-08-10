@@ -136,6 +136,34 @@ export default function HomePage() {
         <section className="w-full relative overflow-hidden">
           <HeroGeometric badge="Chameleon FCDS" title1="Master Your" title2="Future Skills">
             <div className="flex flex-col items-center w-full max-w-5xl">
+              
+              {/* Creative Facebook Follow Bar - Max 30px Height */}
+              <a
+                href="https://www.facebook.com/share/19Rsuuedsn/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative inline-flex items-center justify-center gap-2.5 h-[30px] px-4 rounded-full bg-gradient-to-r from-primary/10 via-[#1877F2]/15 to-secondary/10 hover:from-primary/20 hover:via-[#1877F2]/25 hover:to-secondary/20 border border-[#1877F2]/30 hover:border-[#1877F2]/60 backdrop-blur-md shadow-[0_0_15px_rgba(24,119,242,0.15)] hover:shadow-[0_0_25px_rgba(24,119,242,0.35)] transition-all duration-300 mb-6 z-20 cursor-pointer overflow-hidden max-w-fit"
+              >
+                {/* Ambient glowing shine on hover */}
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 dark:via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+                
+                {/* Facebook Icon Badge */}
+                <span className="relative flex items-center justify-center w-4 h-4 rounded-full bg-[#1877F2] text-white shrink-0 group-hover:scale-110 transition-transform shadow-sm">
+                  <svg className="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                </span>
+
+                {/* Creative Label */}
+                <span className="text-[11px] font-black uppercase tracking-wider text-foreground/90 group-hover:text-primary transition-colors flex items-center gap-1.5 font-rubik">
+                  <span>FOLLOW US ON FACEBOOK</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#1877F2] animate-ping" />
+                </span>
+
+                {/* Arrow Icon */}
+                <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-primary group-hover:-rotate-45 transition-transform duration-300" />
+              </a>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 justify-center mb-16 z-20 relative w-full max-w-md px-4 sm:px-0">
                 <Link href={user ? "#specializations" : "/auth/signin"} className="w-full">
                     <Button size="lg" className="w-full rounded-full h-12 px-8 text-base shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-shadow">
