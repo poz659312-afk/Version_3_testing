@@ -150,7 +150,7 @@ export default function HeroGeometric({
               mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-4 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
               Transforming ideas into vibrant digital experiences, adapting seamlessly like a chameleon to every challenge and vision.
             </p>
           </div>
@@ -158,7 +158,7 @@ export default function HeroGeometric({
 
         {children && (
           <div
-            className={`transition-all duration-1000 ease-out delay-300 w-full mt-12 flex justify-center ${
+            className={`transition-all duration-1000 ease-out delay-300 w-full mt-4 md:mt-6 flex justify-center ${
               mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
             }`}
           >
