@@ -644,6 +644,25 @@ export async function approveMember(roomId: string, userId: string) {
       return { success: false, error: error.message }
     }
 
+    // Fetch room name for the notification
+    const { data: roomData } = await supabase
+      .from('study_rooms')
+      .select('name')
+      .eq('id', roomId)
+      .single()
+
+    const roomName = roomData?.name || 'مساحة الدراسة'
+
+    // Send notification to the approved member
+    await supabase.from('Notifications').insert({
+      auth_id: userId,
+      title: 'تم قبول انضمامك 🎉',
+      message_content: `تمت الموافقة على طلب انضمامك إلى مساحة الدراسة "${roomName}". يمكنك الآن الدخول والمشاركة!`,
+      type: 'space_approval',
+      provider: 'system',
+      seen: 'false'
+    })
+
     revalidatePath(`/study-spaces/${roomId}`)
     return { success: true }
   } catch (err: any) {
