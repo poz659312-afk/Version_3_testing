@@ -15,7 +15,8 @@ import {
   Sparkles,
   Palette,
   Shield,
-  Contrast
+  Contrast,
+  Sun
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
@@ -118,13 +119,13 @@ const STORE_ITEMS = [
     category: "theme"
   },
   { 
-    id: "theme-prism", 
-    name: "Celestial Prism", 
-    description: "An ethereal, holographic cosmic masterpiece. Shimmering prismatic hues, liquid gold light & radiant astral glow.",
+    id: "theme-solaris", 
+    name: "Solaris Supernova", 
+    description: "Harness the blinding power of a dying star. Incandescent solar flares, liquid gold plasma & radiant crimson embers.",
     price: 10000, 
-    icon: Sparkles, 
-    color: "from-fuchsia-500 via-purple-600 via-cyan-400 to-amber-300",
-    shadow: "shadow-fuchsia-500/30 border-fuchsia-500/40",
+    icon: Sun, 
+    color: "from-amber-400 via-orange-500 via-rose-600 to-yellow-300",
+    shadow: "shadow-amber-500/30 border-amber-500/40",
     category: "theme",
     isNew: true
   },

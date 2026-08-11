@@ -431,14 +431,14 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       userBorder: "border-orange-500/30", userShadow: "shadow-orange-600/10",
       sendShadow: "shadow-orange-500/20", cardHover: "hover:bg-orange-500/10 hover:border-orange-500/30", cardTextHover: "group-hover:text-orange-400"
     },
-    prism: {
-      text: "text-fuchsia-400 dark:text-fuchsia-300", bg: "bg-fuchsia-500/10 dark:bg-fuchsia-950/30", border: "border-fuchsia-500/30", bullet: "bg-gradient-to-r from-fuchsia-400 to-cyan-400", heading: "text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 via-purple-300 to-cyan-400 font-extrabold", codeBg: "bg-purple-950/40", inlineCodeText: "text-cyan-300", accent: "#d946ef",
-      primary: "bg-gradient-to-r from-fuchsia-500 via-purple-600 to-cyan-500 text-white", primary600: "bg-fuchsia-600", primary700: "bg-fuchsia-700", primary800: "bg-fuchsia-800",
-      ring: "focus:ring-fuchsia-500/30", focusBorder: "focus:border-fuchsia-400",
-      textHoverBg: "hover:text-fuchsia-300 hover:bg-fuchsia-500/20",
-      gradientBg: "bg-gradient-to-br from-fuchsia-900/80 via-purple-950/90 to-cyan-950/80 dark:from-fuchsia-950 dark:via-purple-950 dark:to-cyan-950",
-      userBorder: "border-fuchsia-500/40", userShadow: "shadow-fuchsia-500/20",
-      sendShadow: "shadow-fuchsia-500/30", cardHover: "hover:bg-fuchsia-500/15 hover:border-fuchsia-400/40", cardTextHover: "group-hover:text-fuchsia-300"
+    solaris: {
+      text: "text-amber-500 dark:text-amber-400", bg: "bg-amber-500/10 dark:bg-amber-950/30", border: "border-amber-500/30", bullet: "bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500", heading: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 font-extrabold", codeBg: "bg-amber-950/30", inlineCodeText: "text-amber-300", accent: "#f59e0b",
+      primary: "bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 text-white", primary600: "bg-amber-600", primary700: "bg-amber-700", primary800: "bg-amber-800",
+      ring: "focus:ring-amber-500/30", focusBorder: "focus:border-amber-400",
+      textHoverBg: "hover:text-amber-400 hover:bg-amber-500/20",
+      gradientBg: "bg-gradient-to-br from-amber-900/80 via-orange-950/90 to-rose-950/80 dark:from-amber-950 dark:via-orange-950 dark:to-rose-950",
+      userBorder: "border-amber-500/40", userShadow: "shadow-amber-500/20",
+      sendShadow: "shadow-amber-500/30", cardHover: "hover:bg-amber-500/15 hover:border-amber-400/40", cardTextHover: "group-hover:text-amber-400"
     }
   };
 
@@ -736,7 +736,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         indigo: "#6366f1", // Indigo Blue
         emerald: "#10b981", // Emerald Green
         coral: "#ff7f50", // Coral Orange
-        prism: "#d946ef", // Celestial Prism Magenta
+        solaris: "#f59e0b", // Solaris Supernova Amber
       };
 
       const activeThemeColor = themeColorMap[colorTheme] || themeColorMap.default;
