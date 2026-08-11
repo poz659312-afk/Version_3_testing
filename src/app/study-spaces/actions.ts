@@ -4,6 +4,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import { getServerStudentSession } from '@/lib/auth-server'
 import { revalidatePath } from 'next/cache'
 import { resolveDepartmentKey } from '@/lib/department-data-accessor'
+import { encryptSpaceText, decryptSpaceText, encryptSpaceArray, decryptSpaceArray } from '@/lib/space-encryption'
 
 function buildDepartmentSlugCandidates(specialization: string): string[] {
   const raw = (specialization || '').trim().toLowerCase()
@@ -277,15 +278,34 @@ export async function getRoomDetails(roomId: string) {
   const isMember = memberRow?.status === 'approved'
   const isPending = memberRow?.status === 'pending'
 
+  // Decrypt content for privacy (End-to-End Privacy Layer)
+  const decryptedMessages = (messages || []).map((m: any) => ({
+    ...m,
+    content: decryptSpaceText(m.content, roomId)
+  }))
+
+  const decryptedPolls = (polls || []).map((p: any) => ({
+    ...p,
+    question: decryptSpaceText(p.question, roomId),
+    options: decryptSpaceArray(p.options || [], roomId)
+  }))
+
+  const decryptedChatQuizzes = (chatQuizzes || []).map((cq: any) => ({
+    ...cq,
+    question: decryptSpaceText(cq.question, roomId),
+    options: decryptSpaceArray(cq.options || [], roomId),
+    correct_answer: decryptSpaceText(cq.correct_answer, roomId)
+  }))
+
   return {
     room,
     members: members || [],
-    messages: messages || [],
+    messages: decryptedMessages,
     challenges: challenges || [],
     availableQuizzes: quizzes || [],
-    polls: polls || [],
+    polls: decryptedPolls,
     dailyChallenges: dailyChallenges || [],
-    chatQuizzes: chatQuizzes || [],
+    chatQuizzes: decryptedChatQuizzes,
     resources: resources || [],
     messageReactions: messageReactions || [],
     isMember,
@@ -459,7 +479,7 @@ export async function sendRoomMessage(roomId: string, content: string, isQuestio
     .insert({
       room_id: roomId,
       user_id: session.auth_id,
-      content,
+      content: encryptSpaceText(content, roomId),
       is_question: isQuestion
     })
 
@@ -1075,8 +1095,8 @@ export async function createRoomPoll(roomId: string, question: string, options: 
       .insert({
         room_id: roomId,
         created_by: session.auth_id,
-        question,
-        options,
+        question: encryptSpaceText(question, roomId),
+        options: encryptSpaceArray(options, roomId),
         is_multiple_choice: isMultipleChoice
       })
 
@@ -1222,9 +1242,9 @@ export async function createChatQuiz(roomId: string, question: string, options: 
       .insert({
         room_id: roomId,
         created_by: session.auth_id,
-        question,
-        options,
-        correct_answer: correctAnswer,
+        question: encryptSpaceText(question, roomId),
+        options: encryptSpaceArray(options, roomId),
+        correct_answer: encryptSpaceText(correctAnswer, roomId),
         countdown_seconds: null,
         ends_at: null
       })
@@ -1241,7 +1261,7 @@ export async function createChatQuiz(roomId: string, question: string, options: 
       .insert({
         room_id: roomId,
         user_id: session.auth_id,
-        content: `[QUIZ:${quizData.id}] ${question}`,
+        content: encryptSpaceText(`[QUIZ:${quizData.id}] ${question}`, roomId),
         is_question: false
       })
 
@@ -1285,7 +1305,8 @@ export async function submitQuizAnswer(quizId: string, answer: string) {
       return { success: false, error: 'You have already submitted an answer for this quiz.' }
     }
 
-    const isCorrect = quiz.correct_answer === answer
+    const plainCorrectAnswer = decryptSpaceText(quiz.correct_answer, quiz.room_id)
+    const isCorrect = plainCorrectAnswer === answer
     const score = isCorrect ? 10 : 0
 
     const { error } = await supabase

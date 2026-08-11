@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { decryptSpaceText, decryptSpaceArray } from '@/lib/space-encryption'
 import { useLenis } from 'lenis/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -668,7 +669,7 @@ export default function StudySpaceClient({
 
           const newMsg = {
             id: payload.new.id,
-            content: payload.new.content,
+            content: decryptSpaceText(payload.new.content, roomId),
             is_question: payload.new.is_question,
             created_at: payload.new.created_at,
             user_id: senderId,
@@ -781,6 +782,8 @@ export default function StudySpaceClient({
         (payload: any) => {
           const newPoll = {
             ...payload.new,
+            question: decryptSpaceText(payload.new.question, roomId),
+            options: decryptSpaceArray(payload.new.options || [], roomId),
             votes: []
           }
           setPolls((prev: any[]) => {
@@ -801,8 +804,8 @@ export default function StudySpaceClient({
               if (p.id === updatedPoll.id) {
                 return {
                   ...p,
-                  question: updatedPoll.question,
-                  options: updatedPoll.options,
+                  question: decryptSpaceText(updatedPoll.question, roomId),
+                  options: decryptSpaceArray(updatedPoll.options || [], roomId),
                   is_multiple_choice: updatedPoll.is_multiple_choice,
                   is_pinned: updatedPoll.is_pinned
                 }
@@ -945,6 +948,9 @@ export default function StudySpaceClient({
         (payload: any) => {
           const newQuiz = {
             ...payload.new,
+            question: decryptSpaceText(payload.new.question, roomId),
+            options: decryptSpaceArray(payload.new.options || [], roomId),
+            correct_answer: decryptSpaceText(payload.new.correct_answer, roomId),
             answers: []
           }
           setChatQuizzes((prev: any[]) => {
