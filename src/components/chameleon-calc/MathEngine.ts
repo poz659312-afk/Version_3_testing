@@ -283,6 +283,8 @@ export function rpnToLaTeX(rpn: string[]): string {
   for (const token of rpn) {
     if (!isNaN(Number(token))) {
       stack.push(token);
+    } else if (token.toLowerCase() === "x") {
+      stack.push("x");
     } else if (token === "pi" || token === "PI") {
       stack.push("\\pi");
     } else if (token === "e" || token === "E") {

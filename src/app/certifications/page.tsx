@@ -28,6 +28,8 @@ import {
 import Navigation from '@/components/navigation';
 import ScrollAnimatedSection from '@/components/scroll-animated-section';
 import Image from 'next/image';
+import { useColorTheme } from "@/components/color-theme-provider"
+import { getCertificateThemePalette } from "@/components/CertificateModal"
 
 interface CertificationTier {
   id: string;
@@ -256,6 +258,8 @@ const AchievementItem = ({ achievement, index }: { achievement: Achievement, ind
 export default function CertificationsPage() {
   const [activeSection, setActiveSection] = useState<string>('overview');
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['overview']));
+  const { colorTheme } = useColorTheme();
+  const palette = getCertificateThemePalette(colorTheme);
 
   const toggleSection = (sectionId: string) => {
     const newExpanded = new Set(expandedSections);
@@ -614,7 +618,7 @@ export default function CertificationsPage() {
 
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/[0.05] via-transparent to-purple-500/[0.05] blur-xl md:blur-3xl" />
+        <div className="absolute inset-0 opacity-40 blur-xl md:blur-3xl" style={{ backgroundImage: palette.bgGradient }} />
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-5"
           style={{ backgroundImage: 'url(/images/Background.png)' }}
@@ -641,9 +645,9 @@ export default function CertificationsPage() {
               transition={{ duration: 0.8 }}
               className="mb-6"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border">
-                <Trophy className="w-4 h-4 text-yellow-400" />
-                <span className="text-sm text-muted-foreground tracking-wide">Academic Excellence</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border backdrop-blur-md" style={{ backgroundColor: palette.accentBg, borderColor: palette.accentBorder }}>
+                <Trophy className="w-4 h-4" style={{ color: palette.accentColor }} />
+                <span className="text-sm tracking-wide font-bold" style={{ color: palette.studentNameColor }}>Academic Excellence</span>
               </div>
             </motion.div>
 
@@ -651,11 +655,10 @@ export default function CertificationsPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-4xl md:text-6xl font-bold  mb-6"
+              className="text-4xl md:text-6xl font-black font-outfit uppercase tracking-wider mb-6"
+              style={{ color: palette.titleColor }}
             >
-              <span className="bg-gradient-to-r from-yellow-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Certifications
-              </span>
+              Certifications & Honors
             </motion.h1>
 
             <motion.p

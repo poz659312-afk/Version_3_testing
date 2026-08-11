@@ -6,9 +6,9 @@ import { createBrowserClient } from "@/lib/supabase/client"
 import { motion, AnimatePresence } from "framer-motion"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles, MousePointer, Search, ChevronUp, ChevronDown, Trash2, Plus, ShieldAlert, Loader2, Contrast } from "lucide-react"
+import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles, MousePointer, Search, ChevronUp, ChevronDown, Trash2, Plus, ShieldAlert, Loader2, Contrast, Download, CheckCircle2 } from "lucide-react"
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -29,6 +29,9 @@ import { Separator } from "@/components/ui/separator"
 import { useTheme } from "@/components/theme-provider"
 import { useColorTheme } from "@/components/color-theme-provider"
 import AvatarBorder from "@/components/visual-effects/avatar-border"
+import { getUserCertificates, CertificateItem } from "@/lib/certificates"
+import { CertificateModal, getCertificateThemePalette } from "@/components/CertificateModal"
+import { Progress } from "@/components/ui/progress"
 
 
 
@@ -645,6 +648,7 @@ function VisualEffectsSettings({ inventory = [] }: { inventory?: string[] }) {
 }
 
 export default function ProfilePage() {
+  const { colorTheme } = useColorTheme()
   const [userSubjects, setUserSubjects] = useState<any[]>([])
   const [userDepartmentKey, setUserDepartmentKey] = useState<string>('computing-data-sciences')
   const [subjectsLoading, setSubjectsLoading] = useState(true)
@@ -679,7 +683,8 @@ export default function ProfilePage() {
   const [showSeconds, setShowSeconds] = useState<boolean>(true)
   const [showDate, setShowDate] = useState<boolean>(true)
   const [currentTime, setCurrentTime] = useState(new Date())
-
+  const [selectedCertificate, setSelectedCertificate] = useState<CertificateItem | null>(null)
+  const [isCertModalOpen, setIsCertModalOpen] = useState(false)
 
   useEffect(() => {
     // Sync time format and settings with storage
@@ -1205,7 +1210,7 @@ export default function ProfilePage() {
           </motion.div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid bg-muted border border-border h-auto p-1 gap-1">
+            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 lg:w-auto lg:inline-grid bg-muted border border-border h-auto p-1 gap-1">
               <TabsTrigger value="profile" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm py-2 md:py-1.5">
                 <User className="size-5 md:size-4" />
                 <span className="hidden md:inline">Profile</span>
@@ -1213,6 +1218,10 @@ export default function ProfilePage() {
               <TabsTrigger value="academic" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm py-2 md:py-1.5">
                 <BookOpen className="size-5 md:size-4" />
                 <span className="hidden md:inline">Academic Tracking</span>
+              </TabsTrigger>
+              <TabsTrigger value="certificates" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm py-2 md:py-1.5">
+                <Award className="size-5 md:size-4 text-amber-500" />
+                <span className="hidden md:inline">Certificates</span>
               </TabsTrigger>
               <TabsTrigger value="appearance" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm py-2 md:py-1.5">
                 <Palette className="size-5 md:size-4" />
@@ -1912,7 +1921,143 @@ export default function ProfilePage() {
             </TabsContent>
 
 
-            {/* TAB 3: Appearance */}
+            {/* TAB: Certificates Gallery */}
+            <TabsContent value="certificates" className="space-y-6 outline-none">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                {(() => {
+                  const certificatesList = getUserCertificates(userData || {})
+                  const unlockedCount = certificatesList.filter(c => c.isUnlocked).length
+                  const certPalette = getCertificateThemePalette(colorTheme)
+
+                  return (
+                    <div className="space-y-6">
+                      {/* Header Banner Card */}
+                      <Card className="bg-card/90 border shadow-xl overflow-hidden relative" style={{ borderColor: certPalette.borderColor }}>
+                        <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -z-10 pointer-events-none" style={{ backgroundColor: certPalette.accentBg }} />
+                        <CardHeader>
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                              <CardTitle className="text-2xl font-black font-outfit text-foreground flex items-center gap-2">
+                                <Award className="size-7 animate-pulse" style={{ color: certPalette.accentColor }} />
+                                Academic Certificates & Honors Gallery
+                              </CardTitle>
+                              <CardDescription className="font-outfit text-muted-foreground mt-1">
+                                Explore accredited achievements, certificates of distinction, and export official PDFs certified by Levi Ackerman.
+                              </CardDescription>
+                            </div>
+                            <div className="flex items-center gap-2 bg-background/80 backdrop-blur-md px-4 py-2 rounded-xl border shrink-0" style={{ borderColor: certPalette.innerBorderColor }}>
+                              <Sparkles className="size-5" style={{ color: certPalette.accentColor }} />
+                              <div>
+                                <p className="text-xs text-muted-foreground font-outfit">Unlocked Honors</p>
+                                <p className="text-lg font-black font-outfit" style={{ color: certPalette.studentNameColor }}>{unlockedCount} / {certificatesList.length} Verified</p>
+                              </div>
+                            </div>
+                          </div>
+                        </CardHeader>
+                      </Card>
+
+                      {/* Certificates Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {certificatesList.map((cert) => (
+                          <Card
+                            key={cert.id}
+                            className={`relative border-2 transition-all duration-300 overflow-hidden flex flex-col justify-between ${
+                              cert.isUnlocked
+                                ? "bg-card/80 shadow-xl hover:scale-[1.01]"
+                                : "bg-muted/20 border-border/40 opacity-75 grayscale-[30%]"
+                            }`}
+                            style={{ borderColor: cert.isUnlocked ? certPalette.borderColor : undefined }}
+                          >
+                            <CardHeader className="pb-3">
+                              <div className="flex items-start justify-between gap-3">
+                                <div className="flex items-center gap-3">
+                                  <div className={`size-12 rounded-xl bg-gradient-to-br ${cert.badgeColor} p-0.5 shadow-md flex items-center justify-center`}>
+                                    <div className="size-full bg-zinc-950 rounded-[10px] flex items-center justify-center">
+                                      <Award className="size-6" style={{ color: cert.isUnlocked ? certPalette.accentColor : "#71717a" }} />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <CardTitle className="text-lg font-bold font-outfit text-foreground leading-snug">
+                                      {cert.title}
+                                    </CardTitle>
+                                    <p className="text-xs text-muted-foreground font-mono mt-0.5">{cert.titleEn}</p>
+                                  </div>
+                                </div>
+
+                                {cert.isUnlocked ? (
+                                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border flex items-center gap-1 shrink-0 font-mono" style={{ backgroundColor: certPalette.accentBg, color: certPalette.accentColor, borderColor: certPalette.innerBorderColor }}>
+                                    <CheckCircle2 className="size-3" /> VERIFIED
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] font-bold uppercase tracking-wider bg-zinc-800 text-zinc-400 px-2.5 py-1 rounded-full border border-zinc-700 flex items-center gap-1 shrink-0 font-mono">
+                                    <Lock className="size-3" /> LOCKED
+                                  </span>
+                                )}
+                              </div>
+                            </CardHeader>
+
+                            <CardContent className="space-y-4 text-sm font-outfit">
+                              <p className="text-xs text-muted-foreground leading-relaxed">{cert.description}</p>
+
+                              {cert.isUnlocked ? (
+                                <div className="space-y-2 pt-2 border-t border-border/40 text-xs">
+                                  <div className="flex justify-between text-muted-foreground">
+                                    <span>Academic Distinction:</span>
+                                    <span className="font-bold text-emerald-400">{cert.grade}</span>
+                                  </div>
+                                  <div className="flex justify-between text-muted-foreground">
+                                    <span>Verification Code:</span>
+                                    <span className="font-mono" style={{ color: certPalette.accentColor }}>{cert.serialCode}</span>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="space-y-2 pt-2 border-t border-border/40 text-xs">
+                                  <div className="flex justify-between items-center text-muted-foreground mb-1">
+                                    <span>Progress:</span>
+                                    <span className="font-bold" style={{ color: certPalette.accentColor }}>{cert.progress}%</span>
+                                  </div>
+                                  <Progress value={cert.progress} className="h-2" />
+                                  <p className="text-[11px] text-zinc-400 font-medium">Requirement: {cert.criteriaText}</p>
+                                </div>
+                              )}
+                            </CardContent>
+
+                            <CardFooter className="pt-2 border-t border-border/30 bg-muted/10">
+                              {cert.isUnlocked ? (
+                                <Button
+                                  onClick={() => {
+                                    setSelectedCertificate(cert)
+                                    setIsCertModalOpen(true)
+                                  }}
+                                  style={{ backgroundColor: certPalette.accentColor, color: "#000000" }}
+                                  className="w-full font-bold shadow-md hover:brightness-110"
+                                >
+                                  <Download className="size-4 mr-2" />
+                                  View & Download Certificate PDF
+                                </Button>
+                              ) : (
+                                <Button
+                                  disabled
+                                  variant="outline"
+                                  className="w-full text-xs cursor-not-allowed opacity-60"
+                                >
+                                  <Lock className="size-3 mr-1.5" /> Certificate Locked
+                                </Button>
+                              )}
+                            </CardFooter>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })()}
+              </motion.div>
+            </TabsContent>
+
             <TabsContent value="appearance" className="space-y-6 outline-none">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -2071,6 +2216,12 @@ export default function ProfilePage() {
 
           </Tabs>
         </div>
+
+        <CertificateModal
+          certificate={selectedCertificate}
+          isOpen={isCertModalOpen}
+          onClose={() => setIsCertModalOpen(false)}
+        />
       </main>
     </div>
   )

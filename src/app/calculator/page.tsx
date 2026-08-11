@@ -20,7 +20,6 @@ import {
   Maximize2,
   Minimize2,
   Trash2,
-  Brain,
   Sparkles,
   ArrowRight,
   TrendingDown,
@@ -62,20 +61,7 @@ interface CalcHistoryItem {
   result: string;
 }
 
-// AI Message interface
-interface Message {
-  id: string;
-  sender: "user" | "ai";
-  text: string;
-  latex?: string;
-  action?: {
-    label: string;
-    tab: keyof typeof MODE_THEMES;
-    data: any;
-  };
-}
-
-// Mode style definitions matching Chameleon aesthetic (High contrast & inverted hover)
+// Mode style definitions matching Chameleon aesthetic
 const MODE_THEMES = {
   basic: {
     accent: "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
@@ -130,21 +116,24 @@ const MODE_THEMES = {
     btn: "bg-rose-500/15 border-rose-500/30 text-rose-700 dark:text-rose-300 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-300 dark:hover:text-rose-950 transition-all duration-300",
     ring: "focus-visible:ring-rose-500/40",
     primary: "rose-500"
-  },
-  ai: {
-    accent: "text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/30",
-    accentHover: "hover:bg-indigo-500/20",
-    bgGradient: "from-indigo-950/10 via-background to-background",
-    badge: "bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border-indigo-500/30",
-    btn: "bg-indigo-500/15 border-indigo-500/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-300 dark:hover:text-indigo-950 transition-all duration-300",
-    ring: "focus-visible:ring-indigo-500/40",
-    primary: "indigo-500"
   }
 };
 
 export default function ChameleonCalcPage() {
   const [activeTab, setActiveTab] = useState<keyof typeof MODE_THEMES>("basic");
-  const theme = MODE_THEMES[activeTab];
+  const theme = MODE_THEMES[activeTab] || MODE_THEMES.basic;
+
+  // Lock body scrolling when graphing tab is active to allow smooth canvas panning/zooming
+  useEffect(() => {
+    if (activeTab === "graphing") {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [activeTab]);
 
   // ==========================================
   // Basic & Advanced Math Calculator State
@@ -192,6 +181,14 @@ export default function ChameleonCalcPage() {
     if (!expression.trim()) return;
     try {
       const res = evaluate(expression);
+      if (isNaN(res)) {
+        setCalcResult("Error: Invalid Math Expression");
+        return;
+      }
+      if (!isFinite(res)) {
+        setCalcResult("Undefined (Division by Zero)");
+        return;
+      }
       const formattedRes = Number(res.toFixed(10)).toString(); 
       setCalcResult(formattedRes);
 
@@ -239,7 +236,7 @@ export default function ChameleonCalcPage() {
     const { rows, cols } = matrixDimA;
     const newMatrix = MatrixEngine.createZeroMatrix(rows, cols);
     for (let r = 0; r < Math.min(rows, matrixA.length); r++) {
-      for (let c = 0; c < Math.min(cols, matrixA[0].length); c++) {
+      for (let c = 0; c < Math.min(cols, matrixA[0]?.length || 0); c++) {
         newMatrix[r][c] = matrixA[r][c] || 0;
       }
     }
@@ -250,7 +247,7 @@ export default function ChameleonCalcPage() {
     const { rows, cols } = matrixDimB;
     const newMatrix = MatrixEngine.createZeroMatrix(rows, cols);
     for (let r = 0; r < Math.min(rows, matrixB.length); r++) {
-      for (let c = 0; c < Math.min(cols, matrixB[0].length); c++) {
+      for (let c = 0; c < Math.min(cols, matrixB[0]?.length || 0); c++) {
         newMatrix[r][c] = matrixB[r][c] || 0;
       }
     }
@@ -260,50 +257,52 @@ export default function ChameleonCalcPage() {
   const updateMatrixValue = (target: "A" | "B", r: number, c: number, val: string) => {
     const num = parseFloat(val) || 0;
     if (target === "A") {
-      const copy = matrixA.map((row) => [...row]);
-      copy[r][c] = num;
-      setMatrixA(copy);
+      const updated = matrixA.map((rowArr, rowIndex) =>
+        rowIndex === r ? rowArr.map((colVal, colIndex) => (colIndex === c ? num : colVal)) : rowArr
+      );
+      setMatrixA(updated);
     } else {
-      const copy = matrixB.map((row) => [...row]);
-      copy[r][c] = num;
-      setMatrixB(copy);
+      const updated = matrixB.map((rowArr, rowIndex) =>
+        rowIndex === r ? rowArr.map((colVal, colIndex) => (colIndex === c ? num : colVal)) : rowArr
+      );
+      setMatrixB(updated);
     }
   };
 
   const handleMatrixAdd = () => {
     try {
       const res = MatrixEngine.add(matrixA, matrixB);
-      setMatrixResult({ type: "matrix", val: res });
-    } catch (e: any) {
-      setMatrixResult({ type: "string", val: `Error: ${e.message}` });
+      setMatrixResult({ type: "matrix", val: res, latex: renderLaTeXMatrix(res) });
+    } catch (err: any) {
+      setMatrixResult({ type: "string", val: err.message });
     }
   };
 
   const handleMatrixSub = () => {
     try {
       const res = MatrixEngine.subtract(matrixA, matrixB);
-      setMatrixResult({ type: "matrix", val: res });
-    } catch (e: any) {
-      setMatrixResult({ type: "string", val: `Error: ${e.message}` });
+      setMatrixResult({ type: "matrix", val: res, latex: renderLaTeXMatrix(res) });
+    } catch (err: any) {
+      setMatrixResult({ type: "string", val: err.message });
     }
   };
 
   const handleMatrixMul = () => {
     try {
       const res = MatrixEngine.multiply(matrixA, matrixB);
-      setMatrixResult({ type: "matrix", val: res });
-    } catch (e: any) {
-      setMatrixResult({ type: "string", val: `Error: ${e.message}` });
+      setMatrixResult({ type: "matrix", val: res, latex: renderLaTeXMatrix(res) });
+    } catch (err: any) {
+      setMatrixResult({ type: "string", val: err.message });
     }
   };
 
   const handleMatrixScalarMul = () => {
     try {
-      const k = parseFloat(scalarK) || 0;
+      const k = parseFloat(scalarK) || 1;
       const res = MatrixEngine.multiplyScalar(matrixA, k);
-      setMatrixResult({ type: "matrix", val: res });
-    } catch (e: any) {
-      setMatrixResult({ type: "string", val: `Error: ${e.message}` });
+      setMatrixResult({ type: "matrix", val: res, latex: renderLaTeXMatrix(res) });
+    } catch (err: any) {
+      setMatrixResult({ type: "string", val: err.message });
     }
   };
 
@@ -311,9 +310,9 @@ export default function ChameleonCalcPage() {
     try {
       const targetMat = target === "A" ? matrixA : matrixB;
       const res = MatrixEngine.determinant(targetMat);
-      setMatrixResult({ type: "scalar", val: res, latex: `\\det(${target}) = ${res.toFixed(6)}` });
-    } catch (e: any) {
-      setMatrixResult({ type: "string", val: `Error: ${e.message}` });
+      setMatrixResult({ type: "scalar", val: res, latex: `\\det(${target}) = ${res}` });
+    } catch (err: any) {
+      setMatrixResult({ type: "string", val: err.message });
     }
   };
 
@@ -321,43 +320,42 @@ export default function ChameleonCalcPage() {
     try {
       const targetMat = target === "A" ? matrixA : matrixB;
       const res = MatrixEngine.inverse(targetMat);
-      if (res) {
-        setMatrixResult({ type: "matrix", val: res });
-      } else {
-        setMatrixResult({ type: "string", val: `Matrix ${target} is singular (determinant is 0) and has no inverse.` });
+      if (!res) {
+        setMatrixResult({ type: "string", val: "Matrix is singular (non-invertible, det = 0)" });
+        return;
       }
-    } catch (e: any) {
-      setMatrixResult({ type: "string", val: `Error: ${e.message}` });
+      setMatrixResult({ type: "matrix", val: res, latex: renderLaTeXMatrix(res) });
+    } catch (err: any) {
+      setMatrixResult({ type: "string", val: err.message });
     }
   };
 
   const handleMatrixTranspose = (target: "A" | "B") => {
     const targetMat = target === "A" ? matrixA : matrixB;
     const res = MatrixEngine.transpose(targetMat);
-    setMatrixResult({ type: "matrix", val: res });
+    setMatrixResult({ type: "matrix", val: res, latex: renderLaTeXMatrix(res) });
   };
 
   const handleMatrixTrace = (target: "A" | "B") => {
     try {
       const targetMat = target === "A" ? matrixA : matrixB;
       const res = MatrixEngine.trace(targetMat);
-      setMatrixResult({ type: "scalar", val: res, latex: `\\text{Tr}(${target}) = ${res}` });
-    } catch (e: any) {
-      setMatrixResult({ type: "string", val: `Error: ${e.message}` });
+      setMatrixResult({ type: "scalar", val: res, latex: `\\text{tr}(${target}) = ${res}` });
+    } catch (err: any) {
+      setMatrixResult({ type: "string", val: err.message });
     }
   };
 
   // ==========================================
-  // Decomposition Matrix State
+  // Matrix Decomposition (LU, QR, Eigen) State
   // ==========================================
-  const [decompDim, setDecompDim] = useState(3);
+  const [decompDim, setDecompDim] = useState(2);
   const [decompMatrix, setDecompMatrix] = useState<MatrixEngine.Matrix>([
-    [4, 3, 2],
-    [3, 6, 3],
-    [2, 3, 5]
+    [4, 3],
+    [6, 3]
   ]);
   const [decompResult, setDecompResult] = useState<{
-    type: "LU" | "QR" | "Eigen";
+    type: "LU" | "QR" | "EIGEN";
     data: any;
     steps: string[];
   } | null>(null);
@@ -365,29 +363,27 @@ export default function ChameleonCalcPage() {
   useEffect(() => {
     const newMatrix = MatrixEngine.createZeroMatrix(decompDim, decompDim);
     for (let r = 0; r < Math.min(decompDim, decompMatrix.length); r++) {
-      for (let c = 0; c < Math.min(decompDim, decompMatrix[0].length); c++) {
+      for (let c = 0; c < Math.min(decompDim, decompMatrix[0]?.length || 0); c++) {
         newMatrix[r][c] = decompMatrix[r][c] || 0;
       }
-    }
-    for (let i = 0; i < decompDim; i++) {
-      if (newMatrix[i][i] === 0) newMatrix[i][i] = 1;
     }
     setDecompMatrix(newMatrix);
   }, [decompDim]);
 
   const updateDecompMatrixValue = (r: number, c: number, val: string) => {
     const num = parseFloat(val) || 0;
-    const copy = decompMatrix.map((row) => [...row]);
-    copy[r][c] = num;
-    setDecompMatrix(copy);
+    const updated = decompMatrix.map((rowArr, rowIndex) =>
+      rowIndex === r ? rowArr.map((colVal, colIndex) => (colIndex === c ? num : colVal)) : rowArr
+    );
+    setDecompMatrix(updated);
   };
 
   const handleLUDecomp = () => {
     try {
       const res = MatrixEngine.luDecomposition(decompMatrix);
       setDecompResult({ type: "LU", data: res, steps: res.steps });
-    } catch (e: any) {
-      setDecompResult({ type: "LU", data: null, steps: [`Error: ${e.message}`] });
+    } catch (err: any) {
+      setDecompResult({ type: "LU", data: null, steps: [err.message] });
     }
   };
 
@@ -395,37 +391,34 @@ export default function ChameleonCalcPage() {
     try {
       const res = MatrixEngine.qrDecomposition(decompMatrix);
       setDecompResult({ type: "QR", data: res, steps: res.steps });
-    } catch (e: any) {
-      setDecompResult({ type: "QR", data: null, steps: [`Error: ${e.message}`] });
+    } catch (err: any) {
+      setDecompResult({ type: "QR", data: null, steps: [err.message] });
     }
   };
 
   const handleEigenvalues = () => {
     try {
-      const steps = ["Starting Eigenvalue Computation using QR Algorithm...", "Running QR shifting iterations..."];
-      const res = MatrixEngine.computeEigenvalues(decompMatrix, 80);
-      steps.push("Iterations finished.", `Eigenvalues spectrum approximated: [${res.map(x=>x.toFixed(6)).join(", ")}]`);
-      setDecompResult({ type: "Eigen", data: res, steps });
-    } catch (e: any) {
-      setDecompResult({ type: "Eigen", data: null, steps: [`Error: ${e.message}`] });
+      const res = MatrixEngine.computeEigenvalues(decompMatrix);
+      setDecompResult({ type: "EIGEN", data: res, steps: ["Computed QR Algorithm Eigenvalues spectrum"] });
+    } catch (err: any) {
+      setDecompResult({ type: "EIGEN", data: null, steps: [err.message] });
     }
   };
 
-  // Matrix display formatter helper
   const renderLaTeXMatrix = (matrix: MatrixEngine.Matrix): string => {
-    const rows = matrix.map(r => r.map(val => Number(val.toFixed(4)).toString()).join(" & "));
-    return `\\begin{pmatrix} ${rows.join(" \\\\ ")} \\end{pmatrix}`;
+    if (!matrix || matrix.length === 0) return "";
+    const rowsStr = matrix.map((row) => row.map((cell) => cell.toFixed(4).replace(/\.?0+$/, "")).join(" & ")).join(" \\\\ ");
+    return `\\begin{bmatrix} ${rowsStr} \\end{bmatrix}`;
   };
 
   // ==========================================
-  // NEW TAB: Multivariate Statistics & SVD State
+  // Multivariate Statistics & SVD State
   // ==========================================
-  const [statsDim, setStatsDim] = useState({ rows: 4, cols: 2 });
+  const [statsDim, setStatsDim] = useState({ rows: 3, cols: 2 });
   const [statsMatrix, setStatsMatrix] = useState<MatrixEngine.Matrix>([
-    [10, 2],
-    [15, 4],
-    [20, 5],
-    [30, 9]
+    [1, 2],
+    [3, 4],
+    [5, 6]
   ]);
   const [statsResult, setStatsResult] = useState<{
     type: "STATS" | "SVD";
@@ -434,10 +427,9 @@ export default function ChameleonCalcPage() {
   } | null>(null);
 
   useEffect(() => {
-    const { rows, cols } = statsDim;
-    const newMatrix = MatrixEngine.createZeroMatrix(rows, cols);
-    for (let r = 0; r < Math.min(rows, statsMatrix.length); r++) {
-      for (let c = 0; c < Math.min(cols, statsMatrix[0].length); c++) {
+    const newMatrix = MatrixEngine.createZeroMatrix(statsDim.rows, statsDim.cols);
+    for (let r = 0; r < Math.min(statsDim.rows, statsMatrix.length); r++) {
+      for (let c = 0; c < Math.min(statsDim.cols, statsMatrix[0]?.length || 0); c++) {
         newMatrix[r][c] = statsMatrix[r][c] || 0;
       }
     }
@@ -446,268 +438,52 @@ export default function ChameleonCalcPage() {
 
   const updateStatsValue = (r: number, c: number, val: string) => {
     const num = parseFloat(val) || 0;
-    const copy = statsMatrix.map((row) => [...row]);
-    copy[r][c] = num;
-    setStatsMatrix(copy);
+    const updated = statsMatrix.map((rowArr, rowIndex) =>
+      rowIndex === r ? rowArr.map((colVal, colIndex) => (colIndex === c ? num : colVal)) : rowArr
+    );
+    setStatsMatrix(updated);
   };
 
   const handleComputeStats = () => {
     try {
       const res = MatrixEngine.computeMultivariateStats(statsMatrix);
       setStatsResult({ type: "STATS", data: res, steps: res.steps });
-    } catch (e: any) {
-      setStatsResult({ type: "STATS", data: null, steps: [`Error: ${e.message}`] });
+    } catch (err: any) {
+      setStatsResult({ type: "STATS", data: null, steps: [err.message] });
     }
   };
 
   const handleComputeSVD = () => {
     try {
-      // SVD works on square matrices in this solver
-      if (statsMatrix.length !== statsMatrix[0].length) {
-        throw new Error("Matrix must be square (Equal rows and columns) for SVD solver");
-      }
       const res = MatrixEngine.svd(statsMatrix);
       setStatsResult({ type: "SVD", data: res, steps: res.steps });
-    } catch (e: any) {
-      setStatsResult({ type: "SVD", data: null, steps: [`Error: ${e.message}`] });
+    } catch (err: any) {
+      setStatsResult({ type: "SVD", data: null, steps: [err.message] });
     }
   };
 
-  // Re-multiply U * S * V^T to demonstrate SVD reconstruction
   const getSVDReconstruction = (data: any): MatrixEngine.Matrix => {
-    if (!data) return [];
-    const n = data.U.length;
-    // Build Sigma matrix from S vector
-    const Sigma = MatrixEngine.createZeroMatrix(n, n);
-    for (let i = 0; i < n; i++) {
-      Sigma[i][i] = data.S[i];
+    if (!data || !data.U || !data.S || !data.VT) return [];
+    const { U, S, VT } = data;
+    const Sigma = MatrixEngine.createZeroMatrix(U.length, VT.length);
+    for (let i = 0; i < Math.min(U.length, VT.length, S.length); i++) {
+      Sigma[i][i] = S[i];
     }
-    // U * Sigma * V^T
-    const USigma = MatrixEngine.multiply(data.U, Sigma);
-    return MatrixEngine.multiply(USigma, data.VT);
-  };
-
-  // ==========================================
-  // NEW TAB: Chameleon AI Mind Assistant
-  // ==========================================
-  const [aiInput, setAiInput] = useState("");
-  const [aiMessages, setAiMessages] = useState<Message[]>([
-    {
-      id: "init",
-      sender: "ai",
-      text: "Greetings. I am the Chameleon AI Mathematical Assistant. I can graph functions, solve equations, factor matrices, or compute statistics locally. Type a prompt like:\n\n- 'solve 2x^2 + 5x - 3 = 0'\n- 'plot x^2 - 4x + 3'\n- 'SVD of [[4,0],[0,3]]'\n- 'SD of [10, 20, 30, 45]'"
-    }
-  ]);
-  const [isAiThinking, setIsAiThinking] = useState(false);
-  const chatBottomRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [aiMessages, isAiThinking]);
-
-  const handleSendAi = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!aiInput.trim()) return;
-
-    const userText = aiInput.trim();
-    const userMsg: Message = { id: Date.now().toString(), sender: "user", text: userText };
-    setAiMessages((prev) => [...prev, userMsg]);
-    setAiInput("");
-    setIsAiThinking(true);
-
-    setTimeout(() => {
-      let aiText = "I'm sorry, I couldn't interpret your prompt mathematically. Please check your syntax or try one of the preset prompts.";
-      let aiLatex: string | undefined;
-      let aiAction: Message["action"];
-
-      try {
-        const clean = userText.toLowerCase().replace(/\s+/g, "");
-
-        // 1. Plot command (e.g. plot sin(x) + cos(2x))
-        if (clean.startsWith("plot") || clean.startsWith("graph") || clean.startsWith("draw")) {
-          const rawExpr = userText.replace(/plot|graph|draw/i, "").trim();
-          if (rawExpr) {
-            aiText = `I've successfully parsed your graphing expression. I can plot the curve for you on the coordinate plane. Click the action button below to load it into the Graphing Board.`;
-            aiLatex = `f(x) = ${toLaTeX(rawExpr)}`;
-            aiAction = {
-              label: "Load into Graphing Board",
-              tab: "graphing",
-              data: rawExpr
-            };
-          }
-        }
-        
-        // 2. Solve quadratic equations (e.g. solve 2x^2 + 5x - 3 = 0)
-        else if (clean.startsWith("solve")) {
-          // Regex for ax^2 + bx + c = 0
-          const match = clean.match(/solve([+-]?\d*(?:\.\d+)?)x\^2([+-]?\d*(?:\.\d+)?)x([+-]?\d*(?:\.\d+)?)=0/);
-          if (match) {
-            const aStr = match[1];
-            const bStr = match[2];
-            const cStr = match[3];
-
-            const a = aStr === "" || aStr === "+" ? 1 : aStr === "-" ? -1 : parseFloat(aStr);
-            const b = bStr === "" || bStr === "+" ? 1 : bStr === "-" ? -1 : parseFloat(bStr);
-            const c = parseFloat(cStr);
-
-            if (!isNaN(a) && !isNaN(b) && !isNaN(c)) {
-              const D = b * b - 4 * a * c;
-              aiText = `Identified quadratic coefficients:\n- a = ${a}\n- b = ${b}\n- c = ${c}\n\nCalculating discriminant:\n  D = b² - 4ac = (${b})² - 4(${a})(${c}) = ${D}\n\n`;
-              
-              if (D > 0) {
-                const r1 = (-b + Math.sqrt(D)) / (2 * a);
-                const r2 = (-b - Math.sqrt(D)) / (2 * a);
-                aiText += `Since D > 0, we have two distinct real roots:\n- x₁ = ${r1.toFixed(5)}\n- x₂ = ${r2.toFixed(5)}`;
-                aiLatex = `x = \\frac{-${b} \\pm \\sqrt{${D}}}{2(${a})} \\implies x_1 = ${r1.toFixed(4)},\\; x_2 = ${r2.toFixed(4)}`;
-              } else if (D === 0) {
-                const r = -b / (2 * a);
-                aiText += `Since D = 0, we have one double real root:\n- x = ${r.toFixed(5)}`;
-                aiLatex = `x = \\frac{-${b}}{2(${a})} = ${r.toFixed(4)}`;
-              } else {
-                const realPart = -b / (2 * a);
-                const imagPart = Math.sqrt(-D) / (2 * a);
-                aiText += `Since D < 0, we have two complex conjugate roots:\n- x₁ = ${realPart.toFixed(5)} + ${imagPart.toFixed(5)}i\n- x₂ = ${realPart.toFixed(5)} - ${imagPart.toFixed(5)}i`;
-                aiLatex = `x = ${realPart.toFixed(4)} \\pm ${imagPart.toFixed(4)} i`;
-              }
-              
-              aiAction = {
-                label: "Solve as Expression",
-                tab: "advanced",
-                data: `${a}*x^2 + ${b}*x + ${c}`
-              };
-            }
-          } else {
-            // General equation fallback (try evaluating as standard expression)
-            const expr = userText.replace(/solve/i, "").trim();
-            const res = evaluate(expr);
-            aiText = `Solved algebraic expression directly:\nAnswer: ${res}`;
-            aiLatex = `${toLaTeX(expr)} = ${res}`;
-          }
-        }
-
-        // 3. SVD decomposition (e.g. SVD of [[4,0],[0,3]])
-        else if (clean.includes("svd")) {
-          // Try to parse matrix, e.g. [[4,0],[0,3]]
-          const matrixMatch = userText.match(/\[\s*\[(.*?)\]\s*,\s*\[(.*?)\]\s*\]/); // 2x2 fallback
-          let matrix: number[][] = [[4, 0], [0, 3]]; // Preset default
-          
-          if (matrixMatch) {
-            try {
-              matrix = JSON.parse(userText.match(/\[\s*\[.*\]\s*\]/)?.[0] || "");
-            } catch {}
-          }
-          
-          if (matrix && matrix.length === matrix[0].length) {
-            const res = MatrixEngine.svd(matrix);
-            aiText = `Computed Singular Value Decomposition (SVD) for matrix A:\n- Singular values: [${res.S.map(x=>x.toFixed(4)).join(", ")}]\n\nLoad this matrix into the Multivariate & SVD tab to see full orthogonal matrices U and V^T, walkthrough trace steps, and verification checks.`;
-            aiLatex = `A = U \\Sigma V^T,\\; S = \\text{diag}(${res.S.map(x=>x.toFixed(4)).join(",")})`;
-            aiAction = {
-              label: "Load Matrix into SVD Board",
-              tab: "stats",
-              data: { matrix, dim: matrix.length }
-            };
-          } else {
-            aiText = "SVD solver requires a square matrix. E.g. 'SVD of [[2,1],[1,2]]'.";
-          }
-        }
-
-        // 4. LU decomposition
-        else if (clean.includes("lu")) {
-          let matrix = [[4, 3], [6, 3]];
-          try {
-            matrix = JSON.parse(userText.match(/\[\s*\[.*\]\s*\]/)?.[0] || "");
-          } catch {}
-          const res = MatrixEngine.luDecomposition(matrix);
-          aiText = `Computed LU Decomposition for matrix A. L has diagonal 1s, U is upper triangular.\n\nClick below to load this matrix into the matrix decomposition board for full logs.`;
-          aiLatex = `A = LU`;
-          aiAction = {
-            label: "Load into Decomposition Board",
-            tab: "decomposition",
-            data: { matrix, dim: matrix.length }
-          };
-        }
-
-        // 5. Standard Deviation & Stats
-        else if (clean.includes("sd") || clean.includes("stats") || clean.includes("standarddeviation")) {
-          const listMatch = userText.match(/\[(.*?)\]/);
-          if (listMatch) {
-            const arr = listMatch[1].split(",").map(x => parseFloat(x.trim()) || 0);
-            if (arr.length > 0) {
-              // Convert list to 1-column matrix for multivariate stats
-              const matrix = arr.map(x => [x]);
-              const stats = MatrixEngine.computeMultivariateStats(matrix);
-              aiText = `Computed Statistics for dataset list:\n- Mean (Average): ${stats.means[0].toFixed(5)}\n- Standard Deviation (SD): ${stats.stdevs[0].toFixed(5)}\n- Sample Variance: ${(stats.stdevs[0] * stats.stdevs[0]).toFixed(5)}`;
-              aiLatex = `\\mu = ${stats.means[0].toFixed(4)},\\; \\sigma = ${stats.stdevs[0].toFixed(4)}`;
-              aiAction = {
-                label: "Load as Column into Stats Matrix",
-                tab: "stats",
-                data: { matrix, rows: arr.length, cols: 1 }
-              };
-            }
-          } else {
-            aiText = "Could not parse dataset array list. Make sure to enclose numbers in brackets, e.g. 'SD of [10, 20, 30]'.";
-          }
-        }
-      } catch (err: any) {
-        aiText = `Error evaluating prompt: ${err.message || "Math parser error"}`;
-      }
-
-      const responseMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        sender: "ai",
-        text: aiText,
-        latex: aiLatex,
-        action: aiAction
-      };
-      setAiMessages((prev) => [...prev, responseMsg]);
-      setIsAiThinking(false);
-    }, 700);
-  };
-
-  const handleAiAction = (action: Message["action"]) => {
-    if (!action) return;
-    const { tab, data } = action;
-    setActiveTab(tab);
-
-    // Route action payloads to correct tab states
-    if (tab === "graphing" && typeof data === "string") {
-      // In Graphing tab, we'll replace the first equation
-      // Trigger event or wait for state. Graphing is sub-component. We'll alert/pass down.
-      // But we can also set localStorage which Graphing reads, or let's reload.
-      // We'll write to localStorage and trigger an update.
-      localStorage.setItem("chameleon_calc_preload_graph", data);
-      window.dispatchEvent(new Event("chameleon_calc_preload"));
-    } else if (tab === "stats") {
-      if (data.matrix) {
-        setStatsDim({ rows: data.rows || data.dim, cols: data.cols || data.dim });
-        setStatsMatrix(data.matrix);
-      }
-    } else if (tab === "decomposition") {
-      if (data.matrix) {
-        setDecompDim(data.dim);
-        setDecompMatrix(data.matrix);
-      }
-    } else if (tab === "advanced" && typeof data === "string") {
-      setExpression(data);
-    }
-  };
-
-  // Custom visual triggers for preset prompt clicks
-  const sendPresetPrompt = (txt: string) => {
-    setAiInput(txt);
+    const US = MatrixEngine.multiply(U, Sigma);
+    return MatrixEngine.multiply(US, VT);
   };
 
   return (
     <main className={`min-h-screen bg-gradient-to-b ${theme.bgGradient} transition-all duration-700 ease-in-out py-8 px-4 md:px-8 relative overflow-hidden`}>
       {/* Decorative Blur Backgrounds */}
       <div className={`absolute top-1/4 left-1/4 w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-${theme.primary}/10 rounded-full blur-[80px] -z-10 pointer-events-none transition-colors duration-700`} />
-      <div className="absolute bottom-1/4 right-1/4 w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-indigo-500/5 rounded-full blur-[80px] -z-10 pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-purple-500/5 rounded-full blur-[80px] -z-10 pointer-events-none" />
 
       <div className="max-w-7xl mx-auto flex flex-col gap-6">
         {/* Title Header with Logo */}
         <header className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-border/40 pb-6">
           <div className="flex items-center gap-4">
-            <ChameleonLogo size={70} />
+            <ChameleonLogo size={58} />
             <div className="text-center md:text-left">
               <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary via-indigo-400 to-purple-400 bg-clip-text text-transparent font-sans">
                 Chameleon Calc
@@ -736,7 +512,7 @@ export default function ChameleonCalcPage() {
           onValueChange={(v) => setActiveTab(v as any)}
           className="w-full"
         >
-          <TabsList className="grid grid-cols-2 md:grid-cols-7 gap-1.5 bg-muted/40 border border-border/30 p-1.5 rounded-xl h-auto backdrop-blur">
+          <TabsList className="grid grid-cols-2 md:grid-cols-6 gap-1.5 bg-muted/40 border border-border/30 p-1.5 rounded-xl h-auto backdrop-blur">
             <TabsTrigger value="basic" className="rounded-lg py-2.5 font-semibold text-[11px] data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-300 border border-transparent data-[state=active]:border-emerald-500/30">
               Basic Math
             </TabsTrigger>
@@ -755,271 +531,311 @@ export default function ChameleonCalcPage() {
             <TabsTrigger value="graphing" className="rounded-lg py-2.5 font-semibold text-[11px] data-[state=active]:bg-rose-500/20 data-[state=active]:text-rose-300 border border-transparent data-[state=active]:border-rose-500/30">
               Graphing
             </TabsTrigger>
-            <TabsTrigger value="ai" className="rounded-lg py-2.5 font-semibold text-[11px] col-span-2 md:col-span-1 data-[state=active]:bg-indigo-500/20 data-[state=active]:text-indigo-300 border border-transparent data-[state=active]:border-indigo-500/30">
-              Chameleon AI
-            </TabsTrigger>
           </TabsList>
 
           {/* ========================================================
-              TAB: BASIC MATH & ADVANCED MATH
+              TAB: BASIC MATH
               ======================================================== */}
-          <TabsContent value="basic" className="mt-6 animate-fadeIn">
+          <TabsContent value="basic" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Display & Keypad */}
+              {/* Main Display & Keypad */}
               <div className="lg:col-span-8 flex flex-col gap-4">
                 <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl">
                   <CardHeader className="pb-3 border-b border-border/20">
-                    <CardTitle className="text-sm font-semibold flex items-center justify-between text-muted-foreground font-mono">
-                      <span>Standard Math Input</span>
-                      <span className="text-[10px] text-muted-foreground/50">Supports keyboard input</span>
+                    <CardTitle className="text-sm font-semibold flex items-center justify-between">
+                      <span>Interactive Expression Sandbox</span>
+                      <span className="text-[10px] text-muted-foreground font-mono">KaTeX Live Preview</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-4 flex flex-col gap-4">
-                    {/* Screen / Readout */}
-                    <div className="bg-background/90 border border-border/50 rounded-xl p-4 min-h-[110px] flex flex-col justify-between relative shadow-inner">
-                      {/* Active formula display (Raw) */}
+                    {/* Expression Input */}
+                    <div className="relative">
                       <Input
                         value={expression}
                         onChange={(e) => setExpression(e.target.value)}
-                        placeholder="Type mathematical expression (e.g. 2x + 10 or 3(x+4))..."
-                        className="bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-xl font-mono p-0 h-8"
+                        placeholder="Type math expression (e.g. 25 * (4 + 3)^2 - sqrt(144))..."
+                        className="bg-background/80 border-border/40 focus-visible:ring-emerald-500/40 text-base md:text-lg font-mono tracking-wide h-12 pr-10 rounded-xl"
                       />
-                      
-                      {/* LaTeX formatted representation */}
-                      {latexExpr && (
-                        <div className="text-muted-foreground overflow-x-auto text-sm py-1 border-t border-dashed border-border/30 mt-1 max-w-full custom-scrollbar">
-                          <Latex math={latexExpr} />
-                        </div>
-                      )}
-
-                      {/* Evaluated result readout */}
-                      {calcResult && (
-                        <div className={`text-right text-2xl font-bold font-mono mt-2 truncate ${calcResult.startsWith("Error") ? "text-destructive" : "text-emerald-500 dark:text-emerald-400 animate-pulse-glow"}`}>
-                          {calcResult}
-                        </div>
+                      {expression && (
+                        <button
+                          onClick={handleClear}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                          <Delete className="w-5 h-5" />
+                        </button>
                       )}
                     </div>
 
-                    {/* Keypads layout with Inverted Hover transitions */}
-                    <div className="grid grid-cols-4 gap-2.5">
-                      {/* Action Row */}
-                      <Button onClick={handleClear} variant="secondary" className="font-bold text-sm bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive hover:text-white dark:hover:bg-red-400 dark:hover:text-red-950 rounded-xl py-6 transition-all duration-300">
-                        C
-                      </Button>
-                      <Button onClick={() => handleKeypadPress("(")} className="font-bold text-sm bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">
-                        {"("}
-                      </Button>
-                      <Button onClick={() => handleKeypadPress(")")} className="font-bold text-sm bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">
-                        {")"}
-                      </Button>
-                      <Button onClick={handleBackspace} className="font-bold text-sm bg-muted/20 border border-border/40 text-foreground hover:bg-destructive hover:text-white dark:hover:bg-red-400 dark:hover:text-red-950 rounded-xl py-6 transition-all duration-300 flex items-center justify-center">
-                        <Delete className="w-5 h-5" />
-                      </Button>
+                    {/* KaTeX Live Math Preview & Output */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-background/60 border border-border/30 rounded-xl p-4 min-h-[90px] flex flex-col justify-between">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground">LaTeX Render</span>
+                        <div className="text-sm md:text-base overflow-x-auto custom-scrollbar font-serif text-emerald-400 py-1">
+                          {latexExpr ? <Latex math={latexExpr} block /> : <span className="text-muted-foreground/40 italic">Live math formatting...</span>}
+                        </div>
+                      </div>
 
-                      {/* Numbers and Basic Operators */}
-                      <Button onClick={() => handleKeypadPress("7")} className="font-bold text-lg bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">7</Button>
-                      <Button onClick={() => handleKeypadPress("8")} className="font-bold text-lg bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">8</Button>
-                      <Button onClick={() => handleKeypadPress("9")} className="font-bold text-lg bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">9</Button>
-                      <Button onClick={() => handleKeypadPress(" / ")} className={`font-bold text-lg ${theme.btn} rounded-xl py-6`}>/</Button>
+                      <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-xl p-4 min-h-[90px] flex flex-col justify-between">
+                        <span className="text-[10px] uppercase font-bold text-emerald-400">Result</span>
+                        <div className="text-xl md:text-2xl font-bold font-mono text-emerald-300 overflow-x-auto custom-scrollbar">
+                          {calcResult !== "" ? calcResult : <span className="text-muted-foreground/40 text-base">Press = or Enter</span>}
+                        </div>
+                      </div>
+                    </div>
 
-                      <Button onClick={() => handleKeypadPress("4")} className="font-bold text-lg bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">4</Button>
-                      <Button onClick={() => handleKeypadPress("5")} className="font-bold text-lg bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">5</Button>
-                      <Button onClick={() => handleKeypadPress("6")} className="font-bold text-lg bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">6</Button>
-                      <Button onClick={() => handleKeypadPress(" * ")} className={`font-bold text-lg ${theme.btn} rounded-xl py-6`}>×</Button>
-
-                      <Button onClick={() => handleKeypadPress("1")} className="font-bold text-lg bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">1</Button>
-                      <Button onClick={() => handleKeypadPress("2")} className="font-bold text-lg bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">2</Button>
-                      <Button onClick={() => handleKeypadPress("3")} className="font-bold text-lg bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">3</Button>
-                      <Button onClick={() => handleKeypadPress(" - ")} className={`font-bold text-lg ${theme.btn} rounded-xl py-6`}>-</Button>
-
-                      <Button onClick={() => handleKeypadPress("0")} className="font-bold text-lg bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">0</Button>
-                      <Button onClick={() => handleKeypadPress(".")} className="font-bold text-lg bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">.</Button>
-                      <Button onClick={() => handleKeypadPress(" % ")} className="font-bold text-lg bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300" title="Modulo (remainder)">%</Button>
-                      <Button onClick={() => handleKeypadPress(" + ")} className={`font-bold text-lg ${theme.btn} rounded-xl py-6`}>+</Button>
-
-                      {/* Advanced operators row */}
-                      <Button onClick={() => handleKeypadPress("^")} className="font-bold text-sm bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300" title="Power (A^B)">x<sup>y</sup></Button>
-                      <Button onClick={() => handleKeypadPress("pi")} className="font-semibold text-sm bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">π</Button>
-                      <Button onClick={() => handleKeypadPress("e")} className="font-semibold text-sm bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-6 transition-all duration-300">e</Button>
-                      <Button onClick={handleEvaluate} className="col-span-1 font-bold text-lg bg-emerald-600 hover:bg-emerald-500 text-white hover:bg-foreground hover:text-emerald-600 dark:hover:bg-white dark:hover:text-emerald-950 border-0 shadow-lg rounded-xl py-6 transition-all duration-300 flex items-center justify-center">
-                        <CornerDownLeft className="w-5 h-5" />
-                      </Button>
+                    {/* Standard Keypad Grid */}
+                    <div className="grid grid-cols-4 gap-2.5 pt-2">
+                      {["C", "(", ")", "/"].map((btn) => (
+                        <Button
+                          key={btn}
+                          onClick={() => (btn === "C" ? handleClear() : handleKeypadPress(btn))}
+                          className={
+                            btn === "C"
+                              ? "bg-red-500/25 hover:bg-red-500/40 text-red-300 border border-red-500/40 text-lg font-extrabold shadow-md hover:scale-105 active:scale-95 transition-all"
+                              : btn === "/"
+                              ? "bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-300 border border-emerald-500/40 text-xl font-black shadow-md hover:scale-105 active:scale-95 transition-all"
+                              : "bg-zinc-800/90 hover:bg-emerald-500/20 text-emerald-300 border border-zinc-700/60 text-lg font-extrabold shadow-md hover:scale-105 active:scale-95 transition-all"
+                          }
+                        >
+                          {btn}
+                        </Button>
+                      ))}
+                      {["7", "8", "9", "*"].map((btn) => (
+                        <Button
+                          key={btn}
+                          onClick={() => handleKeypadPress(btn)}
+                          className={
+                            btn === "*"
+                              ? "bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-300 border border-emerald-500/40 text-xl font-black shadow-md hover:scale-105 active:scale-95 transition-all"
+                              : "bg-zinc-800/90 hover:bg-zinc-700 text-white border border-zinc-700/60 text-xl font-bold shadow-md hover:scale-105 active:scale-95 transition-all"
+                          }
+                        >
+                          {btn}
+                        </Button>
+                      ))}
+                      {["4", "5", "6", "-"].map((btn) => (
+                        <Button
+                          key={btn}
+                          onClick={() => handleKeypadPress(btn)}
+                          className={
+                            btn === "-"
+                              ? "bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-300 border border-emerald-500/40 text-xl font-black shadow-md hover:scale-105 active:scale-95 transition-all"
+                              : "bg-zinc-800/90 hover:bg-zinc-700 text-white border border-zinc-700/60 text-xl font-bold shadow-md hover:scale-105 active:scale-95 transition-all"
+                          }
+                        >
+                          {btn}
+                        </Button>
+                      ))}
+                      {["1", "2", "3", "+"].map((btn) => (
+                        <Button
+                          key={btn}
+                          onClick={() => handleKeypadPress(btn)}
+                          className={
+                            btn === "+"
+                              ? "bg-emerald-500/20 hover:bg-emerald-500/35 text-emerald-300 border border-emerald-500/40 text-xl font-black shadow-md hover:scale-105 active:scale-95 transition-all"
+                              : "bg-zinc-800/90 hover:bg-zinc-700 text-white border border-zinc-700/60 text-xl font-bold shadow-md hover:scale-105 active:scale-95 transition-all"
+                          }
+                        >
+                          {btn}
+                        </Button>
+                      ))}
+                      {["0", ".", "^", "="].map((btn) => (
+                        <Button
+                          key={btn}
+                          onClick={() => (btn === "=" ? handleEvaluate() : handleKeypadPress(btn))}
+                          className={
+                            btn === "="
+                              ? "bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-2xl font-black shadow-lg shadow-emerald-500/25 border border-emerald-400 hover:scale-105 active:scale-95 transition-all"
+                              : btn === "^"
+                              ? "bg-zinc-800/90 hover:bg-emerald-500/20 text-emerald-300 border border-zinc-700/60 text-lg font-extrabold shadow-md hover:scale-105 active:scale-95 transition-all"
+                              : "bg-zinc-800/90 hover:bg-zinc-700 text-white border border-zinc-700/60 text-xl font-bold shadow-md hover:scale-105 active:scale-95 transition-all"
+                          }
+                        >
+                          {btn}
+                        </Button>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* History Sidebar */}
+              {/* Math History Panel */}
               <div className="lg:col-span-4 flex flex-col gap-4">
-                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl h-full flex flex-col justify-between">
-                  <div>
-                    <CardHeader className="pb-3 border-b border-border/20 flex flex-row items-center justify-between">
-                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                        <History className="w-4.5 h-4.5 text-primary" />
-                        Math History
-                      </CardTitle>
-                      {mathHistory.length > 0 && (
-                        <Button onClick={clearHistory} variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground hover:text-destructive">
-                          Clear
-                        </Button>
-                      )}
-                    </CardHeader>
-                    <CardContent className="pt-4 flex flex-col gap-3 max-h-[300px] overflow-y-auto custom-scrollbar">
-                      {mathHistory.length === 0 ? (
-                        <div className="text-center text-xs text-muted-foreground/80 py-8 flex flex-col items-center gap-1.5">
-                          <Info className="w-5 h-5 text-muted-foreground/45" />
-                          No history yet. Evaluate expressions to log calculation history.
-                        </div>
-                      ) : (
-                        mathHistory.map((item) => (
-                          <div
-                            key={item.id}
-                            onClick={() => {
-                              setExpression(item.expr);
-                              setCalcResult(item.result);
-                            }}
-                            className="p-2.5 rounded-lg bg-background/50 border border-border/30 cursor-pointer hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-all text-xs font-mono flex flex-col gap-1 select-none animate-fadeIn"
-                          >
-                            <div className="text-muted-foreground truncate"><Latex math={item.latex} /></div>
-                            <div className="text-emerald-500 dark:text-emerald-400 font-bold text-right">= {item.result}</div>
+                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl flex flex-col h-full">
+                  <CardHeader className="pb-3 border-b border-border/20 flex flex-row items-center justify-between">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                      <History className="w-4 h-4 text-emerald-400" />
+                      Session History
+                    </CardTitle>
+                    {mathHistory.length > 0 && (
+                      <button onClick={clearHistory} className="text-xs text-muted-foreground hover:text-red-400 flex items-center gap-1">
+                        <Trash2 className="w-3.5 h-3.5" /> Clear
+                      </button>
+                    )}
+                  </CardHeader>
+                  <CardContent className="pt-4 flex flex-col gap-2 flex-grow overflow-y-auto max-h-[400px] custom-scrollbar">
+                    {mathHistory.length === 0 ? (
+                      <div className="text-center text-xs text-muted-foreground py-8">
+                        No calculations performed yet.
+                      </div>
+                    ) : (
+                      mathHistory.map((item) => (
+                        <div
+                          key={item.id}
+                          onClick={() => {
+                            setExpression(item.expr);
+                            setCalcResult(item.result);
+                          }}
+                          className="p-3 bg-background/50 border border-border/30 rounded-xl hover:border-emerald-500/40 cursor-pointer transition-all flex flex-col gap-1 text-xs"
+                        >
+                          <div className="flex justify-between text-muted-foreground font-mono text-[10px]">
+                            <span>{item.expr}</span>
+                            <span className="text-emerald-400 font-bold">{item.result}</span>
                           </div>
-                        ))
-                      )}
-                    </CardContent>
-                  </div>
-                  <div className="p-4 border-t border-border/20 bg-muted/10 text-[10.5px] text-muted-foreground/80 flex gap-2">
-                    <HelpCircle className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
-                    <span>Click on any history item to load it back into the active screen buffer. Supports implicit multiplication like `2pi` or `3(4+x)`.</span>
-                  </div>
+                          <div className="text-foreground font-serif pt-1">
+                            <Latex math={`${item.latex} = ${item.result}`} />
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </CardContent>
                 </Card>
               </div>
             </div>
           </TabsContent>
 
           {/* ========================================================
-              TAB: ADVANCED MATH (SCIENTIFIC / HYPERBOLIC)
+              TAB: ADVANCED MATH
               ======================================================== */}
-          <TabsContent value="advanced" className="mt-6 animate-fadeIn">
+          <TabsContent value="advanced" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Display & Keypad */}
+              {/* Main Input & Scientific Pad */}
               <div className="lg:col-span-8 flex flex-col gap-4">
                 <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl">
                   <CardHeader className="pb-3 border-b border-border/20">
-                    <CardTitle className="text-sm font-semibold flex items-center justify-between text-muted-foreground font-mono">
-                      <span>Scientific / Hyperbolic Math Input</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px]">Hyperbolic Mode</span>
-                        <Button
-                          onClick={() => setIsHyperbolic(!isHyperbolic)}
-                          variant={isHyperbolic ? "default" : "outline"}
-                          size="sm"
-                          className={`h-7 px-2.5 rounded-full text-[10.5px] ${isHyperbolic ? "bg-violet-600 hover:bg-violet-500 text-white" : ""}`}
-                        >
-                          {isHyperbolic ? "ON (sinh)" : "OFF (sin)"}
-                        </Button>
-                      </div>
+                    <CardTitle className="text-sm font-semibold flex items-center justify-between">
+                      <span>Scientific & Transcendental Functions</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsHyperbolic(!isHyperbolic)}
+                        className={`text-[10px] h-7 px-2.5 rounded-lg border-violet-500/30 ${isHyperbolic ? "bg-violet-500/20 text-violet-300" : ""}`}
+                      >
+                        {isHyperbolic ? "Hyperbolic (sinh, cosh)" : "Trig (sin, cos)"}
+                      </Button>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-4 flex flex-col gap-4">
-                    {/* Screen / Readout */}
-                    <div className="bg-background/90 border border-border/50 rounded-xl p-4 min-h-[110px] flex flex-col justify-between relative shadow-inner">
+                    {/* Expression Bar */}
+                    <div className="relative">
                       <Input
                         value={expression}
                         onChange={(e) => setExpression(e.target.value)}
-                        placeholder="Enter expression (e.g. 2sinh(pi/2) or 5sqrt(abs(-16)))..."
-                        className="bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-xl font-mono p-0 h-8"
+                        placeholder="Type function (e.g. sin(pi/4) + ln(e^2) + sqrt(16))..."
+                        className="bg-background/80 border-border/40 focus-visible:ring-violet-500/40 text-base md:text-lg font-mono tracking-wide h-12 pr-10 rounded-xl"
                       />
-                      {latexExpr && (
-                        <div className="text-muted-foreground overflow-x-auto text-sm py-1 border-t border-dashed border-border/30 mt-1 max-w-full custom-scrollbar">
-                          <Latex math={latexExpr} />
-                        </div>
-                      )}
-                      {calcResult && (
-                        <div className={`text-right text-2xl font-bold font-mono mt-2 truncate ${calcResult.startsWith("Error") ? "text-destructive" : "text-violet-500 dark:text-violet-400 animate-pulse-glow"}`}>
-                          {calcResult}
-                        </div>
+                      {expression && (
+                        <button
+                          onClick={handleClear}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        >
+                          <Delete className="w-5 h-5" />
+                        </button>
                       )}
                     </div>
 
-                    {/* Scientific Keypad Grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                      {/* Action buttons */}
-                      <Button onClick={handleClear} variant="secondary" className="font-bold text-xs bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive hover:text-white dark:hover:bg-red-400 dark:hover:text-red-950 rounded-xl py-5 transition-all duration-300">C</Button>
-                      <Button onClick={handleBackspace} className="font-bold text-xs bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-5 transition-all duration-300 flex items-center justify-center"><Delete className="w-4 h-4" /></Button>
-                      <Button onClick={() => handleKeypadPress("(")} className="font-bold text-xs bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-5 transition-all duration-300">{"("}</Button>
-                      <Button onClick={() => handleKeypadPress(")")} className="font-bold text-xs bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-5 transition-all duration-300">{")"}</Button>
-                      <Button onClick={() => handleKeypadPress(",")} className="font-bold text-xs bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-5 transition-all duration-300" title="Argument separator">,</Button>
-                      <Button onClick={() => handleKeypadPress("^")} className="font-bold text-xs bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-5 transition-all duration-300">x<sup>y</sup></Button>
+                    {/* Preview / Result cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-background/60 border border-border/30 rounded-xl p-4 min-h-[90px] flex flex-col justify-between">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground">LaTeX Expression</span>
+                        <div className="text-sm md:text-base overflow-x-auto custom-scrollbar font-serif text-violet-400 py-1">
+                          {latexExpr ? <Latex math={latexExpr} block /> : <span className="text-muted-foreground/40 italic">Transcendental math preview...</span>}
+                        </div>
+                      </div>
 
-                      {/* Scientific Functions */}
-                      {!isHyperbolic ? (
-                        <>
-                          <Button onClick={() => handleKeypadPress("sin(")} className={`font-semibold text-xs rounded-xl py-5 ${theme.btn}`}>sin</Button>
-                          <Button onClick={() => handleKeypadPress("cos(")} className={`font-semibold text-xs rounded-xl py-5 ${theme.btn}`}>cos</Button>
-                          <Button onClick={() => handleKeypadPress("tan(")} className={`font-semibold text-xs rounded-xl py-5 ${theme.btn}`}>tan</Button>
-                          <Button onClick={() => handleKeypadPress("asin(")} className={`font-semibold text-[10px] rounded-xl py-5 ${theme.btn}`}>asin</Button>
-                          <Button onClick={() => handleKeypadPress("acos(")} className={`font-semibold text-[10px] rounded-xl py-5 ${theme.btn}`}>acos</Button>
-                          <Button onClick={() => handleKeypadPress("atan(")} className={`font-semibold text-[10px] rounded-xl py-5 ${theme.btn}`}>atan</Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button onClick={() => handleKeypadPress("sinh(")} className={`font-semibold text-xs rounded-xl py-5 ${theme.btn}`}>sinh</Button>
-                          <Button onClick={() => handleKeypadPress("cosh(")} className={`font-semibold text-xs rounded-xl py-5 ${theme.btn}`}>cosh</Button>
-                          <Button onClick={() => handleKeypadPress("tanh(")} className={`font-semibold text-xs rounded-xl py-5 ${theme.btn}`}>tanh</Button>
-                          <Button onClick={() => handleKeypadPress("asinh(")} className={`font-semibold text-[10px] rounded-xl py-5 ${theme.btn}`}>asinh</Button>
-                          <Button onClick={() => handleKeypadPress("acosh(")} className={`font-semibold text-[10px] rounded-xl py-5 ${theme.btn}`}>acosh</Button>
-                          <Button onClick={() => handleKeypadPress("atanh(")} className={`font-semibold text-[10px] rounded-xl py-5 ${theme.btn}`}>atanh</Button>
-                        </>
-                      )}
-
-                      {/* Common math functions */}
-                      <Button onClick={() => handleKeypadPress("sqrt(")} className={`font-semibold text-xs rounded-xl py-5 ${theme.btn}`}>√x</Button>
-                      <Button onClick={() => handleKeypadPress("ln(")} className={`font-semibold text-xs rounded-xl py-5 ${theme.btn}`}>ln</Button>
-                      <Button onClick={() => handleKeypadPress("log(")} className={`font-semibold text-xs rounded-xl py-5 ${theme.btn}`}>log<sub>10</sub></Button>
-                      <Button onClick={() => handleKeypadPress("exp(")} className={`font-semibold text-xs rounded-xl py-5 ${theme.btn}`}>e<sup>x</sup></Button>
-                      <Button onClick={() => handleKeypadPress("abs(")} className={`font-semibold text-xs rounded-xl py-5 ${theme.btn}`}>|x|</Button>
-                      <Button onClick={() => handleKeypadPress("pi")} className="font-semibold text-xs bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-5 transition-all duration-300">π</Button>
-
-                      {/* Constants and variables */}
-                      <Button onClick={() => handleKeypadPress("e")} className="font-semibold text-xs bg-muted/20 border border-border/40 text-foreground hover:bg-foreground hover:text-background rounded-xl py-5 transition-all duration-300">e</Button>
-                      <Button onClick={() => handleKeypadPress("x")} className="font-bold text-xs bg-muted/20 border border-border/40 text-indigo-500 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-300 dark:hover:text-indigo-950 rounded-xl py-5 transition-all duration-300">x</Button>
-                      <div className="col-span-2 hidden sm:block" />
-                      <Button onClick={handleEvaluate} className="col-span-2 font-bold text-xs bg-violet-600 hover:bg-violet-500 hover:bg-foreground hover:text-violet-600 dark:hover:bg-white dark:hover:text-violet-950 text-white border-0 shadow-lg rounded-xl py-5 transition-all duration-300">
-                        Calculate Result
-                      </Button>
+                      <div className="bg-violet-950/20 border border-violet-500/30 rounded-xl p-4 min-h-[90px] flex flex-col justify-between">
+                        <span className="text-[10px] uppercase font-bold text-violet-400">Calculated Value</span>
+                        <div className="text-xl md:text-2xl font-bold font-mono text-violet-300 overflow-x-auto custom-scrollbar">
+                          {calcResult !== "" ? calcResult : <span className="text-muted-foreground/40 text-base">Press Evaluate</span>}
+                        </div>
+                      </div>
                     </div>
+
+                    {/* Scientific Functions Grid */}
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5 pt-2">
+                      {(isHyperbolic
+                        ? ["sinh(", "cosh(", "tanh(", "asinh(", "acosh(", "atanh("]
+                        : ["sin(", "cos(", "tan(", "asin(", "acos(", "atan("]
+                      ).map((fnName) => (
+                        <Button
+                          key={fnName}
+                          onClick={() => handleKeypadPress(fnName)}
+                          className="bg-violet-500/20 hover:bg-violet-500/35 text-violet-300 border border-violet-500/40 font-mono text-sm font-bold shadow-md hover:scale-105 active:scale-95 transition-all py-2.5"
+                        >
+                          {fnName.replace("(", "")}
+                        </Button>
+                      ))}
+
+                      {["sqrt(", "ln(", "log(", "exp(", "abs(", "^"].map((fnName) => (
+                        <Button
+                          key={fnName}
+                          onClick={() => handleKeypadPress(fnName)}
+                          className="bg-zinc-800/90 hover:bg-violet-500/20 text-zinc-100 hover:text-violet-300 border border-zinc-700/60 font-mono text-sm font-bold shadow-md hover:scale-105 active:scale-95 transition-all py-2.5"
+                        >
+                          {fnName.replace("(", "")}
+                        </Button>
+                      ))}
+
+                      {["pi", "e", "(", ")", "%", "C"].map((item) => (
+                        <Button
+                          key={item}
+                          onClick={() => (item === "C" ? handleClear() : handleKeypadPress(item))}
+                          className={
+                            item === "C"
+                              ? "bg-red-500/25 hover:bg-red-500/40 text-red-300 border border-red-500/40 font-bold text-sm shadow-md hover:scale-105 active:scale-95 transition-all"
+                              : "bg-zinc-800/90 hover:bg-violet-500/20 text-zinc-100 hover:text-violet-300 border border-zinc-700/60 font-mono text-sm font-bold shadow-md hover:scale-105 active:scale-95 transition-all"
+                          }
+                        >
+                          {item}
+                        </Button>
+                      ))}
+                    </div>
+
+                    <Button
+                      onClick={handleEvaluate}
+                      className="bg-violet-600 hover:bg-violet-500 hover:bg-foreground hover:text-violet-600 dark:hover:bg-white dark:hover:text-violet-950 text-white font-extrabold border border-violet-400 h-11 text-base rounded-xl mt-2"
+                    >
+                      Compute Advanced Result
+                    </Button>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Advanced info panel */}
+              {/* Side Reference Info */}
               <div className="lg:col-span-4 flex flex-col gap-4">
-                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl h-full flex flex-col justify-between">
+                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl flex flex-col h-full justify-between">
                   <div>
                     <CardHeader className="pb-3 border-b border-border/20">
                       <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                        <Info className="w-4.5 h-4.5 text-primary" />
-                        Scientific Guidelines
+                        <Info className="w-4 h-4 text-violet-400" />
+                        Supported Syntax Reference
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="pt-4 text-xs flex flex-col gap-3 text-muted-foreground">
-                      <div className="flex flex-col gap-1">
-                        <span className="font-semibold text-foreground">Hyperbolic Functions:</span>
-                        <span>- `sinh(x) = (e^x - e^-x) / 2`</span>
-                        <span>- `cosh(x) = (e^x + e^-x) / 2`</span>
-                        <span>- `tanh(x) = sinh(x) / cosh(x)`</span>
-                      </div>
-                      <div className="flex flex-col gap-1 border-t border-border/20 pt-2.5">
-                        <span className="font-semibold text-foreground">Implicit Products:</span>
-                        <span>- Type `2x` instead of `2*x`</span>
-                        <span>- Type `2pi` or `4(x+5)` directly</span>
-                        <span>- Mappings automatically process multiplications</span>
-                      </div>
+                    <CardContent className="pt-4 flex flex-col gap-3 text-xs leading-relaxed text-muted-foreground">
+                      <p>
+                        Chameleon Math Engine uses full Shunting-Yard tokenization with precedence matching.
+                      </p>
+                      <ul className="space-y-2 list-disc list-inside font-mono text-[11px]">
+                        <li>Trig: <span className="text-violet-300">sin(x), cos(x), tan(x)</span></li>
+                        <li>Inverse: <span className="text-violet-300">asin(x), acos(x), atan(x)</span></li>
+                        <li>Logarithms: <span className="text-violet-300">ln(x) [base e], log(x) [base 10]</span></li>
+                        <li>Constants: <span className="text-violet-300">pi = 3.14159..., e = 2.71828...</span></li>
+                      </ul>
                     </CardContent>
                   </div>
-                  <div className="p-4 border-t border-border/20 bg-muted/10 text-[10.5px] text-muted-foreground/80 flex gap-2">
-                    <Sliders className="w-4 h-4 text-violet-400 shrink-0" />
-                    <span>To view the plotted version of these equations, click the **Graphing** tab.</span>
+                  <div className="p-4 border-t border-border/20 bg-muted/10 text-[10.5px] text-muted-foreground/80 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-violet-400 shrink-0" />
+                    <span>Real-time KaTeX rendering converts your expressions to academic typesetting.</span>
                   </div>
                 </Card>
               </div>
@@ -1029,300 +845,295 @@ export default function ChameleonCalcPage() {
           {/* ========================================================
               TAB: LINEAR ALGEBRA
               ======================================================== */}
-          <TabsContent value="matrix" className="mt-6 animate-fadeIn">
+          <TabsContent value="matrix" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-8 flex flex-col gap-6">
-                {/* Matrix A Card */}
-                <Card className="border border-border/40 bg-card/60 backdrop-blur-xl">
+              {/* Matrix Controllers A & B */}
+              <div className="lg:col-span-6 flex flex-col gap-6">
+                {/* Matrix A */}
+                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl">
                   <CardHeader className="pb-3 border-b border-border/20 flex flex-row items-center justify-between">
-                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                      <Grid3X3 className="w-4.5 h-4.5 text-cyan-400" />
-                      Matrix A
-                    </CardTitle>
+                    <CardTitle className="text-sm font-semibold text-cyan-400">Matrix A</CardTitle>
                     <div className="flex items-center gap-2 text-xs">
-                      <span>Dimensions:</span>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="4"
+                      <span className="text-muted-foreground font-mono">Dim:</span>
+                      <select
                         value={matrixDimA.rows}
-                        onChange={(e) => setMatrixDimA({ ...matrixDimA, rows: Math.min(4, Math.max(1, parseInt(e.target.value) || 1)) })}
-                        className="w-12 h-7 px-1.5 text-center font-semibold bg-background border-border/40 focus-visible:ring-cyan-500/40 rounded"
-                      />
-                      <span>×</span>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="4"
+                        onChange={(e) => setMatrixDimA({ ...matrixDimA, rows: parseInt(e.target.value) })}
+                        className="bg-background border border-border/40 rounded px-1.5 py-0.5 font-mono"
+                      >
+                        {[1, 2, 3, 4].map((n) => (
+                          <option key={n} value={n}>{n}</option>
+                        ))}
+                      </select>
+                      <span>x</span>
+                      <select
                         value={matrixDimA.cols}
-                        onChange={(e) => setMatrixDimA({ ...matrixDimA, cols: Math.min(4, Math.max(1, parseInt(e.target.value) || 1)) })}
-                        className="w-12 h-7 px-1.5 text-center font-semibold bg-background border-border/40 focus-visible:ring-cyan-500/40 rounded"
-                      />
+                        onChange={(e) => setMatrixDimA({ ...matrixDimA, cols: parseInt(e.target.value) })}
+                        className="bg-background border border-border/40 rounded px-1.5 py-0.5 font-mono"
+                      >
+                        {[1, 2, 3, 4].map((n) => (
+                          <option key={n} value={n}>{n}</option>
+                        ))}
+                      </select>
                     </div>
                   </CardHeader>
-                  <CardContent className="pt-4">
+                  <CardContent className="pt-4 flex flex-col gap-4">
+                    {/* Input Grid */}
                     <div
-                      className="grid gap-2.5 max-w-[320px] mx-auto p-4 border border-border/20 rounded-xl bg-background/40"
+                      className="grid gap-2 justify-center"
                       style={{ gridTemplateColumns: `repeat(${matrixDimA.cols}, minmax(0, 1fr))` }}
                     >
-                      {matrixA.map((row, r) =>
-                        row.map((val, c) => (
+                      {matrixA.map((rowArr, r) =>
+                        rowArr.map((val, c) => (
                           <Input
-                            key={`a-${r}-${c}`}
+                            key={`A-${r}-${c}`}
                             type="number"
-                            value={val || ""}
+                            value={val}
                             onChange={(e) => updateMatrixValue("A", r, c, e.target.value)}
-                            className="h-9 px-2 text-center font-mono text-sm bg-background border-border/50 focus-visible:ring-cyan-500/40 rounded-lg shadow-sm"
-                            placeholder="0"
+                            className="bg-background border-cyan-500/30 text-center font-mono text-sm h-10 focus-visible:ring-cyan-500/40 rounded-lg"
                           />
                         ))
                       )}
+                    </div>
+                    {/* Quick Single Operations */}
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Button onClick={() => handleMatrixDet("A")} variant="outline" size="sm" className="text-xs h-8 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20">
+                        det(A)
+                      </Button>
+                      <Button onClick={() => handleMatrixInv("A")} variant="outline" size="sm" className="text-xs h-8 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20">
+                        A⁻¹ (Inverse)
+                      </Button>
+                      <Button onClick={() => handleMatrixTranspose("A")} variant="outline" size="sm" className="text-xs h-8 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20">
+                        Aᵀ (Transpose)
+                      </Button>
+                      <Button onClick={() => handleMatrixTrace("A")} variant="outline" size="sm" className="text-xs h-8 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20">
+                        tr(A)
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Matrix B Card */}
-                <Card className="border border-border/40 bg-card/60 backdrop-blur-xl">
+                {/* Matrix B */}
+                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl">
                   <CardHeader className="pb-3 border-b border-border/20 flex flex-row items-center justify-between">
-                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                      <Grid3X3 className="w-4.5 h-4.5 text-cyan-400" />
-                      Matrix B
-                    </CardTitle>
+                    <CardTitle className="text-sm font-semibold text-cyan-400">Matrix B</CardTitle>
                     <div className="flex items-center gap-2 text-xs">
-                      <span>Dimensions:</span>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="4"
+                      <span className="text-muted-foreground font-mono">Dim:</span>
+                      <select
                         value={matrixDimB.rows}
-                        onChange={(e) => setMatrixDimB({ ...matrixDimB, rows: Math.min(4, Math.max(1, parseInt(e.target.value) || 1)) })}
-                        className="w-12 h-7 px-1.5 text-center font-semibold bg-background border-border/40 focus-visible:ring-cyan-500/40 rounded"
-                      />
-                      <span>×</span>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="4"
+                        onChange={(e) => setMatrixDimB({ ...matrixDimB, rows: parseInt(e.target.value) })}
+                        className="bg-background border border-border/40 rounded px-1.5 py-0.5 font-mono"
+                      >
+                        {[1, 2, 3, 4].map((n) => (
+                          <option key={n} value={n}>{n}</option>
+                        ))}
+                      </select>
+                      <span>x</span>
+                      <select
                         value={matrixDimB.cols}
-                        onChange={(e) => setMatrixDimB({ ...matrixDimB, cols: Math.min(4, Math.max(1, parseInt(e.target.value) || 1)) })}
-                        className="w-12 h-7 px-1.5 text-center font-semibold bg-background border-border/40 focus-visible:ring-cyan-500/40 rounded"
-                      />
+                        onChange={(e) => setMatrixDimB({ ...matrixDimB, cols: parseInt(e.target.value) })}
+                        className="bg-background border border-border/40 rounded px-1.5 py-0.5 font-mono"
+                      >
+                        {[1, 2, 3, 4].map((n) => (
+                          <option key={n} value={n}>{n}</option>
+                        ))}
+                      </select>
                     </div>
                   </CardHeader>
-                  <CardContent className="pt-4">
+                  <CardContent className="pt-4 flex flex-col gap-4">
+                    {/* Input Grid */}
                     <div
-                      className="grid gap-2.5 max-w-[320px] mx-auto p-4 border border-border/20 rounded-xl bg-background/40"
+                      className="grid gap-2 justify-center"
                       style={{ gridTemplateColumns: `repeat(${matrixDimB.cols}, minmax(0, 1fr))` }}
                     >
-                      {matrixB.map((row, r) =>
-                        row.map((val, c) => (
+                      {matrixB.map((rowArr, r) =>
+                        rowArr.map((val, c) => (
                           <Input
-                            key={`b-${r}-${c}`}
+                            key={`B-${r}-${c}`}
                             type="number"
-                            value={val || ""}
+                            value={val}
                             onChange={(e) => updateMatrixValue("B", r, c, e.target.value)}
-                            className="h-9 px-2 text-center font-mono text-sm bg-background border-border/50 focus-visible:ring-cyan-500/40 rounded-lg shadow-sm"
-                            placeholder="0"
+                            className="bg-background border-cyan-500/30 text-center font-mono text-sm h-10 focus-visible:ring-cyan-500/40 rounded-lg"
                           />
                         ))
                       )}
+                    </div>
+                    {/* Binary Operations Controls */}
+                    <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-border/20">
+                      <Button onClick={handleMatrixAdd} size="sm" className="bg-cyan-600 hover:bg-cyan-500 hover:bg-foreground hover:text-cyan-600 dark:hover:bg-white dark:hover:text-cyan-950 text-white font-bold h-8 text-xs">
+                        A + B
+                      </Button>
+                      <Button onClick={handleMatrixSub} size="sm" className="bg-cyan-600 hover:bg-cyan-500 hover:bg-foreground hover:text-cyan-600 dark:hover:bg-white dark:hover:text-cyan-950 text-white font-bold h-8 text-xs">
+                        A - B
+                      </Button>
+                      <Button onClick={handleMatrixMul} size="sm" className="bg-cyan-600 hover:bg-cyan-500 hover:bg-foreground hover:text-cyan-600 dark:hover:bg-white dark:hover:text-cyan-950 text-white font-bold h-8 text-xs">
+                        A × B
+                      </Button>
+
+                      <div className="flex items-center gap-1.5 ml-auto">
+                        <Input
+                          type="number"
+                          value={scalarK}
+                          onChange={(e) => setScalarK(e.target.value)}
+                          className="w-14 h-8 bg-background text-center font-mono text-xs rounded"
+                        />
+                        <Button onClick={handleMatrixScalarMul} variant="outline" size="sm" className="text-xs h-8 border-cyan-500/30 text-cyan-300">
+                          k × A
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Controls */}
-              <div className="lg:col-span-4 flex flex-col gap-4">
-                <Card className="border border-border/40 bg-card/60 backdrop-blur-xl flex flex-col h-full justify-between">
-                  <div>
-                    <CardHeader className="pb-3 border-b border-border/20">
-                      <CardTitle className="text-sm font-semibold">Matrix Operations</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-4 flex flex-col gap-4">
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <Button onClick={handleMatrixAdd} className={theme.btn + " h-9 rounded-lg font-semibold"}>A + B</Button>
-                        <Button onClick={handleMatrixSub} className={theme.btn + " h-9 rounded-lg font-semibold"}>A - B</Button>
-                        <Button onClick={handleMatrixMul} className={theme.btn + " h-9 rounded-lg font-semibold col-span-2"}>A × B</Button>
-                        
-                        <Button onClick={() => handleMatrixDet("A")} className={theme.btn + " h-9 rounded-lg font-semibold"}>Det(A)</Button>
-                        <Button onClick={() => handleMatrixDet("B")} className={theme.btn + " h-9 rounded-lg font-semibold"}>Det(B)</Button>
-
-                        <Button onClick={() => handleMatrixInv("A")} className={theme.btn + " h-9 rounded-lg font-semibold"}>Inv(A)</Button>
-                        <Button onClick={() => handleMatrixInv("B")} className={theme.btn + " h-9 rounded-lg font-semibold"}>Inv(B)</Button>
-
-                        <Button onClick={() => handleMatrixTranspose("A")} className={theme.btn + " h-9 rounded-lg font-semibold"}>Transpose(A)</Button>
-                        <Button onClick={() => handleMatrixTranspose("B")} className={theme.btn + " h-9 rounded-lg font-semibold"}>Transpose(B)</Button>
-
-                        <Button onClick={() => handleMatrixTrace("A")} className={theme.btn + " h-9 rounded-lg font-semibold"}>Trace(A)</Button>
-                        <Button onClick={() => handleMatrixTrace("B")} className={theme.btn + " h-9 rounded-lg font-semibold"}>Trace(B)</Button>
+              {/* Output Display */}
+              <div className="lg:col-span-6 flex flex-col gap-4">
+                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl flex flex-col h-full">
+                  <CardHeader className="pb-3 border-b border-border/20">
+                    <CardTitle className="text-sm font-semibold">Matrix Engine Output</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-4 flex flex-col justify-center items-center flex-grow min-h-[250px]">
+                    {matrixResult ? (
+                      <div className="flex flex-col items-center gap-4 w-full select-all">
+                        <span className="text-[10px] font-bold uppercase text-cyan-400 tracking-wider">Evaluation Solution</span>
+                        {matrixResult.latex ? (
+                          <div className="text-xl overflow-x-auto custom-scrollbar py-4 max-w-full text-center">
+                            <Latex math={matrixResult.latex} block />
+                          </div>
+                        ) : (
+                          <div className="font-mono text-lg text-cyan-300">{String(matrixResult.val)}</div>
+                        )}
                       </div>
-
-                      <div className="flex gap-2 items-center border-t border-border/20 pt-3">
-                        <Input
-                          type="number"
-                          value={scalarK}
-                          onChange={(e) => setScalarK(e.target.value)}
-                          className="w-16 h-8 text-center bg-background border-border/40 focus-visible:ring-cyan-500/40 rounded"
-                          placeholder="k"
-                        />
-                        <Button onClick={handleMatrixScalarMul} className="flex-grow h-8 bg-cyan-600 hover:bg-cyan-500 hover:bg-foreground hover:text-cyan-600 dark:hover:bg-white dark:hover:text-cyan-950 text-white rounded-lg text-xs transition-all duration-300 font-semibold">
-                          Scalar Multiply k × A
-                        </Button>
+                    ) : (
+                      <div className="text-center text-xs text-muted-foreground py-12">
+                        Perform a matrix operation to see the KaTeX formatted output.
                       </div>
-
-                      {matrixResult && (
-                        <div className="border border-cyan-500/20 bg-cyan-500/5 p-4 rounded-xl flex flex-col gap-2 mt-2 select-all overflow-x-auto custom-scrollbar animate-fadeIn">
-                          <span className="text-[11px] font-bold uppercase text-cyan-400">Result</span>
-                          {matrixResult.type === "matrix" && (
-                            <div className="flex justify-center py-2 text-base">
-                              <Latex math={renderLaTeXMatrix(matrixResult.val as MatrixEngine.Matrix)} block />
-                            </div>
-                          )}
-                          {matrixResult.type === "scalar" && (
-                            <div className="text-center font-mono py-2 text-sm font-semibold text-cyan-200">
-                              <Latex math={matrixResult.latex || ""} />
-                            </div>
-                          )}
-                          {matrixResult.type === "string" && (
-                            <div className="text-xs text-destructive font-mono py-2 leading-relaxed">
-                              {matrixResult.val}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </CardContent>
-                  </div>
-                  <div className="p-4 border-t border-border/20 bg-muted/10 text-[10.5px] text-muted-foreground/80 flex gap-2">
-                    <Info className="w-4 h-4 text-cyan-400 shrink-0" />
-                    <span>Linear algebra results print as KaTeX matrix renderings.</span>
-                  </div>
+                    )}
+                  </CardContent>
                 </Card>
               </div>
             </div>
           </TabsContent>
 
           {/* ========================================================
-              TAB: LU/QR DECOMPOSITION
+              TAB: MATRIX DECOMPOSITION
               ======================================================== */}
-          <TabsContent value="decomposition" className="mt-6 animate-fadeIn">
+          <TabsContent value="decomposition" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-6 flex flex-col gap-6">
-                <Card className="border border-border/40 bg-card/60 backdrop-blur-xl h-full">
+              {/* Input Matrix Setup */}
+              <div className="lg:col-span-6 flex flex-col gap-4">
+                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl">
                   <CardHeader className="pb-3 border-b border-border/20 flex flex-row items-center justify-between">
-                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                      <Grid3X3 className="w-4.5 h-4.5 text-amber-400" />
-                      Decomp Matrix A
-                    </CardTitle>
+                    <CardTitle className="text-sm font-semibold text-amber-400">Square Matrix A (n × n)</CardTitle>
                     <div className="flex items-center gap-2 text-xs">
-                      <span>Dimension:</span>
-                      <Input
-                        type="number"
-                        min="2"
-                        max="4"
+                      <span className="text-muted-foreground font-mono">Dimension n:</span>
+                      <select
                         value={decompDim}
-                        onChange={(e) => setDecompDim(Math.min(4, Math.max(2, parseInt(e.target.value) || 2)))}
-                        className="w-12 h-7 px-1.5 text-center font-semibold bg-background border-border/40 focus-visible:ring-amber-500/40 rounded"
-                      />
+                        onChange={(e) => setDecompDim(parseInt(e.target.value))}
+                        className="bg-background border border-border/40 rounded px-1.5 py-0.5 font-mono"
+                      >
+                        {[2, 3, 4].map((n) => (
+                          <option key={n} value={n}>{n}x{n}</option>
+                        ))}
+                      </select>
                     </div>
                   </CardHeader>
-                  <CardContent className="pt-6 flex flex-col gap-6 h-[calc(100%-60px)] justify-between">
+                  <CardContent className="pt-4 flex flex-col gap-4">
+                    {/* Matrix Grid */}
                     <div
-                      className="grid gap-2.5 max-w-[280px] mx-auto p-4 border border-border/20 rounded-xl bg-background/40"
+                      className="grid gap-2 justify-center"
                       style={{ gridTemplateColumns: `repeat(${decompDim}, minmax(0, 1fr))` }}
                     >
-                      {decompMatrix.map((row, r) =>
-                        row.map((val, c) => (
+                      {decompMatrix.map((rowArr, r) =>
+                        rowArr.map((val, c) => (
                           <Input
-                            key={`decomp-${r}-${c}`}
+                            key={`D-${r}-${c}`}
                             type="number"
-                            value={val || ""}
+                            value={val}
                             onChange={(e) => updateDecompMatrixValue(r, c, e.target.value)}
-                            className="h-9 px-2 text-center font-mono text-sm bg-background border-border/50 focus-visible:ring-amber-500/40 rounded-lg shadow-sm"
-                            placeholder="0"
+                            className="bg-background border-amber-500/30 text-center font-mono text-sm h-11 focus-visible:ring-amber-500/40 rounded-lg"
                           />
                         ))
                       )}
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 text-xs mt-4">
+                    {/* Decomposition triggers */}
+                    <div className="grid grid-cols-3 gap-2 pt-2">
                       <Button onClick={handleLUDecomp} className="bg-amber-600 hover:bg-amber-500 hover:bg-foreground hover:text-amber-600 dark:hover:bg-white dark:hover:text-amber-950 text-white rounded-lg h-9 transition-all duration-300 font-semibold">
-                        LU Factor
+                        LU Factorization
                       </Button>
                       <Button onClick={handleQRDecomp} className="bg-amber-600 hover:bg-amber-500 hover:bg-foreground hover:text-amber-600 dark:hover:bg-white dark:hover:text-amber-950 text-white rounded-lg h-9 transition-all duration-300 font-semibold">
-                        QR Factor
+                        Gram-Schmidt QR
                       </Button>
                       <Button onClick={handleEigenvalues} className="bg-amber-600 hover:bg-amber-500 hover:bg-foreground hover:text-amber-600 dark:hover:bg-white dark:hover:text-amber-950 text-white rounded-lg h-9 transition-all duration-300 font-semibold">
-                        Eigen Spectrum
+                        QR Eigenvalues
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
+              {/* Step-by-Step walkthrough log & Factor Output */}
               <div className="lg:col-span-6 flex flex-col gap-4">
-                <Card className="border border-border/40 bg-card/60 backdrop-blur-xl flex flex-col h-full">
+                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl flex flex-col h-full">
                   <CardHeader className="pb-3 border-b border-border/20">
-                    <CardTitle className="text-sm font-semibold">Factorization Step-by-Step Solver</CardTitle>
+                    <CardTitle className="text-sm font-semibold">Decomposition Solution & Trace Log</CardTitle>
                   </CardHeader>
-                  <CardContent className="pt-4 flex flex-col gap-4 flex-grow overflow-hidden">
+                  <CardContent className="pt-4 flex flex-col gap-4 flex-grow overflow-y-auto custom-scrollbar">
                     {decompResult && decompResult.data ? (
-                      <div className="border border-amber-500/20 bg-amber-500/5 p-4 rounded-xl flex flex-col gap-3 select-all overflow-x-auto custom-scrollbar animate-fadeIn">
-                        <span className="text-[11px] font-bold uppercase text-amber-400">Output Matrices</span>
+                      <div className="border border-amber-500/20 bg-amber-500/5 p-4 rounded-xl flex flex-col gap-4 select-all animate-fadeIn">
+                        <span className="text-[10px] font-bold uppercase text-amber-400">Result Matrices</span>
                         
                         {decompResult.type === "LU" && (
-                          <div className="flex flex-col gap-4 items-center py-2 text-sm justify-center">
+                          <div className="flex flex-col md:flex-row justify-around items-center gap-4">
                             <div className="flex flex-col items-center">
-                              <span className="text-[10px] text-muted-foreground mb-1">Lower Matrix L:</span>
+                              <span className="text-[10px] text-muted-foreground mb-1">Lower Triangular (L):</span>
                               <Latex math={renderLaTeXMatrix(decompResult.data.L)} block />
                             </div>
                             <div className="flex flex-col items-center">
-                              <span className="text-[10px] text-muted-foreground mb-1">Upper Matrix U:</span>
+                              <span className="text-[10px] text-muted-foreground mb-1">Upper Triangular (U):</span>
                               <Latex math={renderLaTeXMatrix(decompResult.data.U)} block />
                             </div>
                           </div>
                         )}
 
                         {decompResult.type === "QR" && (
-                          <div className="flex flex-col gap-4 items-center py-2 text-sm justify-center">
+                          <div className="flex flex-col md:flex-row justify-around items-center gap-4">
                             <div className="flex flex-col items-center">
-                              <span className="text-[10px] text-muted-foreground mb-1">Orthogonal Q:</span>
+                              <span className="text-[10px] text-muted-foreground mb-1">Orthogonal (Q):</span>
                               <Latex math={renderLaTeXMatrix(decompResult.data.Q)} block />
                             </div>
                             <div className="flex flex-col items-center">
-                              <span className="text-[10px] text-muted-foreground mb-1">Upper Triangular R:</span>
+                              <span className="text-[10px] text-muted-foreground mb-1">Upper Triangular (R):</span>
                               <Latex math={renderLaTeXMatrix(decompResult.data.R)} block />
                             </div>
                           </div>
                         )}
 
-                        {decompResult.type === "Eigen" && (
-                          <div className="flex flex-col gap-2 py-2 font-mono text-xs">
-                            <span className="font-semibold text-amber-200">Eigenvalues Spectrum:</span>
-                            {decompResult.data.map((val: number, idx: number) => (
-                              <div key={`eigen-${idx}`} className="flex justify-between border-b border-border/20 py-1">
-                                <span>λ_{idx+1}:</span>
-                                <span className="font-bold text-amber-300">{val.toFixed(8)}</span>
-                              </div>
-                            ))}
+                        {decompResult.type === "EIGEN" && (
+                          <div className="flex flex-col items-center gap-2">
+                            <span className="text-[10px] text-muted-foreground">Computed Real Eigenvalues:</span>
+                            <div className="font-mono text-base font-bold text-amber-300">
+                              λ = [{decompResult.data.map((x: number) => x.toFixed(5)).join(", ")}]
+                            </div>
                           </div>
                         )}
                       </div>
                     ) : decompResult ? (
                       <div className="text-center text-xs text-destructive py-6 font-mono">
-                        Computation failed. Check matrix elements.
+                        Error performing decomposition. See log below.
                       </div>
                     ) : (
                       <div className="text-center text-xs text-muted-foreground py-8">
-                        Factorize the matrix on the left to see analytical matrix outputs.
+                        Select a decomposition algorithm above to view step-by-step trace logs.
                       </div>
                     )}
 
                     {decompResult && (
                       <div className="flex-grow flex flex-col gap-2 mt-2">
-                        <span className="text-[10px] font-bold uppercase text-muted-foreground">Trace Log</span>
+                        <span className="text-[10px] font-bold uppercase text-muted-foreground">Algorithm Step Log</span>
                         <div className="bg-background/80 border border-border/50 rounded-xl p-3.5 max-h-[220px] overflow-y-auto font-mono text-[10.5px] leading-relaxed text-muted-foreground custom-scrollbar">
                           {decompResult.steps.map((step, idx) => (
-                            <div key={`step-${idx}`} className={`py-0.5 ${step.includes("Error") ? "text-destructive" : step.includes("Warning") ? "text-amber-400" : "text-muted-foreground"}`}>
+                            <div key={`step-${idx}`} className="py-0.5">
                               &gt; {step}
                             </div>
                           ))}
@@ -1336,66 +1147,61 @@ export default function ChameleonCalcPage() {
           </TabsContent>
 
           {/* ========================================================
-              NEW TAB: MULTIVARIATE STATISTICS & SVD
+              TAB: MULTIVARIATE STATS & SVD
               ======================================================== */}
-          <TabsContent value="stats" className="mt-6 animate-fadeIn">
+          <TabsContent value="stats" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Matrix Dataset entry grid */}
-              <div className="lg:col-span-6 flex flex-col gap-6">
-                <Card className="border border-border/40 bg-card/60 backdrop-blur-xl h-full">
+              {/* Data Matrix Configuration */}
+              <div className="lg:col-span-6 flex flex-col gap-4">
+                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl">
                   <CardHeader className="pb-3 border-b border-border/20 flex flex-row items-center justify-between">
-                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                      <BarChart4 className="w-4.5 h-4.5 text-orange-400" />
-                      Multivariate Dataset A
-                    </CardTitle>
-                    {/* Dimension selectors */}
+                    <CardTitle className="text-sm font-semibold text-orange-400">Dataset Matrix X (n × p)</CardTitle>
                     <div className="flex items-center gap-2 text-xs">
-                      <span>Samples:</span>
-                      <Input
-                        type="number"
-                        min="2"
-                        max="8"
+                      <span className="text-muted-foreground font-mono">Size:</span>
+                      <select
                         value={statsDim.rows}
-                        onChange={(e) => setStatsDim({ ...statsDim, rows: Math.min(8, Math.max(2, parseInt(e.target.value) || 2)) })}
-                        className="w-12 h-7 px-1.5 text-center font-semibold bg-background border-border/40 focus-visible:ring-orange-500/40 rounded"
-                      />
-                      <span>Vars:</span>
-                      <Input
-                        type="number"
-                        min="1"
-                        max="4"
+                        onChange={(e) => setStatsDim({ ...statsDim, rows: parseInt(e.target.value) })}
+                        className="bg-background border border-border/40 rounded px-1.5 py-0.5 font-mono"
+                      >
+                        {[2, 3, 4, 5].map((n) => (
+                          <option key={n} value={n}>{n} rows</option>
+                        ))}
+                      </select>
+                      <span>x</span>
+                      <select
                         value={statsDim.cols}
-                        onChange={(e) => setStatsDim({ ...statsDim, cols: Math.min(4, Math.max(1, parseInt(e.target.value) || 1)) })}
-                        className="w-12 h-7 px-1.5 text-center font-semibold bg-background border-border/40 focus-visible:ring-orange-500/40 rounded"
-                      />
+                        onChange={(e) => setStatsDim({ ...statsDim, cols: parseInt(e.target.value) })}
+                        className="bg-background border border-border/40 rounded px-1.5 py-0.5 font-mono"
+                      >
+                        {[1, 2, 3, 4].map((n) => (
+                          <option key={n} value={n}>{n} vars</option>
+                        ))}
+                      </select>
                     </div>
                   </CardHeader>
-                  <CardContent className="pt-6 flex flex-col gap-6 h-[calc(100%-60px)] justify-between">
-                    {/* Entry Grid */}
-                    <div className="max-h-[250px] overflow-y-auto custom-scrollbar pr-1">
-                      <div
-                        className="grid gap-2.5 p-4 border border-border/20 rounded-xl bg-background/40"
-                        style={{ gridTemplateColumns: `repeat(${statsDim.cols}, minmax(0, 1fr))` }}
-                      >
-                        {statsMatrix.map((row, r) =>
-                          row.map((val, c) => (
-                            <Input
-                              key={`stats-${r}-${c}`}
-                              type="number"
-                              value={val || ""}
-                              onChange={(e) => updateStatsValue(r, c, e.target.value)}
-                              className="h-9 px-2 text-center font-mono text-sm bg-background border-border/50 focus-visible:ring-orange-500/40 rounded-lg shadow-sm"
-                              placeholder={`r${r+1}c${c+1}`}
-                            />
-                          ))
-                        )}
-                      </div>
+                  <CardContent className="pt-4 flex flex-col gap-4">
+                    {/* Dataset Input Grid */}
+                    <div
+                      className="grid gap-2 justify-center"
+                      style={{ gridTemplateColumns: `repeat(${statsDim.cols}, minmax(0, 1fr))` }}
+                    >
+                      {statsMatrix.map((rowArr, r) =>
+                        rowArr.map((val, c) => (
+                          <Input
+                            key={`S-${r}-${c}`}
+                            type="number"
+                            value={val}
+                            onChange={(e) => updateStatsValue(r, c, e.target.value)}
+                            className="bg-background border-orange-500/30 text-center font-mono text-sm h-10 focus-visible:ring-orange-500/40 rounded-lg"
+                          />
+                        ))
+                      )}
                     </div>
 
-                    {/* Solve stats buttons */}
-                    <div className="grid grid-cols-2 gap-2 text-xs mt-4">
+                    {/* Stat buttons */}
+                    <div className="grid grid-cols-2 gap-3 pt-2">
                       <Button onClick={handleComputeStats} className="bg-orange-600 hover:bg-orange-500 hover:bg-foreground hover:text-orange-600 dark:hover:bg-white dark:hover:text-orange-950 text-white rounded-lg h-9 transition-all duration-300 font-semibold">
-                        Compute SD & Covariance
+                        Multivariate Stats (Mean/SD/Cov)
                       </Button>
                       <Button onClick={handleComputeSVD} className="bg-orange-600 hover:bg-orange-500 hover:bg-foreground hover:text-orange-600 dark:hover:bg-white dark:hover:text-orange-950 text-white rounded-lg h-9 transition-all duration-300 font-semibold" title="Requires Square Matrix">
                         Singular Value Decomp (SVD)
@@ -1407,14 +1213,14 @@ export default function ChameleonCalcPage() {
 
               {/* Output Results */}
               <div className="lg:col-span-6 flex flex-col gap-4">
-                <Card className="border border-border/40 bg-card/60 backdrop-blur-xl flex flex-col h-full">
+                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl flex flex-col h-full">
                   <CardHeader className="pb-3 border-b border-border/20">
                     <CardTitle className="text-sm font-semibold">Statistics & SVD Spectrum Results</CardTitle>
                   </CardHeader>
                   <CardContent className="pt-4 flex flex-col gap-4 flex-grow overflow-y-auto custom-scrollbar">
                     {statsResult && statsResult.data ? (
                       <div className="border border-orange-500/20 bg-orange-500/5 p-4 rounded-xl flex flex-col gap-4 select-all animate-fadeIn">
-                        <span className="text-[11px] font-bold uppercase text-orange-400">Solution Report</span>
+                        <span className="text-[10px] font-bold uppercase text-orange-400">Solution Report</span>
                         
                         {statsResult.type === "STATS" && (
                           <div className="flex flex-col gap-3.5 text-xs">
@@ -1503,147 +1309,6 @@ export default function ChameleonCalcPage() {
               ======================================================== */}
           <TabsContent value="graphing" className="mt-6">
             <GraphingPanel />
-          </TabsContent>
-
-          {/* ========================================================
-              NEW TAB: CHAMELEON AI MIND ASSISTANT
-              ======================================================== */}
-          <TabsContent value="ai" className="mt-6 animate-fadeIn">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Chat Viewport */}
-              <div className="lg:col-span-8 flex flex-col gap-4">
-                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl h-[450px] md:h-[500px] flex flex-col justify-between overflow-hidden">
-                  <CardHeader className="pb-3 border-b border-border/20 flex flex-row items-center justify-between">
-                    <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                      <Brain className="w-5 h-5 text-indigo-400 animate-pulse" />
-                      Chameleon AI Mind
-                    </CardTitle>
-                    <Badge className="bg-indigo-600/25 border-indigo-500/35 text-indigo-300 font-mono text-[9px] uppercase tracking-wide">
-                      Local Agent V2
-                    </Badge>
-                  </CardHeader>
-                  
-                  {/* Message Stream */}
-                  <div className="flex-grow p-4 overflow-y-auto custom-scrollbar space-y-4">
-                    {aiMessages.map((msg) => (
-                      <div
-                        key={msg.id}
-                        className={`flex flex-col max-w-[85%] ${msg.sender === "user" ? "ml-auto items-end" : "mr-auto items-start"} animate-fadeIn`}
-                      >
-                        <span className="text-[10px] text-muted-foreground mb-1 font-mono">
-                          {msg.sender === "user" ? "User Query" : "CHAM-AI Agent"}
-                        </span>
-                        <div
-                          className={`p-3.5 rounded-2xl text-xs leading-relaxed ${
-                            msg.sender === "user"
-                              ? "bg-indigo-600 text-white rounded-tr-none shadow"
-                              : "bg-muted/40 border border-border/40 text-foreground rounded-tl-none whitespace-pre-line"
-                          }`}
-                        >
-                          {msg.text}
-                          
-                          {/* LaTeX renderer block inside AI chat bubble */}
-                          {msg.latex && (
-                            <div className="mt-3 p-2 bg-background/50 rounded-xl border border-border/30 overflow-x-auto custom-scrollbar flex justify-center text-sm font-semibold">
-                              <Latex math={msg.latex} block />
-                            </div>
-                          )}
-
-                          {/* Quick action execution triggers */}
-                          {msg.action && (
-                            <div className="mt-3.5 border-t border-border/20 pt-3 flex justify-end">
-                              <Button
-                                onClick={() => handleAiAction(msg.action)}
-                                className="h-7 text-[10px] font-bold bg-indigo-500 hover:bg-white hover:text-indigo-950 text-white rounded-full transition-all duration-300 flex items-center gap-1 shadow"
-                              >
-                                {msg.action.label}
-                                <ArrowRight className="w-3.5 h-3.5" />
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* AI thinking indicator */}
-                    {isAiThinking && (
-                      <div className="flex flex-col items-start mr-auto animate-pulse">
-                        <span className="text-[10px] text-muted-foreground mb-1 font-mono">CHAM-AI Agent</span>
-                        <div className="bg-muted/40 border border-border/40 p-3 rounded-2xl rounded-tl-none text-xs flex items-center gap-2">
-                          <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                          <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                          <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                          <span className="font-mono text-muted-foreground text-[10px]">Evaluating mathematical bounds...</span>
-                        </div>
-                      </div>
-                    )}
-                    <div ref={chatBottomRef} />
-                  </div>
-
-                  {/* Message Input bar */}
-                  <form onSubmit={handleSendAi} className="p-3 border-t border-border/20 bg-muted/10 flex gap-2">
-                    <Input
-                      value={aiInput}
-                      onChange={(e) => setAiInput(e.target.value)}
-                      placeholder="Ask the AI (e.g. solve 3x^2 - x - 2 = 0, plot cos(x), SVD)..."
-                      className="bg-background border-border/40 focus-visible:ring-indigo-500/40 rounded-xl text-xs font-mono"
-                    />
-                    <Button type="submit" className="bg-indigo-600 hover:bg-indigo-500 hover:bg-foreground hover:text-indigo-600 dark:hover:bg-white dark:hover:text-indigo-950 text-white rounded-xl text-xs font-bold transition-all duration-300">
-                      Query AI
-                    </Button>
-                  </form>
-                </Card>
-              </div>
-
-              {/* Heuristics guidelines / Presets */}
-              <div className="lg:col-span-4 flex flex-col gap-4">
-                <Card className="border border-border/40 shadow-lg bg-card/60 backdrop-blur-xl h-full flex flex-col justify-between">
-                  <div>
-                    <CardHeader className="pb-3 border-b border-border/20">
-                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                        <Sparkles className="w-4.5 h-4.5 text-primary" />
-                        AI Agent Preset Prompts
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-4 flex flex-col gap-3 text-xs">
-                      <span className="text-[10px] text-muted-foreground font-mono">Click to load query prompt:</span>
-                      
-                      <button
-                        onClick={() => sendPresetPrompt("solve 3x^2 - x - 2 = 0")}
-                        className="w-full text-left p-2.5 rounded-lg border border-border/20 bg-background/50 hover:border-indigo-500/35 hover:bg-indigo-500/5 font-mono text-[10.5px] transition-colors truncate"
-                      >
-                        &gt; solve 3x^2 - x - 2 = 0
-                      </button>
-
-                      <button
-                        onClick={() => sendPresetPrompt("plot 2x^2 + sin(x)")}
-                        className="w-full text-left p-2.5 rounded-lg border border-border/20 bg-background/50 hover:border-indigo-500/35 hover:bg-indigo-500/5 font-mono text-[10.5px] transition-colors truncate"
-                      >
-                        &gt; plot 2x^2 + sin(x)
-                      </button>
-
-                      <button
-                        onClick={() => sendPresetPrompt("SVD of [[4,0],[0,3]]")}
-                        className="w-full text-left p-2.5 rounded-lg border border-border/20 bg-background/50 hover:border-indigo-500/35 hover:bg-indigo-500/5 font-mono text-[10.5px] transition-colors truncate"
-                      >
-                        &gt; SVD of [[4,0],[0,3]]
-                      </button>
-
-                      <button
-                        onClick={() => sendPresetPrompt("SD of [12, 16, 20, 24, 30]")}
-                        className="w-full text-left p-2.5 rounded-lg border border-border/20 bg-background/50 hover:border-indigo-500/35 hover:bg-indigo-500/5 font-mono text-[10.5px] transition-colors truncate"
-                      >
-                        &gt; SD of [12, 16, 20, 24, 30]
-                      </button>
-                    </CardContent>
-                  </div>
-                  <div className="p-4 border-t border-border/20 bg-muted/10 text-[10.5px] text-muted-foreground/80 flex gap-2">
-                    <Info className="w-4 h-4 text-indigo-400 shrink-0" />
-                    <span>The assistant compiles prompts locally, using the calculator engines directly to solve natural language queries.</span>
-                  </div>
-                </Card>
-              </div>
-            </div>
           </TabsContent>
         </Tabs>
       </div>

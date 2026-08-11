@@ -392,42 +392,47 @@ export default function GraphingPanel() {
     };
   }, [handleGlobalMouseMove, handleGlobalMouseUp]);
 
-  // Zooming via scroll wheel
-  const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
-    e.preventDefault();
+  // Native non-passive wheel listener to zoom canvas without triggering page scroll
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const px = e.clientX - rect.left;
-    const py = e.clientY - rect.top;
+    const onNativeWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    const { xMin, xMax, yMin, yMax } = bounds;
-    const mouseMathX = xMin + (px / canvas.width) * (xMax - xMin);
-    const mouseMathY = yMax - (py / canvas.height) * (yMax - yMin);
+      const rect = canvas.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
 
-    // Zoom multiplier (scroll up is negative = zoom in)
-    const zoomFactor = e.deltaY < 0 ? 0.85 : 1.15;
-    
-    // Keep zoom within bounds to prevent numeric explosions
-    const nextXSpan = (xMax - xMin) * zoomFactor;
-    if (nextXSpan < 0.001 || nextXSpan > 100000) return;
+      const { xMin, xMax, yMin, yMax } = bounds;
+      const mouseMathX = xMin + (px / canvas.width) * (xMax - xMin);
+      const mouseMathY = yMax - (py / canvas.height) * (yMax - yMin);
 
-    // Recenter zoom on mouse pointer
-    const newXMin = mouseMathX - (px / canvas.width) * nextXSpan;
-    const newXMax = newXMin + nextXSpan;
+      const zoomFactor = e.deltaY < 0 ? 0.85 : 1.15;
+      const nextXSpan = (xMax - xMin) * zoomFactor;
+      if (nextXSpan < 0.001 || nextXSpan > 100000) return;
 
-    const nextYSpan = (yMax - yMin) * zoomFactor;
-    const newYMin = mouseMathY - ((canvas.height - py) / canvas.height) * nextYSpan;
-    const newYMax = newYMin + nextYSpan;
+      const newXMin = mouseMathX - (px / canvas.width) * nextXSpan;
+      const newXMax = newXMin + nextXSpan;
 
-    setBounds({
-      xMin: newXMin,
-      xMax: newXMax,
-      yMin: newYMin,
-      yMax: newYMax,
-    });
-  };
+      const nextYSpan = (yMax - yMin) * zoomFactor;
+      const newYMin = mouseMathY - ((canvas.height - py) / canvas.height) * nextYSpan;
+      const newYMax = newYMin + nextYSpan;
+
+      setBounds({
+        xMin: newXMin,
+        xMax: newXMax,
+        yMin: newYMin,
+        yMax: newYMax,
+      });
+    };
+
+    canvas.addEventListener("wheel", onNativeWheel, { passive: false });
+    return () => {
+      canvas.removeEventListener("wheel", onNativeWheel);
+    };
+  }, [bounds]);
 
   // Add / Edit functions
   const addFunction = () => {
@@ -565,7 +570,6 @@ export default function GraphingPanel() {
             ref={canvasRef}
             onMouseMove={handleMouseMove}
             onMouseDown={handleMouseDown}
-            onWheel={handleWheel}
             className="w-full block bg-black"
             style={{ cursor: "crosshair", touchAction: "none" }}
           />
