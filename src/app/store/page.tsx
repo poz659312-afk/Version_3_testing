@@ -118,13 +118,13 @@ const STORE_ITEMS = [
     category: "theme"
   },
   { 
-    id: "theme-monochrome", 
-    name: "Monochrome Noir", 
-    description: "An ultra-sleek, creative pure black & white design. Zero color, maximum contrast, timeless elegance.",
+    id: "theme-prism", 
+    name: "Celestial Prism", 
+    description: "An ethereal, holographic cosmic masterpiece. Shimmering prismatic hues, liquid gold light & radiant astral glow.",
     price: 10000, 
-    icon: Contrast, 
-    color: "from-zinc-100 via-zinc-400 to-black",
-    shadow: "shadow-zinc-400/20",
+    icon: Sparkles, 
+    color: "from-fuchsia-500 via-purple-600 via-cyan-400 to-amber-300",
+    shadow: "shadow-fuchsia-500/30 border-fuchsia-500/40",
     category: "theme",
     isNew: true
   },

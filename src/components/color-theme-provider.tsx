@@ -26,7 +26,7 @@ export type ColorTheme =
   | "matrix"
   | "nebula"
   | "glacier"
-  | "monochrome"
+  | "prism"
 
 type ColorThemeProviderProps = {
   children: React.ReactNode
@@ -46,7 +46,7 @@ const initialState: ColorThemeProviderState = {
 
 const ColorThemeProviderContext = createContext<ColorThemeProviderState>(initialState)
 
-const PREMIUM_THEMES: ColorTheme[] = ["diamond", "luxury", "cyberpunk", "matrix", "nebula", "glacier", "monochrome"]
+const PREMIUM_THEMES: ColorTheme[] = ["diamond", "luxury", "cyberpunk", "matrix", "nebula", "glacier", "prism"]
 
 export function ColorThemeProvider({
   children,
@@ -91,7 +91,7 @@ export function ColorThemeProvider({
       "theme-matrix",
       "theme-nebula",
       "theme-glacier",
-      "theme-monochrome"
+      "theme-prism"
     )
 
     // Add new theme class if not default

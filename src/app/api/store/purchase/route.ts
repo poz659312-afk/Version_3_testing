@@ -12,7 +12,7 @@ const STORE_ITEMS = [
   { id: "theme-matrix", name: "Matrix Theme", price: 3000, type: "theme" },
   { id: "theme-nebula", name: "Nebula Theme", price: 1500, type: "theme" },
   { id: "theme-glacier", name: "Glacier Theme", price: 3000, type: "theme" },
-  { id: "theme-monochrome", name: "Monochrome Noir Theme", price: 10000, type: "theme" },
+  { id: "theme-prism", name: "Celestial Prism Theme", price: 10000, type: "theme" },
   // Borders (Original price is discounted by 25% on store purchase)
   { id: "border-gold-glow", name: "Gold Glow Border", price: 600, type: "border" },
   { id: "border-cosmic-aurora", name: "Cosmic Aurora Border", price: 900, type: "border" },

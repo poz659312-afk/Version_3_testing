@@ -431,14 +431,14 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       userBorder: "border-orange-500/30", userShadow: "shadow-orange-600/10",
       sendShadow: "shadow-orange-500/20", cardHover: "hover:bg-orange-500/10 hover:border-orange-500/30", cardTextHover: "group-hover:text-orange-400"
     },
-    monochrome: {
-      text: "text-zinc-900 dark:text-zinc-100", bg: "bg-zinc-100/80 dark:bg-zinc-800/40", border: "border-zinc-300 dark:border-zinc-500/40", bullet: "bg-zinc-900 dark:bg-zinc-100", heading: "text-black dark:text-white font-black", codeBg: "bg-zinc-100 dark:bg-zinc-900", inlineCodeText: "text-zinc-900 dark:text-zinc-100", accent: "#000000",
-      primary: "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black", primary600: "bg-zinc-800 dark:bg-zinc-200", primary700: "bg-zinc-700 dark:bg-zinc-300", primary800: "bg-zinc-600 dark:bg-zinc-400",
-      ring: "focus:ring-zinc-400/30", focusBorder: "focus:border-zinc-800 dark:focus:border-zinc-300",
-      textHoverBg: "hover:text-black dark:hover:text-white hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60",
-      gradientBg: "bg-gradient-to-br from-zinc-200 via-zinc-100 to-zinc-300 dark:from-zinc-900 dark:to-black",
-      userBorder: "border-zinc-300 dark:border-zinc-500/40", userShadow: "shadow-black/5 dark:shadow-white/5",
-      sendShadow: "shadow-black/10 dark:shadow-white/10", cardHover: "hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 hover:border-zinc-400/50", cardTextHover: "group-hover:text-black dark:group-hover:text-white"
+    prism: {
+      text: "text-fuchsia-400 dark:text-fuchsia-300", bg: "bg-fuchsia-500/10 dark:bg-fuchsia-950/30", border: "border-fuchsia-500/30", bullet: "bg-gradient-to-r from-fuchsia-400 to-cyan-400", heading: "text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 via-purple-300 to-cyan-400 font-extrabold", codeBg: "bg-purple-950/40", inlineCodeText: "text-cyan-300", accent: "#d946ef",
+      primary: "bg-gradient-to-r from-fuchsia-500 via-purple-600 to-cyan-500 text-white", primary600: "bg-fuchsia-600", primary700: "bg-fuchsia-700", primary800: "bg-fuchsia-800",
+      ring: "focus:ring-fuchsia-500/30", focusBorder: "focus:border-fuchsia-400",
+      textHoverBg: "hover:text-fuchsia-300 hover:bg-fuchsia-500/20",
+      gradientBg: "bg-gradient-to-br from-fuchsia-900/80 via-purple-950/90 to-cyan-950/80 dark:from-fuchsia-950 dark:via-purple-950 dark:to-cyan-950",
+      userBorder: "border-fuchsia-500/40", userShadow: "shadow-fuchsia-500/20",
+      sendShadow: "shadow-fuchsia-500/30", cardHover: "hover:bg-fuchsia-500/15 hover:border-fuchsia-400/40", cardTextHover: "group-hover:text-fuchsia-300"
     }
   };
 
@@ -736,7 +736,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         indigo: "#6366f1", // Indigo Blue
         emerald: "#10b981", // Emerald Green
         coral: "#ff7f50", // Coral Orange
-        monochrome: "#ffffff", // Monochrome White
+        prism: "#d946ef", // Celestial Prism Magenta
       };
 
       const activeThemeColor = themeColorMap[colorTheme] || themeColorMap.default;

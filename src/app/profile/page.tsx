@@ -248,7 +248,7 @@ function ColorThemeSelector({ inventory }: { inventory: string[] }) {
     { value: "matrix", label: "Matrix Hacker (Premium)", colors: ["120 100% 45%", "120 60% 12%", "120 100% 70%"], premium: true },
     { value: "nebula", label: "Cosmic Nebula (Premium)", colors: ["280 85% 55%", "15 95% 55%", "330 90% 50%"], premium: true },
     { value: "glacier", label: "Arctic Glacier (Premium)", colors: ["195 100% 70%", "210 30% 25%", "195 100% 90%"], premium: true },
-    { value: "monochrome", label: "Monochrome Noir (Ultra)", colors: ["0 0% 100%", "0 0% 50%", "0 0% 0%"], premium: true },
+    { value: "prism", label: "Celestial Prism (Masterpiece)", colors: ["285 95% 62%", "190 100% 45%", "325 100% 60%"], premium: true },
   ]
 
   return (
@@ -1327,7 +1327,7 @@ export default function ProfilePage() {
                             "theme-matrix": { name: "Matrix Theme", color: "text-green-500 bg-green-500/10", icon: Shield },
                             "theme-nebula": { name: "Nebula Theme", color: "text-purple-500 bg-purple-500/10", icon: Sparkles },
                             "theme-glacier": { name: "Glacier Theme", color: "text-sky-400 bg-sky-400/10", icon: Star },
-                            "theme-monochrome": { name: "Monochrome Noir Theme", color: "text-zinc-100 bg-zinc-900/80 border border-zinc-700", icon: Contrast },
+                            "theme-prism": { name: "Celestial Prism Theme", color: "text-fuchsia-400 bg-gradient-to-r from-fuchsia-500/20 via-purple-500/20 to-cyan-500/20 border border-fuchsia-500/40", icon: Sparkles },
                             // Custom Borders
                             "border-gold-glow": { name: "Gold Glow Border", color: "text-amber-500 bg-amber-500/10", icon: Award },
                             "border-cosmic-aurora": { name: "Cosmic Aurora Border", color: "text-emerald-400 bg-emerald-400/10", icon: Palette },
