@@ -432,13 +432,13 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-orange-500/20", cardHover: "hover:bg-orange-500/10 hover:border-orange-500/30", cardTextHover: "group-hover:text-orange-400"
     },
     monochrome: {
-      text: "text-zinc-100 dark:text-zinc-100", bg: "bg-zinc-800/40", border: "border-zinc-500/40", bullet: "bg-zinc-100", heading: "text-white font-black", codeBg: "bg-zinc-900", inlineCodeText: "text-zinc-100", accent: "#ffffff",
-      primary: "bg-zinc-100 text-black", primary600: "bg-zinc-200", primary700: "bg-zinc-300", primary800: "bg-zinc-400",
-      ring: "focus:ring-zinc-400/30", focusBorder: "focus:border-zinc-300",
-      textHoverBg: "hover:text-white hover:bg-zinc-800/60",
-      gradientBg: "bg-gradient-to-br from-zinc-800 via-zinc-900 to-black dark:from-zinc-900 dark:to-black",
-      userBorder: "border-zinc-500/40", userShadow: "shadow-white/5",
-      sendShadow: "shadow-white/10", cardHover: "hover:bg-zinc-800/50 hover:border-zinc-400/50", cardTextHover: "group-hover:text-white"
+      text: "text-zinc-900 dark:text-zinc-100", bg: "bg-zinc-100/80 dark:bg-zinc-800/40", border: "border-zinc-300 dark:border-zinc-500/40", bullet: "bg-zinc-900 dark:bg-zinc-100", heading: "text-black dark:text-white font-black", codeBg: "bg-zinc-100 dark:bg-zinc-900", inlineCodeText: "text-zinc-900 dark:text-zinc-100", accent: "#000000",
+      primary: "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black", primary600: "bg-zinc-800 dark:bg-zinc-200", primary700: "bg-zinc-700 dark:bg-zinc-300", primary800: "bg-zinc-600 dark:bg-zinc-400",
+      ring: "focus:ring-zinc-400/30", focusBorder: "focus:border-zinc-800 dark:focus:border-zinc-300",
+      textHoverBg: "hover:text-black dark:hover:text-white hover:bg-zinc-200/60 dark:hover:bg-zinc-800/60",
+      gradientBg: "bg-gradient-to-br from-zinc-200 via-zinc-100 to-zinc-300 dark:from-zinc-900 dark:to-black",
+      userBorder: "border-zinc-300 dark:border-zinc-500/40", userShadow: "shadow-black/5 dark:shadow-white/5",
+      sendShadow: "shadow-black/10 dark:shadow-white/10", cardHover: "hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50 hover:border-zinc-400/50", cardTextHover: "group-hover:text-black dark:group-hover:text-white"
     }
   };
 
