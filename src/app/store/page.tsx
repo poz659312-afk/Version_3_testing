@@ -14,7 +14,8 @@ import {
   TrendingUp, 
   Sparkles,
   Palette,
-  Shield
+  Shield,
+  Contrast
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
@@ -115,6 +116,17 @@ const STORE_ITEMS = [
     color: "from-blue-300 via-sky-400 to-teal-200",
     shadow: "shadow-blue-500/20",
     category: "theme"
+  },
+  { 
+    id: "theme-monochrome", 
+    name: "Monochrome Noir", 
+    description: "An ultra-sleek, creative pure black & white design. Zero color, maximum contrast, timeless elegance.",
+    price: 10000, 
+    icon: Contrast, 
+    color: "from-zinc-100 via-zinc-400 to-black",
+    shadow: "shadow-zinc-400/20",
+    category: "theme",
+    isNew: true
   },
   // New Categories: Borders (25% Discount)
   { 

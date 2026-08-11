@@ -430,6 +430,15 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       gradientBg: "bg-gradient-to-br from-orange-600 to-orange-700 dark:from-orange-600/90 dark:to-orange-800/90",
       userBorder: "border-orange-500/30", userShadow: "shadow-orange-600/10",
       sendShadow: "shadow-orange-500/20", cardHover: "hover:bg-orange-500/10 hover:border-orange-500/30", cardTextHover: "group-hover:text-orange-400"
+    },
+    monochrome: {
+      text: "text-zinc-100 dark:text-zinc-100", bg: "bg-zinc-800/40", border: "border-zinc-500/40", bullet: "bg-zinc-100", heading: "text-white font-black", codeBg: "bg-zinc-900", inlineCodeText: "text-zinc-100", accent: "#ffffff",
+      primary: "bg-zinc-100 text-black", primary600: "bg-zinc-200", primary700: "bg-zinc-300", primary800: "bg-zinc-400",
+      ring: "focus:ring-zinc-400/30", focusBorder: "focus:border-zinc-300",
+      textHoverBg: "hover:text-white hover:bg-zinc-800/60",
+      gradientBg: "bg-gradient-to-br from-zinc-800 via-zinc-900 to-black dark:from-zinc-900 dark:to-black",
+      userBorder: "border-zinc-500/40", userShadow: "shadow-white/5",
+      sendShadow: "shadow-white/10", cardHover: "hover:bg-zinc-800/50 hover:border-zinc-400/50", cardTextHover: "group-hover:text-white"
     }
   };
 
@@ -727,6 +736,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         indigo: "#6366f1", // Indigo Blue
         emerald: "#10b981", // Emerald Green
         coral: "#ff7f50", // Coral Orange
+        monochrome: "#ffffff", // Monochrome White
       };
 
       const activeThemeColor = themeColorMap[colorTheme] || themeColorMap.default;

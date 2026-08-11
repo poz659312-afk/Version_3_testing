@@ -1126,18 +1126,6 @@ export default function DrivePage() {
                                       Add to Study Space
                                     </DropdownMenuItem>
                                   )}
-                                  {!isFolder && (
-                                    <DropdownMenuItem 
-                                      onClick={() => {
-                                        setSelectedAIFile(file);
-                                        setAiModalOpen(true);
-                                      }}
-                                      className="text-indigo-400 focus:text-indigo-400 focus:bg-indigo-500/10 cursor-pointer"
-                                    >
-                                      <Sparkles className="w-4 h-4 mr-2" />
-                                      Summarize with AI
-                                    </DropdownMenuItem>
-                                  )}
                                   <DropdownMenuItem onClick={() => handleDownload(file)} className="cursor-pointer">
                                     <Download className="w-4 h-4 mr-2" />
                                     Download
@@ -1211,18 +1199,6 @@ export default function DrivePage() {
                               </div>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-md border-border">
-                              {!isFolder && (
-                                 <DropdownMenuItem 
-                                   onClick={() => {
-                                     setSelectedAIFile(file);
-                                     setAiModalOpen(true);
-                                   }}
-                                   className="text-indigo-400 focus:text-indigo-400 focus:bg-indigo-500/10 cursor-pointer"
-                                 >
-                                   <Sparkles className="w-4 h-4 mr-2" />
-                                   Summarize with AI
-                                 </DropdownMenuItem>
-                               )}
                               {isPDF && (
                                 <DropdownMenuItem 
                                   onClick={() => handleAddToStudySpace(file)}
