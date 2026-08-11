@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ToastProvider"
+import { toast } from "sonner"
 import Image from "next/image"
 import { useAddNotification } from "@/components/notification"
 import { DeleteAccountDialog } from "@/components/delete-account-dialog"
@@ -266,13 +267,20 @@ function ColorThemeSelector({ inventory }: { inventory: string[] }) {
             return (
               <button
                 key={theme.value}
-                onClick={() => setColorTheme(theme.value as any)}
+                onClick={() => {
+                  if (!isOwned) {
+                    toast.error("هذا الثيم متميز! يجب شراؤه من المتجر أولاً لاستخدامه.")
+                    return
+                  }
+                  setColorTheme(theme.value as any)
+                }}
+                disabled={!isOwned}
                 className={`relative p-4 border-2 rounded-lg transition-all hover:border-primary/50 ${
                   colorTheme === theme.value 
                     ? "border-primary bg-primary/10" 
                     : isOwned 
-                      ? "border-border/30 bg-muted/20" 
-                      : "border-border/20 bg-muted/5 opacity-60 hover:opacity-85"
+                      ? "border-border/30 bg-muted/20 cursor-pointer" 
+                      : "border-border/20 bg-muted/5 opacity-60 cursor-not-allowed"
                 }`}
               >
                 {theme.premium && (
