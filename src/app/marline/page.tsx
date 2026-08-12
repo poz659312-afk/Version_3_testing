@@ -35,6 +35,8 @@ import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { MarlineMarkdownRenderer } from "@/components/MarlineMarkdownRenderer"
+import { getStudentSession, type StudentUser } from "@/lib/auth"
+import { Lock, ShieldAlert, Clock } from "lucide-react"
 
 interface Message {
   id: string
@@ -50,6 +52,8 @@ interface ChatSession {
   messages: Message[]
   createdAt: string
 }
+
+const DAILY_QUESTION_LIMIT = 10
 
 function getMarlineEmotion(content: string, isThinking?: boolean, isError?: boolean): string {
   if (isThinking) return "/images/chameleon/03_chameleon_thinking.png"
@@ -71,6 +75,11 @@ function getMarlineEmotion(content: string, isThinking?: boolean, isError?: bool
 }
 
 export default function MarlineAssistantPage() {
+  const [user, setUser] = useState<StudentUser | null>(null)
+  const [isAuthChecking, setIsAuthChecking] = useState<boolean>(true)
+  const [dailyUsage, setDailyUsage] = useState<number>(0)
+  const [dailyLimitExceeded, setDailyLimitExceeded] = useState<boolean>(false)
+
   const [sessions, setSessions] = useState<ChatSession[]>([])
   const [activeSessionId, setActiveSessionId] = useState<string>("")
   const [input, setInput] = useState("")
@@ -84,6 +93,27 @@ export default function MarlineAssistantPage() {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const isUserScrolledUpRef = useRef<boolean>(false)
+
+  // Auth Guard & Daily Question Limit Check
+  useEffect(() => {
+    async function initUserSession() {
+      setIsAuthChecking(true)
+      const student = await getStudentSession()
+      setUser(student)
+      setIsAuthChecking(false)
+
+      if (student) {
+        const todayStr = new Date().toISOString().slice(0, 10)
+        const storageKey = `marline_daily_${student.auth_id}_${todayStr}`
+        const used = parseInt(localStorage.getItem(storageKey) || "0", 10)
+        setDailyUsage(used)
+        if (used >= DAILY_QUESTION_LIMIT) {
+          setDailyLimitExceeded(true)
+        }
+      }
+    }
+    initUserSession()
+  }, [])
 
   // Pre-load Web Speech API voices
   useEffect(() => {
@@ -262,6 +292,24 @@ export default function MarlineAssistantPage() {
   const handleSend = async (customPrompt?: string) => {
     const textToSend = customPrompt || input
     if (!textToSend.trim() || isLoading) return
+    if (!user) return
+
+    // Check & increment daily usage limit
+    const todayStr = new Date().toISOString().slice(0, 10)
+    const storageKey = `marline_daily_${user.auth_id}_${todayStr}`
+    const currentUsed = parseInt(localStorage.getItem(storageKey) || "0", 10)
+
+    if (currentUsed >= DAILY_QUESTION_LIMIT) {
+      setDailyLimitExceeded(true)
+      return
+    }
+
+    const newUsed = currentUsed + 1
+    localStorage.setItem(storageKey, newUsed.toString())
+    setDailyUsage(newUsed)
+    if (newUsed >= DAILY_QUESTION_LIMIT) {
+      setDailyLimitExceeded(true)
+    }
 
     // Reset user scroll state on new prompt so view auto-scrolls down for new prompt
     isUserScrolledUpRef.current = false
@@ -382,6 +430,65 @@ export default function MarlineAssistantPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // 1. Auth Loading Spinner State
+  if (isAuthChecking) {
+    return (
+      <div className="h-[100dvh] w-full flex items-center justify-center bg-background font-rubik">
+        <div className="flex flex-col items-center gap-3">
+          <RefreshCw className="w-8 h-8 text-primary animate-spin" />
+          <span className="text-xs text-muted-foreground font-semibold">جاري التحقق من تسجيل الدخول...</span>
+        </div>
+      </div>
+    )
+  }
+
+  // 2. Locked Access View if User is NOT logged in
+  if (!user) {
+    return (
+      <div className="h-[100dvh] w-full flex items-center justify-center bg-background p-4 relative overflow-hidden font-rubik">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(var(--primary),0.15),transparent_70%)] pointer-events-none" />
+        
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-md w-full p-6 sm:p-8 rounded-3xl bg-card/90 border border-primary/20 backdrop-blur-2xl text-center space-y-6 shadow-2xl relative z-10"
+        >
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto text-primary shadow-inner">
+            <Lock className="w-8 h-8" />
+          </div>
+
+          <div className="space-y-2">
+            <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary text-xs px-3 py-1 rounded-full font-bold">
+              مطلوب تسجيل الدخول 🔒
+            </Badge>
+            <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight pt-1">
+              أهلاً بك في مارلين <span className="text-primary">AI</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              استخدام الرفيق الأكاديمي متاح حصرياً للطلاب المسجلين في منصة Chameleon FCDS لتقديم جداول المذاكرة والإرشاد الأكاديمي.
+            </p>
+          </div>
+
+          <div className="pt-2">
+            <Link href="/auth/signin">
+              <Button size="lg" className="w-full rounded-2xl h-12 text-sm font-extrabold gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+                <span>تسجيل الدخول إلى حسابك</span>
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+
+          <div className="pt-2 border-t border-border/40">
+            <Link href="/" className="text-xs text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 font-semibold">
+              <ArrowRight className="w-3.5 h-3.5" />
+              <span>العودة إلى المنصة الرئيسية</span>
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+    )
   }
 
   return (
@@ -526,6 +633,21 @@ export default function MarlineAssistantPage() {
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Daily Usage Counter Badge */}
+            <Badge
+              variant="outline"
+              className={`text-[10px] sm:text-[11px] px-2 sm:px-2.5 py-1 font-bold flex items-center gap-1 rounded-full shrink-0 ${
+                dailyUsage >= DAILY_QUESTION_LIMIT
+                  ? "bg-destructive/10 border-destructive/30 text-destructive animate-pulse"
+                  : "bg-primary/10 border-primary/30 text-primary"
+              }`}
+            >
+              <Clock className="w-3 h-3 shrink-0" />
+              <span>
+                المتبقي اليوم: {Math.max(0, DAILY_QUESTION_LIMIT - dailyUsage)} / {DAILY_QUESTION_LIMIT} أسئلة
+              </span>
+            </Badge>
+
             {/* Mobile New Chat Button */}
             <Button
               variant="default"
@@ -589,54 +711,54 @@ export default function MarlineAssistantPage() {
                   أهلاً بك! أنا <span className="text-primary">مارلين (Marline)</span> 👋
                 </h2>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-lg leading-relaxed font-rubik px-2">
-                  رفيقتك الذكية المخصصة لكلية الحاسبات وعلوم البيانات. يمكنني كتابة الأكواد، شرح المفاهيم، حل المسائل، وحساب معدلك الأكاديمي!
+                  رفيقتك الأكاديمية لإعداد جداول المذاكرة، وإجابة استفسارات الطلاب الجدد ولائحة الكلية بأعلى كفاءة وتوفير!
                 </p>
               </div>
 
               {/* Quick Action Suggestion Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 w-full pt-2 sm:pt-4">
                 <button
-                  onClick={() => handleSend("اشرح لي مفهوم الـ Object-Oriented Programming (OOP) بأمثلة كود Python")}
-                  className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
-                >
-                  <div className="flex items-center gap-2 text-primary font-bold text-xs">
-                    <Code className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    <span>برمجة وهندسة كود</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground font-medium">"اشرح لي مفهوم الـ OOP بأمثلة كود Python"</p>
-                </button>
-
-                <button
-                  onClick={() => handleSend("كيف أستطيع حساب الـ GPA الخاص بي وحساب تأثير المواد على التقدير؟")}
-                  className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
-                >
-                  <div className="flex items-center gap-2 text-accent font-bold text-xs">
-                    <Calculator className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    <span>حساب الـ GPA والتقديرات</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground font-medium">"ازاي أحسب الـ GPA وتأثير المواد على التقدير؟"</p>
-                </button>
-
-                <button
                   onClick={() => handleSend("اعمل لي جدول مذاكرة منظّم وموزّع للمواد الدراسية قبل الامتحانات")}
                   className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
                 >
-                  <div className="flex items-center gap-2 text-emerald-500 font-bold text-xs">
+                  <div className="flex items-center gap-2 text-primary font-bold text-xs">
                     <BookOpen className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    <span>خطة مذاكرة وتنظيم</span>
+                    <span>جدول مذاكرة وتنظيم أسبوعي</span>
                   </div>
                   <p className="text-xs text-muted-foreground font-medium">"اعمل لي جدول مذاكرة منظم قبل الامتحانات"</p>
                 </button>
 
                 <button
-                  onClick={() => handleSend("اعطني 5 أسئلة كويز تفاعلية مع إجاباتها عن قواعد البيانات SQL")}
+                  onClick={() => handleSend("أنا طالب جديد في الكلية، ما هي أهم نصائح البدء وقواعد اللائحة الكلية؟")}
+                  className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2 text-emerald-500 font-bold text-xs">
+                    <GraduationCap className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                    <span>إرشادات للطلاب الجدد</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium">"أنا طالب جديد، ما أهم قواعد اللائحة والبدء؟"</p>
+                </button>
+
+                <button
+                  onClick={() => handleSend("ازاي أحسب الـ GPA ونسبة الغياب والإنذار الأكاديمي حسب اللائحة؟")}
                   className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
                 >
                   <div className="flex items-center gap-2 text-amber-500 font-bold text-xs">
-                    <Lightbulb className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    <span>أسئلة كويز وتدريب</span>
+                    <Calculator className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                    <span>حساب الـ GPA والإنذار الأكاديمي</span>
                   </div>
-                  <p className="text-xs text-muted-foreground font-medium">"اعطني أسئلة كويز وتدريب عن SQL"</p>
+                  <p className="text-xs text-muted-foreground font-medium">"ازاي أحسب الـ GPA والإنذار الأكاديمي؟"</p>
+                </button>
+
+                <button
+                  onClick={() => handleSend("اعطني خطة مراجعة سريعة ومكثفة لمدة 3 أيام قبل امتحانات الفاينل")}
+                  className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
+                >
+                  <div className="flex items-center gap-2 text-accent font-bold text-xs">
+                    <Zap className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                    <span>خطة مراجعة سريعة</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium">"اعطني خطة مراجعة مكثفة 3 أيام قبل الفاينل"</p>
                 </button>
               </div>
             </div>
@@ -743,6 +865,13 @@ export default function MarlineAssistantPage() {
         {/* 3. Pinned Texting / Input Dock */}
         <div className="p-2.5 sm:p-4 md:p-6 border-t border-border/80 bg-card/95 backdrop-blur-xl shrink-0 z-20 sticky bottom-0">
           <div className="max-w-4xl mx-auto space-y-1.5 sm:space-y-2">
+            {dailyUsage >= DAILY_QUESTION_LIMIT && (
+              <div className="p-2.5 sm:p-3 rounded-2xl bg-destructive/10 border border-destructive/30 text-destructive text-xs font-bold flex items-center gap-2 animate-fadeIn">
+                <ShieldAlert className="w-4 h-4 shrink-0" />
+                <span>لقد استنفدت حد الأسئلة اليومي (10/10 أسئلة). يرجى العودة غداً للمزيد من الإرشاد الأكاديمي!</span>
+              </div>
+            )}
+
             <form
               onSubmit={(e) => {
                 e.preventDefault()
@@ -753,6 +882,7 @@ export default function MarlineAssistantPage() {
               <Textarea
                 ref={textareaRef}
                 value={input}
+                disabled={isLoading || dailyUsage >= DAILY_QUESTION_LIMIT}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
@@ -760,14 +890,18 @@ export default function MarlineAssistantPage() {
                     handleSend()
                   }
                 }}
-                placeholder="اسأل مارلين عن المواد او نظام ال GPA او اي شي"
+                placeholder={
+                  dailyUsage >= DAILY_QUESTION_LIMIT
+                    ? "وصلت إلى الحد اليومي (10 أسئلة). يرجى العودة غداً..."
+                    : "اسأل مارلين عن جداول المذاكرة أو استفسارات الطلاب الجدد..."
+                }
                 rows={1}
-                className="min-h-[46px] sm:min-h-[52px] max-h-28 sm:max-h-36 resize-none pr-3.5 pl-12 sm:pr-4 sm:pl-14 py-2.5 sm:py-3.5 rounded-2xl bg-background/80 border-border focus-visible:ring-primary text-foreground text-xs sm:text-sm md:text-base font-rubik shadow-inner"
+                className="min-h-[46px] sm:min-h-[52px] max-h-28 sm:max-h-36 resize-none pr-3.5 pl-12 sm:pr-4 sm:pl-14 py-2.5 sm:py-3.5 rounded-2xl bg-background/80 border-border focus-visible:ring-primary text-foreground text-xs sm:text-sm md:text-base font-rubik shadow-inner disabled:opacity-60"
               />
 
               <Button
                 type="submit"
-                disabled={!input.trim() || isLoading}
+                disabled={!input.trim() || isLoading || dailyUsage >= DAILY_QUESTION_LIMIT}
                 className="absolute left-2 top-1/2 -translate-y-1/2 rounded-xl w-8 h-8 sm:w-10 sm:h-10 p-0 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md cursor-pointer transition-all active:scale-95 disabled:opacity-40"
               >
                 <Send className="w-4 h-4 rotate-180" />
@@ -775,7 +909,7 @@ export default function MarlineAssistantPage() {
             </form>
 
             <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-muted-foreground px-1.5 sm:px-2">
-              <span className="hidden sm:inline">اضغط Enter للإرسال، Shift + Enter لسطر جديد</span>
+              <span className="hidden sm:inline">حد الأسئلة اليومي: 10 أسئلة لكل طالب لحفظ الموارد والتوكنز</span>
               <span className="text-primary font-semibold flex items-center gap-1 mr-auto sm:mr-0">
                 <Sparkles className="w-3 h-3" /> Powered by Marline AI 3.0
               </span>
