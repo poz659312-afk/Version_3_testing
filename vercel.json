@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/reset-ai-credits",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}

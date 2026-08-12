@@ -50,7 +50,36 @@ export async function POST(req: Request) {
       );
     }
 
-    const { messages } = await req.json();
+    const { messages, auth_id } = await req.json();
+
+    // Check & deduct ai_credits from database if auth_id is provided
+    if (auth_id) {
+      try {
+        const { createAdminClient } = await import("@/lib/supabase/admin")
+        const supabaseAdmin = createAdminClient() as any
+        const { data: userRecord } = await supabaseAdmin
+          .from('chameleons')
+          .select('ai_credits')
+          .eq('auth_id', auth_id)
+          .single()
+
+        const currentCredits = userRecord?.ai_credits ?? 5
+        if (currentCredits <= 0) {
+          return NextResponse.json(
+            { error: "لقد استنفدت رصيد الأسئلة اليومي (0/5 أسئلة). يرجى العودة غداً عند تجديد الرصيد!" },
+            { status: 429 }
+          )
+        }
+
+        // Deduct 1 credit from chameleons table
+        await supabaseAdmin
+          .from('chameleons')
+          .update({ ai_credits: Math.max(0, currentCredits - 1) })
+          .eq('auth_id', auth_id)
+      } catch (dbErr) {
+        console.warn("Could not update ai_credits in DB:", dbErr)
+      }
+    }
 
     // MAXIMUM TOKEN OPTIMIZATION: Keep System Prompt + last 3 messages ONLY and limit input to 400 chars
     const recentMessages = (messages || [])

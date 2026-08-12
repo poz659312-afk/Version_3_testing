@@ -53,7 +53,7 @@ interface ChatSession {
   createdAt: string
 }
 
-const DAILY_QUESTION_LIMIT = 10
+const DAILY_QUESTION_LIMIT = 5
 
 function getMarlineEmotion(content: string, isThinking?: boolean, isError?: boolean): string {
   if (isThinking) return "/images/chameleon/03_chameleon_thinking.png"
@@ -351,6 +351,7 @@ export default function MarlineAssistantPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          auth_id: user.auth_id,
           messages: updatedMessages.map((m) => ({ role: m.role, content: m.content }))
         })
       })
@@ -868,7 +869,7 @@ export default function MarlineAssistantPage() {
             {dailyUsage >= DAILY_QUESTION_LIMIT && (
               <div className="p-2.5 sm:p-3 rounded-2xl bg-destructive/10 border border-destructive/30 text-destructive text-xs font-bold flex items-center gap-2 animate-fadeIn">
                 <ShieldAlert className="w-4 h-4 shrink-0" />
-                <span>لقد استنفدت حد الأسئلة اليومي (10/10 أسئلة). يرجى العودة غداً للمزيد من الإرشاد الأكاديمي!</span>
+                <span>لقد استنفدت حد الأسئلة اليومي (5/5 أسئلة). يرجى العودة غداً للمزيد من الإرشاد الأكاديمي!</span>
               </div>
             )}
 
@@ -892,7 +893,7 @@ export default function MarlineAssistantPage() {
                 }}
                 placeholder={
                   dailyUsage >= DAILY_QUESTION_LIMIT
-                    ? "وصلت إلى الحد اليومي (10 أسئلة). يرجى العودة غداً..."
+                    ? "وصلت إلى الحد اليومي (5 أسئلة). يرجى العودة غداً..."
                     : "اسأل مارلين عن جداول المذاكرة أو استفسارات الطلاب الجدد..."
                 }
                 rows={1}
@@ -909,7 +910,7 @@ export default function MarlineAssistantPage() {
             </form>
 
             <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-muted-foreground px-1.5 sm:px-2">
-              <span className="hidden sm:inline">حد الأسئلة اليومي: 10 أسئلة لكل طالب لحفظ الموارد والتوكنز</span>
+              <span className="hidden sm:inline">حد الأسئلة اليومي: 5 أسئلة لكل طالب لحفظ الموارد والتوكنز</span>
               <span className="text-primary font-semibold flex items-center gap-1 mr-auto sm:mr-0">
                 <Sparkles className="w-3 h-3" /> Powered by Marline AI 3.0
               </span>
