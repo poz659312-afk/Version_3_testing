@@ -645,7 +645,7 @@ export default function MarlineAssistantPage() {
             >
               <Clock className="w-3 h-3 shrink-0" />
               <span>
-                المتبقي اليوم: {Math.max(0, DAILY_QUESTION_LIMIT - dailyUsage)} / {DAILY_QUESTION_LIMIT} أسئلة
+                {Math.max(0, DAILY_QUESTION_LIMIT - dailyUsage)} / {DAILY_QUESTION_LIMIT}
               </span>
             </Badge>
 
