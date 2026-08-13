@@ -167,8 +167,17 @@ export default function PDFViewer({ initialUrl = "", fileName = "", driveFileId 
               ))}
             </div>
           ) : pdfUrl && !pdfDoc ? (
-            <div className="flex-grow flex items-center justify-center">
-              <span className="text-sm font-semibold text-muted-foreground">Unable to load PDF document</span>
+            <div className="flex-1 w-full h-full min-h-[500px] flex items-center justify-center">
+              {driveFileId ? (
+                <iframe
+                  src={`https://drive.google.com/file/d/${driveFileId}/preview`}
+                  className="w-full h-full min-h-[550px] rounded-lg border border-white/10"
+                  title={fileName || "PDF Preview"}
+                  allow="autoplay"
+                />
+              ) : (
+                <span className="text-sm font-semibold text-muted-foreground">Unable to load PDF document</span>
+              )}
             </div>
           ) : (
             <motion.div

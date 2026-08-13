@@ -49,19 +49,21 @@ export async function GET(request: NextRequest) {
 
     // Retrieve authorized Drive client using server-verified user ID
     const drive = await getAdminDriveClient(user.id)
-    const response = await drive.files.get(
-      { fileId: fileId, alt: 'media' },
-      { responseType: 'stream' }
-    )
 
-    // Return the stream as Response with Cache-Control headers
-    return new Response(response.data as any, {
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': 'inline',
-        'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=600',
-      },
+    // Retrieve file metadata from Google Drive API to get direct Google Drive delivery URL
+    const fileMetaData = await drive.files.get({
+      fileId: fileId,
+      fields: 'id, webContentLink, webViewLink',
+      supportsAllDrives: true,
     })
+
+    const directDownloadUrl = fileMetaData.data.webContentLink || 
+      `https://drive.google.com/uc?id=${fileId}&export=download`
+
+    // REDIRECT client directly to Google Drive URL (HTTP 307)
+    // This transfers ZERO binary bytes through Vercel Compute / Edge, completely eliminating FOT egress!
+    return NextResponse.redirect(directDownloadUrl, 307)
+
   } catch (error: any) {
     console.error('Error downloading file:', error)
     return NextResponse.json({ error: error.message || 'Failed to download file' }, { status: 500 })
