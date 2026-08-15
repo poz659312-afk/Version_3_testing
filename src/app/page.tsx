@@ -38,6 +38,7 @@ import { getStudentSession } from "@/lib/auth"
 import { formatTAName } from "@/lib/ta-utils"
 import Image from "next/image"
 import HeroGeometric from "@/components/hero-geometric"
+import { DonationBanner } from "@/components/donation"
 import { Pacifico } from "next/font/google";
 
 const pacifico = Pacifico({
@@ -281,6 +282,13 @@ export default function HomePage() {
                 </div>
              </div>
            </div>
+        </section>
+
+        {/* Chameleon Community Arabic Donation / Support Banner */}
+        <section className="w-full py-4 relative z-20">
+          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
+            <DonationBanner />
+          </div>
         </section>
 
         {/* Specializations Section (How It Works) */}
