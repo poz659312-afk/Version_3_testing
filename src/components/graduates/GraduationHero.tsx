@@ -34,30 +34,38 @@ export function GraduationHero({
 
   return (
     <section className="relative overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24">
-      {/* Dynamic Background Effects & Large Creative Graduated Mascot */}
-      <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden flex items-center justify-center">
+      {/* Dynamic Ambient Background Glows */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-tr from-amber-500/20 via-primary/20 to-purple-500/20 blur-[130px] rounded-full" />
         <div className="absolute top-1/3 -right-20 w-80 h-80 bg-primary/15 blur-[100px] rounded-full" />
         <div className="absolute bottom-0 -left-20 w-80 h-80 bg-amber-500/15 blur-[100px] rounded-full" />
+        <div
+          className="absolute inset-0 opacity-[0.04] dark:opacity-[0.02]"
+          style={{
+            backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)",
+            backgroundSize: "36px 36px",
+          }}
+        />
+      </div>
 
-        {/* Large Semi-Transparent Floating Graduated Chameleon Mascot */}
+      {/* Large Creative Graduated Mascot (Positioned between background and text) */}
+      <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center overflow-hidden">
         <motion.div
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: "easeOut" }}
-          className="relative w-[380px] sm:w-[540px] md:w-[700px] lg:w-[860px] h-[380px] sm:h-[540px] md:h-[700px] lg:h-[860px] select-none"
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="relative w-[360px] sm:w-[500px] md:w-[650px] lg:w-[800px] h-[360px] sm:h-[500px] md:h-[650px] lg:h-[800px] select-none -translate-y-4"
         >
-          {/* Subtle Backlight Glow for the Mascot */}
-          <div className="absolute inset-0 bg-gradient-to-b from-amber-500/15 via-primary/10 to-transparent blur-[70px] rounded-full" />
+          {/* Backlight Ambient Glow */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/25 via-primary/20 to-purple-500/20 blur-[80px] rounded-full scale-90" />
 
           <motion.div
             animate={{
-              y: [-10, 10, -10],
-              rotate: [-1, 1, -1],
-              scale: [1, 1.02, 1],
+              y: [-12, 12, -12],
+              rotate: [-1.5, 1.5, -1.5],
             }}
             transition={{
-              duration: 9,
+              duration: 8,
               repeat: Infinity,
               ease: "easeInOut",
             }}
@@ -67,22 +75,16 @@ export function GraduationHero({
               src="/images/chameleon/19_chameleon_graduated.png"
               alt="Chameleon Graduated Mascot"
               fill
-              className="object-contain opacity-25 dark:opacity-20 drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+              sizes="(max-width: 768px) 100vw, 800px"
+              className="object-contain opacity-40 dark:opacity-30 drop-shadow-[0_20px_40px_rgba(0,0,0,0.25)]"
               priority
             />
           </motion.div>
         </motion.div>
-
-        <div
-          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02]"
-          style={{
-            backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)",
-            backgroundSize: "36px 36px",
-          }}
-        />
       </div>
 
-      <div className="container max-w-6xl mx-auto px-4 sm:px-6">
+      {/* Foreground Content */}
+      <div className="container max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
         <div className="flex flex-col items-center text-center space-y-6">
           {/* Alumni Prestige Badge */}
           <motion.div
