@@ -37,8 +37,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/magic_of_the_faculty_of_computer_and_data_science_tree.pdf
 /public/drive-tree.html
+/gemini-chat.html
+/public/gemini-chat.html
 /push-changes.ps1
 /push-changes.sh
 
