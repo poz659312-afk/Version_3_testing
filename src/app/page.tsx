@@ -85,7 +85,7 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center mb-8">
               <div className="md:col-span-4 space-y-4 text-center md:text-left">
                 <div className="flex items-center justify-center md:justify-start gap-2">
-                  <Image src="/images/chameleon_logo.png" alt="Chameleon Logo" width={32} height={32} className="object-contain" />
+                  <Image src="/images/chameleon.png" alt="Chameleon Logo" width={32} height={32} className="object-contain" />
                   <span className="font-bold text-lg">Chameleon</span>
                 </div>
                 <p className="text-sm text-muted-foreground">

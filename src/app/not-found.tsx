@@ -59,10 +59,10 @@ export default function NotFound() {
                 <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200">Marline AI</span>
               </div>
             </Link>
-            <Link href="/Tournment" className="p-3 rounded-xl border border-zinc-900 hover:border-zinc-800 bg-zinc-950/30 transition-all group">
+            <Link href="/study-spaces" className="p-3 rounded-xl border border-zinc-900 hover:border-zinc-800 bg-zinc-950/30 transition-all group">
               <div className="flex items-center justify-center gap-2">
                 <Search className="w-3 h-3 text-zinc-500 group-hover:text-blue-400" />
-                <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200">Tournament</span>
+                <span className="text-[11px] text-zinc-400 group-hover:text-zinc-200">Study Spaces</span>
               </div>
             </Link>
             <Link href="/profile" className="p-3 rounded-xl border border-zinc-900 hover:border-zinc-800 bg-zinc-950/30 transition-all group">
