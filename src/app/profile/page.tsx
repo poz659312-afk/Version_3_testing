@@ -1475,12 +1475,18 @@ export default function ProfilePage() {
                       </div>
 
                       <div className="flex items-center gap-3.5 p-4 rounded-xl bg-muted/40 border border-border/80 transition-all hover:bg-muted/70">
-                        <div className="p-3 rounded-xl bg-primary/10 text-primary shrink-0">
+                        <div className={`p-3 rounded-xl shrink-0 ${userData.status === 'graduated' || userData.current_level === null ? 'bg-amber-500/10 text-amber-500' : 'bg-primary/10 text-primary'}`}>
                           <GraduationCap className="w-5 h-5" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-outfit font-semibold">Authority Level</p>
-                          <p className="text-foreground font-medium font-outfit truncate text-sm">Level {userData.current_level}</p>
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-outfit font-semibold">
+                            {userData.status === 'graduated' || userData.current_level === null ? 'Academic Standing' : 'Authority Level'}
+                          </p>
+                          <p className="text-foreground font-medium font-outfit truncate text-sm">
+                            {userData.status === 'graduated' || userData.current_level === null
+                              ? 'Alumni (Graduated)'
+                              : `Level ${userData.current_level || 1}`}
+                          </p>
                         </div>
                       </div>
                     </div>

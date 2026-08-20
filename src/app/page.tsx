@@ -40,6 +40,7 @@ import Image from "next/image"
 import HeroGeometric from "@/components/hero-geometric"
 import { DonationBanner } from "@/components/donation"
 import { Pacifico } from "next/font/google";
+import { GraduatesExperience } from "@/components/graduates/GraduatesExperience"
 
 const pacifico = Pacifico({
   subsets: ["latin"],
@@ -64,6 +65,85 @@ export default function HomePage() {
     }
     loadSession()
   }, [])
+
+  // Branch user experience: Graduates receive dedicated alumni portal
+  if (user && (user.status === 'graduated' || user.current_level === null)) {
+    return (
+      <div className="min-h-screen bg-background text-foreground selection:bg-primary/20">
+        <GraduatesExperience user={user} />
+        
+        {/* Chameleon Community Arabic Donation / Support Banner */}
+        <section className="w-full py-6 relative z-20">
+          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
+            <DonationBanner />
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="border-t border-border/40 py-12 bg-background/50 backdrop-blur-md relative z-10">
+          <div className="container mx-auto px-4 md:px-6 max-w-6xl">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center mb-8">
+              <div className="md:col-span-4 space-y-4 text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start gap-2">
+                  <Image src="/images/chameleon_logo.png" alt="Chameleon Logo" width={32} height={32} className="object-contain" />
+                  <span className="font-bold text-lg">Chameleon</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  The educational ecosystem for FCDS students and distinguished alumni.
+                </p>
+              </div>
+              <div className="md:col-span-5 grid grid-cols-3 gap-4 text-center md:text-left">
+                <div>
+                  <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Platform</h4>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li><Link href="/summaries" className="hover:text-foreground transition-colors">Summaries</Link></li>
+                    <li><Link href="/study-spaces" className="hover:text-foreground transition-colors">Study Spaces</Link></li>
+                    <li><Link href="/store" className="hover:text-foreground transition-colors">Store</Link></li>
+                    {user?.is_super_admin && (
+                      <li>
+                        <Link href="/admin" className="text-red-500 font-bold hover:text-red-400 transition-colors inline-flex items-center gap-1.5">
+                          <Shield className="w-3.5 h-3.5 animate-pulse" />
+                          Admin Console
+                        </Link>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Company</h4>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li><Link href="/about" className="hover:text-foreground transition-colors">About Us</Link></li>
+                    <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
+                    <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Connect</h4>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li><a href="mailto:tokyo9900777@gmail.com" className="hover:text-foreground transition-colors">Contact Us</a></li>
+                    <li><a href="https://youtube.com/@ChameleonFCDS" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">YouTube Channel</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div className="md:col-span-3 flex justify-center md:justify-end items-center">
+                <Image 
+                  src="/images/chameleon/10_chameleon_success.png" 
+                  alt="Chameleon Mascot" 
+                  width={180} 
+                  height={180}
+                  className="object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.25)] select-none"
+                  priority
+                />
+              </div>
+            </div>
+            <div className="border-t border-border/40 pt-8 text-xs text-muted-foreground text-center">
+              &copy; {new Date().getFullYear()} Chameleon FCDS. All rights reserved.
+            </div>
+          </div>
+        </footer>
+      </div>
+    )
+  }
 
   const specializations = [
     {

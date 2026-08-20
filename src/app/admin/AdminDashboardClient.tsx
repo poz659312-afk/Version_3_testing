@@ -41,7 +41,8 @@ import {
   Percent,
   Users,
   Clock,
-  AlertCircle
+  AlertCircle,
+  GraduationCap
 } from 'lucide-react'
 import { 
   updateUserProfile, 
@@ -53,7 +54,9 @@ import {
   previewCustomFolderChanges,
   verifyQuizWithAI,
   insertQuizToDb,
-  getUserAnalytics
+  getUserAnalytics,
+  getAcademicRolloverPreview,
+  executeAcademicRollover
 } from './actions'
 import {
   ResponsiveContainer,
@@ -232,7 +235,69 @@ export default function AdminDashboardClient({
       fix?: string
     }>
   } | null>(null)
-  const [parsedQuestions, setParsedQuestions] = useState<any[] | null>(null)
+  // Academic Rollover States
+  const [rolloverCounts, setRolloverCounts] = useState<{
+    year1: number
+    year2: number
+    year3: number
+    year4: number
+    graduated: number
+    totalStudents: number
+  } | null>(null)
+  const [isRolloverLoading, setIsRolloverLoading] = useState(false)
+  const [isExecutingRollover, setIsExecutingRollover] = useState(false)
+  const [rolloverYear, setRolloverYear] = useState<number>(new Date().getFullYear())
+  const [rolloverConfirmation, setRolloverConfirmation] = useState('')
+  const [isRolloverDialogOpen, setIsRolloverDialogOpen] = useState(false)
+  const [rolloverResult, setRolloverResult] = useState<any | null>(null)
+
+  const loadRolloverPreview = async () => {
+    setIsRolloverLoading(true)
+    try {
+      const res = await getAcademicRolloverPreview()
+      if (res.success && res.counts) {
+        setRolloverCounts(res.counts)
+      } else {
+        toast.error(res.error || 'Failed to load rollover preview')
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to load rollover preview')
+    } finally {
+      setIsRolloverLoading(false)
+    }
+  }
+
+  const handleExecuteRollover = async () => {
+    if (rolloverConfirmation !== 'ROLLOVER') {
+      toast.error('Please type ROLLOVER to confirm this critical operation.')
+      return
+    }
+
+    setIsExecutingRollover(true)
+    try {
+      const res = await executeAcademicRollover(rolloverYear)
+      if (res.success && res.result) {
+        setRolloverResult(res.result)
+        toast.success(`Academic Rollover for Class of ${rolloverYear} completed successfully!`)
+        setIsRolloverDialogOpen(false)
+        setRolloverConfirmation('')
+        loadRolloverPreview()
+        router.refresh()
+      } else {
+        toast.error(res.error || 'Failed to execute academic rollover.')
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to execute academic rollover.')
+    } finally {
+      setIsExecutingRollover(false)
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === 'rollover') {
+      loadRolloverPreview()
+    }
+  }, [activeTab])
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const gutterRef = useRef<HTMLDivElement>(null)
@@ -983,7 +1048,7 @@ export default function AdminDashboardClient({
 
       {/* Tabs System */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="relative grid grid-cols-3 md:grid-cols-6 h-auto bg-black/5 dark:bg-white/5 backdrop-blur-md p-1.5 rounded-xl border border-black/10 dark:border-white/10 max-w-4xl mb-8">
+        <TabsList className="relative grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 h-auto bg-black/5 dark:bg-white/5 backdrop-blur-md p-1.5 rounded-xl border border-black/10 dark:border-white/10 max-w-6xl mb-8">
           <TabsTrigger 
             value="users" 
             className="relative flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground data-[state=active]:text-white focus-visible:outline-none select-none cursor-pointer bg-transparent data-[state=active]:!bg-transparent data-[state=active]:!shadow-none"
@@ -1072,6 +1137,21 @@ export default function AdminDashboardClient({
             )}
             <FileCode className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'quizzes' ? 'scale-110 rotate-12' : 'hover:scale-110'}`} />
             <span>Quizzes</span>
+          </TabsTrigger>
+
+          <TabsTrigger 
+            value="rollover" 
+            className="relative flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground data-[state=active]:text-white focus-visible:outline-none select-none cursor-pointer bg-transparent data-[state=active]:!bg-transparent data-[state=active]:!shadow-none"
+          >
+            {activeTab === 'rollover' && (
+              <motion.div
+                layoutId="active-admin-tab"
+                className="absolute inset-0 bg-gradient-to-r from-amber-500 to-primary rounded-lg -z-10 shadow-lg shadow-amber-500/30"
+                transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+              />
+            )}
+            <GraduationCap className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'rollover' ? 'scale-110 rotate-6' : 'hover:scale-110'}`} />
+            <span>Academic Rollover</span>
           </TabsTrigger>
         </TabsList>
 
@@ -2545,6 +2625,161 @@ export default function AdminDashboardClient({
             </div>
           </motion.div>
         </TabsContent>
+
+        {/* Tab 7: Academic Rollover & Graduation System */}
+        <TabsContent value="rollover" className="mt-0 focus-visible:outline-none">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="space-y-6"
+          >
+            {/* Header Card */}
+            <Card className="bg-card border-border shadow-md">
+              <CardHeader className="pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <CardTitle className="text-2xl font-bold font-outfit flex items-center gap-2">
+                      <GraduationCap className="w-6 h-6 text-amber-500" />
+                      Academic Rollover &amp; Graduation Console
+                    </CardTitle>
+                    <CardDescription className="text-sm mt-1">
+                      Promote students atomically across academic years (Year 1 &rarr; 2 &rarr; 3 &rarr; 4) and graduate Year 4 students into Chameleon Alumni.
+                    </CardDescription>
+                  </div>
+                  <Button
+                    onClick={loadRolloverPreview}
+                    disabled={isRolloverLoading}
+                    variant="outline"
+                    className="border-border text-sm"
+                  >
+                    <RefreshCw className={`w-4 h-4 mr-2 ${isRolloverLoading ? 'animate-spin' : ''}`} />
+                    Refresh Counts
+                  </Button>
+                </div>
+              </CardHeader>
+
+              <CardContent className="space-y-8">
+                {/* 1. Student Cohort Distribution */}
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                    Current Student Distribution by Level
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                    <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-center">
+                      <p className="text-xs font-semibold text-blue-400 uppercase">Year 1</p>
+                      <p className="text-2xl font-extrabold font-outfit text-foreground mt-1">
+                        {isRolloverLoading ? '...' : (rolloverCounts?.year1 ?? 0)}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">&rarr; Promotes to Year 2</p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-center">
+                      <p className="text-xs font-semibold text-indigo-400 uppercase">Year 2</p>
+                      <p className="text-2xl font-extrabold font-outfit text-foreground mt-1">
+                        {isRolloverLoading ? '...' : (rolloverCounts?.year2 ?? 0)}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">&rarr; Promotes to Year 3</p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-center">
+                      <p className="text-xs font-semibold text-purple-400 uppercase">Year 3</p>
+                      <p className="text-2xl font-extrabold font-outfit text-foreground mt-1">
+                        {isRolloverLoading ? '...' : (rolloverCounts?.year3 ?? 0)}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">&rarr; Promotes to Year 4</p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-amber-500/15 border border-amber-500/30 text-center">
+                      <p className="text-xs font-bold text-amber-500 uppercase">Year 4 (Senior)</p>
+                      <p className="text-2xl font-extrabold font-outfit text-foreground mt-1">
+                        {isRolloverLoading ? '...' : (rolloverCounts?.year4 ?? 0)}
+                      </p>
+                      <p className="text-[11px] text-amber-400 font-semibold mt-0.5">&rarr; Graduating to Alumni</p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+                      <p className="text-xs font-semibold text-emerald-400 uppercase">Existing Alumni</p>
+                      <p className="text-2xl font-extrabold font-outfit text-foreground mt-1">
+                        {isRolloverLoading ? '...' : (rolloverCounts?.graduated ?? 0)}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">Historical records</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Rollover Action Configuration Card */}
+                <div className="p-5 rounded-2xl bg-muted/20 border border-border/80 space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-foreground font-outfit text-lg">
+                        Execute Annual Rollover Batch
+                      </h4>
+                      <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
+                        Specify the graduating class year. When executed, Year 4 students will be transitioned to graduated status with a dedicated graduate record, and Years 1-3 will be promoted simultaneously.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 shrink-0">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                          Graduation Year
+                        </label>
+                        <Input
+                          type="number"
+                          value={rolloverYear}
+                          onChange={(e) => setRolloverYear(Number(e.target.value))}
+                          min={2000}
+                          max={2100}
+                          className="w-32 bg-background border-border text-center font-bold text-sm h-10"
+                        />
+                      </div>
+
+                      <Button
+                        onClick={() => {
+                          setRolloverConfirmation('')
+                          setIsRolloverDialogOpen(true)
+                        }}
+                        disabled={isRolloverLoading || isExecutingRollover}
+                        className="mt-5 bg-gradient-to-r from-amber-500 to-primary hover:from-amber-600 hover:to-primary/90 text-white font-bold px-6 h-10 rounded-xl shadow-lg shadow-amber-500/20 cursor-pointer"
+                      >
+                        <GraduationCap className="w-4 h-4 mr-2" />
+                        Run Academic Rollover
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Safety Guarantees Notice */}
+                  <div className="p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-border/60 text-xs text-muted-foreground space-y-1.5">
+                    <p className="font-bold text-foreground flex items-center gap-1.5">
+                      <Shield className="w-4 h-4 text-primary" />
+                      Atomic Execution &amp; Idempotency Guarantees
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 pl-1">
+                      <li>Promotions occur simultaneously via database-level atomic transitions (no duplicate promotion bug).</li>
+                      <li>Year 4 students have their <code className="text-primary">status</code> set to <code className="text-primary">&apos;graduated&apos;</code> and <code className="text-primary">current_level</code> set to <code className="text-primary">NULL</code>.</li>
+                      <li>Existing student records, authentication IDs, quiz history, achievements, and coins are 100% preserved.</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Rollover Result Alert */}
+                {rolloverResult && (
+                  <Alert className="bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
+                    <CheckCircle className="w-5 h-5 text-emerald-500" />
+                    <AlertTitle className="font-bold text-base">Rollover Batch Successfully Completed!</AlertTitle>
+                    <AlertDescription className="text-xs space-y-1 mt-1 text-foreground/80">
+                      <p>&bull; Graduated Year 4 Students: <strong className="text-foreground">{rolloverResult.graduated_count}</strong> (Class of {rolloverResult.graduation_year})</p>
+                      <p>&bull; Promoted Year 3 &rarr; Year 4: <strong className="text-foreground">{rolloverResult.promoted_to_year4}</strong></p>
+                      <p>&bull; Promoted Year 2 &rarr; Year 3: <strong className="text-foreground">{rolloverResult.promoted_to_year3}</strong></p>
+                      <p>&bull; Promoted Year 1 &rarr; Year 2: <strong className="text-foreground">{rolloverResult.promoted_to_year2}</strong></p>
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </TabsContent>
       </Tabs>
 
       {/* Edit User Dialog */}
@@ -2795,6 +3030,68 @@ export default function AdminDashboardClient({
                 </>
               ) : (
                 'Confirm & Apply'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Academic Rollover Confirmation Dialog */}
+      <Dialog open={isRolloverDialogOpen} onOpenChange={setIsRolloverDialogOpen}>
+        <DialogContent className="bg-background/95 border-border max-w-md shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-amber-500 font-outfit text-xl">
+              <AlertTriangle className="w-5 h-5" />
+              Confirm Academic Rollover
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              You are about to promote all active students and graduate Year 4 students into Chameleon Alumni for Class of {rolloverYear}.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <Alert className="bg-amber-500/10 border-amber-500/30 text-xs">
+              <AlertCircle className="w-4 h-4 text-amber-500" />
+              <AlertTitle className="font-bold text-amber-500">Critical Academic Operation</AlertTitle>
+              <AlertDescription className="mt-1 text-muted-foreground">
+                This will promote {rolloverCounts?.totalStudents ?? 0} active students and graduate {rolloverCounts?.year4 ?? 0} seniors.
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-foreground">
+                Type <span className="font-mono font-bold text-primary">ROLLOVER</span> to confirm:
+              </label>
+              <Input
+                value={rolloverConfirmation}
+                onChange={(e) => setRolloverConfirmation(e.target.value)}
+                placeholder="ROLLOVER"
+                className="font-mono text-center uppercase tracking-widest text-sm"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsRolloverDialogOpen(false)}
+              disabled={isExecutingRollover}
+              className="border-border text-xs"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleExecuteRollover}
+              disabled={rolloverConfirmation !== 'ROLLOVER' || isExecutingRollover}
+              className="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs"
+            >
+              {isExecutingRollover ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Executing Rollover...
+                </>
+              ) : (
+                'Confirm & Execute Rollover'
               )}
             </Button>
           </DialogFooter>

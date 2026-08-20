@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
         specialization: userData.specialization,
         age: userData.age,
         current_level: userData.current_level,
+        status: userData.status || 'student',
         is_admin: userData.is_admin || false,
         is_banned: userData.is_banned || false,
         email: userData.email,

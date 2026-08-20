@@ -6,7 +6,8 @@ export interface StudentUser {
   phone_number: string
   specialization: string
   age: number
-  current_level: number
+  current_level: number | null
+  status?: 'student' | 'graduated'
   is_admin: boolean
   is_banned: boolean
   created_at: string
@@ -122,11 +123,22 @@ export async function getStudentSession(forceRefresh = false): Promise<StudentUs
       }
 
       // Fetch fresh user data from chameleons table — select ONLY needed columns to minimize egress
-      const { data: userData, error: dbError } = await supabase
+      let { data: userData, error: dbError } = await supabase
         .from('chameleons')
-        .select('auth_id, username, phone_number, specialization, age, current_level, is_admin, is_banned, created_at, profile_image, email, coins, ai_credits, inventory, Registrations, is_super_admin')
+        .select('auth_id, username, phone_number, specialization, age, current_level, status, is_admin, is_banned, created_at, profile_image, email, coins, ai_credits, inventory, Registrations, is_super_admin')
         .eq('auth_id', user.id)
         .single()
+
+      // Graceful fallback if status column has not yet been migrated
+      if (dbError && dbError.message?.includes('status')) {
+        const fallbackRes = await supabase
+          .from('chameleons')
+          .select('auth_id, username, phone_number, specialization, age, current_level, is_admin, is_banned, created_at, profile_image, email, coins, ai_credits, inventory, Registrations, is_super_admin')
+          .eq('auth_id', user.id)
+          .single()
+        userData = fallbackRes.data
+        dbError = fallbackRes.error
+      }
 
       if (dbError || !userData) {
         clearSessionCache()
@@ -139,6 +151,8 @@ export async function getStudentSession(forceRefresh = false): Promise<StudentUs
         return null
       }
 
+      const userStatus: 'student' | 'graduated' = (userData as any).status || (userData.current_level === null ? 'graduated' : 'student')
+
       const sessionData: StudentUser = {
         auth_id: userData.auth_id,
         username: userData.username,
@@ -146,6 +160,7 @@ export async function getStudentSession(forceRefresh = false): Promise<StudentUs
         specialization: userData.specialization,
         age: userData.age,
         current_level: userData.current_level,
+        status: userStatus,
         is_admin: userData.is_admin,
         is_banned: userData.is_banned,
         created_at: userData.created_at,

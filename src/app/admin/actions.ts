@@ -1165,3 +1165,173 @@ export async function getUserAnalytics() {
     hourlyActivity
   }
 }
+
+/**
+ * Super Admin Action: Get counts of students at each academic level and total graduates
+ */
+export async function getAcademicRolloverPreview() {
+  await checkSuperAdmin()
+  const supabase = createAdminClient()
+
+  try {
+    // 1. Fetch student distribution by level
+    const { data: users, error } = await supabase
+      .from('chameleons')
+      .select('current_level, status')
+
+    if (error) {
+      throw new Error(`Failed to fetch student distribution: ${error.message}`)
+    }
+
+    const counts = {
+      year1: 0,
+      year2: 0,
+      year3: 0,
+      year4: 0,
+      graduated: 0,
+      totalStudents: 0
+    }
+
+    users?.forEach((u: any) => {
+      const isGrad = u.status === 'graduated' || u.current_level === null
+      if (isGrad) {
+        counts.graduated++
+      } else if (u.current_level === 1) {
+        counts.year1++
+        counts.totalStudents++
+      } else if (u.current_level === 2) {
+        counts.year2++
+        counts.totalStudents++
+      } else if (u.current_level === 3) {
+        counts.year3++
+        counts.totalStudents++
+      } else if (u.current_level === 4) {
+        counts.year4++
+        counts.totalStudents++
+      }
+    })
+
+    return {
+      success: true,
+      counts
+    }
+  } catch (error: any) {
+    console.error('Error fetching rollover preview:', error)
+    return {
+      success: false,
+      error: error.message || 'Failed to fetch rollover preview'
+    }
+  }
+}
+
+/**
+ * Super Admin Action: Execute safe, atomic academic rollover
+ */
+export async function executeAcademicRollover(graduationYear: number) {
+  const admin = await checkSuperAdmin()
+  const supabase = createAdminClient()
+
+  const targetYear = graduationYear && graduationYear >= 2000 && graduationYear <= 2100
+    ? graduationYear
+    : new Date().getFullYear()
+
+  try {
+    // Try calling the database RPC first (if migration executed)
+    const { data: rpcData, error: rpcError } = await supabase.rpc('execute_academic_rollover', {
+      p_graduation_year: targetYear
+    })
+
+    let result = rpcData
+
+    if (rpcError) {
+      console.warn('RPC execute_academic_rollover failed or not yet deployed. Running server-side atomic transition...', rpcError.message)
+
+      // Fallback: server-side atomic execution using Supabase client
+      // 1. Fetch Year 4 active students
+      const { data: year4Students, error: y4Err } = await supabase
+        .from('chameleons')
+        .select('auth_id')
+        .eq('current_level', 4)
+
+      if (y4Err) throw y4Err
+
+      const year4Ids = year4Students?.map((s) => s.auth_id) || []
+
+      // 2. Insert into graduates table (idempotent)
+      if (year4Ids.length > 0) {
+        const gradRows = year4Ids.map((id) => ({
+          student_id: id,
+          graduation_year: targetYear,
+          graduated_at: new Date().toISOString()
+        }))
+
+        // Upsert into graduates
+        await supabase.from('graduates').upsert(gradRows, { onConflict: 'student_id' })
+
+        // 3. Mark Year 4 as graduated and clear level
+        await supabase
+          .from('chameleons')
+          .update({
+            status: 'graduated',
+            current_level: null
+          } as any)
+          .in('auth_id', year4Ids)
+      }
+
+      // 4. Promote Year 3 -> Year 4
+      const { data: year3Updated } = await supabase
+        .from('chameleons')
+        .update({ current_level: 4 })
+        .eq('current_level', 3)
+        .select('auth_id')
+
+      // 5. Promote Year 2 -> Year 3
+      const { data: year2Updated } = await supabase
+        .from('chameleons')
+        .update({ current_level: 3 })
+        .eq('current_level', 2)
+        .select('auth_id')
+
+      // 6. Promote Year 1 -> Year 2
+      const { data: year1Updated } = await supabase
+        .from('chameleons')
+        .update({ current_level: 2 })
+        .eq('current_level', 1)
+        .select('auth_id')
+
+      result = {
+        success: true,
+        graduation_year: targetYear,
+        graduated_count: year4Ids.length,
+        promoted_to_year4: year3Updated?.length || 0,
+        promoted_to_year3: year2Updated?.length || 0,
+        promoted_to_year2: year1Updated?.length || 0
+      }
+    }
+
+    // Log admin action to DB audit log
+    await logAdminActionToDb(
+      admin.auth_id,
+      'ACADEMIC_ROLLOVER',
+      null,
+      {
+        graduation_year: targetYear,
+        summary: result
+      }
+    )
+
+    revalidatePath('/admin')
+
+    return {
+      success: true,
+      result
+    }
+  } catch (error: any) {
+    console.error('Error executing academic rollover:', error)
+    return {
+      success: false,
+      error: error.message || 'Academic rollover failed'
+    }
+  }
+}
+

@@ -6,7 +6,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { Moon, Sun, Menu, X, LogIn, UserPlus,BookMarked, BrainCircuit, SquareUserRound, LogOut, Home, HelpCircle, ChevronDown, ShoppingBag, BookOpen } from "lucide-react"
+import { Moon, Sun, Menu, X, LogIn, UserPlus, BookMarked, BrainCircuit, SquareUserRound, LogOut, Home, HelpCircle, ChevronDown, ShoppingBag, BookOpen, GraduationCap } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { getStudentSession } from "@/lib/auth"
@@ -571,7 +571,14 @@ export default function Navigation() {
                             </div>
                           )}
                         </AvatarBorder>
-                        <span>{formatTAName(user.username, user.current_level)}</span>
+                        <div className="flex items-center gap-2">
+                          <span>{formatTAName(user.username, user.current_level)}</span>
+                          {(user.status === 'graduated' || user.current_level === null) && (
+                            <span className="text-[10px] bg-amber-500/10 text-amber-500 border border-amber-500/30 px-1.5 py-0.5 rounded font-bold inline-flex items-center gap-1">
+                              <GraduationCap className="w-3 h-3" /> Alumni
+                            </span>
+                          )}
+                        </div>
                       </Link>
                       <Button
                         onClick={() => {

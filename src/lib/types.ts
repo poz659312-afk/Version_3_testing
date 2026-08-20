@@ -1,10 +1,19 @@
+export type UserStatus = 'student' | 'graduated'
+
+export interface Graduate {
+  student_id: string
+  graduation_year: number
+  graduated_at: string
+}
+
 export interface User {
   auth_id: string
   username: string
   phone_number: string
   specialization: string
   age: number
-  current_level: number
+  current_level: number | null
+  status?: UserStatus
   is_admin: boolean
   is_banned: boolean
   created_at: string

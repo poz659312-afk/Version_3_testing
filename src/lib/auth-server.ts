@@ -18,15 +18,34 @@ export const getServerStudentSession = cache(async (): Promise<StudentUser | nul
     }
     const user = session.user;
 
-    const { data: userData, error: dbError } = await supabase
+    let userData: any = null;
+    let dbError: any = null;
+
+    const res = await supabase
       .from('chameleons')
-      .select('auth_id, username, phone_number, specialization, age, current_level, is_admin, is_banned, created_at, profile_image, email, coins, inventory, Registrations, is_super_admin')
+      .select('auth_id, username, phone_number, specialization, age, current_level, status, is_admin, is_banned, created_at, profile_image, email, coins, inventory, Registrations, is_super_admin')
       .eq('auth_id', user.id)
       .single();
+
+    userData = res.data;
+    dbError = res.error;
+
+    // Fallback if status column is not yet present
+    if (dbError && dbError.message?.includes('status')) {
+      const fallbackRes = await supabase
+        .from('chameleons')
+        .select('auth_id, username, phone_number, specialization, age, current_level, is_admin, is_banned, created_at, profile_image, email, coins, inventory, Registrations, is_super_admin')
+        .eq('auth_id', user.id)
+        .single();
+      userData = fallbackRes.data;
+      dbError = fallbackRes.error;
+    }
 
     if (dbError || !userData) {
       return null;
     }
+
+    const userStatus: 'student' | 'graduated' = (userData as any).status || (userData.current_level === null ? 'graduated' : 'student');
 
     return {
       auth_id: userData.auth_id,
@@ -35,6 +54,7 @@ export const getServerStudentSession = cache(async (): Promise<StudentUser | nul
       specialization: userData.specialization,
       age: userData.age,
       current_level: userData.current_level,
+      status: userStatus,
       is_admin: userData.is_admin,
       is_banned: userData.is_banned,
       created_at: userData.created_at,
