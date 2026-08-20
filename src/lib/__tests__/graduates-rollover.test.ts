@@ -193,6 +193,72 @@ export function runGraduatesSystemTests(): { passed: number; failed: number; err
   }
   assert(newStudent.status === 'student' && newStudent.current_level === 1, 'New student initializes with status="student" and current_level=1')
 
+  // --- Test 8: Super Admin 3-Factor Owner Security Verification ---
+  console.log('\nTesting 3-Factor Super Admin Owner Security Authentication...')
+  
+  function testValidateAuth(auth?: { nationalId: string; birthDate: string; monitorType: string }) {
+    if (!auth) throw new Error('Missing auth')
+    const cleanId = (auth.nationalId || '').replace(/\D/g, '')
+    if (cleanId !== '30506070202714') throw new Error('Invalid National ID')
+
+    const cleanDate = (auth.birthDate || '').trim().toLowerCase()
+    const isMatchDate =
+      cleanDate === '2005-06-07' ||
+      cleanDate === '7/6/2005' ||
+      cleanDate === '07/06/2005' ||
+      cleanDate === '7-6-2005' ||
+      cleanDate === '07-06-2005' ||
+      cleanDate === '2005/06/07' ||
+      cleanDate === '2005/6/7' ||
+      (cleanDate.includes('2005') && (cleanDate.includes('6') || cleanDate.includes('06') || cleanDate.includes('يونيو') || cleanDate.includes('june')) && (cleanDate.includes('7') || cleanDate.includes('07')))
+    if (!isMatchDate) throw new Error('Invalid Birth Date')
+
+    const cleanMonitor = (auth.monitorType || '').trim().toUpperCase()
+    if (cleanMonitor !== 'AOC') throw new Error('Invalid Monitor Screen Brand')
+    return true
+  }
+
+  // 8.1: Valid credentials
+  assert(
+    testValidateAuth({ nationalId: '30506070202714', birthDate: '7 يونيو 2005', monitorType: 'AOC' }) === true,
+    'Valid Owner credentials with Arabic birthdate must pass'
+  )
+  assert(
+    testValidateAuth({ nationalId: '30506070202714', birthDate: '2005-06-07', monitorType: 'aoc' }) === true,
+    'Valid Owner credentials with ISO date and lowercase monitor must pass'
+  )
+  assert(
+    testValidateAuth({ nationalId: '30506070202714', birthDate: '7/6/2005', monitorType: 'Aoc' }) === true,
+    'Valid Owner credentials with slash date must pass'
+  )
+
+  // 8.2: Invalid National ID
+  let failedId = false
+  try {
+    testValidateAuth({ nationalId: '12345678901234', birthDate: '2005-06-07', monitorType: 'AOC' })
+  } catch {
+    failedId = true
+  }
+  assert(failedId, 'Wrong National ID must be rejected')
+
+  // 8.3: Invalid Birth Date
+  let failedDate = false
+  try {
+    testValidateAuth({ nationalId: '30506070202714', birthDate: '2004-01-01', monitorType: 'AOC' })
+  } catch {
+    failedDate = true
+  }
+  assert(failedDate, 'Wrong Birth Date must be rejected')
+
+  // 8.4: Invalid Monitor Brand
+  let failedMonitor = false
+  try {
+    testValidateAuth({ nationalId: '30506070202714', birthDate: '2005-06-07', monitorType: 'Samsung' })
+  } catch {
+    failedMonitor = true
+  }
+  assert(failedMonitor, 'Wrong Monitor Screen must be rejected')
+
   return { passed, failed, errors }
 }
 

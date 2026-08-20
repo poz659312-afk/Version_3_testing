@@ -1166,6 +1166,48 @@ export async function getUserAnalytics() {
   }
 }
 
+export interface OwnerSecurityAuth {
+  nationalId: string
+  birthDate: string
+  monitorType: string
+}
+
+function validateOwnerSecurityCredentials(auth?: OwnerSecurityAuth) {
+  if (!auth) {
+    throw new Error('Super Admin Security Authentication credentials required.')
+  }
+
+  // 1. National ID validation: 30506070202714
+  const cleanId = (auth.nationalId || '').replace(/\D/g, '')
+  if (cleanId !== '30506070202714') {
+    throw new Error('Verification Failed: Invalid National ID (الرقم القومي غير مطابق).')
+  }
+
+  // 2. Birthdate validation: 7 June 2005 / 2005-06-07 / 7/6/2005
+  const cleanDate = (auth.birthDate || '').trim().toLowerCase()
+  const isMatchDate =
+    cleanDate === '2005-06-07' ||
+    cleanDate === '7/6/2005' ||
+    cleanDate === '07/06/2005' ||
+    cleanDate === '7-6-2005' ||
+    cleanDate === '07-06-2005' ||
+    cleanDate === '2005/06/07' ||
+    cleanDate === '2005/6/7' ||
+    (cleanDate.includes('2005') && (cleanDate.includes('6') || cleanDate.includes('06') || cleanDate.includes('يونيو') || cleanDate.includes('june')) && (cleanDate.includes('7') || cleanDate.includes('07')))
+
+  if (!isMatchDate) {
+    throw new Error('Verification Failed: Invalid Birth Date (تاريخ الميلاد غير مطابق).')
+  }
+
+  // 3. Monitor type validation: AOC (case-insensitive)
+  const cleanMonitor = (auth.monitorType || '').trim().toUpperCase()
+  if (cleanMonitor !== 'AOC') {
+    throw new Error('Verification Failed: Invalid Computer Monitor Type (نوع الشاشة غير مطابق).')
+  }
+
+  return true
+}
+
 /**
  * Super Admin Action: Get counts of students at each academic level and total graduates
  */
@@ -1174,46 +1216,54 @@ export async function getAcademicRolloverPreview() {
   const supabase = createAdminClient()
 
   try {
-    // 1. Fetch student distribution by level
-    const { data: users, error } = await supabase
-      .from('chameleons')
-      .select('current_level, status')
+    // Run exact count queries across all levels and statuses to bypass row limits completely
+    const [y1Res, y2Res, y3Res, y4Res, gradRes, gradTableRes] = await Promise.all([
+      supabase
+        .from('chameleons')
+        .select('*', { count: 'exact', head: true })
+        .eq('current_level', 1)
+        .or('status.is.null,status.neq.graduated'),
+      supabase
+        .from('chameleons')
+        .select('*', { count: 'exact', head: true })
+        .eq('current_level', 2)
+        .or('status.is.null,status.neq.graduated'),
+      supabase
+        .from('chameleons')
+        .select('*', { count: 'exact', head: true })
+        .eq('current_level', 3)
+        .or('status.is.null,status.neq.graduated'),
+      supabase
+        .from('chameleons')
+        .select('*', { count: 'exact', head: true })
+        .eq('current_level', 4)
+        .or('status.is.null,status.neq.graduated'),
+      supabase
+        .from('chameleons')
+        .select('*', { count: 'exact', head: true })
+        .or('status.eq.graduated,current_level.is.null'),
+      supabase
+        .from('graduates')
+        .select('*', { count: 'exact', head: true })
+    ])
 
-    if (error) {
-      throw new Error(`Failed to fetch student distribution: ${error.message}`)
-    }
-
-    const counts = {
-      year1: 0,
-      year2: 0,
-      year3: 0,
-      year4: 0,
-      graduated: 0,
-      totalStudents: 0
-    }
-
-    users?.forEach((u: any) => {
-      const isGrad = u.status === 'graduated' || u.current_level === null
-      if (isGrad) {
-        counts.graduated++
-      } else if (u.current_level === 1) {
-        counts.year1++
-        counts.totalStudents++
-      } else if (u.current_level === 2) {
-        counts.year2++
-        counts.totalStudents++
-      } else if (u.current_level === 3) {
-        counts.year3++
-        counts.totalStudents++
-      } else if (u.current_level === 4) {
-        counts.year4++
-        counts.totalStudents++
-      }
-    })
+    const year1 = y1Res.count ?? 0
+    const year2 = y2Res.count ?? 0
+    const year3 = y3Res.count ?? 0
+    const year4 = y4Res.count ?? 0
+    const graduated = Math.max(gradRes.count ?? 0, gradTableRes.count ?? 0)
+    const totalStudents = year1 + year2 + year3 + year4
 
     return {
       success: true,
-      counts
+      counts: {
+        year1,
+        year2,
+        year3,
+        year4,
+        graduated,
+        totalStudents
+      }
     }
   } catch (error: any) {
     console.error('Error fetching rollover preview:', error)
@@ -1225,11 +1275,17 @@ export async function getAcademicRolloverPreview() {
 }
 
 /**
- * Super Admin Action: Execute safe, atomic academic rollover
+ * Super Admin Action: Execute safe, atomic academic rollover with 3-factor security verification
  */
-export async function executeAcademicRollover(graduationYear: number) {
+export async function executeAcademicRollover(
+  graduationYear: number,
+  securityAuth?: OwnerSecurityAuth
+) {
   const admin = await checkSuperAdmin()
   const supabase = createAdminClient()
+
+  // 1. Strict Owner 3-Factor Security Challenge Validation
+  validateOwnerSecurityCredentials(securityAuth)
 
   const targetYear = graduationYear && graduationYear >= 2000 && graduationYear <= 2100
     ? graduationYear
@@ -1316,7 +1372,8 @@ export async function executeAcademicRollover(graduationYear: number) {
       null,
       {
         graduation_year: targetYear,
-        summary: result
+        summary: result,
+        security_verified: true
       }
     )
 

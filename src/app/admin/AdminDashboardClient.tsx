@@ -42,7 +42,12 @@ import {
   Users,
   Clock,
   AlertCircle,
-  GraduationCap
+  GraduationCap,
+  KeyRound,
+  Fingerprint,
+  Monitor,
+  Lock,
+  ShieldAlert
 } from 'lucide-react'
 import { 
   updateUserProfile, 
@@ -56,7 +61,8 @@ import {
   insertQuizToDb,
   getUserAnalytics,
   getAcademicRolloverPreview,
-  executeAcademicRollover
+  executeAcademicRollover,
+  OwnerSecurityAuth
 } from './actions'
 import {
   ResponsiveContainer,
@@ -235,7 +241,7 @@ export default function AdminDashboardClient({
       fix?: string
     }>
   } | null>(null)
-  // Academic Rollover States
+  // Academic Rollover States & 3-Factor Owner Security Authentication
   const [rolloverCounts, setRolloverCounts] = useState<{
     year1: number
     year2: number
@@ -248,6 +254,10 @@ export default function AdminDashboardClient({
   const [isExecutingRollover, setIsExecutingRollover] = useState(false)
   const [rolloverYear, setRolloverYear] = useState<number>(new Date().getFullYear())
   const [rolloverConfirmation, setRolloverConfirmation] = useState('')
+  const [ownerNationalId, setOwnerNationalId] = useState('')
+  const [ownerBirthDate, setOwnerBirthDate] = useState('')
+  const [ownerMonitorType, setOwnerMonitorType] = useState('')
+  const [securityError, setSecurityError] = useState<string | null>(null)
   const [isRolloverDialogOpen, setIsRolloverDialogOpen] = useState(false)
   const [rolloverResult, setRolloverResult] = useState<any | null>(null)
 
@@ -268,25 +278,58 @@ export default function AdminDashboardClient({
   }
 
   const handleExecuteRollover = async () => {
+    setSecurityError(null)
+
+    // 1. Client-Side Pre-Validation for Super Admin Questions
+    const cleanId = ownerNationalId.replace(/\D/g, '')
+    if (!cleanId) {
+      setSecurityError('يرجى إدخال الرقم القومي الخاص بك كمالك للمنصة.')
+      toast.error('يرجى إدخال الرقم القومي لمالك المنصة.')
+      return
+    }
+
+    if (!ownerBirthDate.trim()) {
+      setSecurityError('يرجى إدخال تاريخ ميلادك للمطابقة الأمنية.')
+      toast.error('يرجى إدخال تاريخ الميلاد.')
+      return
+    }
+
+    if (!ownerMonitorType.trim()) {
+      setSecurityError('يرجى إدخال نوع شاشة الكمبيوتر الخاص بك.')
+      toast.error('يرجى إدخال نوع شاشة الكمبيوتر.')
+      return
+    }
+
     if (rolloverConfirmation !== 'ROLLOVER') {
+      setSecurityError('يرجى كتابة كلمة ROLLOVER بالأحرف الإنجليزية الكبيرة.')
       toast.error('Please type ROLLOVER to confirm this critical operation.')
       return
     }
 
     setIsExecutingRollover(true)
     try {
-      const res = await executeAcademicRollover(rolloverYear)
+      const res = await executeAcademicRollover(rolloverYear, {
+        nationalId: ownerNationalId,
+        birthDate: ownerBirthDate,
+        monitorType: ownerMonitorType
+      })
       if (res.success && res.result) {
         setRolloverResult(res.result)
-        toast.success(`Academic Rollover for Class of ${rolloverYear} completed successfully!`)
+        toast.success(`تم تنفيذ التدوير الأكاديمي بنجاح لدفعة ${rolloverYear}!`)
         setIsRolloverDialogOpen(false)
         setRolloverConfirmation('')
+        setOwnerNationalId('')
+        setOwnerBirthDate('')
+        setOwnerMonitorType('')
+        setSecurityError(null)
         loadRolloverPreview()
         router.refresh()
       } else {
+        setSecurityError(res.error || 'فشل التحقق الأمني أو تنفيذ التدوير.')
         toast.error(res.error || 'Failed to execute academic rollover.')
       }
     } catch (err: any) {
+      setSecurityError(err.message || 'فشل التحقق الأمني.')
       toast.error(err.message || 'Failed to execute academic rollover.')
     } finally {
       setIsExecutingRollover(false)
@@ -3036,62 +3079,156 @@ export default function AdminDashboardClient({
         </DialogContent>
       </Dialog>
 
-      {/* Academic Rollover Confirmation Dialog */}
-      <Dialog open={isRolloverDialogOpen} onOpenChange={setIsRolloverDialogOpen}>
-        <DialogContent className="bg-background/95 border-border max-w-md shadow-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-amber-500 font-outfit text-xl">
-              <AlertTriangle className="w-5 h-5" />
-              Confirm Academic Rollover
-            </DialogTitle>
-            <DialogDescription className="text-xs">
-              You are about to promote all active students and graduate Year 4 students into Chameleon Alumni for Class of {rolloverYear}.
+      {/* Academic Rollover 3-Factor Owner Security Verification Dialog */}
+      <Dialog 
+        open={isRolloverDialogOpen} 
+        onOpenChange={(open) => {
+          if (!open && !isExecutingRollover) {
+            setIsRolloverDialogOpen(false)
+            setSecurityError(null)
+          }
+        }}
+      >
+        <DialogContent className="bg-background/95 border-border max-w-lg shadow-2xl overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-500 via-amber-500 to-primary animate-pulse" />
+
+          <DialogHeader className="pt-2">
+            <div className="flex items-center gap-2.5 text-amber-500 font-outfit text-xl font-bold">
+              <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-500">
+                <ShieldAlert className="w-6 h-6" />
+              </div>
+              <div>
+                <DialogTitle className="text-lg font-bold text-foreground">
+                  Super Admin Security Challenge
+                </DialogTitle>
+                <p className="text-xs text-amber-500 font-semibold font-mono">
+                  Owner Identity Protocol &bull; 3-Factor Verification
+                </p>
+              </div>
+            </div>
+            <DialogDescription className="text-xs text-muted-foreground pt-1.5 leading-relaxed">
+              عملية التدوير الأكاديمي (<span className="font-mono text-foreground font-semibold">Academic Rollover</span>) لدفعة <strong className="text-primary">{rolloverYear}</strong> عملية حرجة تؤثر على جميع الطلاب. يتطلب إتمامها إثبات هويتك كمالك للمنصة عبر الإجابة على أسئلة الأمان أدناه.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
-            <Alert className="bg-amber-500/10 border-amber-500/30 text-xs">
-              <AlertCircle className="w-4 h-4 text-amber-500" />
-              <AlertTitle className="font-bold text-amber-500">Critical Academic Operation</AlertTitle>
-              <AlertDescription className="mt-1 text-muted-foreground">
-                This will promote {rolloverCounts?.totalStudents ?? 0} active students and graduate {rolloverCounts?.year4 ?? 0} seniors.
-              </AlertDescription>
-            </Alert>
+            {/* Impact Summary Badge */}
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-semibold">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>إجمالي الطلاب المتأثرين بالتدوير:</span>
+              </div>
+              <span className="font-bold text-foreground font-mono bg-background px-2 py-0.5 rounded border border-border">
+                {rolloverCounts?.totalStudents ?? 0} طالب + {rolloverCounts?.year4 ?? 0} خريج
+              </span>
+            </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-foreground">
-                Type <span className="font-mono font-bold text-primary">ROLLOVER</span> to confirm:
+            {/* Error Message if security verification fails */}
+            {securityError && (
+              <Alert variant="destructive" className="py-2 text-xs">
+                <AlertCircle className="w-4 h-4" />
+                <AlertDescription className="font-semibold">
+                  {securityError}
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* 3-Factor Security Questions Form */}
+            <div className="space-y-3 p-3.5 rounded-xl bg-muted/30 border border-border/70 text-xs">
+              {/* Question 1: National ID */}
+              <div className="space-y-1">
+                <label className="font-bold text-foreground flex items-center gap-1.5">
+                  <KeyRound className="w-3.5 h-3.5 text-primary" />
+                  <span>1. الرقم القومي لمالك الموقع (National ID):</span>
+                </label>
+                <Input
+                  type="password"
+                  value={ownerNationalId}
+                  onChange={(e) => setOwnerNationalId(e.target.value)}
+                  placeholder="أدخل الـ 14 رقماً للرقم القومي"
+                  className="font-mono text-xs bg-background h-9"
+                  autoComplete="off"
+                />
+              </div>
+
+              {/* Question 2: Birth Date */}
+              <div className="space-y-1">
+                <label className="font-bold text-foreground flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-amber-500" />
+                  <span>2. تاريخ ميلادك (Date of Birth):</span>
+                </label>
+                <Input
+                  type="text"
+                  value={ownerBirthDate}
+                  onChange={(e) => setOwnerBirthDate(e.target.value)}
+                  placeholder="مثال: 7 يونيو 2005 أو 2005-06-07 أو 7/6/2005"
+                  className="text-xs bg-background h-9"
+                  autoComplete="off"
+                />
+              </div>
+
+              {/* Question 3: Monitor Screen Brand */}
+              <div className="space-y-1">
+                <label className="font-bold text-foreground flex items-center gap-1.5">
+                  <Monitor className="w-3.5 h-3.5 text-purple-500" />
+                  <span>3. نوع شاشة الكمبيوتر الخاص بك (Hardware Display):</span>
+                </label>
+                <Input
+                  type="text"
+                  value={ownerMonitorType}
+                  onChange={(e) => setOwnerMonitorType(e.target.value)}
+                  placeholder="مثال: AOC"
+                  className="font-mono uppercase text-xs bg-background h-9"
+                  autoComplete="off"
+                />
+              </div>
+            </div>
+
+            {/* Final Confirmation Word */}
+            <div className="space-y-1.5 pt-1">
+              <label className="text-xs font-bold text-foreground flex items-center justify-between">
+                <span>اكتب كلمة <span className="font-mono font-black text-primary">ROLLOVER</span> لتأكيد الأمر:</span>
+                <Lock className="w-3 h-3 text-muted-foreground" />
               </label>
               <Input
                 value={rolloverConfirmation}
                 onChange={(e) => setRolloverConfirmation(e.target.value)}
                 placeholder="ROLLOVER"
-                className="font-mono text-center uppercase tracking-widest text-sm"
+                className="font-mono text-center uppercase tracking-widest text-sm font-bold bg-background h-9 border-amber-500/40 focus-visible:border-amber-500"
               />
             </div>
           </div>
 
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 pt-2 border-t border-border/60">
             <Button
               variant="outline"
-              onClick={() => setIsRolloverDialogOpen(false)}
+              onClick={() => {
+                setIsRolloverDialogOpen(false)
+                setSecurityError(null)
+              }}
               disabled={isExecutingRollover}
-              className="border-border text-xs"
+              className="border-border text-xs cursor-pointer"
             >
-              Cancel
+              إلغاء
             </Button>
             <Button
               onClick={handleExecuteRollover}
-              disabled={rolloverConfirmation !== 'ROLLOVER' || isExecutingRollover}
-              className="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs"
+              disabled={
+                !ownerNationalId.trim() ||
+                !ownerBirthDate.trim() ||
+                !ownerMonitorType.trim() ||
+                rolloverConfirmation !== 'ROLLOVER' ||
+                isExecutingRollover
+              }
+              className="bg-gradient-to-r from-red-600 via-amber-600 to-amber-500 hover:from-red-700 hover:to-amber-600 text-white font-bold text-xs shadow-md cursor-pointer"
             >
               {isExecutingRollover ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Executing Rollover...
+                  جاري التحقق الأمني وتنفيذ التدوير...
                 </>
               ) : (
-                'Confirm & Execute Rollover'
+                'التحقق من الهوية وتنفيذ التدوير الأكاديمي'
               )}
             </Button>
           </DialogFooter>
