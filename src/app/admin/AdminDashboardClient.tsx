@@ -283,26 +283,26 @@ export default function AdminDashboardClient({
     // 1. Client-Side Pre-Validation for Super Admin Questions
     const cleanId = ownerNationalId.replace(/\D/g, '')
     if (!cleanId) {
-      setSecurityError('يرجى إدخال الرقم القومي الخاص بك كمالك للمنصة.')
-      toast.error('يرجى إدخال الرقم القومي لمالك المنصة.')
+      setSecurityError('Please enter your 14-digit Owner National ID.')
+      toast.error('Owner National ID is required.')
       return
     }
 
     if (!ownerBirthDate.trim()) {
-      setSecurityError('يرجى إدخال تاريخ ميلادك للمطابقة الأمنية.')
-      toast.error('يرجى إدخال تاريخ الميلاد.')
+      setSecurityError('Please enter your Date of Birth.')
+      toast.error('Date of Birth is required.')
       return
     }
 
     if (!ownerMonitorType.trim()) {
-      setSecurityError('يرجى إدخال نوع شاشة الكمبيوتر الخاص بك.')
-      toast.error('يرجى إدخال نوع شاشة الكمبيوتر.')
+      setSecurityError('Please enter your Computer Monitor Brand / Type.')
+      toast.error('Computer Monitor Brand is required.')
       return
     }
 
     if (rolloverConfirmation !== 'ROLLOVER') {
-      setSecurityError('يرجى كتابة كلمة ROLLOVER بالأحرف الإنجليزية الكبيرة.')
-      toast.error('Please type ROLLOVER to confirm this critical operation.')
+      setSecurityError('Please type ROLLOVER to confirm this critical operation.')
+      toast.error('Please type ROLLOVER in uppercase.')
       return
     }
 
@@ -315,7 +315,7 @@ export default function AdminDashboardClient({
       })
       if (res.success && res.result) {
         setRolloverResult(res.result)
-        toast.success(`تم تنفيذ التدوير الأكاديمي بنجاح لدفعة ${rolloverYear}!`)
+        toast.success(`Academic Rollover for Class of ${rolloverYear} completed successfully!`)
         setIsRolloverDialogOpen(false)
         setRolloverConfirmation('')
         setOwnerNationalId('')
@@ -325,11 +325,11 @@ export default function AdminDashboardClient({
         loadRolloverPreview()
         router.refresh()
       } else {
-        setSecurityError(res.error || 'فشل التحقق الأمني أو تنفيذ التدوير.')
+        setSecurityError(res.error || 'Security verification failed or rollover aborted.')
         toast.error(res.error || 'Failed to execute academic rollover.')
       }
     } catch (err: any) {
-      setSecurityError(err.message || 'فشل التحقق الأمني.')
+      setSecurityError(err.message || 'Security verification failed.')
       toast.error(err.message || 'Failed to execute academic rollover.')
     } finally {
       setIsExecutingRollover(false)
@@ -3107,7 +3107,7 @@ export default function AdminDashboardClient({
               </div>
             </div>
             <DialogDescription className="text-xs text-muted-foreground pt-1.5 leading-relaxed">
-              عملية التدوير الأكاديمي (<span className="font-mono text-foreground font-semibold">Academic Rollover</span>) لدفعة <strong className="text-primary">{rolloverYear}</strong> عملية حرجة تؤثر على جميع الطلاب. يتطلب إتمامها إثبات هويتك كمالك للمنصة عبر الإجابة على أسئلة الأمان أدناه.
+              Executing the Academic Rollover batch for Class of <strong className="text-primary">{rolloverYear}</strong> is a critical, irreversible operation. To proceed, please provide your 3 Super Admin identity credentials below.
             </DialogDescription>
           </DialogHeader>
 
@@ -3116,10 +3116,10 @@ export default function AdminDashboardClient({
             <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-between text-xs">
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-semibold">
                 <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>إجمالي الطلاب المتأثرين بالتدوير:</span>
+                <span>Total Impacted Students:</span>
               </div>
               <span className="font-bold text-foreground font-mono bg-background px-2 py-0.5 rounded border border-border">
-                {rolloverCounts?.totalStudents ?? 0} طالب + {rolloverCounts?.year4 ?? 0} خريج
+                {rolloverCounts?.totalStudents ?? 0} Active &bull; {rolloverCounts?.year4 ?? 0} Graduates
               </span>
             </div>
 
@@ -3134,18 +3134,17 @@ export default function AdminDashboardClient({
             )}
 
             {/* 3-Factor Security Questions Form */}
-            <div className="space-y-3 p-3.5 rounded-xl bg-muted/30 border border-border/70 text-xs">
+            <div className="space-y-3.5 p-3.5 rounded-xl bg-muted/30 border border-border/70 text-xs">
               {/* Question 1: National ID */}
               <div className="space-y-1">
                 <label className="font-bold text-foreground flex items-center gap-1.5">
                   <KeyRound className="w-3.5 h-3.5 text-primary" />
-                  <span>1. الرقم القومي لمالك الموقع (National ID):</span>
+                  <span>1. Owner National ID</span>
                 </label>
                 <Input
                   type="password"
                   value={ownerNationalId}
                   onChange={(e) => setOwnerNationalId(e.target.value)}
-                  placeholder="أدخل الـ 14 رقماً للرقم القومي"
                   className="font-mono text-xs bg-background h-9"
                   autoComplete="off"
                 />
@@ -3155,13 +3154,12 @@ export default function AdminDashboardClient({
               <div className="space-y-1">
                 <label className="font-bold text-foreground flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-amber-500" />
-                  <span>2. تاريخ ميلادك (Date of Birth):</span>
+                  <span>2. Owner Date of Birth</span>
                 </label>
                 <Input
                   type="text"
                   value={ownerBirthDate}
                   onChange={(e) => setOwnerBirthDate(e.target.value)}
-                  placeholder="مثال: 7 يونيو 2005 أو 2005-06-07 أو 7/6/2005"
                   className="text-xs bg-background h-9"
                   autoComplete="off"
                 />
@@ -3171,13 +3169,12 @@ export default function AdminDashboardClient({
               <div className="space-y-1">
                 <label className="font-bold text-foreground flex items-center gap-1.5">
                   <Monitor className="w-3.5 h-3.5 text-purple-500" />
-                  <span>3. نوع شاشة الكمبيوتر الخاص بك (Hardware Display):</span>
+                  <span>3. Owner Computer Monitor Brand / Model</span>
                 </label>
                 <Input
                   type="text"
                   value={ownerMonitorType}
                   onChange={(e) => setOwnerMonitorType(e.target.value)}
-                  placeholder="مثال: AOC"
                   className="font-mono uppercase text-xs bg-background h-9"
                   autoComplete="off"
                 />
@@ -3187,14 +3184,14 @@ export default function AdminDashboardClient({
             {/* Final Confirmation Word */}
             <div className="space-y-1.5 pt-1">
               <label className="text-xs font-bold text-foreground flex items-center justify-between">
-                <span>اكتب كلمة <span className="font-mono font-black text-primary">ROLLOVER</span> لتأكيد الأمر:</span>
+                <span>Type <span className="font-mono font-black text-primary">ROLLOVER</span> to confirm:</span>
                 <Lock className="w-3 h-3 text-muted-foreground" />
               </label>
               <Input
                 value={rolloverConfirmation}
                 onChange={(e) => setRolloverConfirmation(e.target.value)}
-                placeholder="ROLLOVER"
                 className="font-mono text-center uppercase tracking-widest text-sm font-bold bg-background h-9 border-amber-500/40 focus-visible:border-amber-500"
+                autoComplete="off"
               />
             </div>
           </div>
@@ -3209,7 +3206,7 @@ export default function AdminDashboardClient({
               disabled={isExecutingRollover}
               className="border-border text-xs cursor-pointer"
             >
-              إلغاء
+              Cancel
             </Button>
             <Button
               onClick={handleExecuteRollover}
@@ -3225,10 +3222,10 @@ export default function AdminDashboardClient({
               {isExecutingRollover ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  جاري التحقق الأمني وتنفيذ التدوير...
+                  Verifying Security &amp; Executing...
                 </>
               ) : (
-                'التحقق من الهوية وتنفيذ التدوير الأكاديمي'
+                'Verify Identity &amp; Execute Rollover'
               )}
             </Button>
           </DialogFooter>
