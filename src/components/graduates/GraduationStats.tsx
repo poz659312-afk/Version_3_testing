@@ -2,54 +2,32 @@
 
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { Award, BookOpen, CheckCircle, Flame, Star, TrendingUp, Trophy, Zap, Clock, Bookmark } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { BookOpen, Calendar, Flame, Zap } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 import { createBrowserClient } from "@/lib/supabase/client"
 
 interface GraduationStatsProps {
   authId: string
   coins?: number
+  createdAt?: string
 }
 
-export function GraduationStats({ authId, coins = 0 }: GraduationStatsProps) {
+export function GraduationStats({ authId, coins = 0, createdAt }: GraduationStatsProps) {
   const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState({
-    totalQuizzesTaken: 0,
-    averageScore: 0,
-    highestScore: 0,
-    perfectScores: 0,
-    departmentsExplored: 0,
-  })
+  const [totalQuizzes, setTotalQuizzes] = useState(0)
 
   useEffect(() => {
     async function loadGraduateStats() {
       try {
         const supabase = createBrowserClient()
         // Query user's quiz attempts history
-        const { data: attempts, error } = await supabase
+        const { count, error } = await supabase
           .from("quiz_department_history")
-          .select("score, questions_count, department_slug, quiz_code")
+          .select("id", { count: "exact", head: true })
           .eq("user_id", authId)
 
-        if (!error && attempts && attempts.length > 0) {
-          const totalAttempts = attempts.length
-          const totalPercentage = attempts.reduce((acc: number, curr: any) => {
-            const count = curr.questions_count || 1
-            const percentage = Math.min(100, Math.round(((curr.score || 0) / count) * 100))
-            return acc + percentage
-          }, 0)
-          const avg = Math.round(totalPercentage / totalAttempts)
-          const highest = Math.max(...attempts.map((a: any) => a.score || 0))
-          const perfect = attempts.filter((a: any) => (a.score || 0) >= (a.questions_count || 1)).length
-          const uniqueDepts = new Set(attempts.map((a: any) => a.department_slug)).size
-
-          setStats({
-            totalQuizzesTaken: totalAttempts,
-            averageScore: avg,
-            highestScore: highest,
-            perfectScores: perfect,
-            departmentsExplored: uniqueDepts || 1,
-          })
+        if (!error && count !== null) {
+          setTotalQuizzes(count)
         }
       } catch (err) {
         console.error("Failed to load graduate quiz stats:", err)
@@ -65,30 +43,36 @@ export function GraduationStats({ authId, coins = 0 }: GraduationStatsProps) {
     }
   }, [authId])
 
+  const formattedJoinDate = React.useMemo(() => {
+    if (!createdAt) return "Since Pioneer Days"
+    try {
+      const date = new Date(createdAt)
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    } catch {
+      return "Since Pioneer Days"
+    }
+  }, [createdAt])
+
   const statCards = [
     {
       title: "Quizzes Completed",
-      value: loading ? "..." : stats.totalQuizzesTaken.toString(),
+      value: loading ? "..." : totalQuizzes.toString(),
       description: "Throughout academic years",
       icon: BookOpen,
       color: "text-blue-500",
       bg: "bg-blue-500/10 border-blue-500/20",
     },
     {
-      title: "Average Score",
-      value: loading ? "..." : `${stats.averageScore}%`,
-      description: "Lifetime academic performance",
-      icon: TrendingUp,
+      title: "Member Since",
+      value: formattedJoinDate,
+      description: "Journey on Chameleon",
+      icon: Calendar,
       color: "text-emerald-500",
       bg: "bg-emerald-500/10 border-emerald-500/20",
-    },
-    {
-      title: "Perfect Scores",
-      value: loading ? "..." : stats.perfectScores.toString(),
-      description: "100% Mastery achievements",
-      icon: Trophy,
-      color: "text-amber-500",
-      bg: "bg-amber-500/10 border-amber-500/20",
     },
     {
       title: "Chameleon Coins",
@@ -114,7 +98,7 @@ export function GraduationStats({ authId, coins = 0 }: GraduationStatsProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {statCards.map((card, idx) => (
           <motion.div
             key={card.title}

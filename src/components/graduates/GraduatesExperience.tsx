@@ -55,6 +55,7 @@ export function GraduatesExperience({ user }: GraduatesExperienceProps) {
         <GraduationStats
           authId={user.auth_id}
           coins={user.coins || 0}
+          createdAt={user.created_at}
         />
 
         {/* Alumni Honors & Verified Badges */}
