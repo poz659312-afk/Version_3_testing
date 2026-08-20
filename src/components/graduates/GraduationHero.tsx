@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 
+import Image from "next/image"
+
 interface GraduationHeroProps {
   username: string
   graduationYear?: number | null
@@ -32,11 +34,45 @@ export function GraduationHero({
 
   return (
     <section className="relative overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24">
-      {/* Dynamic Background Effects */}
-      <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
+      {/* Dynamic Background Effects & Large Creative Graduated Mascot */}
+      <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden flex items-center justify-center">
         <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[450px] bg-gradient-to-tr from-amber-500/20 via-primary/20 to-purple-500/20 blur-[130px] rounded-full" />
         <div className="absolute top-1/3 -right-20 w-80 h-80 bg-primary/15 blur-[100px] rounded-full" />
         <div className="absolute bottom-0 -left-20 w-80 h-80 bg-amber-500/15 blur-[100px] rounded-full" />
+
+        {/* Large Semi-Transparent Floating Graduated Chameleon Mascot */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="relative w-[380px] sm:w-[540px] md:w-[700px] lg:w-[860px] h-[380px] sm:h-[540px] md:h-[700px] lg:h-[860px] select-none"
+        >
+          {/* Subtle Backlight Glow for the Mascot */}
+          <div className="absolute inset-0 bg-gradient-to-b from-amber-500/15 via-primary/10 to-transparent blur-[70px] rounded-full" />
+
+          <motion.div
+            animate={{
+              y: [-10, 10, -10],
+              rotate: [-1, 1, -1],
+              scale: [1, 1.02, 1],
+            }}
+            transition={{
+              duration: 9,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="w-full h-full relative"
+          >
+            <Image
+              src="/images/chameleon/19_chameleon_graduated.png"
+              alt="Chameleon Graduated Mascot"
+              fill
+              className="object-contain opacity-25 dark:opacity-20 drop-shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+              priority
+            />
+          </motion.div>
+        </motion.div>
+
         <div
           className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02]"
           style={{

@@ -2,22 +2,13 @@
 
 import React from "react"
 import { motion } from "framer-motion"
-import { Briefcase, BookOpen, Users, Compass, FileText, Sparkles, MessageSquare, ExternalLink, ArrowRight, Library, HeartHandshake } from "lucide-react"
+import { Users, Compass, ArrowRight, HeartHandshake } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
 export function AlumniResources() {
   const resources = [
-    {
-      title: "Alumni Knowledge Hub & Summaries",
-      description: "Access community-curated revision sheets, academic summaries, and comprehensive FCDS course references.",
-      link: "/summaries",
-      linkLabel: "Browse Summaries",
-      icon: Library,
-      color: "text-blue-500",
-      bg: "bg-blue-500/10",
-    },
     {
       title: "Graduate Study Spaces & Lounges",
       description: "Collaborate with fellow graduates, join technical group discussions, or study for certifications together.",
@@ -26,15 +17,6 @@ export function AlumniResources() {
       icon: Users,
       color: "text-purple-500",
       bg: "bg-purple-500/10",
-    },
-    {
-      title: "Post-Graduate Quizzes & Certs",
-      description: "Sharpen your skills, test your domain knowledge against advanced university question banks and earn badges.",
-      link: "/quiz",
-      linkLabel: "Explore Quizzes",
-      icon: BookOpen,
-      color: "text-emerald-500",
-      bg: "bg-emerald-500/10",
     },
     {
       title: "Junior Mentorship & Community",
