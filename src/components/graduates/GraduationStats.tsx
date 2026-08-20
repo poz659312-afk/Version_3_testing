@@ -20,15 +20,33 @@ export function GraduationStats({ authId, coins = 0, createdAt }: GraduationStat
     async function loadGraduateStats() {
       try {
         const supabase = createBrowserClient()
-        // Query user's quiz attempts history
-        const { count, error } = await supabase
-          .from("quiz_department_history")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", authId)
+        let totalCount = 0
 
-        if (!error && count !== null) {
-          setTotalQuizzes(count)
+        // 1. Primary quiz data table (used across Chameleon platform)
+        const { count: quizCount, error: quizError } = await supabase
+          .from("quiz_data")
+          .select("*", { count: "exact", head: true })
+          .eq("auth_id", authId)
+
+        if (!quizError && quizCount !== null) {
+          totalCount += quizCount
         }
+
+        // 2. Department quiz history table (fallback if department quizzes exist)
+        try {
+          const { count: deptCount, error: deptError } = await supabase
+            .from("quiz_department_history")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", authId)
+
+          if (!deptError && deptCount !== null) {
+            totalCount += deptCount
+          }
+        } catch {
+          // Optional table
+        }
+
+        setTotalQuizzes(totalCount)
       } catch (err) {
         console.error("Failed to load graduate quiz stats:", err)
       } finally {
