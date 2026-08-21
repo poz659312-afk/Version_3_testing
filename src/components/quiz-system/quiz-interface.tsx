@@ -2029,21 +2029,25 @@ export default function QuizInterface({
               {/* Glass reflection line */}
               <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
               
-              <CardHeader className="pt-12 pb-6 text-center text-foreground z-10 relative">
+              <CardHeader className="pt-10 pb-6 text-center text-foreground z-10 relative">
                 <motion.div
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 15 }}
-                  className="mx-auto mb-8 relative"
+                  initial={{ scale: 0, y: 30 }}
+                  animate={{ scale: 1, y: 0 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 220, damping: 18 }}
+                  className="mx-auto mb-6 relative flex items-center justify-center select-none"
                 >
-                  <div className="relative inline-flex items-center justify-center p-6 rounded-full bg-background border border-border/50 shadow-xl overflow-hidden group">
-                    {isPerfect ? (
-                      <Trophy className="w-20 h-20 md:w-28 md:h-28 text-primary drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
-                    ) : isPassing ? (
-                      <Award className="w-20 h-20 md:w-28 md:h-28 text-primary drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
-                    ) : (
-                      <Target className="w-20 h-20 md:w-28 md:h-28 text-muted-foreground/80 drop-shadow-md" />
-                    )}
+                  <div className="relative w-44 h-44 sm:w-52 sm:h-52 md:w-60 md:h-60 flex items-center justify-center">
+                    {/* Backlight Ambient Glow */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/25 via-primary/25 to-yellow-500/20 rounded-full blur-[45px] scale-90" />
+                    
+                    <Image
+                      src="/images/chameleon/16_chameleon_victory.png"
+                      alt="Chameleon Victory Mascot"
+                      width={240}
+                      height={240}
+                      className="w-full h-full object-contain drop-shadow-[0_15px_35px_rgba(0,0,0,0.25)] select-none transition-transform hover:scale-105 duration-300"
+                      priority
+                    />
 
                     {isPassing && (
                       <motion.div
@@ -2051,7 +2055,7 @@ export default function QuizInterface({
                         transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
                         className="absolute -top-2 -right-2 hidden sm:block"
                       >
-                        <Sparkles className="w-8 h-8 text-primary" />
+                        <Sparkles className="w-8 h-8 text-yellow-400 drop-shadow-md" />
                       </motion.div>
                     )}
                   </div>
