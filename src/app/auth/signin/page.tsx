@@ -134,8 +134,8 @@ export default function SignInPage() {
             <div className="w-[180px] h-[180px] flex items-center justify-center relative">
               <div className="absolute inset-0 bg-red-500/5 rounded-full blur-xl pointer-events-none" />
               <Image 
-                src="/images/chameleon/17_chameleon_contact_support.png" 
-                alt="Contact Support Mascot" 
+                src="/images/chameleon/21_chameleon_security_checker.png" 
+                alt="Security Checker Mascot" 
                 width={180} 
                 height={180} 
                 className="object-contain drop-shadow-[0_10px_25px_rgba(239,68,68,0.15)]"
