@@ -27,6 +27,11 @@ const Cursor = dynamic(
   { ssr: false }
 );
 
+const MarlineOnboardingTour = dynamic(
+  () => import("@/components/onboarding/MarlineOnboardingTour"),
+  { ssr: false }
+);
+
 // Inter as Geist Sans replacement
 const geistSans = Inter({
   subsets: ["latin"],
@@ -86,10 +91,10 @@ export const metadata: Metadata = {
 };
 
 // Ads toggle: Set to false to disable all ads across the site
-export const ENABLE_ADS = false;
+const ENABLE_ADS = false;
 
 // Cache toggle: Set to true to force a refresh for all users by disabling browser caching
-export const DISABLE_CACHE = false;
+const DISABLE_CACHE = false;
 
 export default function RootLayout({
   children,
@@ -130,6 +135,7 @@ export default function RootLayout({
                 <SmoothScrollProvider>
                   <MaintenanceGuard>
                     <Navigation />
+                    <MarlineOnboardingTour />
                     <Cursor />
                     {children}
                     <Toaster />
