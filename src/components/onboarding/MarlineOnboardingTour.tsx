@@ -1,8 +1,7 @@
 "use client"
 
-import React, { useState, useEffect, useRef, useCallback } from "react"
+import React, { useState, useEffect } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Sparkles,
@@ -13,33 +12,21 @@ import {
   ArrowRight,
   ArrowLeft,
   X,
-  CheckCircle2,
-  HelpCircle,
   Clock,
-  Compass,
-  Zap,
-  FolderOpen,
-  MessageSquare,
-  ShieldCheck,
   EyeOff,
-  Flame,
-  Star,
   Volume2,
   VolumeX,
-  Layers,
-  GraduationCap,
   Coins,
-  ChevronLeft,
-  Play,
-  RotateCcw,
-  Sparkle
+  Gift,
+  Check
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { getStudentSession } from "@/lib/auth"
+import { getStudentSession, StudentUser } from "@/lib/auth"
+import { createBrowserClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
 
 // ==========================================
-// Web Audio API Micro-Synthesizer (0 KB download, ultra-fast)
+// Lightweight Audio Synthesizer
 // ==========================================
 class SoundFX {
   private ctx: AudioContext | null = null
@@ -47,17 +34,14 @@ class SoundFX {
 
   constructor() {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("chameleon_tour_sound")
-      this.enabled = saved !== "false"
+      this.enabled = localStorage.getItem("chameleon_tour_sound") !== "false"
     }
   }
 
   private init() {
     if (!this.ctx && typeof window !== "undefined") {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-      if (AudioCtx) {
-        this.ctx = new AudioCtx()
-      }
+      if (AudioCtx) this.ctx = new AudioCtx()
     }
     if (this.ctx && this.ctx.state === "suspended") {
       this.ctx.resume().catch(() => {})
@@ -82,17 +66,15 @@ class SoundFX {
       const osc = this.ctx.createOscillator()
       const gain = this.ctx.createGain()
       osc.type = "sine"
-      osc.frequency.setValueAtTime(440, this.ctx.currentTime)
-      osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.08)
-      gain.gain.setValueAtTime(0.12, this.ctx.currentTime)
-      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08)
+      osc.frequency.setValueAtTime(480, this.ctx.currentTime)
+      osc.frequency.exponentialRampToValueAtTime(720, this.ctx.currentTime + 0.06)
+      gain.gain.setValueAtTime(0.1, this.ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.06)
       osc.connect(gain)
       gain.connect(this.ctx.destination)
       osc.start()
-      osc.stop(this.ctx.currentTime + 0.08)
-    } catch {
-      // Audio autoplay policy fallback
-    }
+      osc.stop(this.ctx.currentTime + 0.06)
+    } catch {}
   }
 
   playSuccess() {
@@ -101,19 +83,42 @@ class SoundFX {
       this.init()
       if (!this.ctx) return
       const now = this.ctx.currentTime
-      const notes = [523.25, 659.25, 783.99, 1046.5] // C5, E5, G5, C6 arpeggio
+      const notes = [523.25, 659.25, 783.99]
       notes.forEach((freq, i) => {
+        if (!this.ctx) return
+        const osc = this.ctx.createOscillator()
+        const gain = this.ctx.createGain()
+        osc.type = "sine"
+        osc.frequency.setValueAtTime(freq, now + i * 0.06)
+        gain.gain.setValueAtTime(0.12, now + i * 0.06)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.15)
+        osc.connect(gain)
+        gain.connect(this.ctx.destination)
+        osc.start(now + i * 0.06)
+        osc.stop(now + i * 0.06 + 0.15)
+      })
+    } catch {}
+  }
+
+  playCoins() {
+    if (!this.enabled) return
+    try {
+      this.init()
+      if (!this.ctx) return
+      const now = this.ctx.currentTime
+      const freqs = [1046.5, 1318.51, 1567.98, 2093.0]
+      freqs.forEach((freq, i) => {
         if (!this.ctx) return
         const osc = this.ctx.createOscillator()
         const gain = this.ctx.createGain()
         osc.type = "triangle"
         osc.frequency.setValueAtTime(freq, now + i * 0.07)
         gain.gain.setValueAtTime(0.15, now + i * 0.07)
-        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.18)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.2)
         osc.connect(gain)
         gain.connect(this.ctx.destination)
         osc.start(now + i * 0.07)
-        osc.stop(now + i * 0.07 + 0.18)
+        osc.stop(now + i * 0.07 + 0.2)
       })
     } catch {}
   }
@@ -122,105 +127,99 @@ class SoundFX {
 const sfx = new SoundFX()
 
 // ==========================================
-// Tour Step Definitions
+// Tour Step Definitions (Chameleon Gold Theme as Default)
 // ==========================================
 interface TourStep {
   id: number
   mascotImage: string
   mascotAlt: string
-  mascotMood: string
-  badge: string
-  badgeIcon: React.ElementType
-  themeGlow: string
-  accentColor: string
-  title: string
+  pillBadge: string
+  pillColor: string
+  title: (name: string) => string
   subtitle: string
   description: string
-  interactiveType: "timeline" | "drive-preview" | "mini-quiz" | "ai-prompts" | "celebration"
+  interactiveType: "cover" | "timeline" | "drive" | "quiz" | "ai" | "celebration"
 }
 
 const TOUR_STEPS: TourStep[] = [
   {
-    id: 1,
-    mascotImage: "/images/chameleon/02_chameleon_waving.png",
+    id: 0,
+    mascotImage: "/images/chameleon/02_chameleon_waving.webp",
     mascotAlt: "Marline Waving Welcome",
-    mascotMood: "👋 مرحباً يا بطل!",
-    badge: "بوابة الانطلاق",
-    badgeIcon: Sparkles,
-    themeGlow: "from-emerald-500/20 via-teal-500/10 to-primary/20",
-    accentColor: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
-    title: "أهلاً بك في Chameleon! مين إحنا ومن إمتى؟",
-    subtitle: "المجتمع التعليمي الأذكى لكلية الحاسبات والذكاء الاصطناعي",
+    pillBadge: "✨ WELCOME ABOARD",
+    pillColor: "bg-amber-500/15 text-amber-500 dark:text-amber-400 border-amber-500/30",
+    title: (name) => `WELCOME, ${name.toUpperCase()}!`,
+    subtitle: "Knowledge, Growth & Community at FCDS",
     description:
-      "إحنا المنصة الرسمية لمجتمع طلاب FCDS بجامعة الإسكندرية. انطلقنا سنة 2024 كفكرة طلابية لجمع كل المواد، السلايدات، والكويزات في مكان واحد متطور. واليوم نقدم لك تجربة مدعومة بالذكاء الاصطناعي وبمساعدتي أنا، مارلين 🦎!",
+      "Welcome to Chameleon — your complete digital campus companion. Take this quick 1-minute tour to discover your courses, quizzes, and AI tools!",
+    interactiveType: "cover"
+  },
+  {
+    id: 1,
+    mascotImage: "/images/chameleon/01_chameleon_front.webp",
+    mascotAlt: "Marline Front",
+    pillBadge: "🏛️ ABOUT CHAMELEON",
+    pillColor: "bg-amber-500/15 text-amber-500 dark:text-amber-400 border-amber-500/30",
+    title: () => "Who We Are & Our Story",
+    subtitle: "Faculty of Computer & Data Science (FCDS)",
+    description:
+      "Chameleon launched in 2024 as an Alexandria University student initiative to gather all academic lectures, sections, and study materials into one easy-to-use platform.",
     interactiveType: "timeline"
   },
   {
     id: 2,
-    mascotImage: "/images/chameleon/04_chameleon_reading.png",
+    mascotImage: "/images/chameleon/04_chameleon_reading.webp",
     mascotAlt: "Marline Reading Materials",
-    mascotMood: "📚 ماتيريال منظمة",
-    badge: "المكتبة الذكية",
-    badgeIcon: BookOpen,
-    themeGlow: "from-blue-500/20 via-cyan-500/10 to-primary/20",
-    accentColor: "text-blue-400 border-blue-500/30 bg-blue-500/10",
-    title: "إزاي توصل لموادك، الدرايف، والملخصات؟",
-    subtitle: "تصفح سريع لجميع التخصصات وسلايدات المحاضرات الرسمية",
+    pillBadge: "📚 COURSES & DRIVE",
+    pillColor: "bg-amber-500/15 text-amber-500 dark:text-amber-400 border-amber-500/30",
+    title: () => "Access Courses & Materials",
+    subtitle: "Official slides, past exams, and top summaries",
     description:
-      "تصفح التخصصات الستة (CDS, AI, CYS, MA, BA, HI). في صفحة كل مادة ستجد مستودع Google Drive للمحاضرات والسكاشن، بالإضافة للملخصات الحصرية المعتمدة التي أعدها أوائل الدفعة!",
-    interactiveType: "drive-preview"
+      "Explore the 6 specializations (CDS, AI, CYS, MA, BA, HI). Every course features organized Google Drive materials along with verified summaries prepared by top students.",
+    interactiveType: "drive"
   },
   {
     id: 3,
-    mascotImage: "/images/chameleon/09_chameleon_idea.png",
+    mascotImage: "/images/chameleon/09_chameleon_idea.webp",
     mascotAlt: "Marline Quiz Idea",
-    mascotMood: "💡 تحديات ذكية",
-    badge: "ساحة الكويزات",
-    badgeIcon: Trophy,
-    themeGlow: "from-amber-500/20 via-orange-500/10 to-primary/20",
-    accentColor: "text-amber-400 border-amber-500/30 bg-amber-500/10",
-    title: "الكويزات التفاعلية وتحديات الترتيب والعملات",
-    subtitle: "تدرّب على أسئلة الامتحانات وتصدر قائمة الأوائل",
+    pillBadge: "🏆 INTERACTIVE QUIZZES",
+    pillColor: "bg-amber-500/15 text-amber-500 dark:text-amber-400 border-amber-500/30",
+    title: () => "Quizzes & Competitive Ranking",
+    subtitle: "Adaptive tests with Instant or Traditional feedback",
     description:
-      "حل كويزات تفاعلية لكل شابتر، اختر بين التقييم الفوري أو التقليدي، واجمع كوينز كاميليون (Coins) مع كل نجاح لفتح ميزات حصرية والتصدر في ليدربورد الدفعة!",
-    interactiveType: "mini-quiz"
+      "Solve chapter-by-chapter quizzes, earn points towards the batch leaderboard on your first attempt, and collect Chameleon Coins for the store!",
+    interactiveType: "quiz"
   },
   {
     id: 4,
-    mascotImage: "/images/chameleon/05_chameleon_laptop.png",
+    mascotImage: "/images/chameleon/05_chameleon_laptop.webp",
     mascotAlt: "Marline Laptop AI",
-    mascotMood: "⚡ ذكاء اصطناعي 24/7",
-    badge: "مختبر الإنتاجية",
-    badgeIcon: BrainCircuit,
-    themeGlow: "from-purple-500/20 via-violet-500/10 to-primary/20",
-    accentColor: "text-purple-400 border-purple-500/30 bg-purple-500/10",
-    title: "مساعدك الذكي Marline & غرف المذاكرة",
-    subtitle: "أدوات مخصصة لمناهج كليتك تجعل دراستك أسرع",
+    pillBadge: "⚡ SMART ASSISTANT",
+    pillColor: "bg-amber-500/15 text-amber-500 dark:text-amber-400 border-amber-500/30",
+    title: () => "Marline AI & Study Spaces",
+    subtitle: "Intelligent tutoring, Pomodoro rooms & GPA calculator",
     description:
-      "تحدث مع Marline AI لشرح أي مسألة أو تلخيص الشباتر، واستمتع بغرف المذاكرة الجماعية (Study Spaces) مع زملائك، بالإضافة لحاسبة الـ GPA التراكمي المحدثة باللائحة!",
-    interactiveType: "ai-prompts"
+      "Use Marline AI to explain code and summarize chapters, collaborate with peers in Study Spaces, and track your cumulative GPA using official faculty formulas.",
+    interactiveType: "ai"
   },
   {
     id: 5,
-    mascotImage: "/images/chameleon/13_chameleon_celebrating.png",
+    mascotImage: "/images/chameleon/13_chameleon_celebrating.webp",
     mascotAlt: "Marline Celebrating",
-    mascotMood: "🎉 مبروك الانطلاق!",
-    badge: "التتويج والبداية",
-    badgeIcon: Rocket,
-    themeGlow: "from-emerald-500/25 via-primary/20 to-secondary/25",
-    accentColor: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
-    title: "أنت الآن جاهز لاكتساح رحلتك الأكاديمية! 🚀",
-    subtitle: "تم فتح ميزات الدليل ومكافأة البداية",
+    pillBadge: "🎁 WELCOME REWARD",
+    pillColor: "bg-amber-500/15 text-amber-500 dark:text-amber-400 border-amber-500/30",
+    title: () => "Claim 15,000 Welcome Coins! 🪙",
+    subtitle: "Your official starter gift to kick off the semester",
     description:
-      "تذكر أن هذا التوتوريال متاح لك خلال أول يومين فقط من إنشاء حسابك، ومارلين مستعد دائماً لمساعدتك عبر الزر العائم في أي وقت. انطلق واستمتع بتجربة دراسية لا مثيل لها!",
+      "Click the claim button below to deposit 15,000 Chameleon Coins straight into your account. You are now all set to excel. Have an amazing journey!",
     interactiveType: "celebration"
   }
 ]
 
 const STORAGE_KEYS = {
   PERMANENT_DISMISS: "chameleon_tour_permanent_dismiss",
-  FIRST_VISIT: "chameleon_first_visit",
-  LAST_STEP: "chameleon_tour_step"
+  LAST_STEP: "chameleon_tour_step",
+  COINS_CLAIMED: "chameleon_tour_15k_coins_claimed"
 }
 
 export default function MarlineOnboardingTour() {
@@ -230,12 +229,12 @@ export default function MarlineOnboardingTour() {
   const [isClient, setIsClient] = useState<boolean>(false)
   const [accountAgeHours, setAccountAgeHours] = useState<number>(0)
   const [isSoundOn, setIsSoundOn] = useState<boolean>(true)
+  const [currentUser, setCurrentUser] = useState<StudentUser | null>(null)
+  const [isClaimingCoins, setIsClaimingCoins] = useState<boolean>(false)
   
-  // Interactive widget states
-  const [activeTabDrive, setActiveTabDrive] = useState<"drive" | "summaries" | "specs">("drive")
+  // Interactive step mini-states
+  const [activeDriveTab, setActiveDriveTab] = useState<"drive" | "summaries" | "specs">("drive")
   const [quizSelected, setQuizSelected] = useState<number | null>(null)
-  const [quizAnswered, setQuizAnswered] = useState<boolean>(false)
-  const [marlineClicked, setMarlineClicked] = useState<number>(0)
 
   useEffect(() => {
     setIsClient(true)
@@ -246,36 +245,38 @@ export default function MarlineOnboardingTour() {
         const permanentlyDismissed = localStorage.getItem(STORAGE_KEYS.PERMANENT_DISMISS) === "true"
         if (permanentlyDismissed) {
           setIsEligible(false)
+          setIsOpen(false)
           return
         }
 
+        // Must be a logged-in student user
+        const session = await getStudentSession()
+        if (!session || !session.auth_id) {
+          // Unauthenticated visitors / guests do NOT see the onboarding tour
+          setIsEligible(false)
+          setIsOpen(false)
+          return
+        }
+
+        setCurrentUser(session)
+
         const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000 // 48 hours
         let isWithinTwoDays = false
-        let hoursOld = 0
 
-        const session = await getStudentSession()
-        if (session && session.created_at) {
+        if (session.created_at) {
           const createdAtTime = new Date(session.created_at).getTime()
           const ageMs = Date.now() - createdAtTime
-          hoursOld = Math.floor(ageMs / (1000 * 60 * 60))
+          const hoursOld = Math.max(0, Math.floor(ageMs / (1000 * 60 * 60)))
           setAccountAgeHours(hoursOld)
 
+          // Eligible only if account was created within the last 48 hours
           if (ageMs >= 0 && ageMs <= TWO_DAYS_MS) {
             isWithinTwoDays = true
           }
         } else {
-          let firstVisit = localStorage.getItem(STORAGE_KEYS.FIRST_VISIT)
-          if (!firstVisit) {
-            firstVisit = Date.now().toString()
-            localStorage.setItem(STORAGE_KEYS.FIRST_VISIT, firstVisit)
-          }
-          const ageMs = Date.now() - parseInt(firstVisit, 10)
-          hoursOld = Math.floor(ageMs / (1000 * 60 * 60))
-          setAccountAgeHours(hoursOld)
-
-          if (ageMs >= 0 && ageMs <= TWO_DAYS_MS) {
-            isWithinTwoDays = true
-          }
+          // New session without created_at is considered newly created
+          isWithinTwoDays = true
+          setAccountAgeHours(0)
         }
 
         if (isWithinTwoDays) {
@@ -290,7 +291,7 @@ export default function MarlineOnboardingTour() {
             const timer = setTimeout(() => {
               setIsOpen(true)
               sfx.playSuccess()
-            }, 1000)
+            }, 600)
             return () => clearTimeout(timer)
           }
         } else {
@@ -299,18 +300,41 @@ export default function MarlineOnboardingTour() {
         }
       } catch (err) {
         console.error("Error checking onboarding eligibility:", err)
+        setIsEligible(false)
+        setIsOpen(false)
       }
     }
 
     checkEligibility()
+
+    // Listen to custom auth state changes or window focus to re-check when user logs in
+    const handleAuthChange = () => checkEligibility()
+    window.addEventListener("chameleon_auth_change", handleAuthChange)
+    window.addEventListener("focus", handleAuthChange)
+
+    return () => {
+      window.removeEventListener("chameleon_auth_change", handleAuthChange)
+      window.removeEventListener("focus", handleAuthChange)
+    }
   }, [])
 
-  // Keyboard navigation support
+  // Lock background body scroll while modal is open
+  useEffect(() => {
+    if (isOpen) {
+      const prevOverflow = document.body.style.overflow
+      document.body.style.overflow = "hidden"
+      return () => {
+        document.body.style.overflow = prevOverflow
+      }
+    }
+  }, [isOpen])
+
+  // Keyboard navigation
   useEffect(() => {
     if (!isOpen) return
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") handleNext()
-      if (e.key === "ArrowRight") handlePrev()
+      if (e.key === "ArrowRight") handleNext()
+      if (e.key === "ArrowLeft") handlePrev()
       if (e.key === "Escape") handleMinimize()
     }
     window.addEventListener("keydown", handleKeyDown)
@@ -325,6 +349,7 @@ export default function MarlineOnboardingTour() {
   const isFirstStep = currentStep === 0
   const isLastStep = currentStep === TOUR_STEPS.length - 1
   const remainingHours = Math.max(0, 48 - accountAgeHours)
+  const userName = currentUser?.username ? currentUser.username.split(" ")[0] : "Chameleon"
 
   const handleNext = () => {
     sfx.playPop()
@@ -333,7 +358,7 @@ export default function MarlineOnboardingTour() {
       setCurrentStep(nextStep)
       localStorage.setItem(STORAGE_KEYS.LAST_STEP, nextStep.toString())
     } else {
-      handleCompleteTour()
+      handleClaimCoinsAndFinish()
     }
   }
 
@@ -358,16 +383,63 @@ export default function MarlineOnboardingTour() {
     sessionStorage.setItem("chameleon_tour_session_minimized", "true")
   }
 
-  const handleCompleteTour = () => {
-    sfx.playSuccess()
-    setIsOpen(false)
-    localStorage.setItem(STORAGE_KEYS.PERMANENT_DISMISS, "true")
-    setIsEligible(false)
+  const handleClaimCoinsAndFinish = async () => {
+    setIsClaimingCoins(true)
+    sfx.playCoins()
+
+    try {
+      const alreadyClaimed = localStorage.getItem(STORAGE_KEYS.COINS_CLAIMED) === "true"
+      
+      if (!alreadyClaimed) {
+        const supabase = createBrowserClient()
+        let user = currentUser
+        if (!user) {
+          user = await getStudentSession()
+        }
+
+        if (user && user.auth_id) {
+          const { data: dbUser } = await supabase
+            .from("chameleons")
+            .select("coins")
+            .eq("auth_id", user.auth_id)
+            .single()
+
+          const currentCoins = dbUser?.coins || 0
+          const updatedCoins = currentCoins + 15000
+
+          await supabase
+            .from("chameleons")
+            .update({ coins: updatedCoins })
+            .eq("auth_id", user.auth_id)
+
+          sessionStorage.removeItem("chameleon_user_cache")
+        }
+
+        localStorage.setItem(STORAGE_KEYS.COINS_CLAIMED, "true")
+      }
+
+      toast.success("🎉 Congrats! 15,000 Welcome Coins added to your account!", {
+        duration: 4500,
+      })
+
+      setTimeout(() => {
+        setIsOpen(false)
+        localStorage.setItem(STORAGE_KEYS.PERMANENT_DISMISS, "true")
+        setIsEligible(false)
+      }, 1200)
+    } catch (err) {
+      console.error("Error awarding welcome coins:", err)
+      setIsOpen(false)
+      localStorage.setItem(STORAGE_KEYS.PERMANENT_DISMISS, "true")
+      setIsEligible(false)
+    } finally {
+      setIsClaimingCoins(false)
+    }
   }
 
   const handlePermanentDismiss = () => {
     sfx.playPop()
-    if (window.confirm("هل أنت متأكد من إلغاء التوتوريال نهائياً؟ لن يظهر لك مجدداً.")) {
+    if (window.confirm("Are you sure you want to dismiss the tour? It will not appear again.")) {
       localStorage.setItem(STORAGE_KEYS.PERMANENT_DISMISS, "true")
       setIsOpen(false)
       setIsEligible(false)
@@ -380,442 +452,397 @@ export default function MarlineOnboardingTour() {
     if (state) sfx.playPop()
   }
 
-  const handleMarlineClick = () => {
-    sfx.playPop()
-    setMarlineClicked(prev => prev + 1)
-  }
-
   return (
     <>
       {/* ==========================================
-          Floating Pro-Max Mascot Widget (Minimized Mode)
+          Floating Trigger Pill (Chameleon Gold Theme)
           ========================================== */}
       {!isOpen && isEligible && (
         <motion.div
-          initial={{ scale: 0, opacity: 0, y: 30 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 22 }}
+          transition={{ duration: 0.2 }}
           className="fixed bottom-6 left-6 z-[999]"
-          dir="rtl"
+          dir="ltr"
         >
-          <div className="relative group">
-            {/* Ambient Multi-layer Pulsing Ring */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 via-primary to-secondary rounded-full blur-md opacity-70 group-hover:opacity-100 animate-pulse transition-opacity" />
-
-            <button
-              onClick={() => {
-                sfx.playSuccess()
-                setIsOpen(true)
-              }}
-              className="relative flex items-center gap-3.5 px-4 py-2.5 rounded-full bg-background/90 dark:bg-[#10131a]/95 text-foreground font-rubik shadow-[0_12px_35px_rgba(0,0,0,0.35)] hover:scale-105 active:scale-95 transition-all duration-300 border border-emerald-500/30 backdrop-blur-xl"
-              title="دليل المبتدئين التفاعلي"
-            >
-              {/* Animated Mascot Head with Reaction Ripple */}
-              <div className="relative w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-500/20 to-primary/20 border border-emerald-500/40 p-0.5 flex items-center justify-center shrink-0 overflow-hidden">
-                <Image
-                  src={stepData.mascotImage}
-                  alt="Marline Mascot"
-                  width={36}
-                  height={36}
-                  className="object-contain transform group-hover:scale-110 transition-transform duration-300"
-                />
-                <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-                <span className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400" />
-              </div>
-
-              {/* Text Meta Info */}
-              <div className="flex flex-col text-right">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-black tracking-tight text-foreground flex items-center gap-1">
-                    جولة Chameleon Pro
-                    <Sparkle className="w-3 h-3 text-amber-400 fill-amber-400 animate-spin" style={{ animationDuration: '6s' }} />
-                  </span>
-                  <Badge variant="outline" className="px-1.5 py-0 text-[10px] font-bold border-primary/30 bg-primary/10 text-primary">
-                    {currentStep + 1}/{TOUR_STEPS.length}
-                  </Badge>
-                </div>
-                <span className="text-[10px] text-muted-foreground font-medium flex items-center gap-1">
-                  <Clock className="w-2.5 h-2.5 text-amber-500" />
-                  متبقي {remainingHours} ساعة في فترة الترحيب
+          <button
+            onClick={() => {
+              sfx.playPop()
+              setIsOpen(true)
+            }}
+            className="flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-card border-2 border-amber-500/50 text-foreground font-sans shadow-lg hover:border-amber-500 hover:scale-105 active:scale-95 transition-all duration-200"
+          >
+            <div className="relative w-7 h-7 flex items-center justify-center shrink-0">
+              <Image
+                src={stepData.mascotImage}
+                alt="Marline Mascot"
+                width={32}
+                height={32}
+                className="object-contain"
+                priority
+              />
+            </div>
+            <div className="text-left">
+              <div className="flex items-center gap-1">
+                <span className="text-xs font-bold text-foreground">Chameleon Tour</span>
+                <span className="px-1.5 py-0.2 rounded-md bg-amber-500/20 text-amber-500 font-black text-[10px]">
+                  +15K 🪙
                 </span>
               </div>
-            </button>
-          </div>
+            </div>
+          </button>
         </motion.div>
       )}
 
       {/* ==========================================
-          Fullscreen Cyber-Glass Holographic Tour Modal
+          Creative Modal: Authenticated New Users Tour
           ========================================== */}
       <AnimatePresence>
         {isOpen && (
           <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 md:p-6 overflow-y-auto bg-black/80 backdrop-blur-xl selection:bg-emerald-500/30"
-            dir="rtl"
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-5 overflow-y-auto bg-black/65 backdrop-blur-sm"
+            dir="ltr"
           >
-            {/* Cinematic Radial Mesh Background */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={handleMinimize}
-              className="fixed inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-900/20 via-background/60 to-black/90 pointer-events-auto"
-            />
+            {/* Backdrop click to minimize */}
+            <div onClick={handleMinimize} className="fixed inset-0 z-0" />
 
-            {/* Glowing Ambient Light Orbs (Optimized CSS-only) */}
-            <div className="fixed top-1/4 right-1/4 w-80 h-80 bg-emerald-500/15 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse" />
-            <div className="fixed bottom-1/4 left-1/4 w-80 h-80 bg-primary/15 rounded-full blur-[140px] pointer-events-none -z-10 animate-pulse" style={{ animationDelay: "1.5s" }} />
+            {/* Main Window Outer Wrapper */}
+            <div className="relative z-10 w-full max-w-xl sm:max-w-2xl lg:max-w-[760px] my-auto py-6 sm:py-8 sm:pr-14 md:pr-20 overflow-visible">
 
-            {/* Modal Card Structure */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 30 }}
-              transition={{ type: "spring", duration: 0.45, bounce: 0.18 }}
-              className="relative z-10 w-full max-w-3xl bg-card/95 dark:bg-[#0e1118]/95 backdrop-blur-2xl border border-emerald-500/25 rounded-[2.5rem] shadow-[0_30px_90px_rgba(0,0,0,0.65)] overflow-hidden font-rubik flex flex-col max-h-[92vh] will-change-transform"
-            >
-              {/* Dynamic Neon Gradient Ambient Bar */}
-              <div className="h-1.5 w-full bg-gradient-to-r from-emerald-400 via-primary to-cyan-400 shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
-
-              {/* Header: Status, Mute & Dismiss Controls */}
-              <div className="px-6 py-3.5 flex items-center justify-between border-b border-border/40 bg-muted/20 backdrop-blur-md">
-                <div className="flex items-center gap-2.5">
-                  <Badge variant="outline" className={`px-3 py-1 rounded-full text-xs font-black flex items-center gap-1.5 ${stepData.accentColor}`}>
-                    <stepData.badgeIcon className="w-3.5 h-3.5" />
-                    <span>{stepData.badge}</span>
-                  </Badge>
-                  <span className="text-xs text-muted-foreground font-medium hidden sm:inline-block">
-                    مستوى الإتقان: <strong className="text-foreground">{Math.round(((currentStep + 1) / TOUR_STEPS.length) * 100)}%</strong>
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  {/* Sound Effect Toggle */}
-                  <button
-                    onClick={handleToggleSound}
-                    className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                    title={isSoundOn ? "كتم المؤثرات الصوتية" : "تشغيل المؤثرات الصوتية"}
+              {/* ------------------------------------------
+                  MASCOT OVERHANGING ON RIGHT
+                  Exits UP ⬆️ on slide change
+                  ------------------------------------------ */}
+              <div className="sm:absolute sm:-right-8 md:-right-10 lg:-right-12 sm:top-1/2 sm:-translate-y-1/2 z-30 flex flex-col items-center justify-center select-none pointer-events-none mb-3 sm:mb-0">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={`mascot-gold-theme-${currentStep}`}
+                    initial={{ opacity: 0, y: 35, scale: 0.92 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -55, scale: 0.92 }}
+                    transition={{ duration: 0.25, ease: [0.25, 1, 0.5, 1] }}
+                    className="flex flex-col items-center justify-center"
                   >
-                    {isSoundOn ? <Volume2 className="w-4 h-4 text-emerald-400" /> : <VolumeX className="w-4 h-4 text-muted-foreground" />}
-                  </button>
-
-                  {/* Permanent Dismiss */}
-                  <button
-                    onClick={handlePermanentDismiss}
-                    className="text-xs text-muted-foreground hover:text-red-400 transition-colors flex items-center gap-1 px-2.5 py-1.5 rounded-xl hover:bg-red-500/10 border border-transparent hover:border-red-500/20"
-                    title="إلغاء التوتوريال نهائياً"
-                  >
-                    <EyeOff className="w-3.5 h-3.5" />
-                    <span className="hidden md:inline">إلغاء التوتوريال</span>
-                  </button>
-
-                  {/* Minimize */}
-                  <button
-                    onClick={handleMinimize}
-                    className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-                    title="تصغير إلى الزر العائم"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Futuristic Stepper Progress Bar */}
-              <div className="px-6 py-2.5 bg-background/40 flex items-center justify-between gap-2 border-b border-border/30">
-                {TOUR_STEPS.map((step, idx) => (
-                  <button
-                    key={step.id}
-                    onClick={() => handleJumpToStep(idx)}
-                    className="flex-1 group py-1.5 focus:outline-none"
-                    title={`الخطوة ${idx + 1}: ${step.title}`}
-                  >
-                    <div className="flex flex-col gap-1 items-center">
-                      <div
-                        className={`h-1.5 w-full rounded-full transition-all duration-300 ${
-                          idx === currentStep
-                            ? "bg-gradient-to-r from-emerald-400 to-primary shadow-[0_0_12px_rgba(16,185,129,0.8)] scale-y-125"
-                            : idx < currentStep
-                            ? "bg-emerald-500/50"
-                            : "bg-muted/60 group-hover:bg-muted-foreground/30"
-                        }`}
-                      />
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              {/* Main Content Body */}
-              <div className="px-6 py-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
-                {/* Hero Mascot + Headline Section */}
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-                  {/* Interactive Mascot Hologram Avatar */}
-                  <div
-                    onClick={handleMarlineClick}
-                    className="relative shrink-0 flex items-center justify-center cursor-pointer group select-none"
-                    title="اضغط على مارلين للتحية! 🦎"
-                  >
-                    {/* Glowing Aura Ring */}
-                    <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/30 to-primary/30 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-300 animate-pulse" />
-                    
-                    <div className="relative w-36 h-36 sm:w-44 sm:h-44 p-3 rounded-3xl bg-gradient-to-b from-emerald-500/10 via-background/70 to-secondary/10 border border-emerald-500/30 shadow-inner flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105">
+                    {/* Full Height Mascot Overhanging */}
+                    <div className="relative w-44 h-44 sm:w-68 sm:h-68 md:w-80 md:h-80 lg:w-[370px] lg:h-[370px] flex items-center justify-center filter drop-shadow-[0_25px_50px_rgba(0,0,0,0.85)]">
                       <Image
                         src={stepData.mascotImage}
                         alt={stepData.mascotAlt}
-                        width={180}
-                        height={180}
-                        className="object-contain drop-shadow-[0_8px_25px_rgba(0,0,0,0.4)] transition-transform duration-300 group-hover:rotate-3"
+                        width={380}
+                        height={380}
+                        className="object-contain"
                         priority
                       />
-
-                      {/* Mascot Floating Mood Badge */}
-                      <div className="absolute bottom-2 inset-x-2 bg-background/90 dark:bg-[#121620]/90 backdrop-blur-md px-2 py-1 rounded-xl border border-emerald-500/30 text-center shadow-md">
-                        <span className="text-[11px] font-black text-emerald-400 flex items-center justify-center gap-1">
-                          {stepData.mascotMood}
-                        </span>
-                      </div>
                     </div>
-                  </div>
-
-                  {/* Step Headlines & Description */}
-                  <div className="space-y-2.5 text-center sm:text-right flex-1">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-muted/60 text-[11px] font-bold text-muted-foreground">
-                      <Sparkles className="w-3 h-3 text-amber-400" />
-                      محطة التعلم {currentStep + 1} من {TOUR_STEPS.length}
-                    </div>
-
-                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-foreground tracking-tight leading-snug">
-                      {stepData.title}
-                    </h3>
-                    <p className="text-sm font-bold text-emerald-400">
-                      {stepData.subtitle}
-                    </p>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {stepData.description}
-                    </p>
-                  </div>
-                </div>
-
-                {/* ==========================================
-                    Pro-Max Interactive Mini-Widgets per Step
-                    ========================================== */}
-                <div className="pt-2">
-                  {/* Step 1: Interactive Timeline Widget */}
-                  {stepData.interactiveType === "timeline" && (
-                    <div className="p-4 rounded-2xl bg-muted/30 border border-border/50 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div className="p-3 rounded-xl bg-background/60 border border-emerald-500/20 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-black text-emerald-400">2024</span>
-                          <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                        </div>
-                        <p className="text-xs font-bold text-foreground">انطلاق Chameleon</p>
-                        <p className="text-[10px] text-muted-foreground">تأسست لتلبية احتياجات طلاب حاسبات FCDS بجامعة الإسكندرية.</p>
-                      </div>
-
-                      <div className="p-3 rounded-xl bg-background/60 border border-primary/20 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-black text-primary">2025</span>
-                          <BrainCircuit className="w-3.5 h-3.5 text-primary" />
-                        </div>
-                        <p className="text-xs font-bold text-foreground">الكويزات وغرف المذاكرة</p>
-                        <p className="text-[10px] text-muted-foreground">تدشين بنوك الأسئلة الذكية وغرف المذاكرة Study Spaces.</p>
-                      </div>
-
-                      <div className="p-3 rounded-xl bg-background/60 border border-cyan-500/20 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-black text-cyan-400">2026</span>
-                          <Rocket className="w-3.5 h-3.5 text-cyan-400" />
-                        </div>
-                        <p className="text-xs font-bold text-foreground">الجيل الثالث المتكامل</p>
-                        <p className="text-[10px] text-muted-foreground">تكامل الذكاء الاصطناعي مع مارلين ومناهج الكلية الشاملة.</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 2: Interactive Drive & Library Selector */}
-                  {stepData.interactiveType === "drive-preview" && (
-                    <div className="p-4 rounded-2xl bg-muted/30 border border-border/50 space-y-3">
-                      <div className="flex items-center gap-2 p-1 bg-background/60 rounded-xl border border-border/50">
-                        <button
-                          onClick={() => { sfx.playPop(); setActiveTabDrive("drive") }}
-                          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                            activeTabDrive === "drive" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          📁 ملفات Google Drive
-                        </button>
-                        <button
-                          onClick={() => { sfx.playPop(); setActiveTabDrive("summaries") }}
-                          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                            activeTabDrive === "summaries" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          📝 الملخصات المعتمدة
-                        </button>
-                        <button
-                          onClick={() => { sfx.playPop(); setActiveTabDrive("specs") }}
-                          className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                            activeTabDrive === "specs" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-                          }`}
-                        >
-                          🏛️ التخصصات الستة
-                        </button>
-                      </div>
-
-                      <div className="text-xs text-muted-foreground leading-relaxed bg-background/40 p-3 rounded-xl border border-border/40">
-                        {activeTabDrive === "drive" && (
-                          <p className="flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                            <span>تصفح ملفات المحاضرات والسكاشن بصيغ PDF وسلايدات منظمة بدون الحاجة للبحث في قنوات التليجرام.</span>
-                          </p>
-                        )}
-                        {activeTabDrive === "summaries" && (
-                          <p className="flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                            <span>ملخصات مكثفة لكل شابتر ومراجعات ليلة الامتحان قام بإعدادها أفضل الطلاب وأوائل الدفعات السابقة.</span>
-                          </p>
-                        )}
-                        {activeTabDrive === "specs" && (
-                          <p className="flex items-center gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                            <span>تغطية كاملة لـ: علوم البيانات (CDS)، الذكاء الاصطناعي (AI)، الأمن السيبراني (CYS)، والمزيد!</span>
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 3: Interactive Mini-Quiz Experience */}
-                  {stepData.interactiveType === "mini-quiz" && (
-                    <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
-                          <Flame className="w-3.5 h-3.5 text-amber-400" />
-                          جرّب كويز تفاعلي سريع الآن:
-                        </span>
-                        {quizAnswered && (
-                          <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px]">
-                            +10 كوينز ترحيبية 🪙
-                          </Badge>
-                        )}
-                      </div>
-
-                      <p className="text-xs font-semibold text-foreground">
-                        ما هو الهدف الأساسي لمنصة Chameleon FCDS؟
-                      </p>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {[
-                          { id: 1, text: "توفير بيئة تعليمية ذكية وشاملة لطلاب الكلية", correct: true },
-                          { id: 2, text: "مجرد موقع لعرض الإعلانات", correct: false }
-                        ].map((opt) => (
-                          <button
-                            key={opt.id}
-                            onClick={() => {
-                              setQuizSelected(opt.id)
-                              setQuizAnswered(true)
-                              if (opt.correct) sfx.playSuccess()
-                              else sfx.playPop()
-                            }}
-                            className={`p-2.5 rounded-xl text-right text-xs font-medium border transition-all ${
-                              quizSelected === opt.id
-                                ? opt.correct
-                                  ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-bold"
-                                  : "bg-red-500/20 border-red-500 text-red-300"
-                                : "bg-background/60 border-border/60 hover:border-amber-500/40 text-foreground"
-                            }`}
-                          >
-                            {opt.text}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 4: AI Quick Prompt Chips */}
-                  {stepData.interactiveType === "ai-prompts" && (
-                    <div className="p-4 rounded-2xl bg-purple-500/5 border border-purple-500/20 space-y-2.5">
-                      <span className="text-xs font-bold text-purple-400 flex items-center gap-1.5">
-                        <BrainCircuit className="w-3.5 h-3.5" />
-                        أمثلة لما يمكن لمارلين مساعدتك به:
-                      </span>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          "💬 اشرحلي خوارزميات الـ Sorting بأسلوب مبسط",
-                          "📊 لخصلي أهم قوانين مادة الإحصاء",
-                          "🧮 احسبلي معدلي التراكمي وتوقعات التقدير",
-                          "🎧 فتح غرفة مذاكرة مع زملائي"
-                        ].map((prompt, i) => (
-                          <span
-                            key={i}
-                            className="px-3 py-1.5 rounded-xl bg-background/80 border border-purple-500/20 text-xs text-foreground/80 font-medium hover:border-purple-500/50 transition-colors cursor-default"
-                          >
-                            {prompt}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 5: Celebration & Welcome Rewards */}
-                  {stepData.interactiveType === "celebration" && (
-                    <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-primary/10 to-secondary/10 border border-emerald-500/30 text-center space-y-3">
-                      <div className="inline-flex items-center justify-center p-3 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 mb-1">
-                        <GraduationCap className="w-8 h-8" />
-                      </div>
-                      <h4 className="text-sm font-black text-foreground">
-                        تم تفعيل وسام &quot;المستكشف الجديد&quot; في ملفك الشخصي! 🌟
-                      </h4>
-                      <p className="text-xs text-muted-foreground max-w-md mx-auto">
-                        يمكنك الآن الانتقال لتصفح المواد، خوض أول كويز، أو التحدث مع مارلين. التوتوريال سيظل متاحاً لك كزر عائم لمدة يومين في حال أردت مراجعته.
-                      </p>
-                    </div>
-                  )}
-                </div>
+                  </motion.div>
+                </AnimatePresence>
               </div>
 
-              {/* Footer: Controls & Expiration Timer */}
-              <div className="px-6 py-4 bg-muted/30 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-3 backdrop-blur-md">
-                <div className="text-[11px] text-muted-foreground text-center sm:text-right flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>
-                    متاح لمدة يومين فقط (متبقي <strong className="text-foreground">{remainingHours} ساعة</strong> قبل الاختفاء التلقائي).
-                  </span>
-                </div>
+              {/* ------------------------------------------
+                  CARD WITH CHAMELEON GOLD THEME BORDERS & HIGHLIGHTS
+                  ------------------------------------------ */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+                className="relative z-20 w-full bg-card text-card-foreground border-2 border-amber-500/30 rounded-3xl sm:rounded-[2.4rem] shadow-2xl p-5 sm:p-7 md:p-8 font-sans overflow-hidden min-h-[360px] sm:min-h-[400px] flex flex-col justify-between"
+                style={{
+                  maskImage: "radial-gradient(circle 168px at calc(100% - 18px) 50%, transparent 167px, black 168px)",
+                  WebkitMaskImage: "radial-gradient(circle 168px at calc(100% - 18px) 50%, transparent 167px, black 168px)"
+                }}
+              >
+                {/* Continuous Gold/Theme Border Arc along the circular cutout */}
+                <div
+                  className="hidden sm:block absolute pointer-events-none rounded-full border-2 border-amber-500/30 z-30"
+                  style={{
+                    width: "336px",
+                    height: "336px",
+                    right: "calc(-168px + 18px)",
+                    top: "50%",
+                    transform: "translateY(-50%)"
+                  }}
+                />
 
-                <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                  {!isFirstStep && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handlePrev}
-                      className="rounded-xl px-4 text-xs font-bold flex items-center gap-1.5 border-border hover:bg-muted/60"
+                {/* Top Header Controls Bar */}
+                <div className="flex items-center justify-between gap-3 pb-3 mb-3 border-b border-border/60 max-w-full sm:max-w-[78%] md:max-w-[80%]">
+                  <div className="flex items-center gap-2.5">
+                    <span className={`px-3 py-1 rounded-full text-xs font-black tracking-wide border ${stepData.pillColor}`}>
+                      {stepData.pillBadge}
+                    </span>
+                    <span className="text-xs text-muted-foreground font-medium">
+                      Step {currentStep} of {TOUR_STEPS.length - 1}
+                    </span>
+                  </div>
+
+                  {/* Audio / Skip / Close Controls */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleToggleSound}
+                      className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                      title={isSoundOn ? "Mute audio" : "Unmute audio"}
                     >
-                      <ArrowRight className="w-3.5 h-3.5" />
-                      السابق
-                    </Button>
-                  )}
+                      {isSoundOn ? <Volume2 className="w-4 h-4 text-amber-500" /> : <VolumeX className="w-4 h-4" />}
+                    </button>
 
-                  <Button
-                    size="sm"
-                    onClick={handleNext}
-                    className="rounded-xl px-5 text-xs font-bold bg-gradient-to-r from-emerald-500 to-primary text-primary-foreground shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
-                  >
-                    {isLastStep ? (
-                      <>
-                        <span>إنهاء وبدء الاستكشاف 🚀</span>
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                      </>
-                    ) : (
-                      <>
-                        <span>التالي</span>
-                        <ArrowLeft className="w-3.5 h-3.5" />
-                      </>
-                    )}
-                  </Button>
+                    <button
+                      onClick={handlePermanentDismiss}
+                      className="text-xs text-muted-foreground hover:text-red-500 px-2.5 py-1 rounded-lg hover:bg-red-500/10 transition-colors font-medium"
+                    >
+                      <span className="hidden sm:inline">Skip Tour</span>
+                      <EyeOff className="w-3.5 h-3.5 sm:hidden" />
+                    </button>
+
+                    <button
+                      onClick={handleMinimize}
+                      className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                      title="Minimize"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
+
+                {/* Progress Dots Indicator */}
+                <div className="flex items-center justify-start gap-1.5 mb-4 max-w-full sm:max-w-[62%] md:max-w-[64%]">
+                  {TOUR_STEPS.map((step, idx) => (
+                    <button
+                      key={step.id}
+                      onClick={() => handleJumpToStep(idx)}
+                      className={`h-1.5 rounded-full transition-all duration-200 ${
+                        idx === currentStep
+                          ? "w-6 bg-amber-500 shadow-sm shadow-amber-500/30"
+                          : idx < currentStep
+                          ? "w-1.5 bg-amber-500/50"
+                          : "w-1.5 bg-muted hover:bg-muted-foreground/40"
+                      }`}
+                      title={`Step ${idx}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Content Area */}
+                <div className="w-full sm:max-w-[62%] md:max-w-[64%] min-h-[210px] sm:min-h-[230px] overflow-hidden flex flex-col justify-center">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`content-down-${currentStep}`}
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 30 }}
+                      transition={{ duration: 0.24, ease: [0.25, 1, 0.5, 1] }}
+                      className="space-y-3 text-left w-full"
+                    >
+                      <div className="space-y-1">
+                        <h3 className="text-xl sm:text-2xl font-black text-foreground tracking-tight font-outfit">
+                          {stepData.title(userName)}
+                        </h3>
+                        <p className="text-xs sm:text-sm font-bold text-amber-500 dark:text-amber-400">
+                          {stepData.subtitle}
+                        </p>
+                      </div>
+
+                      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                        {stepData.description}
+                      </p>
+
+                      {/* Interactive Widgets */}
+                      <div className="pt-1.5">
+                        {/* Slide 0: Cover Highlights */}
+                        {stepData.interactiveType === "cover" && (
+                          <div className="grid grid-cols-3 gap-2 pt-1">
+                            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+                              <span className="text-[11px] font-black text-amber-500 dark:text-amber-400 block">📚 6 Tracks</span>
+                              <span className="text-[9px] text-muted-foreground block">Full Drive</span>
+                            </div>
+                            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+                              <span className="text-[11px] font-black text-amber-600 dark:text-amber-400 block">🏆 Quizzes</span>
+                              <span className="text-[9px] text-muted-foreground block">Leaderboard</span>
+                            </div>
+                            <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-center">
+                              <span className="text-[11px] font-black text-purple-600 dark:text-purple-400 block">🤖 Marline</span>
+                              <span className="text-[9px] text-muted-foreground block">24/7 AI</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Slide 1: Timeline */}
+                        {stepData.interactiveType === "timeline" && (
+                          <div className="grid grid-cols-3 gap-2 text-center">
+                            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                              <span className="text-xs font-black text-amber-500 dark:text-amber-400 block">2024</span>
+                              <span className="text-[10px] font-bold text-foreground block">Launched</span>
+                            </div>
+                            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                              <span className="text-xs font-black text-amber-500 dark:text-amber-400 block">2025</span>
+                              <span className="text-[10px] font-bold text-foreground block">Drive & Quizzes</span>
+                            </div>
+                            <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                              <span className="text-xs font-black text-amber-500 dark:text-amber-400 block">2026</span>
+                              <span className="text-[10px] font-bold text-foreground block">AI & Spaces</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Slide 2: Drive Tabs */}
+                        {stepData.interactiveType === "drive" && (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-1.5 p-0.5 bg-muted/60 rounded-lg">
+                              <button
+                                onClick={() => { sfx.playPop(); setActiveDriveTab("drive") }}
+                                className={`flex-1 py-1.5 rounded-md text-xs font-bold transition-colors ${
+                                  activeDriveTab === "drive" ? "bg-background text-amber-500 shadow-sm" : "text-muted-foreground"
+                                }`}
+                              >
+                                📁 Google Drive
+                              </button>
+                              <button
+                                onClick={() => { sfx.playPop(); setActiveDriveTab("summaries") }}
+                                className={`flex-1 py-1.5 rounded-md text-xs font-bold transition-colors ${
+                                  activeDriveTab === "summaries" ? "bg-background text-amber-500 shadow-sm" : "text-muted-foreground"
+                                }`}
+                              >
+                                📝 Summaries
+                              </button>
+                              <button
+                                onClick={() => { sfx.playPop(); setActiveDriveTab("specs") }}
+                                className={`flex-1 py-1.5 rounded-md text-xs font-bold transition-colors ${
+                                  activeDriveTab === "specs" ? "bg-background text-amber-500 shadow-sm" : "text-muted-foreground"
+                                }`}
+                              >
+                                🏛️ 6 Majors
+                              </button>
+                            </div>
+                            <p className="text-xs text-muted-foreground bg-muted/30 p-2.5 rounded-xl border border-border/40">
+                              {activeDriveTab === "drive" && "Download lecture slides, assignments, and section PDFs directly."}
+                              {activeDriveTab === "summaries" && "Comprehensive exam reviews and summaries prepared by top alumni."}
+                              {activeDriveTab === "specs" && "Full tracks for Data Science, AI, Cybersecurity, Media, and more."}
+                            </p>
+                          </div>
+                        )}
+
+                        {/* Slide 3: Quiz Sample */}
+                        {stepData.interactiveType === "quiz" && (
+                          <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-2">
+                            <p className="text-xs font-bold text-foreground">
+                              What is the primary mission of Chameleon FCDS?
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                              {[
+                                { id: 1, text: "Provide a smart educational ecosystem for students", correct: true },
+                                { id: 2, text: "Just a generic static site", correct: false }
+                              ].map((opt) => (
+                                <button
+                                  key={opt.id}
+                                  onClick={() => {
+                                    setQuizSelected(opt.id)
+                                    if (opt.correct) sfx.playSuccess()
+                                    else sfx.playPop()
+                                  }}
+                                  className={`p-2 rounded-xl text-left text-xs font-medium border transition-colors ${
+                                    quizSelected === opt.id
+                                      ? opt.correct
+                                        ? "bg-amber-500/20 border-amber-500 text-amber-500 dark:text-amber-300 font-bold"
+                                        : "bg-red-500/20 border-red-500 text-red-600"
+                                      : "bg-background border-border hover:border-amber-400"
+                                  }`}
+                                >
+                                  {opt.text}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Slide 4: AI Prompt Chips */}
+                        {stepData.interactiveType === "ai" && (
+                          <div className="flex flex-wrap gap-1.5">
+                            {[
+                              "💬 Explain algorithms",
+                              "📊 Summarize chapters",
+                              "🧮 Calculate GPA",
+                              "🎧 Live study spaces"
+                            ].map((prompt, i) => (
+                              <span
+                                key={i}
+                                className="px-2.5 py-1 rounded-xl bg-muted/60 border border-border/60 text-[11px] text-foreground font-medium"
+                              >
+                                {prompt}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Slide 5: 15,000 Coins Reward */}
+                        {stepData.interactiveType === "celebration" && (
+                          <div className="p-3.5 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-between gap-3">
+                            <div className="text-left">
+                              <span className="text-sm sm:text-base font-black text-amber-500 block">
+                                +15,000 Chameleon Coins 🪙
+                              </span>
+                              <span className="text-[11px] text-muted-foreground block">
+                                Official welcome reward added directly to your balance
+                              </span>
+                            </div>
+                            <div className="p-2.5 rounded-full bg-amber-500/20 text-amber-500 shrink-0">
+                              <Coins className="w-6 h-6" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                {/* Footer Controls */}
+                <div className="flex items-center justify-between gap-2 pt-4 mt-4 border-t border-border/60 max-w-full sm:max-w-[62%] md:max-w-[64%]">
+                  <div className="text-[11px] text-muted-foreground flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5 text-amber-500" />
+                    <span>
+                      Available for 2 days ({remainingHours}h left).
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    {!isFirstStep && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handlePrev}
+                        className="rounded-full px-3.5 text-xs font-bold flex items-center gap-1 h-8"
+                      >
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        Back
+                      </Button>
+                    )}
+
+                    <Button
+                      size="sm"
+                      onClick={handleNext}
+                      disabled={isClaimingCoins}
+                      className="rounded-full px-4 text-xs font-black bg-amber-500 hover:bg-amber-600 text-black flex items-center gap-1.5 h-8 shadow-md shadow-amber-500/20"
+                    >
+                      {isFirstStep ? (
+                        <>
+                          <span>Start Tour</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </>
+                      ) : isLastStep ? (
+                        <>
+                          <Gift className="w-3.5 h-3.5" />
+                          <span>{isClaimingCoins ? "Depositing..." : "Claim Coins 🎉"}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Next</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
         )}
       </AnimatePresence>
