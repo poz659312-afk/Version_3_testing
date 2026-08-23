@@ -104,7 +104,17 @@ export default function ContributorDashboardClient({
   const subjectMenuRef = useRef<HTMLDivElement>(null)
   const folderMenuRef = useRef<HTMLDivElement>(null)
 
-  // Close menus on outside click
+  // Close menus on outside click & lock body scroll when upload modal is open
+  useEffect(() => {
+    if (isUploadOpen) {
+      const originalOverflow = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = originalOverflow || 'unset'
+      }
+    }
+  }, [isUploadOpen])
+
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (subjectMenuRef.current && !subjectMenuRef.current.contains(e.target as Node)) {
@@ -883,67 +893,76 @@ export default function ContributorDashboardClient({
                         <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-transform duration-200 ${isSubjectMenuOpen ? 'rotate-180 text-primary' : ''}`} />
                       </button>
 
-                      {/* Dropdown List */}
+                      {/* Inline Expandable Subject List */}
                       <AnimatePresence>
                         {isSubjectMenuOpen && (
                           <motion.div
-                            initial={{ opacity: 0, y: -4, scale: 0.98 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -4, scale: 0.98 }}
-                            transition={{ duration: 0.14 }}
-                            className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 rounded-2xl border-2 border-primary/30 bg-card/95 backdrop-blur-xl shadow-2xl p-2 space-y-1.5 max-h-52 flex flex-col"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2, ease: 'easeOut' }}
+                            className="overflow-hidden pt-1.5"
                           >
-                            {/* Search inside menu */}
-                            <div className="relative">
-                              <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                              <input
-                                type="text"
-                                value={subjectSearchQuery}
-                                onChange={(e) => setSubjectSearchQuery(e.target.value)}
-                                placeholder="Search subject..."
-                                className="w-full h-6 pl-6 pr-2 rounded-lg bg-muted/60 border border-border text-[11px] font-bold focus:outline-none focus:border-primary text-foreground placeholder:text-muted-foreground"
-                                autoFocus
-                              />
-                            </div>
+                            <div
+                              className="rounded-2xl border-2 border-primary/30 bg-muted/40 p-2 space-y-1.5 shadow-inner"
+                              onWheel={(e) => e.stopPropagation()}
+                              onTouchMove={(e) => e.stopPropagation()}
+                            >
+                              {/* Search inside menu */}
+                              <div className="relative">
+                                <Search className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                                <input
+                                  type="text"
+                                  value={subjectSearchQuery}
+                                  onChange={(e) => setSubjectSearchQuery(e.target.value)}
+                                  placeholder="Search subject..."
+                                  className="w-full h-6 pl-7 pr-2 rounded-lg bg-background border border-border text-[11px] font-bold focus:outline-none focus:border-primary text-foreground placeholder:text-muted-foreground"
+                                  autoFocus
+                                />
+                              </div>
 
-                            {/* List of items */}
-                            <div className="overflow-y-auto space-y-0.5 pr-1 scrollbar-thin max-h-36">
-                              {filteredSubjects.map(subj => (
-                                <button
-                                  key={subj}
-                                  type="button"
-                                  onClick={() => {
-                                    setUploadSubjectName(subj)
-                                    setIsSubjectMenuOpen(false)
-                                    setSubjectSearchQuery('')
-                                  }}
-                                  className={`w-full px-2 py-1 rounded-lg text-left text-[11px] font-bold transition-all flex items-center justify-between ${
-                                    uploadSubjectName === subj
-                                      ? 'bg-primary text-primary-foreground shadow-sm'
-                                      : 'hover:bg-primary/15 hover:text-primary text-foreground'
-                                  }`}
-                                >
-                                  <span className="truncate">{subj}</span>
-                                  {uploadSubjectName === subj && <Check className="w-3 h-3 ml-1 shrink-0" />}
-                                </button>
-                              ))}
-
-                              {filteredSubjects.length === 0 && (
-                                <div className="p-2 text-center text-xs text-muted-foreground space-y-1">
-                                  <span className="block text-[10px]">No subject matched &quot;{subjectSearchQuery}&quot;</span>
+                              {/* List of items with isolated scroll */}
+                              <div
+                                className="overflow-y-auto space-y-0.5 pr-1 scrollbar-thin max-h-36 overscroll-contain"
+                                onWheel={(e) => e.stopPropagation()}
+                              >
+                                {filteredSubjects.map(subj => (
                                   <button
+                                    key={subj}
                                     type="button"
                                     onClick={() => {
-                                      setUploadSubjectName(subjectSearchQuery.trim())
+                                      setUploadSubjectName(subj)
                                       setIsSubjectMenuOpen(false)
                                       setSubjectSearchQuery('')
                                     }}
-                                    className="px-2 py-0.5 rounded-md bg-primary text-primary-foreground font-black text-[10px]"
+                                    className={`w-full px-2 py-1.5 rounded-lg text-left text-[11px] font-bold transition-all flex items-center justify-between ${
+                                      uploadSubjectName === subj
+                                        ? 'bg-primary text-primary-foreground shadow-sm'
+                                        : 'hover:bg-primary/15 hover:text-primary text-foreground'
+                                    }`}
                                   >
-                                    Use &quot;{subjectSearchQuery.trim()}&quot; as custom
+                                    <span className="truncate">{subj}</span>
+                                    {uploadSubjectName === subj && <Check className="w-3 h-3 ml-1 shrink-0" />}
                                   </button>
-                                </div>
-                              )}
+                                ))}
+
+                                {filteredSubjects.length === 0 && (
+                                  <div className="p-2 text-center text-xs text-muted-foreground space-y-1">
+                                    <span className="block text-[10px]">No subject matched &quot;{subjectSearchQuery}&quot;</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setUploadSubjectName(subjectSearchQuery.trim())
+                                        setIsSubjectMenuOpen(false)
+                                        setSubjectSearchQuery('')
+                                      }}
+                                      className="px-2.5 py-1 rounded-md bg-primary text-primary-foreground font-black text-[10px]"
+                                    >
+                                      Use &quot;{subjectSearchQuery.trim()}&quot; as custom
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </motion.div>
                         )}
@@ -973,45 +992,51 @@ export default function ContributorDashboardClient({
                       <AnimatePresence>
                         {isFolderMenuOpen && (
                           <motion.div
-                            initial={{ opacity: 0, y: -4, scale: 0.98 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -4, scale: 0.98 }}
-                            transition={{ duration: 0.14 }}
-                            className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 rounded-2xl border-2 border-primary/30 bg-card/95 backdrop-blur-xl shadow-2xl p-1.5 space-y-0.5 max-h-44 overflow-y-auto"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.2, ease: 'easeOut' }}
+                            className="overflow-hidden pt-1.5"
                           >
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setUploadFolderId('root')
-                                setIsFolderMenuOpen(false)
-                              }}
-                              className={`w-full px-2 py-1.5 rounded-lg text-left text-[11px] font-bold transition-all flex items-center justify-between ${
-                                uploadFolderId === 'root'
-                                  ? 'bg-primary text-primary-foreground'
-                                  : 'hover:bg-primary/15 hover:text-primary text-foreground'
-                              }`}
+                            <div
+                              className="rounded-2xl border-2 border-primary/30 bg-muted/40 p-1.5 space-y-0.5 max-h-36 overflow-y-auto overscroll-contain shadow-inner"
+                              onWheel={(e) => e.stopPropagation()}
+                              onTouchMove={(e) => e.stopPropagation()}
                             >
-                              <span>📁 Root Folder (Default)</span>
-                              {uploadFolderId === 'root' && <Check className="w-3 h-3 ml-1 shrink-0" />}
-                            </button>
-                            {subfolders.map(f => (
                               <button
-                                key={f.id}
                                 type="button"
                                 onClick={() => {
-                                  setUploadFolderId(f.id)
+                                  setUploadFolderId('root')
                                   setIsFolderMenuOpen(false)
                                 }}
                                 className={`w-full px-2 py-1.5 rounded-lg text-left text-[11px] font-bold transition-all flex items-center justify-between ${
-                                  uploadFolderId === f.id
+                                  uploadFolderId === 'root'
                                     ? 'bg-primary text-primary-foreground'
                                     : 'hover:bg-primary/15 hover:text-primary text-foreground'
                                 }`}
                               >
-                                <span className="truncate">📂 {f.name}</span>
-                                {uploadFolderId === f.id && <Check className="w-3 h-3 ml-1 shrink-0" />}
+                                <span>📁 Root Folder (Default)</span>
+                                {uploadFolderId === 'root' && <Check className="w-3 h-3 ml-1 shrink-0" />}
                               </button>
-                            ))}
+                              {subfolders.map(f => (
+                                <button
+                                  key={f.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setUploadFolderId(f.id)
+                                    setIsFolderMenuOpen(false)
+                                  }}
+                                  className={`w-full px-2 py-1.5 rounded-lg text-left text-[11px] font-bold transition-all flex items-center justify-between ${
+                                    uploadFolderId === f.id
+                                      ? 'bg-primary text-primary-foreground'
+                                      : 'hover:bg-primary/15 hover:text-primary text-foreground'
+                                  }`}
+                                >
+                                  <span className="truncate">📂 {f.name}</span>
+                                  {uploadFolderId === f.id && <Check className="w-3 h-3 ml-1 shrink-0" />}
+                                </button>
+                              ))}
+                            </div>
                           </motion.div>
                         )}
                       </AnimatePresence>
