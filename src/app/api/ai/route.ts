@@ -301,7 +301,7 @@ When summarizing:
               messages: apiMessages,
               stream: true,
               temperature: 0.3,
-              max_tokens: 2000
+              max_tokens: 4096
             })
           });
 
@@ -341,7 +341,7 @@ When summarizing:
               messages: apiMessages,
               stream: true,
               temperature: 0.3,
-              max_tokens: 2000
+              max_tokens: 4096
             })
           });
 

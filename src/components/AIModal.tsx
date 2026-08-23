@@ -784,27 +784,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
     const toastId = toast.loading("Preparing native PDF...");
     try {
       const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-      const themeColorMap: Record<string, string> = {
-        default: "#eab308", // Golden Amber
-        volcano: "#ef4444", // Volcano Red-Orange
-        nightowl: "#3b82f6", // Deep Blue
-        skyblue: "#0ea5e9", // Sky Blue
-        sunset: "#ec4899", // Vibrant Sunset Pink
-        forest: "#22c55e", // Forest Green
-        ocean: "#0066f4", // Ocean Blue
-        lavender: "#8b5cf6", // Lavender Purple
-        rose: "#ec4899", // Rose Pink
-        amber: "#d97706", // Amber Orange
-        mint: "#10b981", // Mint Green
-        crimson: "#dc143c", // Crimson Red
-        indigo: "#6366f1", // Indigo Blue
-        emerald: "#10b981", // Emerald Green
-        coral: "#ff7f50", // Coral Orange
-        solaris: "#f59e0b", // Solaris Supernova Amber
-      };
-
-      const activeThemeColor = themeColorMap[colorTheme] || themeColorMap.default;
+      // Dynamically use the active theme accent color (covers all 22 themes accurately)
+      const activeThemeColor = activeClasses.accent || "#10b981";
 
       let bodyHtml = '';
       if (msgElement) {
@@ -896,7 +877,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             .content, .content p, .content li, 
             .content span:not([class*="mermaid"] *), 
             .content div:not([class*="mermaid"] *) {
-              color: #1f2937 !important; /* Force high-contrast dark gray text, excluding Mermaid diagram contents */
+              color: #1f2937 !important;
             }
             
             /* Preserve KaTeX specific internal colors */
@@ -905,37 +886,33 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             .content h2 { 
-              font-size: 24px !important; 
+              font-size: 20px !important; 
               font-weight: 900 !important; 
               color: ${activeThemeColor} !important; 
-              margin: 48px 0 20px !important; 
-              padding-left: 16px !important; 
-              border-left: 6px solid ${activeThemeColor} !important; 
-              padding-bottom: 4px !important;
-              border-top: 2px dashed #cbd5e1 !important;
-              padding-top: 24px !important;
+              margin: 32px 0 14px !important; 
+              padding-bottom: 6px !important;
+              border-bottom: 2px solid ${activeThemeColor} !important;
             }
             .content h2 * {
               color: ${activeThemeColor} !important;
             }
             
             .content h3 { 
-              font-size: 17px !important; 
+              font-size: 15px !important; 
               font-weight: 700 !important; 
               color: ${activeThemeColor} !important; 
-              margin: 28px 0 12px !important; 
-              border-bottom: 1px dashed #e5e7eb !important; /* Dashed separator for sub-sections */
-              padding-bottom: 5px !important;
+              margin: 20px 0 10px !important; 
+              padding-bottom: 4px !important;
             }
             .content h3 * {
               color: ${activeThemeColor} !important;
             }
             
             .content h4 { 
-              font-size: 14px !important; 
+              font-size: 13px !important; 
               font-weight: 700 !important; 
               color: #374151 !important; 
-              margin: 16px 0 8px !important; 
+              margin: 14px 0 6px !important; 
             }
             .content h4 * {
               color: #374151 !important;
@@ -951,26 +928,26 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             .content em { 
-              color: #4338ca !important; 
+              color: ${activeThemeColor} !important; 
               font-style: italic !important; 
             }
             .content em * {
-              color: #4338ca !important;
+              color: ${activeThemeColor} !important;
               font-style: italic !important;
             }
             
             .content table { 
               width: 100% !important; 
               border-collapse: collapse !important; 
-              margin: 24px 0 !important; 
+              margin: 20px 0 !important; 
               font-size: 13px !important; 
               break-inside: avoid !important; 
             }
             
             .content th { 
-              background-color: ${activeThemeColor}14 !important; /* Soft theme color table header background */
+              background-color: ${activeThemeColor}14 !important;
               color: ${activeThemeColor} !important; 
-              padding: 12px 16px !important; 
+              padding: 10px 14px !important; 
               text-align: left !important; 
               font-weight: 700 !important; 
               border: 1px solid ${activeThemeColor}33 !important; 
@@ -980,7 +957,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             .content td { 
-              padding: 10px 16px !important; 
+              padding: 10px 14px !important; 
               border: 1px solid #e5e7eb !important; 
               color: #374151 !important; 
             }
@@ -993,33 +970,33 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             .content blockquote { 
-              border-left: 5px solid ${activeThemeColor} !important; 
-              padding: 14px 20px !important; 
-              margin: 20px 0 !important; 
-              background-color: ${activeThemeColor}0d !important; /* Very transparent theme background */
+              border-left: 4px solid ${activeThemeColor} !important; 
+              padding: 12px 18px !important; 
+              margin: 18px 0 !important; 
+              background-color: ${activeThemeColor}0d !important;
               border-radius: 0 8px 8px 0 !important; 
-              color: ${activeThemeColor} !important; 
+              color: #1f2937 !important; 
               font-weight: 500 !important; 
               font-style: italic !important; 
             }
             .content blockquote * {
-              color: ${activeThemeColor} !important;
+              color: #1f2937 !important;
             }
             
             .content ul { 
-              padding-left: 28px !important; 
-              margin: 16px 0 !important; 
+              padding-left: 24px !important; 
+              margin: 14px 0 !important; 
               list-style-type: disc !important;
             }
             
             .content ol { 
-              padding-left: 28px !important; 
-              margin: 16px 0 !important; 
+              padding-left: 24px !important; 
+              margin: 14px 0 !important; 
               list-style-type: decimal !important;
             }
             
             .content li { 
-              margin: 10px 0 !important; /* Premium vertical padding for breathing room */
+              margin: 8px 0 !important;
               padding-left: 4px !important;
               color: #374151 !important; 
               display: list-item !important;
@@ -1030,30 +1007,21 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               color: #374151 !important;
             }
             
-            /* Hide the screen-only custom bullet circles in the PDF list items */
-            .content li > span.shrink-0,
-            .content li > span.mt-1\.5 {
-              display: none !important;
-            }
-            
             .content hr { 
               border: none !important; 
-              border-top: 2px solid #e5e7eb !important; 
-              margin: 24px 0 !important; 
+              border-top: 1px solid #e5e7eb !important; 
+              margin: 20px 0 !important; 
             }
             
             .content code { 
               background-color: #f1f5f9 !important; 
-              color: #4338ca !important; 
+              color: ${activeThemeColor} !important; 
               padding: 2px 6px !important; 
               border-radius: 4px !important; 
+              border: 1px solid ${activeThemeColor}25 !important;
               font-size: 13px !important; 
               font-family: monospace !important; 
-              border: 1px solid #e2e8f0 !important; 
               display: inline-block !important;
-            }
-            .content code * {
-              color: #4338ca !important;
             }
             
             .content pre { 
