@@ -1053,6 +1053,18 @@ export default function DriveRootPage() {
                                           Add to Study Space
                                         </DropdownMenuItem>
                                       )}
+                                      {!isFolder && (
+                                        <DropdownMenuItem 
+                                          onClick={() => {
+                                            setSelectedAIFile(file);
+                                            setAiModalOpen(true);
+                                          }}
+                                          className="text-purple-400 focus:text-purple-400 focus:bg-purple-500/10 cursor-pointer font-medium"
+                                        >
+                                          <Sparkles className="w-4 h-4 mr-2 text-purple-400" />
+                                          Summarize with AI
+                                        </DropdownMenuItem>
+                                      )}
                                       <DropdownMenuItem onClick={() => handleDownload(file)} className="cursor-pointer">
                                         <Download className="w-4 h-4 mr-2" />
                                         Download
@@ -1136,6 +1148,18 @@ export default function DriveRootPage() {
                                     >
                                       <Plus className="w-4 h-4 mr-2" />
                                       Add to Study Space
+                                    </DropdownMenuItem>
+                                  )}
+                                  {!isFolder && (
+                                    <DropdownMenuItem 
+                                      onClick={() => {
+                                        setSelectedAIFile(file);
+                                        setAiModalOpen(true);
+                                      }}
+                                      className="text-purple-400 focus:text-purple-400 focus:bg-purple-500/10 cursor-pointer font-medium"
+                                    >
+                                      <Sparkles className="w-4 h-4 mr-2 text-purple-400" />
+                                      Summarize with AI
                                     </DropdownMenuItem>
                                   )}
                                   <DropdownMenuItem onClick={() => handleDownload(file)} className="cursor-pointer">
@@ -1280,23 +1304,39 @@ export default function DriveRootPage() {
                                     e.stopPropagation();
                                     handleView(file);
                                   }}
-                                  className="flex-1 bg-transparent border-border  hover:bg-muted text-xs font-medium"
+                                  className="flex-1 bg-transparent border-border hover:bg-muted text-xs font-medium"
                                 >
                                   <Eye className="w-3 h-3 mr-1" />
                                   {isFolder ? "Open" : isPDF ? "View PDF" : "View"}
                                 </Button>
                                 {!isFolder && (
-                                  <Button
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleDownload(file);
-                                    }}
-                                    className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border-blue-500/30 text-xs"
-                                  >
-                                    <Download className="w-3 h-3 mr-1" />
-                                    Download
-                                  </Button>
+                                  <>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedAIFile(file);
+                                        setAiModalOpen(true);
+                                      }}
+                                      className="px-2.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs font-semibold flex items-center justify-center gap-1 shrink-0 cursor-pointer transition-all"
+                                      title="Summarize with Marline AI"
+                                    >
+                                      <Sparkles className="w-3.5 h-3.5" />
+                                      <span className="hidden sm:inline">AI</span>
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDownload(file);
+                                      }}
+                                      className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border-blue-500/30 text-xs"
+                                    >
+                                      <Download className="w-3 h-3 mr-1" />
+                                      Download
+                                    </Button>
+                                  </>
                                 )}
                               </div>
                             </CardContent>

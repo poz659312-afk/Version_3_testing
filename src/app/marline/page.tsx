@@ -53,7 +53,7 @@ interface ChatSession {
   createdAt: string
 }
 
-const DAILY_QUESTION_LIMIT = 5
+const DAILY_QUESTION_LIMIT = 20
 
 function getMarlineEmotion(content: string, isThinking?: boolean, isError?: boolean): string {
   if (isThinking) return "/images/chameleon/03_chameleon_thinking.png"
@@ -712,54 +712,54 @@ export default function MarlineAssistantPage() {
                   أهلاً بك! أنا <span className="text-primary">مارلين (Marline)</span> 👋
                 </h2>
                 <p className="text-xs sm:text-sm md:text-base text-muted-foreground max-w-lg leading-relaxed font-rubik px-2">
-                  رفيقتك الأكاديمية لإعداد جداول المذاكرة، وإجابة استفسارات الطلاب الجدد ولائحة الكلية بأعلى كفاءة وتوفير!
+                  رفيقتك الأكاديمية والبرمجية الذكية لشرح وتوليد الأكواد، الإرشاد حول لائحة ومقررات الكلية، وتنظيم جداول المذاكرة!
                 </p>
               </div>
 
               {/* Quick Action Suggestion Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 w-full pt-2 sm:pt-4">
                 <button
-                  onClick={() => handleSend("اعمل لي جدول مذاكرة منظّم وموزّع للمواد الدراسية قبل الامتحانات")}
+                  onClick={() => handleSend("اكتب واشرح لي خوارزمية Binary Search بالـ C++ أو Python مع حساب الـ Time Complexity")}
                   className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
                 >
                   <div className="flex items-center gap-2 text-primary font-bold text-xs">
-                    <BookOpen className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    <span>جدول مذاكرة وتنظيم أسبوعي</span>
+                    <Code className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                    <span>كتابة وشرح كود برمجي</span>
                   </div>
-                  <p className="text-xs text-muted-foreground font-medium">"اعمل لي جدول مذاكرة منظم قبل الامتحانات"</p>
+                  <p className="text-xs text-muted-foreground font-medium">"اكتب واشرح لي كود برمجي وخوارزمية"</p>
                 </button>
 
                 <button
-                  onClick={() => handleSend("أنا طالب جديد في الكلية، ما هي أهم نصائح البدء وقواعد اللائحة الكلية؟")}
+                  onClick={() => handleSend("اشرح لي نظام الساعات المعتمدة في الكلية، حساب الـ CGPA، وشروط التخرج والإنذار الأكاديمي")}
                   className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
                 >
                   <div className="flex items-center gap-2 text-emerald-500 font-bold text-xs">
                     <GraduationCap className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    <span>إرشادات للطلاب الجدد</span>
+                    <span>لائحة الكلية وحساب الـ CGPA</span>
                   </div>
-                  <p className="text-xs text-muted-foreground font-medium">"أنا طالب جديد، ما أهم قواعد اللائحة والبدء؟"</p>
+                  <p className="text-xs text-muted-foreground font-medium">"ما هي شروط التخرج وقواعد اللائحة الرسمية؟"</p>
                 </button>
 
                 <button
-                  onClick={() => handleSend("ازاي أحسب الـ GPA ونسبة الغياب والإنذار الأكاديمي حسب اللائحة؟")}
+                  onClick={() => handleSend("ما هي الأقسام والتخصصات المتاحة في الكلية ومقررات كل قسم (AI, DS, Cyber, BA)؟")}
                   className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
                 >
                   <div className="flex items-center gap-2 text-amber-500 font-bold text-xs">
-                    <Calculator className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    <span>حساب الـ GPA والإنذار الأكاديمي</span>
+                    <BookOpen className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                    <span>أقسام الكلية ومقررات التخصص</span>
                   </div>
-                  <p className="text-xs text-muted-foreground font-medium">"ازاي أحسب الـ GPA والإنذار الأكاديمي؟"</p>
+                  <p className="text-xs text-muted-foreground font-medium">"قارن بين أقسام الكلية والمواد الدراسية"</p>
                 </button>
 
                 <button
-                  onClick={() => handleSend("اعطني خطة مراجعة سريعة ومكثفة لمدة 3 أيام قبل امتحانات الفاينل")}
+                  onClick={() => handleSend("اعمل لي جدول مذاكرة منظّم وموزّع للمواد الدراسية قبل الامتحانات")}
                   className="p-3 sm:p-4 rounded-2xl bg-card hover:bg-muted/50 border border-border/80 text-right space-y-1.5 transition-all hover:scale-[1.01] hover:border-primary/40 shadow-sm group cursor-pointer"
                 >
-                  <div className="flex items-center gap-2 text-accent font-bold text-xs">
+                  <div className="flex items-center gap-2 text-purple-500 font-bold text-xs">
                     <Zap className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    <span>خطة مراجعة سريعة</span>
+                    <span>جدول مذاكرة وخطة مراجعة</span>
                   </div>
-                  <p className="text-xs text-muted-foreground font-medium">"اعطني خطة مراجعة مكثفة 3 أيام قبل الفاينل"</p>
+                  <p className="text-xs text-muted-foreground font-medium">"اعمل لي جدول مذاكرة منظم قبل الامتحانات"</p>
                 </button>
               </div>
             </div>
@@ -869,7 +869,7 @@ export default function MarlineAssistantPage() {
             {dailyUsage >= DAILY_QUESTION_LIMIT && (
               <div className="p-2.5 sm:p-3 rounded-2xl bg-destructive/10 border border-destructive/30 text-destructive text-xs font-bold flex items-center gap-2 animate-fadeIn">
                 <ShieldAlert className="w-4 h-4 shrink-0" />
-                <span>لقد استنفدت حد الأسئلة اليومي (5/5 أسئلة). يرجى العودة غداً للمزيد من الإرشاد الأكاديمي!</span>
+                <span>لقد استنفدت حد الأسئلة اليومي (20/20 أسئلة). يرجى العودة غداً للمزيد من الإرشاد الأكاديمي!</span>
               </div>
             )}
 
@@ -893,7 +893,7 @@ export default function MarlineAssistantPage() {
                 }}
                 placeholder={
                   dailyUsage >= DAILY_QUESTION_LIMIT
-                    ? "وصلت إلى الحد اليومي (5 أسئلة). يرجى العودة غداً..."
+                    ? "وصلت إلى الحد اليومي (20 أسئلة). يرجى العودة غداً..."
                     : "اسأل مارلين عن جداول المذاكرة أو استفسارات الطلاب الجدد..."
                 }
                 rows={1}
@@ -910,9 +910,8 @@ export default function MarlineAssistantPage() {
             </form>
 
             <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-muted-foreground px-1.5 sm:px-2">
-              <span className="hidden sm:inline">حد الأسئلة اليومي: 5 أسئلة لكل طالب لحفظ الموارد والتوكنز</span>
               <span className="text-primary font-semibold flex items-center gap-1 mr-auto sm:mr-0">
-                <Sparkles className="w-3 h-3" /> Powered by Marline AI 3.0
+                <Sparkles className="w-3 h-3" /> Powered by Marline AI 3.0 & Nvidia
               </span>
             </div>
           </div>

@@ -6,97 +6,154 @@ import pdf from 'pdf-parse';
 import { getCachedAIResult, setCachedAIResult } from '@/lib/persistent-ai-cache';
 
 const pdfParse = pdf;
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || process.env.GROQ_API_KEY;
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-// Production scale lightweight inference models
-const PRIMARY_AI_MODEL = "google/gemini-2.5-flash-lite";
-const FAST_CHAT_MODEL = "google/gemini-2.5-flash-lite"; // Optimized for fast, short-form responses like chunk summarization
+// Multi-tier Fallback Providers & Models (100% Free & Highly Capable)
+const OPENROUTER_MODELS = [
+  "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "google/gemma-4-31b-it:free",
+  "nvidia/nemotron-3-super-120b-a12b:free",
+  "nvidia/nemotron-3.5-lightning:free"
+];
 
-// Helper function to handle fetch retries with exponential backoff for high concurrency
-async function fetchWithRetry(url: string, options: any, retries = 3, delay = 1000) {
-  let lastResponse: Response | null = null;
-  for (let i = 0; i < retries; i++) {
-    try {
-      const response = await fetch(url, options);
-      lastResponse = response;
-      if (response.status === 429) {
-        const retryAfterHeader = response.headers.get('retry-after');
-        const waitMs = retryAfterHeader ? parseInt(retryAfterHeader, 10) * 1000 : delay * Math.pow(2, i);
-        console.warn(`[AI API] Rate limited (429), retrying in ${waitMs}ms (attempt ${i + 1}/${retries})...`);
-        await new Promise(res => setTimeout(res, waitMs));
-        continue;
+const GROQ_MODELS = [
+  "qwen/qwen3.6-27b",
+  "openai/gpt-oss-120b",
+  "allam-2-7b"
+];
+
+// Helper to execute LLM calls with multi-tier fallback (OpenRouter -> Groq)
+async function executeLLMWithFallback({
+  messages,
+  max_tokens = 1500,
+  temperature = 0.2,
+  stream = false
+}: {
+  messages: any[];
+  max_tokens?: number;
+  temperature?: number;
+  stream?: boolean;
+}): Promise<{ response?: Response; data?: any; error?: string }> {
+  let lastError = "";
+
+  // TIER 1: Try OpenRouter Free Models
+  if (OPENROUTER_API_KEY) {
+    for (const model of OPENROUTER_MODELS) {
+      try {
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://chameleon-nu.vercel.app",
+            "X-Title": "Marline AI"
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: messages,
+            max_tokens: max_tokens,
+            temperature: temperature,
+            stream: stream
+          })
+        });
+
+        if (res.ok) {
+          if (stream) {
+            return { response: res };
+          }
+          const data = await res.json();
+          if (data.choices?.[0]?.message?.content) {
+            return { data: data };
+          }
+        } else {
+          lastError = await res.text();
+          console.warn(`[Marline Drive AI] OpenRouter ${model} failed (${res.status}):`, lastError);
+        }
+      } catch (err: any) {
+        lastError = err.message;
+        console.warn(`[Marline Drive AI] OpenRouter ${model} error:`, err.message);
       }
-      return response;
-    } catch (err) {
-      if (i === retries - 1) throw err;
-      await new Promise(res => setTimeout(res, delay * Math.pow(2, i)));
     }
   }
-  return lastResponse || fetch(url, options);
+
+  // TIER 2: Fallback to Groq API
+  if (GROQ_API_KEY) {
+    for (const model of GROQ_MODELS) {
+      try {
+        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${GROQ_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: messages,
+            max_tokens: max_tokens,
+            temperature: temperature,
+            stream: stream
+          })
+        });
+
+        if (res.ok) {
+          if (stream) {
+            return { response: res };
+          }
+          const data = await res.json();
+          if (data.choices?.[0]?.message?.content) {
+            return { data: data };
+          }
+        } else {
+          lastError = await res.text();
+          console.warn(`[Marline Drive AI] Groq ${model} failed (${res.status}):`, lastError);
+        }
+      } catch (err: any) {
+        lastError = err.message;
+        console.warn(`[Marline Drive AI] Groq ${model} error:`, err.message);
+      }
+    }
+  }
+
+  return { error: lastError || "All AI providers failed" };
 }
 
 // Lightweight chunk summarizer with semantic caching and graceful degradation
-async function summarizeChunk(chunk: string, index: number, total: number, apiKey: string, language: string): Promise<string> {
+async function summarizeChunk(chunk: string, index: number, total: number, language: string): Promise<string> {
   try {
-    // 1. Check persistent cache for this exact semantic chunk to prevent redundant API calls
     const cached = await getCachedAIResult(chunk, 'chunk-summary', language);
     if (cached) {
-      console.log(`[AI Chunk Cache Hit] Instantly returning cached summary for chunk ${index + 1}/${total}.`);
       return cached;
     }
 
-    const keyPreview = apiKey ? `${apiKey.slice(0, 6)}...${apiKey.slice(-4)}` : 'undefined';
-    console.log(`[AI summarizeChunk] Calling Groq for chunk ${index + 1}/${total} with key: ${keyPreview}, Length: ${apiKey?.length}`);
-
-    // 2. Fetch with backoff retry
-    const response = await fetchWithRetry("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: FAST_CHAT_MODEL,
-        messages: [
-          { role: "system", content: `You are Neuri AI. Summarize concisely in ${language}. Key facts, formulas only.` },
-          { role: "user", content: chunk.slice(0, 12000) }
-        ],
-        max_tokens: 450,
-        temperature: 0.1
-      })
+    const { data } = await executeLLMWithFallback({
+      messages: [
+        { role: "system", content: `You are Marline AI. Summarize concisely in ${language}. Extract key facts, definitions, formulas, and main points only.` },
+        { role: "user", content: chunk.slice(0, 10000) }
+      ],
+      max_tokens: 500,
+      temperature: 0.1,
+      stream: false
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`[AI Chunk Error] Attempt failed with status: ${response.status}. Body: ${errorText}`);
-      return chunk.slice(0, 800); // Graceful degradation fallback
-    }
+    const summary = data?.choices?.[0]?.message?.content || chunk.slice(0, 800);
 
-    const data = await response.json();
-    const summary = data.choices?.[0]?.message?.content || chunk.slice(0, 800);
-
-    // 3. Cache the successful chunk summary for future uploads
     if (summary && summary.trim().length > 50) {
       await setCachedAIResult(chunk, 'chunk-summary', language, summary);
     }
 
     return summary;
   } catch (e) {
-    console.error(`[AI Chunk Exception] Failed for chunk ${index + 1}/${total}:`, e);
-    return chunk.slice(0, 800); // Graceful degradation fallback
+    console.error(`[Marline Chunk Error] Failed for chunk ${index + 1}/${total}:`, e);
+    return chunk.slice(0, 800);
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const keyPreview = OPENROUTER_API_KEY
-      ? `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-4)}`
-      : 'undefined';
-    console.log(`[AI POST] Initializing request. Key Preview: ${keyPreview}, Length: ${OPENROUTER_API_KEY?.length}`);
-
-    if (!OPENROUTER_API_KEY) {
-      console.error("Missing OPENROUTER_API_KEY environment variable");
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    if (!OPENROUTER_API_KEY && !GROQ_API_KEY) {
+      console.error("Missing AI API keys in environment");
+      return NextResponse.json({ error: 'Server configuration error: No AI keys' }, { status: 500 });
     }
 
     const session = await getServerStudentSession();
@@ -107,7 +164,7 @@ export async function POST(req: NextRequest) {
     const rateLimit = checkRateLimit(session.auth_id, RateLimitTier.AI);
     if (!rateLimit.success) {
       return NextResponse.json({
-        error: 'Daily limit reached. You can perform 10 AI actions per day.',
+        error: 'Daily limit reached. You can perform 20 AI actions per day.',
         reset: rateLimit.reset
       }, { status: 429 });
     }
@@ -135,7 +192,6 @@ export async function POST(req: NextRequest) {
     }
 
     let fileContent = '';
-    let isImage = metadata.mimeType?.startsWith('image/');
 
     if (messages.length <= 1) {
       try {
@@ -167,14 +223,14 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 1. PERSISTENT CACHE LOOKUP (Only for core tasks to avoid chat collisions)
+    // 1. PERSISTENT CACHE LOOKUP
     const isCoreTask = task === 'summarize' || task === 'quiz' || task === 'translate';
     const shouldCache = isCoreTask && messages.length === 0 && fileContent.trim().length > 0;
 
     if (shouldCache) {
       const cachedResult = await getCachedAIResult(fileContent, task, language);
       if (cachedResult) {
-        console.log(`[AI Cache Hit] Instantly returning cached result for ${task} in ${language}.`);
+        console.log(`[Marline Cache Hit] Instantly returning cached result for ${task} in ${language}.`);
         if (task === 'quiz') {
           return NextResponse.json({ result: cachedResult });
         } else {
@@ -200,66 +256,29 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const currentModel = PRIMARY_AI_MODEL;
-
-    // 2. HIERARCHICAL COMPRESSION & SEMANTIC CHUNKING WITH DYNAMIC TPM-SAFE SCHEDULING
+    // 2. HIERARCHICAL COMPRESSION & SEMANTIC CHUNKING
     let contextualText = '';
     if (fileContent.trim().length > 0) {
-      if (fileContent.length <= 6000) {
+      if (fileContent.length <= 8000) {
         contextualText = fileContent;
       } else {
-        console.log(`[AI Pipeline] Activating Hierarchical Summarization for large document (${fileContent.length} chars).`);
         const chunkSize = 12000;
         const chunks: string[] = [];
         for (let i = 0; i < fileContent.length; i += chunkSize) {
           chunks.push(fileContent.substring(i, i + chunkSize));
         }
 
-        // Define dynamic orchestration strategy parameters
-        const MAX_CONCURRENT_CHUNKS = parseInt(process.env.MAX_CONCURRENT_CHUNKS || '2', 10);
         const totalChunks = Math.min(chunks.length, 6);
-        const estimatedTokens = Math.floor(fileContent.length / 4);
-
-        let concurrencyLimit = MAX_CONCURRENT_CHUNKS;
-        let batchDelay = 1000; // Delay in milliseconds between batch schedules
-        let strategy = "Parallel";
-
-        // Adaptive Batching Orchestration Strategy
-        if (totalChunks <= 2 || estimatedTokens <= 6000) {
-          concurrencyLimit = 2;
-          batchDelay = 0;
-          strategy = "Parallel (Low Token / Safe)";
-        } else if (totalChunks <= 4 || estimatedTokens <= 12000) {
-          concurrencyLimit = 2;
-          batchDelay = 1500;
-          strategy = "Adaptive Concurrency (Medium PDF / Balanced)";
-        } else {
-          concurrencyLimit = 1;
-          batchDelay = 2500;
-          strategy = "Rolling Sequential (Huge PDF / Strict TPM Protection)";
-        }
-
-        console.log(`[AI Pipeline Strategy] Selecting Strategy: ${strategy} for ${totalChunks} chunks (Est. Tokens: ${estimatedTokens}). Concurrency Limit: ${concurrencyLimit}, Batch Throttle Delay: ${batchDelay}ms`);
-
         const chunkSummaries: string[] = new Array(totalChunks);
         const activePromises: Promise<void>[] = [];
 
-        // Orchestrate chunk processing queue
         for (let i = 0; i < totalChunks; i++) {
           const chunkIndex = i;
           const chunkPromise = (async () => {
-            // Apply defensive delay to chunks outside the initial concurrency window
-            if (batchDelay > 0 && chunkIndex >= concurrencyLimit) {
-              const throttlingDelay = Math.floor(chunkIndex / concurrencyLimit) * batchDelay;
-              console.log(`[AI Pipeline Throttle] Delaying chunk ${chunkIndex + 1}/${totalChunks} by ${throttlingDelay}ms to prevent Groq TPM overflow.`);
-              await new Promise(resolve => setTimeout(resolve, throttlingDelay));
-            }
-
             const summary = await summarizeChunk(
               chunks[chunkIndex],
               chunkIndex,
               totalChunks,
-              OPENROUTER_API_KEY || '',
               language
             );
             chunkSummaries[chunkIndex] = summary;
@@ -268,55 +287,37 @@ export async function POST(req: NextRequest) {
           activePromises.push(chunkPromise);
         }
 
-        // Await all scheduled active chunk jobs to complete safely
         await Promise.all(activePromises);
         contextualText = chunkSummaries.join("\n\n");
       }
     }
 
-    // 3. QUIZ GENERATION SEPARATED FROM FULL PDF CONTEXT
+    // 3. QUIZ GENERATION TASK
     if (task === 'quiz') {
       let quizContext = fileContent;
       if (fileContent.length > 6000) {
         const cachedSummary = await getCachedAIResult(fileContent, 'summarize', language);
-        if (cachedSummary) {
-          quizContext = cachedSummary;
-          console.log(`[AI Quiz Context] Reusing compressed cached summary to generate quiz. Token efficiency: 100%.`);
-        } else {
-          quizContext = contextualText;
-        }
+        quizContext = cachedSummary || contextualText;
       }
 
-      console.log(`[AI POST - Quiz] Fetching Groq completions. Key Preview: ${OPENROUTER_API_KEY ? `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-4)}` : 'undefined'}`);
-      const response = await fetchWithRetry("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "https://chameleon-v3.vercel.app",
-          "X-Title": "Neuri AI"
-        },
-        body: JSON.stringify({
-          model: currentModel,
-          messages: [
-            {
-              role: "system",
-              content: `Output JSON array of 5-10 MCQs in ${language}. Schema: {"numb":number,"type":"Multiple Choice","question":"...","options":["...","...","...","..."],"answer":"...","explanation":"..."}. answer MUST match 1 option exactly. No markdown, only raw JSON array.`
-            },
-            { role: "user", content: `Context:\n${quizContext.slice(0, 10000)}\n\nGenerate MCQs.` }
-          ],
-          temperature: 0.1
-        })
+      const { data, error } = await executeLLMWithFallback({
+        messages: [
+          {
+            role: "system",
+            content: `You are Marline AI. Output a JSON array of 5-10 high-yield Multiple Choice Questions in ${language}. Schema: {"numb":number,"type":"Multiple Choice","question":"...","options":["...","...","...","..."],"answer":"...","explanation":"..."}. answer MUST match 1 option exactly. Return raw JSON array only, no markdown wrapping.`
+          },
+          { role: "user", content: `Context:\n${quizContext.slice(0, 12000)}\n\nGenerate MCQs.` }
+        ],
+        max_tokens: 1500,
+        temperature: 0.1,
+        stream: false
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`[AI POST - Quiz Error] HTTP status: ${response.status}. Body: ${errorText}`);
-        return NextResponse.json({ error: `AI service failed: ${errorText}` }, { status: 502 });
+      if (error || !data) {
+        return NextResponse.json({ error: `AI quiz generation failed: ${error}` }, { status: 502 });
       }
 
-      const aiData = await response.json();
-      let result = aiData.choices?.[0]?.message?.content;
+      const result = data.choices?.[0]?.message?.content;
       try {
         const cleaned = result.replace(/```json|```/g, '').trim();
         const parsed = JSON.parse(cleaned);
@@ -332,9 +333,14 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 4. SUMMARIZE & TRANSLATE TASKS
-    // Permanent prompt compressed from ~900 tokens to under 120 tokens
-    const systemPrompt = `You are Neuri AI. Respond in ${language}. Use $$...$$ for math. Separate sections with ---.${contextualText ? `\n\nContext:\n${contextualText}` : ''}`;
+    // 4. SUMMARIZE, TRANSLATE & CHAT STREAMING TASKS
+    const systemPrompt = `You are Marline AI, an elite academic and coding companion for university students.
+Respond in ${language}.
+When providing summaries:
+- Create structured, high-yield, engaging study notes.
+- Use $$...$$ for LaTeX math formulas and code blocks \`\`\` for programming code.
+- Separate main sections with horizontal rules (---).
+- Include key concepts, exam tips, formulas/code examples, and bulleted takeaways.${contextualText ? `\n\nContext Document:\n${contextualText}` : ''}`;
 
     const apiMessages: any[] = [
       { role: "system", content: systemPrompt }
@@ -346,54 +352,39 @@ export async function POST(req: NextRequest) {
       if (task === 'summarize') {
         apiMessages.push({
           role: "user",
-          content: `Generate a study guide. Include:
-1. Intro
+          content: `Generate a comprehensive, structured study guide from this document.
+Format:
+1. Executive Summary & Overview
 ---
-2. Core Concepts (hierarchical bullets)
+2. Core Concepts & Definitions (hierarchical bullets)
 ---
-3. Formulas & Tables
+3. Essential Formulas, Tables & Code Examples (if applicable)
 ---
-4. Exam Tips
+4. High-Yield Exam Tips & Common Pitfalls
 ---
-5. Takeaways
-Must use "---" between sections. Be concise, dense, educational.`
+5. Key Takeaways Summary
+Use "---" between sections. Be dense, clear, and educational.`
         });
       } else if (task === 'translate') {
         apiMessages.push({
           role: "user",
-          content: `Translate and restructure the key points of the context into ${language}. Use structured bullet points, separate key sections using horizontal lines (---) on separate lines, and only include formulas in isolated block LaTeX ($$...$$).`
+          content: `Translate and restructure the key points of the context document into ${language}. Use structured bullet points, separate key sections with (---), and format formulas in LaTeX ($$...$$).`
         });
       }
     }
 
-    // Adaptive output token budgeting
-    const dynamicMaxTokens = fileContent.length <= 6000 ? 1200 : 1800;
-
-    console.log(`[AI POST - Summarize] Fetching completions. Key Preview: ${OPENROUTER_API_KEY ? `${OPENROUTER_API_KEY.slice(0, 6)}...${OPENROUTER_API_KEY.slice(-4)}` : 'undefined'}`);
-    const response = await fetchWithRetry("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://neuri.ai",
-        "X-Title": "Neuri AI"
-      },
-      body: JSON.stringify({
-        model: currentModel,
-        messages: apiMessages,
-        max_tokens: dynamicMaxTokens,
-        temperature: 0.1,
-        stream: true
-      })
+    const { response, error } = await executeLLMWithFallback({
+      messages: apiMessages,
+      max_tokens: 1800,
+      temperature: 0.2,
+      stream: true
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`[AI POST - Summarize Error] HTTP status: ${response.status}. Body: ${errorText}`);
-      return NextResponse.json({ error: `AI service failed: ${errorText}` }, { status: 502 });
+    if (error || !response || !response.body) {
+      return NextResponse.json({ error: `Marline AI service error: ${error}` }, { status: 502 });
     }
 
-    // Clone the standard response body to process and cache background text asynchronously without blocking
+    // Background caching of stream response
     if (shouldCache) {
       const clonedResponse = response.clone();
       clonedResponse.text().then(streamBuffer => {
@@ -415,10 +406,10 @@ Must use "---" between sections. Be concise, dense, educational.`
             setCachedAIResult(fileContent, task, language, fullResponseText);
           }
         } catch (cacheErr) {
-          console.error('[AI Cache Stream Save Error]:', cacheErr);
+          console.error('[Marline Cache Stream Save Error]:', cacheErr);
         }
       }).catch(err => {
-        console.error('[AI Cache Background Save Error]:', err);
+        console.error('[Marline Cache Background Save Error]:', err);
       });
     }
 
@@ -431,7 +422,7 @@ Must use "---" between sections. Be concise, dense, educational.`
     });
 
   } catch (error) {
-    console.error('AI processing error:', error);
+    console.error('Marline AI processing error:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json({ error: `Failed to process AI request: ${errorMessage}` }, { status: 500 });
   }

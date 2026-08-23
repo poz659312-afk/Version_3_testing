@@ -23,7 +23,6 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import "katex/dist/katex.min.css";
 import QuizInterface from "./quiz-system/quiz-interface";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -805,7 +804,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         <!DOCTYPE html>
         <html>
         <head>
-          <title>${fileName}_neuri_summary</title>
+          <title>${fileName}_marline_summary</title>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
             
@@ -1133,10 +1132,10 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         <body>
           <div class="header">
             <div class="header-flex">
-              <img src="${window.location.origin}/images/Neuri/ai main.png" class="header-img" onerror="this.style.display='none'" />
+              <img src="${window.location.origin}/images/chameleon/01_chameleon_front.png" class="header-img" onerror="this.style.display='none'" />
               <div>
-                <h1 class="title">Neuri AI Summary</h1>
-                <div class="subtitle">AI-Powered Academic Assistant</div>
+                <h1 class="title">Marline AI Summary</h1>
+                <div class="subtitle">AI-Powered Academic & Coding Assistant</div>
               </div>
             </div>
             <div class="meta">
@@ -1153,7 +1152,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           <div class="footer">
             <div class="footer-flex">
               <img src="${window.location.origin}/images/chameleon.png" class="footer-img" onerror="this.style.display='none'" />
-              <span class="footer-text">Generated with Chameleon Native AI (Neuri)</span>
+              <span class="footer-text">Generated with Chameleon Native AI (Marline)</span>
             </div>
             <span class="footer-link">chameleon-nu.vercel.app</span>
           </div>
@@ -1336,11 +1335,11 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                 <div className="relative shrink-0">
                   <div className="absolute -inset-1 rounded-xl blur opacity-35 animate-pulse" style={{ backgroundColor: activeClasses.accent }} />
                   <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center border rounded-xl overflow-hidden shadow-md" style={{ backgroundColor: activeClasses.accent, borderColor: `${activeClasses.accent}40` }}>
-                    <img src="/images/Neuri/ai main.png" alt="Neuri Logo" className="w-full h-full object-cover" />
+                    <img src="/images/chameleon/01_chameleon_front.png" alt="Marline Logo" className="w-full h-full object-contain p-1" />
                   </div>
                 </div>
                 <div className="min-w-0">
-                  <DialogTitle className={cn("text-sm sm:text-lg font-bold tracking-tight truncate", isDark ? "text-white/90" : "text-slate-900")}>Neuri AI</DialogTitle>
+                  <DialogTitle className={cn("text-sm sm:text-lg font-bold tracking-tight truncate", isDark ? "text-white/90" : "text-slate-900")}>Marline AI</DialogTitle>
                   <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5">
                     <Badge variant="outline" className="text-[8px] h-3.5 px-1 bg-green-500/10 border-green-500/20 text-green-400 font-bold uppercase tracking-wider shrink-0">Online</Badge>
                     <span className="text-[9px] sm:text-[10px] text-muted-foreground/80 truncate max-w-[100px] sm:max-w-[200px] font-medium">{file.name}</span>
@@ -1406,11 +1405,11 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                       {/* Left Column: Mascot standing beautifully */}
                       <div className="relative shrink-0 flex items-center justify-center animate-fade-in">
                         <img
-                          src="/images/Neuri/ai (4).png"
-                          alt="AI Tutor Mascot"
+                          src="/images/chameleon/04_chameleon_reading.png"
+                          alt="Marline Mascot"
                           className="w-36 h-36 sm:w-44 sm:h-44 md:w-60 md:h-60 object-contain transition-transform duration-500 hover:scale-105"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/images/Neuri/ai (4).png";
+                            (e.target as HTMLImageElement).src = "/images/chameleon/01_chameleon_front.png";
                             (e.target as HTMLImageElement).className = "w-16 h-16 object-contain opacity-50";
                           }}
                         />
@@ -1471,7 +1470,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                             <UserIcon className="w-4 h-4" />
                           )
                         ) : (
-                          <img src="/images/Neuri/ai main.png" alt="Neuri AI" className="w-5 h-5 object-contain" />
+                          <img src="/images/chameleon/01_chameleon_front.png" alt="Marline AI" className="w-6 h-6 object-contain" />
                         )}
                       </div>
                       <div className={cn(
@@ -1870,7 +1869,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                         sendMessage(input);
                       }
                     }}
-                    placeholder="Ask Neuri anything about this file..."
+                    placeholder="Ask Marline anything about this file..."
                     className={cn(
                       "h-14 pl-12 pr-16 bg-muted/40 border-border rounded-2xl transition-all shadow-inner",
                       activeClasses.ring,

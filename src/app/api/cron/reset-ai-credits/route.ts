@@ -28,7 +28,7 @@ async function handleResetAICredits(request: NextRequest) {
     }
 
     const supabaseAdmin = createAdminClient()
-    const DEFAULT_DAILY_CREDITS = 5
+    const DEFAULT_DAILY_CREDITS = 20
 
     // 3. Reset ai_credits to DEFAULT_DAILY_CREDITS for ALL users in chameleons table
     const { data, error, count } = await (supabaseAdmin as any)

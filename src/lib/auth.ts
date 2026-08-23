@@ -167,7 +167,7 @@ export async function getStudentSession(forceRefresh = false): Promise<StudentUs
         profile_image: userData.profile_image,
         email: userData.email,
         coins: userData.coins || 0,
-        ai_credits: userData.ai_credits ?? 5,
+        ai_credits: userData.ai_credits ?? 20,
         inventory: userData.inventory || [],
         Registrations: userData.Registrations || null,
         is_super_admin: userData.is_super_admin || false

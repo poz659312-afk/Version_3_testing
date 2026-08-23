@@ -1,44 +1,76 @@
 import { NextResponse } from "next/server";
 import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-limit";
 import fcdsBylawsData from "@/lib/fcds_bylaws.json";
+import { ACADEMIC_TRACKS } from "@/lib/course-subjects";
 
-// Optimized model list for fast token-efficient streaming at scale (3000+ students)
-const MARLINE_MODELS = [
-  "google/gemini-2.5-flash-lite",
-  "google/gemini-2.5-flash",
-  "meta-llama/llama-3.3-70b-instruct"
+// Multi-tier Fallback Providers & Models (100% Free & Highly Capable)
+const OPENROUTER_MODELS = [
+  "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "google/gemma-4-31b-it:free",
+  "nvidia/nemotron-3-super-120b-a12b:free",
+  "nvidia/nemotron-3.5-lightning:free",
 ];
 
-// System Prompt with Marline's academic companion persona (study schedules + freshman guide), ultra token-efficient
-const MARLINE_SYSTEM_PROMPT = `أنتِ "مارلين" (Marline AI) - الرفيق والمساعد الأكاديمي المباشر لطلاب موقع ChameleonFCDS وكلية الحاسبات وعلوم البيانات بجامعة الإسكندرية.
+const GROQ_MODELS = [
+  "qwen/qwen3.6-27b",
+  "openai/gpt-oss-120b",
+  "allam-2-7b"
+];
 
-المجال الأكاديمي المسموح لكِ فقط:
-1. إعداد وتنظيم جداول المذاكرة اليومية والأسبوعية وخُطط المراجعة قبل الامتحانات.
-2. إجابة أسئلة الطلاب الجدد (الفرقة الأولى والطلاب المحولين) وإرشادهم حول الكلية، الأقسام، ونظام الساعات المعتمدة.
-3. الإرشاد حول اللائحة الكلية (GPA، الإنذار الأكاديمي، الغياب، التقديرات، وحساب المواد).
+// College Tracks & Subjects Summary for Context Grounding
+const COLLEGE_TRACKS_SUMMARY = ACADEMIC_TRACKS.map(t => ({
+  track: t.name,
+  code: t.code,
+  subjects: t.subjects
+}));
 
-قواعد ملزمة وصارمة لتوفير التوكنز لأقصى درجة (خدمة 3000 طالب):
-1. **ممنوع كتابة أو توليد الأكواد البرمجية (No Code)**: إذا طلب الطالب كتابة كود برمجي أو حل مسألة برمجة، اعتذري فوراً بعبارة واحدة فقط:
-   "أنا رفيقك الأكاديمي لتنظيم المذاكرة والإرشاد فقط، ولست مخصصة لكتابة الأكواد البرمجية."
-2. **ممنوع الردود التفصيلية (No Detailed/Long Answers)**: أجيبي فقط في شكل نقاط مختصرة جداً (Bullet Points)، بحد أقصى 2 إلى 4 أسطر قصيرة ومباشرة، بدون أي مقدمات ترحيبية أو خاتمة.
-3. **التوفير التام في التوكنز**: أجيبي بالخلاصة فوراً دون إعادة كتابة سؤال الطالب ودون تطويل.
-4. **الالتزام باللائحة**: اعتمادي دائمًا على اللائحة المرفقة أدناه في أي استفسارات تخص الكلية.
+// System Prompt for Marline AI
+const MARLINE_SYSTEM_PROMPT = `أنتِ "مارلين" (Marline AI) - الرفيق والمساعد الأكاديمي والبرمجي الذكي المتميز لطلاب كلية الحاسبات وعلوم البيانات بجامعة الإسكندرية (FCDS) ومنصة Chameleon.
 
-اللائحة الداخلية للكلية (FCDS Bylaws):
-${JSON.stringify(fcdsBylawsData)}`;
+### 🌟 شخصيتك وأسلوبك:
+1. **طبيعية وبشرية 100%**: تتحدثين باللهجة المصرية العامية الذكية والودودة جداً (أو العربية الفصحى أو الإنجليزية بطلاقة تامة حسب لغة وطلب الطالب).
+2. **الاحترام والتشجيع**: تخاطبين الطلاب بألقاب محببة ومشجعة مثل "يا باشمهندس"، "يا دكتور"، "يا بطل"، "يا غالي".
+3. **الدقة والوضوح**: إجاباتك خالية تماماً من الفذلكة أو المعلومات المغلوطة، ومصاغة بأسلوب سلس يسهل فهمه.
+
+---
+
+### 💻 1. القدرات البرمجية والتقنية (Coding Mastery):
+* **فهم وتوليد الأكواد**: قادرة على فهم، كتابة، تصحيح، وشرح الأكواد في مختلف لغات البرمجة (Python, C++, Java, JavaScript, TypeScript, SQL, Assembly, R, HTML/CSS).
+* **الخوارزميات وهياكل البيانات**: شرح المسائل الرياضية، الـ Time/Space Complexity، وحل مشكلات الـ Data Structures & Algorithms مع كتابة كود نظيف وتوضيح الـ Edge Cases.
+* **تنسيق الكود**: كتابة الأكواد داخل Markdown Code Blocks منسقة وموثقة مع تعليقات تشرح أهم السطور.
+
+---
+
+### 🎓 2. الإلمام التام بلائحة ومقررات الكلية (FCDS Academic Authority):
+* **المرجعية الصارمة**: لديكِ اللائحة الداخلية المعتمدة للكلية، ولا تقدمين أي معلومة إدارية أو أكاديمية تخالفها.
+* **حساب الـ CGPA والتقديرات**: نظام النقاط (A: 4.0, A-: 3.666, B+: 3.333, B: 3.0, B-: 2.666, C+: 2.333, C: 2.0, D: 1.0, F: 0.0). الحد الأدنى للتخرج هو CGPA 2.00 وساعات التخرج 140 ساعة معتمدة.
+* **الإنذار الأكاديمي**: الطالب يوضع تحت الملاحظة إذا انخفض معدله عن 2.00، ويفصل إذا استمر لعدد فصول محدد باللائحة.
+* **الأقسام والمسارات**: (Data Science, Artificial Intelligence, Cybersecurity, Business Analytics, Media Analytics, Healthcare Informatics).
+
+---
+
+### 📚 بيانات الكلية واللائحة المعتمدة (FCDS Official Bylaws & Tracks):
+اللائحة الداخلية:
+${JSON.stringify(fcdsBylawsData)}
+
+المسارات والمواد الدراسية:
+${JSON.stringify(COLLEGE_TRACKS_SUMMARY)}
+`;
 
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json({ error: "OpenRouter API key is not configured on the server" }, { status: 500 });
+    const openRouterKey = process.env.OPENROUTER_API_KEY;
+    const groqKey = process.env.GROQ_API_KEY;
+
+    if (!openRouterKey && !groqKey) {
+      return NextResponse.json({ error: "No AI provider keys configured on server" }, { status: 500 });
     }
 
     const identifier = getRequestIdentifier(req);
     const rateLimit = checkRateLimit(identifier, RateLimitTier.AI);
     if (!rateLimit.success) {
       return NextResponse.json(
-        { error: "Too many requests. Please try again later." },
+        { error: "لقد تجاوزت معدل الطلبات المسموح به حالياً. يرجى المحاولة بعد قليل." },
         {
           status: 429,
           headers: {
@@ -52,42 +84,41 @@ export async function POST(req: Request) {
 
     const { messages, auth_id } = await req.json();
 
-    // Check & deduct ai_credits from database if auth_id is provided
+    // Deduct daily question credit from DB if authenticated
     if (auth_id) {
       try {
-        const { createAdminClient } = await import("@/lib/supabase/admin")
-        const supabaseAdmin = createAdminClient() as any
+        const { createAdminClient } = await import("@/lib/supabase/admin");
+        const supabaseAdmin = createAdminClient() as any;
         const { data: userRecord } = await supabaseAdmin
           .from('chameleons')
           .select('ai_credits')
           .eq('auth_id', auth_id)
-          .single()
+          .single();
 
-        const currentCredits = userRecord?.ai_credits ?? 5
+        const currentCredits = userRecord?.ai_credits ?? 20;
         if (currentCredits <= 0) {
           return NextResponse.json(
-            { error: "لقد استنفدت رصيد الأسئلة اليومي (0/5 أسئلة). يرجى العودة غداً عند تجديد الرصيد!" },
+            { error: "لقد استنفدت رصيد الأسئلة اليومي (0/20 سؤالاً). يرجى العودة غداً عند تجديد الرصيد!" },
             { status: 429 }
-          )
+          );
         }
 
-        // Deduct 1 credit from chameleons table
         await supabaseAdmin
           .from('chameleons')
           .update({ ai_credits: Math.max(0, currentCredits - 1) })
-          .eq('auth_id', auth_id)
+          .eq('auth_id', auth_id);
       } catch (dbErr) {
-        console.warn("Could not update ai_credits in DB:", dbErr)
+        console.warn("Could not update ai_credits in DB:", dbErr);
       }
     }
 
-    // MAXIMUM TOKEN OPTIMIZATION: Keep System Prompt + last 3 messages ONLY and limit input to 400 chars
+    // Keep last 10 messages for rich conversational & coding context
     const recentMessages = (messages || [])
       .filter((m: any) => m.role !== "system")
-      .slice(-3)
+      .slice(-10)
       .map((m: any) => ({
         role: m.role,
-        content: typeof m.content === "string" ? m.content.slice(0, 400) : m.content
+        content: typeof m.content === "string" ? m.content.slice(0, 3000) : m.content
       }));
 
     const formattedMessages = [
@@ -97,45 +128,83 @@ export async function POST(req: Request) {
 
     let lastErrorText = "";
 
-    // Try streaming with fallback models
-    for (const model of MARLINE_MODELS) {
-      try {
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${apiKey}`,
-            "HTTP-Referer": "https://chameleon-v3.vercel.app",
-            "X-Title": "Marline AI Stream",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: model,
-            messages: formattedMessages,
-            stream: true,
-            temperature: 0.0,
-            max_tokens: 300
-          }),
-        });
-
-        if (response.ok && response.body) {
-          // Return SSE ReadableStream directly to frontend
-          return new Response(response.body, {
+    // TIER 1: Try OpenRouter Free Models
+    if (openRouterKey) {
+      for (const model of OPENROUTER_MODELS) {
+        try {
+          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
             headers: {
-              "Content-Type": "text/event-stream",
-              "Cache-Control": "no-cache, no-transform",
-              "Connection": "keep-alive",
+              "Authorization": `Bearer ${openRouterKey}`,
+              "HTTP-Referer": "https://chameleon-nu.vercel.app",
+              "X-Title": "Marline AI",
+              "Content-Type": "application/json",
             },
+            body: JSON.stringify({
+              model: model,
+              messages: formattedMessages,
+              stream: true,
+              temperature: 0.4,
+              max_tokens: 1800
+            }),
           });
-        } else {
-          lastErrorText = await response.text();
-          console.warn(`Marline AI model ${model} stream failed (${response.status}):`, lastErrorText);
+
+          if (response.ok && response.body) {
+            return new Response(response.body, {
+              headers: {
+                "Content-Type": "text/event-stream",
+                "Cache-Control": "no-cache, no-transform",
+                "Connection": "keep-alive",
+              },
+            });
+          } else {
+            lastErrorText = await response.text();
+            console.warn(`[Marline AI] OpenRouter model ${model} failed (${response.status}):`, lastErrorText);
+          }
+        } catch (err) {
+          console.warn(`[Marline AI] OpenRouter fetch error for ${model}:`, err);
         }
-      } catch (err) {
-        console.warn(`Marline AI stream fetch error for model ${model}:`, err);
       }
     }
 
-    return NextResponse.json({ error: lastErrorText || "All AI model stream attempts failed" }, { status: 500 });
+    // TIER 2: Seamless Fallback to Groq API
+    if (groqKey) {
+      for (const model of GROQ_MODELS) {
+        try {
+          const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${groqKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: formattedMessages,
+              stream: true,
+              temperature: 0.4,
+              max_tokens: 1800
+            }),
+          });
+
+          if (response.ok && response.body) {
+            return new Response(response.body, {
+              headers: {
+                "Content-Type": "text/event-stream",
+                "Cache-Control": "no-cache, no-transform",
+                "Connection": "keep-alive",
+              },
+            });
+          } else {
+            lastErrorText = await response.text();
+            console.warn(`[Marline AI] Groq model ${model} failed (${response.status}):`, lastErrorText);
+          }
+        } catch (err) {
+          console.warn(`[Marline AI] Groq fetch error for ${model}:`, err);
+        }
+      }
+    }
+
+    return NextResponse.json({ error: lastErrorText || "All AI providers and models failed" }, { status: 500 });
   } catch (error) {
     console.error("Marline API Internal Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

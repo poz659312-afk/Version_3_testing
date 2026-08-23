@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Roboto_Mono, Rubik, Outfit, Rock_Salt, Cairo, Noto_Sans_Arabic } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import "katex/dist/katex.min.css";
 import { ToastProvider } from "@/components/ToastProvider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ColorThemeProvider } from "@/components/color-theme-provider";

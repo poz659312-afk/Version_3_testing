@@ -9,7 +9,6 @@ import rehypeRaw from "rehype-raw"
 import rehypeHighlight from "rehype-highlight"
 import { Check, Copy, Terminal, ExternalLink } from "lucide-react"
 
-import "katex/dist/katex.min.css"
 import "highlight.js/styles/github-dark.css"
 
 interface MarlineMarkdownRendererProps {

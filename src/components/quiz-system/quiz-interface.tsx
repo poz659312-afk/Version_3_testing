@@ -39,7 +39,6 @@ import { getStudentSession } from "@/lib/auth";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Dialog as ImageDialog, DialogContent as ImageDialogContent } from "@/components/ui/dialog";
 import Calculator from "@/components/Calculator";
-import "katex/dist/katex.min.css";
 import { InlineMath } from "react-katex";
 import { toast } from "sonner";
 import Image from "next/image";

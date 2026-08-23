@@ -40,6 +40,8 @@ next-env.d.ts
 /public/drive-tree.html
 /gemini-chat.html
 /public/gemini-chat.html
+/nvidia-chat.html
+nvidia-chat.html
 /push-changes.ps1
 /push-changes.sh
 
