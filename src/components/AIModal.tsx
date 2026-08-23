@@ -42,6 +42,31 @@ interface Message {
   content: string;
 }
 
+function preprocessMathContent(content: string): string {
+  if (!content) return "";
+  let text = content;
+
+  // 1. Separate headers (##, ###) with newlines if attached directly to preceding or subsequent text
+  text = text.replace(/([^\n])\s*(#{1,6}\s+[^\n]+)/g, '$1\n\n$2');
+  text = text.replace(/(#{1,6}\s+[^\n]+)\s*([^\n#\s])/g, '$1\n\n$2');
+
+  // 2. Separate horizontal lines (---) with newlines so they don't break paragraphs
+  text = text.replace(/([^\n])\s*---\s*([^\n])/g, '$1\n\n---\n\n$2');
+
+  // 3. Separate code blocks with newlines
+  text = text.replace(/([^\n])\s*(```[a-zA-Z0-9_-]*)/g, '$1\n\n$2');
+  text = text.replace(/(```)\s*([^\n`\s])/g, '$1\n\n$2');
+
+  // 4. Ensure display math $$ has its own lines
+  text = text.replace(/([^\n])\s*(\$\$)/g, '$1\n\n$2');
+  text = text.replace(/(\$\$)\s*([^\n$\s])/g, '$1\n\n$2');
+
+  // 5. Wrap standalone \begin{cases} / \begin{matrix} with $$ if missing
+  text = text.replace(/(?<!\$\$)\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*(?!\$\$)/g, '\n\n$$$1$$\n\n');
+
+  return text;
+}
+
 function extractCodeText(node: any): string {
   if (!node) return "";
   if (typeof node === "string") return node;
@@ -1793,10 +1818,12 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                       </h2>
                                     ),
                                     h3: ({ children }) => (
-                                      <h3 className={cn("text-xs font-extrabold mt-4 mb-2 px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-sm border uppercase tracking-wider transition-all duration-300 hover:scale-[1.02]", activeClasses.bg, activeClasses.text, activeClasses.border)}>
-                                        <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", activeClasses.bullet)} />
-                                        {children}
-                                      </h3>
+                                      <div className="my-3 block">
+                                        <h3 className={cn("text-xs font-extrabold px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-sm border uppercase tracking-wider transition-all duration-300 hover:scale-[1.02]", activeClasses.bg, activeClasses.text, activeClasses.border)}>
+                                          <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", activeClasses.bullet)} />
+                                          {children}
+                                        </h3>
+                                      </div>
                                     ),
                                     h4: ({ children }) => (
                                       <h4 className={cn("text-xs font-bold uppercase tracking-widest mt-4 mb-1.5 flex items-center gap-2", isDark ? "text-white/90" : "text-slate-800")}>
