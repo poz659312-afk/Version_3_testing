@@ -143,21 +143,16 @@ export function GoogleDriveManager({
     }
   }
 
-  // Check if user has Google Drive access
+  // Check if user has Google Drive access (deduplicated)
   const checkGoogleAccess = useCallback(async () => {
     if (!currentAuthId) return false
 
     try {
-      const response = await fetch(`/api/google-drive/check-access?authId=${currentAuthId}`)
-      const result = await response.json()
+      const { checkGoogleDriveAccess } = await import("@/lib/drive-access")
+      const result = await checkGoogleDriveAccess(currentAuthId)
 
-      if (response.ok) {
-        setHasGoogleAccess(result.hasAccess)
-        return result.hasAccess
-      } else {
-        setHasGoogleAccess(false)
-        return false
-      }
+      setHasGoogleAccess(result.hasAccess)
+      return result.hasAccess
     } catch (err) {
       console.error('Error checking Google access:', err)
       setHasGoogleAccess(false)

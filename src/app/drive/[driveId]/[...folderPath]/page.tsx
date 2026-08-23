@@ -373,24 +373,19 @@ export default function DrivePage() {
       const session = await getStudentSession()
       setUserSession(session)
       
-      // Fetch fresh admin status from database
+      // Fetch fresh admin status from database (deduplicated)
       if (session?.auth_id) {
         try {
-          const response = await fetch(`/api/google-drive/check-access?authId=${session.auth_id}`)
-          const result = await response.json()
+          const { checkGoogleDriveAccess } = await import("@/lib/drive-access");
+          const result = await checkGoogleDriveAccess(session.auth_id);
           
-          console.log('Fresh admin status from DB:', result)
-          
-          // User is admin if they have is_admin=true
-          const isUserAdmin = result.isAdmin
-          const isUserAuthorized = result.authorized
-          console.log('Final admin status:', isUserAdmin, 'Authorized:', isUserAuthorized)
-          setIsAdmin(isUserAdmin)
-          setIsAuthorized(isUserAuthorized)
+          const isUserAdmin = result.isAdmin;
+          const isUserAuthorized = result.authorized;
+          setIsAdmin(isUserAdmin);
+          setIsAuthorized(isUserAuthorized);
         } catch (error) {
-          console.error('Error checking admin status:', error)
-          // Fallback to session data
-          setIsAdmin(session?.is_admin || false)
+          console.error('Error checking admin status:', error);
+          setIsAdmin(session?.is_admin || false);
         }
       }
       setSessionChecked(true)

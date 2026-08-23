@@ -35,18 +35,13 @@ export function AdminAuthGuard({ userSession, onAuthStatusChange, children }: Ad
     }
 
     try {
-      const response = await fetch(`/api/google-drive/check-access?authId=${userSession.auth_id}`)
-      const result = await response.json()
+      const { checkGoogleDriveAccess } = await import("@/lib/drive-access")
+      const result = await checkGoogleDriveAccess(userSession.auth_id)
 
-      if (response.ok) {
-        // Admin user has their own Google Drive tokens
-        if (result.hasAccess && result.isAdmin) {
-          setAuthStatus('authenticated')
-          onAuthStatusChange?.(true)
-        } else {
-          setAuthStatus('needs-auth')
-          onAuthStatusChange?.(false)
-        }
+      // Admin user has their own Google Drive tokens
+      if (result.hasAccess && result.isAdmin) {
+        setAuthStatus('authenticated')
+        onAuthStatusChange?.(true)
       } else {
         setAuthStatus('needs-auth')
         onAuthStatusChange?.(false)

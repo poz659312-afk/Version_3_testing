@@ -64,7 +64,7 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
     // The actual callback setup happens in the upload context when uploadFile is called
   }, [onFileCreated])
 
-  // Check if user has Google Drive authentication
+  // Check if user has Google Drive authentication (deduplicated)
   useEffect(() => {
     const checkAuthentication = async () => {
       if (!userSession?.auth_id) {
@@ -73,10 +73,10 @@ export function CreateActions({ currentFolderId, onFileCreated, userSession }: C
       }
 
       try {
-        const response = await fetch(`/api/google-drive/check-access?authId=${userSession.auth_id}`)
-        const result = await response.json()
+        const { checkGoogleDriveAccess } = await import("@/lib/drive-access")
+        const result = await checkGoogleDriveAccess(userSession.auth_id)
 
-        if (response.ok && result.hasAccess) {
+        if (result.hasAccess) {
           setHasGoogleAuth(true)
           setAuthError(null)
         } else {
