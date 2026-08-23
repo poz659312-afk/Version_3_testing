@@ -2,35 +2,31 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   BookOpen,
   Search,
-  Sparkles,
   Plus,
   Coins,
   Heart,
-  SlidersHorizontal,
-  FolderLock,
   UserCheck
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Summary, User as UserType } from '@/lib/types'
-import { StudentUser } from '@/lib/auth'
+import { Summary } from '@/lib/types'
+import { ACADEMIC_TRACKS } from '@/lib/course-subjects'
 import SummaryCard from '@/components/summaries/SummaryCard'
 
 const TRACK_TABS = [
-  { id: 'ALL', label: 'All Tracks' },
-  { id: 'CDS', label: 'CDS' },
+  { id: 'ALL', label: 'All Subjects' },
+  { id: 'DS', label: 'DS' },
   { id: 'AI', label: 'AI' },
-  { id: 'CYS', label: 'CYS' },
-  { id: 'MA', label: 'MA' },
+  { id: 'HA', label: 'HA' },
+  { id: 'CS', label: 'CS' },
   { id: 'BA', label: 'BA' },
-  { id: 'HI', label: 'HI' },
-  { id: 'GENERAL', label: 'General' },
+  { id: 'MA', label: 'MA' },
 ]
 
 interface SummariesHubClientProps {
@@ -44,7 +40,7 @@ export default function SummariesHubClient({
   session,
   isAdmin
 }: SummariesHubClientProps) {
-  const [summaries, setSummaries] = useState<Summary[]>(initialSummaries)
+  const [summaries, setSummaries] = useState<Summary[]>((initialSummaries || []).filter(Boolean))
   const [selectedTrack, setSelectedTrack] = useState('ALL')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'votes' | 'latest'>('votes')
@@ -53,12 +49,16 @@ export default function SummariesHubClient({
   // Filter summaries based on search and track
   const filteredSummaries = summaries
     .filter(summary => {
+      if (!summary) return false
+
       // Track match
       if (selectedTrack !== 'ALL') {
-        const subj = (summary.subject_id || '').toUpperCase()
-        if (selectedTrack === 'GENERAL') {
-          if (subj && subj !== 'GENERAL' && subj !== 'MATH' && subj !== 'PROG') return false
-        } else if (!subj.includes(selectedTrack)) {
+        const trackObj = ACADEMIC_TRACKS.find(t => t.code === selectedTrack)
+        const subjName = (summary.subject_id || '').toLowerCase()
+        const isDirectTrackCode = subjName === selectedTrack.toLowerCase()
+        const isSubjectInTrack = trackObj?.subjects.some(s => s.toLowerCase() === subjName || subjName.includes(s.toLowerCase())) || false
+
+        if (!isDirectTrackCode && !isSubjectInTrack) {
           return false
         }
       }
@@ -66,7 +66,7 @@ export default function SummariesHubClient({
       // Search match
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase()
-        const titleMatch = summary.title.toLowerCase().includes(q)
+        const titleMatch = summary.title?.toLowerCase().includes(q) || false
         const descMatch = summary.description?.toLowerCase().includes(q) || false
         const authorMatch = summary.authorName?.toLowerCase().includes(q) || false
         const subjectMatch = summary.subject_id?.toLowerCase().includes(q) || false
@@ -88,12 +88,12 @@ export default function SummariesHubClient({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border/80 pb-8">
         <div className="space-y-2 max-w-2xl">
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-black tracking-wide">
+            <span className="px-3 py-1 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs font-black tracking-wide">
               ✨ SUMMARIES 2.0
             </span>
             {session && (
               <span className="px-3 py-1 rounded-full bg-muted border border-border text-xs font-bold text-foreground flex items-center gap-1.5">
-                <Coins className="w-3.5 h-3.5 text-amber-500" />
+                <Coins className="w-3.5 h-3.5 text-primary" />
                 <span>Your Balance: {studentCoins.toLocaleString()} Coins</span>
               </span>
             )}
@@ -103,7 +103,7 @@ export default function SummariesHubClient({
             Academic Summaries & Guides
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-            Verified study summaries and lecture notes prepared by top students. Support your favorite contributors with Chameleon Coins!
+            Verified study summaries and lecture notes prepared by top students across all departments (DS, AI, HA, CS, BA, MA). Support contributors with Chameleon Coins!
           </p>
         </div>
 
@@ -111,7 +111,7 @@ export default function SummariesHubClient({
         {isAdmin && (
           <Button
             asChild
-            className="rounded-2xl bg-amber-500 hover:bg-amber-600 text-black font-black px-6 py-6 text-sm shadow-xl shadow-amber-500/20 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
+            className="rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-black px-6 py-6 text-sm shadow-xl shadow-primary/20 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
           >
             <Link href="/summaries/contributor">
               <UserCheck className="w-4 h-4" />
@@ -123,7 +123,7 @@ export default function SummariesHubClient({
 
       {/* Filter Tabs & Search Controls */}
       <div className="space-y-4">
-        {/* Track / Major Tabs */}
+        {/* Track Tabs: ALL, DS, AI, HA, CS, BA, MA */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           {TRACK_TABS.map(tab => (
             <button
@@ -131,8 +131,8 @@ export default function SummariesHubClient({
               onClick={() => setSelectedTrack(tab.id)}
               className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all duration-200 ${
                 selectedTrack === tab.id
-                  ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20'
-                  : 'bg-card border border-border text-muted-foreground hover:text-foreground hover:border-amber-500/40'
+                  ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
+                  : 'bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/40'
               }`}
             >
               {tab.label}
@@ -147,8 +147,8 @@ export default function SummariesHubClient({
             <Input
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search by title, subject, or contributor name..."
-              className="pl-10 rounded-2xl border-border bg-card focus:border-amber-500 text-sm h-11"
+              placeholder="Search by subject name, title, or contributor..."
+              className="pl-10 rounded-2xl border-border bg-card focus:border-primary text-sm h-11"
             />
           </div>
 

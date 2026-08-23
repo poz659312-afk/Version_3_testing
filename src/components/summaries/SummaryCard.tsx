@@ -85,13 +85,13 @@ export default function SummaryCard({
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      className="group relative flex flex-col justify-between rounded-3xl bg-card border border-border/80 hover:border-amber-500/50 transition-all duration-300 p-5 shadow-lg hover:shadow-xl hover:shadow-amber-500/5"
+      className="group relative flex flex-col justify-between rounded-3xl bg-card border border-border/80 hover:border-primary/50 transition-all duration-300 p-5 shadow-lg hover:shadow-xl hover:shadow-primary/5"
     >
       {/* Top Section: Subject Badge + File Meta */}
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-2">
           {summary.subject_id ? (
-            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 text-[11px] font-bold px-2.5 py-0.5 rounded-full">
+            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 text-[11px] font-bold px-2.5 py-0.5 rounded-full">
               {summary.subject_id}
             </Badge>
           ) : (
@@ -111,7 +111,7 @@ export default function SummaryCard({
         </div>
 
         {/* Title */}
-        <h3 className="text-lg font-black text-foreground tracking-tight line-clamp-2 group-hover:text-amber-500 transition-colors">
+        <h3 className="text-lg font-black text-foreground tracking-tight line-clamp-2 group-hover:text-primary transition-colors">
           {summary.title}
         </h3>
 
@@ -130,14 +130,14 @@ export default function SummaryCard({
             href={`/contributors/${authorUsername}`}
             className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
           >
-            <Avatar className="w-8 h-8 border border-amber-500/40">
+            <Avatar className="w-8 h-8 border border-primary/40">
               <AvatarImage src={summary.authorAvatar || undefined} alt={summary.authorName} />
-              <AvatarFallback className="bg-amber-500/20 text-amber-500 text-xs font-black">
+              <AvatarFallback className="bg-primary/20 text-primary text-xs font-black">
                 {summary.authorName ? summary.authorName.charAt(0).toUpperCase() : 'C'}
               </AvatarFallback>
             </Avatar>
             <div className="text-left">
-              <span className="text-xs font-bold text-foreground block line-clamp-1 hover:text-amber-500">
+              <span className="text-xs font-bold text-foreground block line-clamp-1 hover:text-primary">
                 {summary.authorName}
               </span>
               <span className="text-[10px] text-muted-foreground block">
@@ -160,8 +160,8 @@ export default function SummaryCard({
         )}
 
         {/* Supports Counter */}
-        <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-black">
-          <Heart className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+        <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-black">
+          <Heart className="w-3.5 h-3.5 fill-primary text-primary" />
           <span>{votes}</span>
         </div>
       </div>
@@ -173,18 +173,18 @@ export default function SummaryCard({
           onClick={handleSupport}
           disabled={isSupporting}
           size="sm"
-          className="w-full rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-black text-xs shadow-md shadow-amber-500/20 flex items-center justify-center gap-1.5 h-9"
+          className="w-full rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-black text-xs shadow-md shadow-primary/20 flex items-center justify-center gap-1.5 h-9"
         >
           {isSupporting ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
           ) : justSupported ? (
             <>
-              <CheckCircle2 className="w-3.5 h-3.5 text-black" />
+              <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Supported!</span>
             </>
           ) : (
             <>
-              <Heart className="w-3.5 h-3.5 fill-black text-black" />
+              <Heart className="w-3.5 h-3.5 fill-current" />
               <span>Support (100 🪙)</span>
             </>
           )}
@@ -195,7 +195,7 @@ export default function SummaryCard({
           asChild
           variant="outline"
           size="sm"
-          className="w-full rounded-xl border-border hover:border-amber-500/50 hover:bg-muted/80 text-foreground font-bold text-xs flex items-center justify-center gap-1.5 h-9"
+          className="w-full rounded-xl border-border hover:border-primary/50 hover:bg-muted/80 text-foreground font-bold text-xs flex items-center justify-center gap-1.5 h-9"
         >
           <a
             href={summary.drive_url || `https://drive.google.com/file/d/${summary.drive_file_id}/view`}

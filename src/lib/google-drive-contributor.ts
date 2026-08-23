@@ -196,3 +196,25 @@ export async function uploadSummaryFileToDrive(
     fileSize: Number(response.data.size) || file.size || 0
   }
 }
+
+/**
+ * Deletes a summary file from Google Drive when removed by contributor.
+ */
+export async function deleteSummaryFileFromDrive(
+  authId: string,
+  driveFileId: string
+): Promise<boolean> {
+  if (!driveFileId) return true
+
+  try {
+    const drive = await getContributorDriveClient(authId)
+    await drive.files.delete({
+      fileId: driveFileId,
+      supportsAllDrives: true
+    })
+    return true
+  } catch (err) {
+    console.warn(`Could not delete file ${driveFileId} from Google Drive:`, err)
+    return false
+  }
+}

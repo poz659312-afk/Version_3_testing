@@ -9,7 +9,8 @@ import {
   createContributorRootFolder,
   createContributorSubfolder,
   listContributorSubfolders,
-  uploadSummaryFileToDrive
+  uploadSummaryFileToDrive,
+  deleteSummaryFileFromDrive
 } from '@/lib/google-drive-contributor'
 
 // ============================================================================
@@ -56,9 +57,10 @@ export async function getContributorProfile(adminId?: string): Promise<Contribut
     .select('votes, earned_coins')
     .eq('contributor_id', data.id)
 
-  const summaries_count = summariesData?.length || 0
-  const total_votes = (summariesData || []).reduce((acc: number, s: any) => acc + (s.votes || 0), 0)
-  const total_earned_coins = (summariesData || []).reduce((acc: number, s: any) => acc + (s.earned_coins || 0), 0)
+  const validSummaries = (summariesData || []).filter(Boolean)
+  const summaries_count = validSummaries.length
+  const total_votes = validSummaries.reduce((acc: number, s: any) => acc + (s?.votes || 0), 0)
+  const total_earned_coins = validSummaries.reduce((acc: number, s: any) => acc + (s?.earned_coins || 0), 0)
 
   return {
     ...data,
@@ -226,7 +228,7 @@ export async function createContributorSubfolderAction(folderName: string, paren
   }
 
   let targetParent = contributor.drive_folder_id
-  if (parentFolderId && parentFolderId.trim() && parentFolderId !== contributor.drive_folder_id) {
+  if (parentFolderId && parentFolderId.trim() && parentFolderId !== 'root' && parentFolderId !== contributor.drive_folder_id) {
     const subfolders = await listContributorSubfolders(session.auth_id, contributor.drive_folder_id)
     const isValidSubfolder = subfolders.some(f => f.id === parentFolderId)
     if (!isValidSubfolder) {
@@ -236,6 +238,48 @@ export async function createContributorSubfolderAction(folderName: string, paren
   }
 
   return await createContributorSubfolder(session.auth_id, targetParent, folderName)
+}
+
+/**
+ * Delete a subfolder from Google Drive.
+ * Reassigns any summaries in that subfolder back to the contributor's root folder.
+ */
+export async function deleteContributorSubfolderAction(subfolderId: string): Promise<{ success: boolean }> {
+  const session = await getServerStudentSession()
+  if (!session || (!session.is_admin && !session.is_super_admin)) {
+    throw new Error('Unauthorized.')
+  }
+
+  const contributor = await getContributorProfile(session.auth_id)
+  if (!contributor || !contributor.drive_folder_id) {
+    throw new Error('Contributor Profile not found.')
+  }
+
+  if (subfolderId === contributor.drive_folder_id) {
+    throw new Error('Root folder cannot be deleted.')
+  }
+
+  // Validate that this subfolder belongs to the contributor
+  const subfolders = await listContributorSubfolders(session.auth_id, contributor.drive_folder_id)
+  const isAuthorized = subfolders.some(f => f.id === subfolderId)
+  if (!isAuthorized) {
+    throw new Error('Unauthorized. Folder does not belong to your account.')
+  }
+
+  // 1. Move any summaries inside this subfolder to root folder in database
+  const supabase = createAdminClient()
+  await (supabase
+    .from('summaries') as any)
+    .update({ drive_folder_id: contributor.drive_folder_id })
+    .eq('contributor_id', contributor.id)
+    .eq('drive_folder_id', subfolderId)
+
+  // 2. Delete the subfolder from Google Drive
+  await deleteSummaryFileFromDrive(session.auth_id, subfolderId)
+
+  revalidatePath('/summaries')
+  revalidatePath('/summaries/contributor')
+  return { success: true }
 }
 
 // ============================================================================
@@ -271,7 +315,7 @@ export async function uploadSummaryAction(formData: FormData): Promise<Summary> 
     throw new Error('A summary document file is required.')
   }
 
-  // --- FIX #3: Server-Side File Size Validation (BEFORE memory allocation) ---
+  // --- Server-Side File Size Validation ---
   if (file.size > MAX_FILE_SIZE_BYTES) {
     throw new Error(`File exceeds maximum allowed size of 50 MB (Current: ${(file.size / (1024 * 1024)).toFixed(1)} MB).`)
   }
@@ -280,7 +324,7 @@ export async function uploadSummaryAction(formData: FormData): Promise<Summary> 
     throw new Error('Uploaded file is empty.')
   }
 
-  // --- FIX #3: Server-Side MIME Type and File Extension Validation ---
+  // --- Server-Side MIME Type and File Extension Validation ---
   const fileName = file.name || 'document.pdf'
   const fileExt = fileName.split('.').pop()?.toLowerCase() || ''
 
@@ -293,9 +337,9 @@ export async function uploadSummaryAction(formData: FormData): Promise<Summary> 
     throw new Error(`Unsupported file MIME type "${fileMime}". Allowed formats: PDF, Word (DOCX/DOC), PowerPoint (PPTX/PPT), TXT.`)
   }
 
-  // --- FIX #5: Google Drive Subfolder Authorization Validation ---
+  // --- Google Drive Subfolder Authorization Validation ---
   let validatedFolderId = contributor.drive_folder_id
-  if (rawParentFolderId && rawParentFolderId !== contributor.drive_folder_id) {
+  if (rawParentFolderId && rawParentFolderId !== 'root' && rawParentFolderId !== contributor.drive_folder_id) {
     const subfolders = await listContributorSubfolders(session.auth_id, contributor.drive_folder_id)
     const isAuthorizedSubfolder = subfolders.some(f => f.id === rawParentFolderId)
     if (!isAuthorizedSubfolder) {
@@ -354,7 +398,14 @@ export async function uploadSummaryAction(formData: FormData): Promise<Summary> 
 
   revalidatePath('/summaries')
   revalidatePath('/summaries/contributor')
-  return summary as Summary
+  return {
+    ...summary,
+    votes: 0,
+    earned_coins: 0,
+    authorName: contributor.display_name,
+    authorAvatar: contributor.avatar_url,
+    authorUsername: contributor.username
+  } as Summary
 }
 
 /**
@@ -417,7 +468,7 @@ export async function updateSummaryAction(
 }
 
 /**
- * Deletes a summary record.
+ * Deletes a summary record from Supabase AND deletes the file permanently from Google Drive.
  */
 export async function deleteSummaryAction(summaryId: string): Promise<{ success: boolean }> {
   const session = await getServerStudentSession()
@@ -432,10 +483,10 @@ export async function deleteSummaryAction(summaryId: string): Promise<{ success:
 
   const supabase = createAdminClient()
 
-  // Verify ownership
+  // Verify ownership and get drive_file_id
   const { data: existing } = await (supabase
     .from('summaries') as any)
-    .select('id, contributor_id')
+    .select('id, contributor_id, drive_file_id')
     .eq('id', summaryId)
     .single()
 
@@ -443,6 +494,7 @@ export async function deleteSummaryAction(summaryId: string): Promise<{ success:
     throw new Error('Summary not found or access denied.')
   }
 
+  // 1. Delete record from Supabase
   const { error } = await (supabase
     .from('summaries') as any)
     .delete()
@@ -450,6 +502,15 @@ export async function deleteSummaryAction(summaryId: string): Promise<{ success:
 
   if (error) {
     throw new Error(`Failed to delete summary: ${error.message}`)
+  }
+
+  // 2. Delete file permanently from Google Drive
+  if (existing.drive_file_id) {
+    try {
+      await deleteSummaryFileFromDrive(session.auth_id, existing.drive_file_id)
+    } catch (driveErr) {
+      console.warn('Could not delete file from Google Drive:', driveErr)
+    }
   }
 
   revalidatePath('/summaries')
@@ -582,8 +643,10 @@ export async function getPublishedSummaries(filters?: {
     return []
   }
 
-  let result = (data as any[]).map((item: any) => ({
+  let result = (data as any[]).filter(Boolean).map((item: any) => ({
     ...item,
+    votes: item.votes || 0,
+    earned_coins: item.earned_coins || 0,
     contributor: item.contributors || null,
     authorName: item.contributors?.display_name || 'Anonymous Contributor',
     authorAvatar: item.contributors?.avatar_url || null,
@@ -624,7 +687,11 @@ export async function getMyContributorSummaries(): Promise<Summary[]> {
     .order('created_at', { ascending: false })
 
   if (error || !data) return []
-  return data as Summary[]
+  return (data as any[]).filter(Boolean).map(s => ({
+    ...s,
+    votes: s?.votes || 0,
+    earned_coins: s?.earned_coins || 0
+  })) as Summary[]
 }
 
 /**
@@ -653,8 +720,9 @@ export async function getContributorPublicProfile(username: string): Promise<{
     .eq('status', 'published')
     .order('votes', { ascending: false })
 
-  const summaries = ((summariesData || []) as any[]) as Summary[]
-  const total_votes = summaries.reduce((acc, s) => acc + (s.votes || 0), 0)
+  const validSummaries = ((summariesData || []) as any[]).filter(Boolean)
+  const summaries = validSummaries as Summary[]
+  const total_votes = summaries.reduce((acc, s) => acc + (s?.votes || 0), 0)
 
   const fullContributor: Contributor = {
     ...contributor,
@@ -668,6 +736,8 @@ export async function getContributorPublicProfile(username: string): Promise<{
     contributor: fullContributor,
     summaries: summaries.map(s => ({
       ...s,
+      votes: s?.votes || 0,
+      earned_coins: s?.earned_coins || 0,
       authorName: fullContributor.display_name,
       authorAvatar: fullContributor.avatar_url,
       authorUsername: fullContributor.username
