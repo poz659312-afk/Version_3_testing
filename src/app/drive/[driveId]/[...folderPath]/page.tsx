@@ -1276,7 +1276,7 @@ export default function DrivePage() {
                           </DropdownMenu>
                         </div>
 
-                        <CardHeader className="pb-2 pr-14 relative overflow-hidden">
+                        <CardHeader className="pb-2 relative overflow-hidden">
                           {/* Ownership Badge, shifted left to avoid overlapping the three-dots dropdown */}
                           {isCurrentUserOwner(file) && (
                             <div className="absolute -top-2 right-8 z-10">
@@ -1284,7 +1284,7 @@ export default function DrivePage() {
                             </div>
                           )}
                           
-                          <div className="flex items-start gap-3 w-full">
+                          <div className="flex items-start gap-3 w-full min-w-0 pr-12">
                             <div
                               className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-150 ${
                                 isFolder
@@ -1307,13 +1307,11 @@ export default function DrivePage() {
                                 <FileIcon className="w-5 h-5" />
                               )}
                             </div>
-                            <div className="flex-1 min-w-0 max-w-full overflow-hidden">
-                              <div className="w-full">
-                                <CardTitle className="text-sm font-medium leading-snug truncate block max-w-full text-foreground" title={file.name}>
-                                  {file.name}
-                                  {isFolder && <ChevronRight className="inline w-4 h-4 ml-1 opacity-60 shrink-0" />}
-                                </CardTitle>
-                              </div>
+                            <div className="flex-1 min-w-0 overflow-hidden">
+                              <h3 className="text-sm font-medium leading-snug truncate block w-full text-foreground" title={file.name}>
+                                {file.name}
+                                {isFolder && <ChevronRight className="inline w-4 h-4 ml-1 opacity-60 shrink-0" />}
+                              </h3>
                               <div className="flex items-center gap-2 mt-1">
                                 <Badge
                                   variant="outline"
