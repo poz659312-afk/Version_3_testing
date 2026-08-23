@@ -347,43 +347,6 @@ function MermaidElement({ chart }: { chart: string }) {
   );
 }
 
-const preprocessMathContent = (content: string) => {
-  if (!content) return "";
-
-  // Replace simple slash divisions and asterisks in LaTeX blocks with proper vertical fractions and clean dots
-  let processed = content;
-
-  // Match mathematical equations between $ and $ or $$ and $$
-  processed = processed.replace(/(\$\$?)([\s\S]*?)(\$\$?)/g, (match, d1, math, d2) => {
-    let cleanedMath = math;
-
-    // 1. Convert simple asterisks * to \cdot
-    cleanedMath = cleanedMath.replace(/\*/g, " \\cdot ");
-
-    // 2. Convert simple division slashes (/) inside math blocks to proper \frac blocks
-    // Pattern A: (numerator) / (denominator) -> \frac{numerator}{denominator}
-    cleanedMath = cleanedMath.replace(/\(([^)]+)\)\s*\/\s*\(([^)]+)\)/g, "\\frac{$1}{$2}");
-
-    // Pattern B: (numerator) / variable_or_number
-    cleanedMath = cleanedMath.replace(/\(([^)]+)\)\s*\/\s*([a-zA-Z0-9_^{}]+)/g, "\\frac{$1}{$2}");
-
-    // Pattern C: variable_or_number / (denominator)
-    cleanedMath = cleanedMath.replace(/([a-zA-Z0-9_^{}]+)\s*\/\s*\(([^)]+)\)/g, "\\frac{$1}{$2}");
-
-    // Pattern D: simple variable / simple variable (e.g. A/B or z^2/E^2)
-    cleanedMath = cleanedMath.replace(/([a-zA-Z0-9_^{}]+)\s*\/\s*([a-zA-Z0-9_^{}]+)/g, "\\frac{$1}{$2}");
-
-    // 3. Force full display style (\displaystyle) for large mathematical font sizes and beautiful vertical fraction heights
-    if (!cleanedMath.includes("\\displaystyle")) {
-      cleanedMath = " \\displaystyle " + cleanedMath;
-    }
-
-    return `${d1}${cleanedMath}${d2}`;
-  });
-
-  return processed;
-};
-
 export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
   const { colorTheme } = useColorTheme();
   const { resolvedTheme } = useTheme();
