@@ -1204,7 +1204,7 @@ export default function DriveRootPage() {
                               </DropdownMenu>
                             </div>
 
-                            <CardHeader className="pb-2 relative overflow-hidden">
+                            <CardHeader className="pb-2 pr-14 relative overflow-hidden">
                               {/* Ownership Badge, shifted left to avoid overlapping the three-dots dropdown */}
                               {isCurrentUserOwner(file) && <OwnershipBadge className="absolute -top-2 right-8 z-10" />}
 
@@ -1234,19 +1234,11 @@ export default function DriveRootPage() {
                                 <div className="flex-1 min-w-0 max-w-full overflow-hidden">
                                   <div className="w-full">
                                     <CardTitle
-                                      className=" text-sm font-medium leading-tight break-words max-w-full"
-                                      style={{
-                                        display: "-webkit-box",
-                                        WebkitLineClamp: 2,
-                                        WebkitBoxOrient: "vertical",
-                                        overflow: "hidden",
-                                        wordBreak: "break-word",
-                                        hyphens: "auto",
-                                      }}
+                                      className="text-sm font-medium leading-snug truncate block max-w-full text-foreground"
                                       title={file.name}
                                     >
                                       {file.name}
-                                      {isFolder && <ChevronRight className="inline w-4 h-4 ml-1 opacity-60" />}
+                                      {isFolder && <ChevronRight className="inline w-4 h-4 ml-1 opacity-60 shrink-0" />}
                                     </CardTitle>
                                   </div>
                                   <div className="flex items-center gap-2 mt-1">
@@ -1289,30 +1281,28 @@ export default function DriveRootPage() {
                                 )}
                               </div>
 
-                              <div className="flex gap-2">
+                              <div className="flex gap-2 items-center">
                                 <Button
                                   size="sm"
-                                  variant="outline"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleView(file);
                                   }}
-                                  className="flex-1 bg-transparent border-border hover:bg-muted text-xs font-medium"
+                                  className="flex-1 bg-white/5 hover:bg-white/10 text-foreground hover:text-foreground border border-border/60 text-xs font-medium transition-all shadow-none"
                                 >
-                                  <Eye className="w-3 h-3 mr-1" />
+                                  <Eye className="w-3.5 h-3.5 mr-1.5 opacity-80" />
                                   {isFolder ? "Open" : isPDF ? "View PDF" : "View"}
                                 </Button>
                                 {!isFolder && (
                                   <>
                                     <Button
                                       size="sm"
-                                      variant="outline"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         setSelectedAIFile(file);
                                         setAiModalOpen(true);
                                       }}
-                                      className="px-2.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border-purple-500/30 text-xs font-semibold flex items-center justify-center gap-1 shrink-0 cursor-pointer transition-all"
+                                      className="px-3 bg-purple-500/10 hover:bg-purple-500/25 text-purple-400 hover:text-purple-300 border border-purple-500/30 text-xs font-bold flex items-center justify-center gap-1.5 shrink-0 cursor-pointer transition-all shadow-none"
                                       title="Summarize with Marline AI"
                                     >
                                       <Sparkles className="w-3.5 h-3.5" />
@@ -1324,9 +1314,9 @@ export default function DriveRootPage() {
                                         e.stopPropagation();
                                         handleDownload(file);
                                       }}
-                                      className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border-blue-500/30 text-xs"
+                                      className="flex-1 bg-blue-500/15 hover:bg-blue-500/25 text-blue-400 hover:text-blue-300 border border-blue-500/30 text-xs font-medium transition-all shadow-none"
                                     >
-                                      <Download className="w-3 h-3 mr-1" />
+                                      <Download className="w-3.5 h-3.5 mr-1.5" />
                                       Download
                                     </Button>
                                   </>
