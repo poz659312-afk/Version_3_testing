@@ -684,10 +684,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       const decoder = new TextDecoder();
       let done = false;
       let assistantText = "";
-
-      // Push an empty assistant message to write the incoming stream chunks into
-      setMessages(prev => [...prev, { role: "assistant", content: "" }]);
-
+      let hasAddedAssistant = false;
       let buffer = "";
 
       while (!done) {
@@ -722,16 +719,21 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                   "";
                 if (contentChunk) {
                   assistantText += contentChunk;
-                  setMessages(prev => {
-                    const next = [...prev];
-                    if (next.length > 0) {
-                      next[next.length - 1] = {
-                        ...next[next.length - 1],
-                        content: assistantText
-                      };
-                    }
-                    return next;
-                  });
+                  if (!hasAddedAssistant) {
+                    hasAddedAssistant = true;
+                    setMessages(prev => [...prev, { role: "assistant", content: assistantText }]);
+                  } else {
+                    setMessages(prev => {
+                      const next = [...prev];
+                      if (next.length > 0) {
+                        next[next.length - 1] = {
+                          ...next[next.length - 1],
+                          content: assistantText
+                        };
+                      }
+                      return next;
+                    });
+                  }
                 }
               } catch (e: any) {
                 if (e?.message?.includes("AI Stream Error")) {
@@ -1515,7 +1517,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                     </div>
                   )}
 
-                  {messages.map((msg, idx) => (
+                  {messages.filter(m => m.content && m.content.trim().length > 0).map((msg, idx) => (
                     <div
                       key={idx}
                       className={cn(
@@ -1658,24 +1660,18 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                 #msg-content-${idx} p > .katex:only-child::before,
                                 #msg-content-${idx} p > .katex:first-child:last-child::before {
                                   content: 'FORMULA';
-                                  position: absolute;
-                                  top: 8px;
-                                  left: 14px;
-                                  font-size: 7.5px;
-                                  font-weight: 800;
-                                  letter-spacing: 0.15em;
-                                  opacity: 0.45;
-                                  color: ${activeClasses.accent};
+                                  position: absolute !important;
+                                  top: 6px !important;
+                                  left: 12px !important;
+                                  font-size: 9px !important;
+                                  font-weight: 900 !important;
+                                  letter-spacing: 0.15em !important;
+                                  color: ${activeClasses.accent} !important;
+                                  opacity: 0.8 !important;
                                 }
                                 #msg-content-${idx} .katex {
-                                  display: inline-block !important;
-                                  white-space: nowrap !important;
-                                  font-size: 1.2em !important;
-                                  color: #ffffff !important;
-                                  padding: 2px 6px !important;
-                                  background: ${activeClasses.accent}0d !important;
-                                  border-radius: 6px !important;
-                                  margin: 2px 0 !important;
+                                  font-size: 1.08em;
+                                  color: ${isDark ? '#f8fafc' : '#0f172a'} !important;
                                 }
                                 #msg-content-${idx} .katex .mathnormal {
                                   color: ${activeClasses.accent} !important;
@@ -1736,7 +1732,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                       <a href={href} target="_blank" rel="noopener noreferrer" className={cn("hover:opacity-80 underline underline-offset-4 font-semibold transition-all", activeClasses.text)}>{children}</a>
                                     ),
                                     table: ({ children }) => (
-                                      <div className={cn("overflow-x-auto my-8 rounded-2xl border shadow-xl transition-all duration-300 backdrop-blur-sm", activeClasses.border, isDark ? "shadow-black/20 hover:shadow-black/30" : "shadow-black/5 hover:shadow-black/10")} style={{ backgroundColor: `${activeClasses.accent}03` }}>
+                                      <div className="overflow-x-auto my-4 border rounded-xl shadow-sm">
                                         <table className="w-full text-[13px] border-collapse">{children}</table>
                                       </div>
                                     ),
@@ -1791,9 +1787,6 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                 >
                                   {preprocessMathContent(msg.content)}
                                 </ReactMarkdown>
-                                {loading && idx === messages.length - 1 && msg.role === 'assistant' && (
-                                  <span className={cn("inline-block w-1.5 h-4 ml-1 rounded-sm animate-pulse align-middle", activeClasses.bullet)} />
-                                )}
                               </div>
                               {msg.role === 'assistant' && msg.content && msg.content.trim().length > 20 && !loading && (
                                 <div data-pdf-exclude="true" className="flex items-center gap-2 mt-4 pt-3 border-t border-border/30">
@@ -1821,7 +1814,25 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                     </div>
                   ))}
 
-                  {loading && !messages.some(m => m.role === 'assistant' && m.content.trim().length > 0) && (
+                  {loading && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
+                    <div className="flex gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border shadow-sm overflow-hidden" style={{ backgroundColor: activeClasses.accent, borderColor: `${activeClasses.accent}40` }}>
+                        <img src="/images/chameleon/01_chameleon_front.png" alt="Marline AI" className="w-6 h-6 object-contain" />
+                      </div>
+                      <div className="flex flex-col gap-1 max-w-[90%] md:max-w-[85%] items-start">
+                        <div className="p-4 px-5 rounded-2xl bg-muted/30 dark:bg-white/[0.01] backdrop-blur-md rounded-tl-none border border-border dark:border-white/5 flex items-center gap-3" style={{ borderLeft: `4px solid ${activeClasses.accent}` }}>
+                          <div className="flex gap-1.5 items-center">
+                            <span className={cn("w-2 h-2 rounded-full animate-bounce [animation-delay:-0.3s]", activeClasses.bullet)} />
+                            <span className={cn("w-2 h-2 rounded-full animate-bounce [animation-delay:-0.15s]", activeClasses.bullet)} />
+                            <span className={cn("w-2 h-2 rounded-full animate-bounce", activeClasses.bullet)} />
+                          </div>
+                          <span className="text-xs font-medium text-muted-foreground">Marline is thinking...</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {loading && messages.length === 0 && (
                     <div className={cn(
                       "w-full flex flex-col items-center justify-center p-8 my-6 border rounded-3xl shadow-2xl backdrop-blur-md animate-fade-in relative overflow-hidden",
                       isDark ? "bg-white/[0.02] border-white/5" : "bg-black/[0.02] border-black/5"
