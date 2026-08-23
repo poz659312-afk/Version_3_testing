@@ -83,6 +83,7 @@ function CodeBlock({ language, codeText, children, accentColor }: { language: st
           </div>
         </div>
         <button
+          data-pdf-exclude="true"
           onClick={handleCopy}
           className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition-colors text-[11px] font-medium cursor-pointer border border-white/5"
           title="Copy code"
@@ -866,10 +867,15 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         const clone = msgElement.cloneNode(true) as HTMLElement;
         clone.querySelectorAll('[data-pdf-exclude]').forEach(el => el.remove());
 
-        // Ensure white text in dark mode is converted to dark text for the PDF
+        // Ensure white text in dark mode is converted to dark text for the PDF (exempting code blocks, syntax tokens, and diagrams)
         clone.querySelectorAll('*').forEach(el => {
-          (el as HTMLElement).style.color = '';
-          (el as HTMLElement).style.backgroundColor = '';
+          const htmlEl = el as HTMLElement;
+          const isCode = htmlEl.closest('pre') || htmlEl.closest('code') || htmlEl.classList.contains('hljs') || typeof htmlEl.className === 'string' && htmlEl.className.includes('hljs');
+          const isSvg = htmlEl.closest('svg');
+          if (!isCode && !isSvg) {
+            htmlEl.style.color = '';
+            htmlEl.style.backgroundColor = '';
+          }
         });
 
         // Flawlessly inject absolute SVG overrides directly inside each Mermaid SVG to force clean white backgrounds and black text for print
@@ -926,7 +932,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         <head>
           <title>${fileName}_marline_summary</title>
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600;700&display=swap');
             
             body { 
               font-family: 'Inter', system-ui, sans-serif; 
@@ -948,8 +954,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             
             /* PDF Markdown Styles & High-Contrast overrides for White Background */
             .content, .content p, .content li, 
-            .content span:not([class*="mermaid"] *), 
-            .content div:not([class*="mermaid"] *) {
+            .content span:not([class*="mermaid"] *):not([class*="hljs"] *):not(pre *), 
+            .content div:not([class*="mermaid"] *):not([class*="hljs"] *):not(pre *):not([class*="rounded-xl"]) {
               color: #1f2937 !important;
             }
             
@@ -1086,34 +1092,68 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               margin: 20px 0 !important; 
             }
             
-            .content code { 
+            .content code:not(pre code) { 
               background-color: #f1f5f9 !important; 
               color: ${activeThemeColor} !important; 
               padding: 2px 6px !important; 
               border-radius: 4px !important; 
               border: 1px solid ${activeThemeColor}25 !important;
               font-size: 13px !important; 
-              font-family: monospace !important; 
+              font-family: 'Roboto Mono', monospace !important; 
               display: inline-block !important;
             }
             
+            /* IDE Code Box & Syntax Highlighting for PDF */
             .content pre { 
-              background-color: #f8fafc !important; 
+              background-color: #181825 !important; 
+              color: #cdd6f4 !important;
               padding: 16px !important; 
-              border-radius: 8px !important; 
-              border: 1px solid #e5e7eb !important; 
+              border-radius: 10px !important; 
+              border: 1px solid #313244 !important; 
               overflow-x: auto !important; 
               margin: 16px 0 !important; 
+              font-family: 'Roboto Mono', monospace !important;
+              font-size: 12px !important;
+              line-height: 1.5 !important;
             }
             
             .content pre code { 
               background-color: transparent !important; 
               padding: 0 !important; 
-              color: #334155 !important; 
+              color: #cdd6f4 !important; 
               border: none !important; 
+              font-family: 'Roboto Mono', monospace !important;
             }
-            .content pre code * {
-              color: #334155 !important;
+
+            .content .hljs-keyword, .content .hljs-selector-tag, .content .hljs-subst, .content .hljs-section {
+              color: #cba6f7 !important;
+              font-weight: 700 !important;
+            }
+            .content .hljs-title, .content .hljs-title.function_, .content .hljs-title.hljs-function, .content .hljs-function {
+              color: #89b4fa !important;
+              font-weight: 700 !important;
+            }
+            .content .hljs-string, .content .hljs-doctag, .content .hljs-regexp {
+              color: #a6e3a1 !important;
+            }
+            .content .hljs-number, .content .hljs-literal {
+              color: #fab387 !important;
+            }
+            .content .hljs-comment, .content .hljs-quote {
+              color: #9399b2 !important;
+              font-style: italic !important;
+            }
+            .content .hljs-variable, .content .hljs-template-variable {
+              color: #f38ba8 !important;
+            }
+            .content .hljs-built_in, .content .hljs-type, .content .hljs-class {
+              color: #f9e2af !important;
+            }
+            .content .hljs-attr, .content .hljs-property, .content .hljs-attribute {
+              color: #89dceb !important;
+            }
+            .content .hljs-params {
+              color: #cdd6f4 !important;
             }
             
              .katex { 
