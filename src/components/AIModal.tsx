@@ -17,12 +17,16 @@ import {
   Bot,
   Download,
   Square,
-  X
+  X,
+  Check,
+  Copy,
+  Terminal
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import rehypeHighlight from "rehype-highlight";
 import QuizInterface from "./quiz-system/quiz-interface";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -36,6 +40,75 @@ import { getStudentSession } from "@/lib/auth";
 interface Message {
   role: "user" | "assistant";
   content: string;
+}
+
+function extractCodeText(node: any): string {
+  if (!node) return "";
+  if (typeof node === "string") return node;
+  if (typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(extractCodeText).join("");
+  if (node.props && node.props.children) return extractCodeText(node.props.children);
+  return "";
+}
+
+function CodeBlock({ language, codeText, children, accentColor }: { language: string; codeText: string; children: React.ReactNode; accentColor?: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(codeText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy code:", err);
+    }
+  };
+
+  return (
+    <div dir="ltr" className="my-4 rounded-xl overflow-hidden border border-white/10 bg-[#1e1e2e] dark:bg-[#181825] text-slate-100 shadow-2xl font-mono text-xs text-left">
+      {/* IDE Top Window Bar */}
+      <div dir="ltr" className="flex items-center justify-between px-4 py-2 bg-[#181825] dark:bg-[#11111b] border-b border-white/5 text-slate-400 select-none text-left">
+        <div className="flex items-center gap-3">
+          {/* Mac/IDE window 3 dots */}
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#f38ba8]/80 inline-block shadow-sm" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#f9e2af]/80 inline-block shadow-sm" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#a6e3a1]/80 inline-block shadow-sm" />
+          </div>
+          <div className="flex items-center gap-1.5 ml-2 border-l border-white/10 pl-3">
+            <Terminal className="w-3.5 h-3.5 text-primary" style={accentColor ? { color: accentColor } : undefined} />
+            <span className="font-bold uppercase tracking-wider text-[10.5px] text-slate-300">
+              {language || "code"}
+            </span>
+          </div>
+        </div>
+        <button
+          onClick={handleCopy}
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition-colors text-[11px] font-medium cursor-pointer border border-white/5"
+          title="Copy code"
+        >
+          {copied ? (
+            <>
+              <Check className="w-3 h-3 text-emerald-400" />
+              <span className="text-emerald-400 font-semibold">Copied!</span>
+            </>
+          ) : (
+            <>
+              <Copy className="w-3 h-3 text-slate-400" />
+              <span>Copy</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Code Content */}
+      <div dir="ltr" className="p-4 overflow-x-auto text-[13px] leading-relaxed select-text text-left font-mono">
+        <pre dir="ltr" className="font-mono text-left m-0 p-0 bg-transparent border-0">
+          <code dir="ltr" className="font-mono text-left hljs bg-transparent">{children || codeText}</code>
+        </pre>
+      </div>
+    </div>
+  );
 }
 
 interface AIModalProps {
@@ -1648,7 +1721,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                               `}</style>
                                 <ReactMarkdown
                                   remarkPlugins={[remarkGfm, remarkMath]}
-                                  rehypePlugins={[[rehypeKatex, { strict: false }]]}
+                                  rehypePlugins={[[rehypeKatex, { strict: false }], rehypeHighlight]}
                                   components={{
                                     h2: ({ children }) => (
                                       <h2 className={cn("text-lg sm:text-xl font-bold mt-5 mb-2.5 pb-1.5 border-b flex items-center gap-2 tracking-tight transition-all duration-300", activeClasses.heading, activeClasses.border)}>
@@ -1722,33 +1795,37 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                         {children}
                                       </blockquote>
                                     ),
-                                    pre: ({ children }) => {
-                                      const isMermaid = React.Children.toArray(children).some(
-                                        (child: any) =>
-                                          child?.props?.className?.includes('language-mermaid') ||
-                                          child?.props?.language === 'mermaid'
-                                      );
-                                      if (isMermaid) {
-                                        return <>{children}</>;
-                                      }
-                                      return (
-                                        <pre className={cn("rounded-xl p-4 my-3 overflow-x-auto border shadow-inner", isDark ? "bg-black/40 border-white/5" : "bg-black/[0.03] border-black/5 text-slate-800")}>{children}</pre>
-                                      );
+                                    pre: ({ children }: any) => {
+                                      return <>{children}</>;
                                     },
-                                    code: ({ className, children, ...props }) => {
-                                      const isInline = !className;
-                                      const match = /language-(\w+)/.exec(className || '');
-                                      const language = match ? match[1] : '';
-                                      if (!isInline && language === 'mermaid') {
+                                    code: ({ node, inline, className, children, ...props }: any) => {
+                                      const match = /language-(\w+)/.exec(className || "");
+                                      const plainCodeText = extractCodeText(children).replace(/\n$/, "");
+                                      const isBlock = !inline && (match || plainCodeText.includes("\n") || className?.includes("hljs"));
+
+                                      if (!inline && match && match[1] === "mermaid") {
+                                        return <MermaidElement chart={plainCodeText} />;
+                                      }
+
+                                      if (isBlock) {
                                         return (
-                                          <MermaidElement chart={String(children).replace(/\n$/, '')} />
+                                          <CodeBlock
+                                            language={match ? match[1] : "code"}
+                                            codeText={plainCodeText}
+                                            children={children}
+                                            accentColor={activeClasses.accent}
+                                          />
                                         );
                                       }
 
-                                      return isInline ? (
-                                        <code className={cn("px-1.5 py-0.5 rounded-md text-xs font-mono border", activeClasses.codeBg, activeClasses.inlineCodeText, activeClasses.border)} {...props}>{children}</code>
-                                      ) : (
-                                        <code className={cn("block text-xs font-mono", isDark ? "text-green-300/90" : "text-emerald-700", className)} {...props}>{children}</code>
+                                      return (
+                                        <code
+                                          dir="ltr"
+                                          className={cn("px-1.5 py-0.5 rounded-md text-xs font-mono border", activeClasses.codeBg, activeClasses.inlineCodeText, activeClasses.border)}
+                                          {...props}
+                                        >
+                                          {children}
+                                        </code>
                                       );
                                     },
                                   }}
