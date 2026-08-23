@@ -240,11 +240,11 @@ export async function POST(req: NextRequest) {
     const systemPrompt = `You are Marline AI, an elite university academic and coding assistant.
 Language: ${language}.
 When summarizing:
-- Write an engaging, well-structured, high-yield study guide.
+- Write a clean, engaging, beautifully structured study guide.
 - Format math formulas with LaTeX ($$...$$ for block, $...$ for inline).
-- Format programming code using markdown code blocks with language tags.
-- Separate major sections using horizontal lines (---).
-- Include: Overview, Core Concepts (with bullet points), Essential Formulas/Code Examples, Exam Tips, and Key Takeaways.`;
+- Format code with language-tagged markdown code blocks.
+- Use clear markdown headings (## for main sections, ### for subsections).
+- Do NOT output empty horizontal lines (---) or redundant dividers. Keep content compact, dense, and educational.`;
 
     const apiMessages: any[] = [
       { role: "system", content: systemPrompt }
@@ -266,16 +266,11 @@ When summarizing:
       if (task === 'summarize') {
         apiMessages.push({
           role: "user",
-          content: `Document: ${metadata.name || 'Academic File'}\n\nContent:\n${sanitizedContext}\n\nPlease generate a comprehensive, structured study guide from this document.
-Format:
+          content: `Document: ${metadata.name || 'Academic File'}\n\nContent:\n${sanitizedContext}\n\nPlease generate a comprehensive, structured study guide from this document using these sections:
 ## 📌 Executive Summary
----
-## 💡 Core Concepts & Definitions
----
-## 📐 Key Formulas, Code & Technical Details
----
-## 🎯 High-Yield Exam Tips & Common Mistakes
----
+## 💡 Core Concepts & Key Terminology
+## 📐 Formulas, Code & Technical Details (if applicable)
+## 🎯 High-Yield Exam Tips & Common Pitfalls
 ## 📝 Summary Takeaways`
         });
       } else if (task === 'translate') {

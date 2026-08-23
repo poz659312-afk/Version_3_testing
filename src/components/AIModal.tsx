@@ -296,17 +296,17 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
     gradientBg: string; userBorder: string; userShadow: string; sendShadow: string; cardHover: string; cardTextHover: string;
   }> = {
     default: {
-      text: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", bullet: "bg-indigo-400/60", heading: "text-indigo-400", codeBg: "bg-indigo-500/15", inlineCodeText: "text-indigo-300", accent: "#4f46e5",
-      primary: "bg-indigo-500", primary600: "bg-indigo-600", primary700: "bg-indigo-700", primary800: "bg-indigo-800",
-      ring: "focus:ring-indigo-500/20", focusBorder: "focus:border-indigo-500/50",
-      textHoverBg: "hover:text-indigo-400 hover:bg-indigo-500/10",
-      gradientBg: "bg-gradient-to-br from-indigo-600 to-indigo-700 dark:from-indigo-600/90 dark:to-indigo-800/90",
-      userBorder: "border-indigo-500/30", userShadow: "shadow-indigo-600/10",
-      sendShadow: "shadow-indigo-500/20", cardHover: "hover:bg-indigo-500/10 hover:border-indigo-500/30", cardTextHover: "group-hover:text-indigo-400"
+      text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", bullet: "bg-emerald-400", heading: "text-emerald-400", codeBg: "bg-emerald-500/15", inlineCodeText: "text-emerald-300", accent: "#10b981",
+      primary: "bg-emerald-500 text-white", primary600: "bg-emerald-600", primary700: "bg-emerald-700", primary800: "bg-emerald-800",
+      ring: "focus:ring-emerald-500/20", focusBorder: "focus:border-emerald-500/50",
+      textHoverBg: "hover:text-emerald-400 hover:bg-emerald-500/10",
+      gradientBg: "bg-gradient-to-br from-emerald-600 to-emerald-700 dark:from-emerald-600/90 dark:to-emerald-800/90",
+      userBorder: "border-emerald-500/30", userShadow: "shadow-emerald-600/10",
+      sendShadow: "shadow-emerald-500/20", cardHover: "hover:bg-emerald-500/10 hover:border-emerald-500/30", cardTextHover: "group-hover:text-emerald-400"
     },
     volcano: {
-      text: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/20", bullet: "bg-orange-500/60", heading: "text-orange-400", codeBg: "bg-orange-500/15", inlineCodeText: "text-orange-300", accent: "#f97316",
-      primary: "bg-orange-500", primary600: "bg-orange-600", primary700: "bg-orange-700", primary800: "bg-orange-800",
+      text: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/20", bullet: "bg-orange-500", heading: "text-orange-400", codeBg: "bg-orange-500/15", inlineCodeText: "text-orange-300", accent: "#f97316",
+      primary: "bg-orange-500 text-white", primary600: "bg-orange-600", primary700: "bg-orange-700", primary800: "bg-orange-800",
       ring: "focus:ring-orange-500/20", focusBorder: "focus:border-orange-500/50",
       textHoverBg: "hover:text-orange-400 hover:bg-orange-500/10",
       gradientBg: "bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-500/90 dark:to-orange-600/90",
@@ -314,8 +314,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-orange-500/20", cardHover: "hover:bg-orange-500/10 hover:border-orange-500/30", cardTextHover: "group-hover:text-orange-400"
     },
     nightowl: {
-      text: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20", bullet: "bg-sky-400/60", heading: "text-sky-400", codeBg: "bg-sky-500/15", inlineCodeText: "text-sky-300", accent: "#0ea5e9",
-      primary: "bg-sky-500", primary600: "bg-sky-600", primary700: "bg-sky-700", primary800: "bg-sky-800",
+      text: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20", bullet: "bg-sky-400", heading: "text-sky-400", codeBg: "bg-sky-500/15", inlineCodeText: "text-sky-300", accent: "#0ea5e9",
+      primary: "bg-sky-500 text-white", primary600: "bg-sky-600", primary700: "bg-sky-700", primary800: "bg-sky-800",
       ring: "focus:ring-sky-500/20", focusBorder: "focus:border-sky-500/50",
       textHoverBg: "hover:text-sky-400 hover:bg-sky-500/10",
       gradientBg: "bg-gradient-to-br from-sky-600 to-sky-700 dark:from-sky-600/90 dark:to-sky-800/90",
@@ -323,8 +323,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-sky-500/20", cardHover: "hover:bg-sky-500/10 hover:border-sky-500/30", cardTextHover: "group-hover:text-sky-400"
     },
     skyblue: {
-      text: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20", bullet: "bg-sky-400/60", heading: "text-sky-400", codeBg: "bg-sky-500/15", inlineCodeText: "text-sky-300", accent: "#38bdf8",
-      primary: "bg-sky-500", primary600: "bg-sky-600", primary700: "bg-sky-700", primary800: "bg-sky-800",
+      text: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20", bullet: "bg-sky-400", heading: "text-sky-400", codeBg: "bg-sky-500/15", inlineCodeText: "text-sky-300", accent: "#38bdf8",
+      primary: "bg-sky-500 text-white", primary600: "bg-sky-600", primary700: "bg-sky-700", primary800: "bg-sky-800",
       ring: "focus:ring-sky-500/20", focusBorder: "focus:border-sky-500/50",
       textHoverBg: "hover:text-sky-400 hover:bg-sky-500/10",
       gradientBg: "bg-gradient-to-br from-sky-600 to-sky-700 dark:from-sky-600/90 dark:to-sky-800/90",
@@ -332,8 +332,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-sky-500/20", cardHover: "hover:bg-sky-500/10 hover:border-sky-500/30", cardTextHover: "group-hover:text-sky-400"
     },
     sunset: {
-      text: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", bullet: "bg-rose-400/60", heading: "text-rose-400", codeBg: "bg-rose-500/15", inlineCodeText: "text-rose-300", accent: "#f43f5e",
-      primary: "bg-rose-500", primary600: "bg-rose-600", primary700: "bg-rose-700", primary800: "bg-rose-800",
+      text: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", bullet: "bg-rose-400", heading: "text-rose-400", codeBg: "bg-rose-500/15", inlineCodeText: "text-rose-300", accent: "#f43f5e",
+      primary: "bg-rose-500 text-white", primary600: "bg-rose-600", primary700: "bg-rose-700", primary800: "bg-rose-800",
       ring: "focus:ring-rose-500/20", focusBorder: "focus:border-rose-500/50",
       textHoverBg: "hover:text-rose-400 hover:bg-rose-500/10",
       gradientBg: "bg-gradient-to-br from-rose-600 to-rose-700 dark:from-rose-600/90 dark:to-rose-800/90",
@@ -341,8 +341,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-rose-500/20", cardHover: "hover:bg-rose-500/10 hover:border-rose-500/30", cardTextHover: "group-hover:text-rose-400"
     },
     forest: {
-      text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", bullet: "bg-emerald-400/60", heading: "text-emerald-400", codeBg: "bg-emerald-500/15", inlineCodeText: "text-emerald-300", accent: "#16a34a",
-      primary: "bg-emerald-500", primary600: "bg-emerald-600", primary700: "bg-emerald-700", primary800: "bg-emerald-800",
+      text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", bullet: "bg-emerald-400", heading: "text-emerald-400", codeBg: "bg-emerald-500/15", inlineCodeText: "text-emerald-300", accent: "#16a34a",
+      primary: "bg-emerald-500 text-white", primary600: "bg-emerald-600", primary700: "bg-emerald-700", primary800: "bg-emerald-800",
       ring: "focus:ring-emerald-500/20", focusBorder: "focus:border-emerald-500/50",
       textHoverBg: "hover:text-emerald-400 hover:bg-emerald-500/10",
       gradientBg: "bg-gradient-to-br from-emerald-600 to-emerald-700 dark:from-emerald-600/90 dark:to-emerald-800/90",
@@ -350,17 +350,17 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-emerald-500/20", cardHover: "hover:bg-emerald-500/10 hover:border-emerald-500/30", cardTextHover: "group-hover:text-emerald-400"
     },
     ocean: {
-      text: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", bullet: "bg-blue-400/60", heading: "text-blue-400", codeBg: "bg-blue-500/15", inlineCodeText: "text-blue-300", accent: "#2563eb",
-      primary: "bg-blue-500", primary600: "bg-blue-600", primary700: "bg-blue-700", primary800: "bg-blue-800",
+      text: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", bullet: "bg-blue-400", heading: "text-blue-400", codeBg: "bg-blue-500/15", inlineCodeText: "text-blue-300", accent: "#2563eb",
+      primary: "bg-blue-500 text-white", primary600: "bg-blue-600", primary700: "bg-blue-700", primary800: "bg-blue-800",
       ring: "focus:ring-blue-500/20", focusBorder: "focus:border-blue-500/50",
       textHoverBg: "hover:text-blue-400 hover:bg-blue-500/10",
       gradientBg: "bg-gradient-to-br from-blue-600 to-blue-700 dark:from-blue-600/90 dark:to-blue-800/90",
       userBorder: "border-blue-500/30", userShadow: "shadow-blue-600/10",
-      sendShadow: "shadow-blue-500/20", cardHover: "hover:bg-blue-500/10 hover:border-blue-500/30", cardTextHover: "group-hover:text-indigo-400"
+      sendShadow: "shadow-blue-500/20", cardHover: "hover:bg-blue-500/10 hover:border-blue-500/30", cardTextHover: "group-hover:text-blue-400"
     },
     lavender: {
-      text: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", bullet: "bg-purple-400/60", heading: "text-purple-400", codeBg: "bg-purple-500/15", inlineCodeText: "text-purple-300", accent: "#a78bfa",
-      primary: "bg-purple-500", primary600: "bg-purple-600", primary700: "bg-purple-700", primary800: "bg-purple-800",
+      text: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", bullet: "bg-purple-400", heading: "text-purple-400", codeBg: "bg-purple-500/15", inlineCodeText: "text-purple-300", accent: "#a78bfa",
+      primary: "bg-purple-500 text-white", primary600: "bg-purple-600", primary700: "bg-purple-700", primary800: "bg-purple-800",
       ring: "focus:ring-purple-500/20", focusBorder: "focus:border-purple-500/50",
       textHoverBg: "hover:text-purple-400 hover:bg-purple-500/10",
       gradientBg: "bg-gradient-to-br from-purple-600 to-purple-700 dark:from-purple-600/90 dark:to-purple-800/90",
@@ -368,8 +368,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-purple-500/20", cardHover: "hover:bg-purple-500/10 hover:border-purple-500/30", cardTextHover: "group-hover:text-purple-400"
     },
     rose: {
-      text: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", bullet: "bg-rose-400/60", heading: "text-rose-400", codeBg: "bg-rose-500/15", inlineCodeText: "text-rose-300", accent: "#ec4899",
-      primary: "bg-rose-500", primary600: "bg-rose-600", primary700: "bg-rose-700", primary800: "bg-rose-800",
+      text: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", bullet: "bg-rose-400", heading: "text-rose-400", codeBg: "bg-rose-500/15", inlineCodeText: "text-rose-300", accent: "#ec4899",
+      primary: "bg-rose-500 text-white", primary600: "bg-rose-600", primary700: "bg-rose-700", primary800: "bg-rose-800",
       ring: "focus:ring-rose-500/20", focusBorder: "focus:border-rose-500/50",
       textHoverBg: "hover:text-rose-400 hover:bg-rose-500/10",
       gradientBg: "bg-gradient-to-br from-rose-600 to-rose-700 dark:from-rose-600/90 dark:to-rose-800/90",
@@ -377,8 +377,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-rose-500/20", cardHover: "hover:bg-rose-500/10 hover:border-rose-500/30", cardTextHover: "group-hover:text-rose-400"
     },
     amber: {
-      text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", bullet: "bg-amber-400/60", heading: "text-amber-400", codeBg: "bg-amber-500/15", inlineCodeText: "text-amber-300", accent: "#d97706",
-      primary: "bg-amber-500", primary600: "bg-amber-600", primary700: "bg-amber-700", primary800: "bg-amber-800",
+      text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", bullet: "bg-amber-400", heading: "text-amber-400", codeBg: "bg-amber-500/15", inlineCodeText: "text-amber-300", accent: "#d97706",
+      primary: "bg-amber-500 text-white", primary600: "bg-amber-600", primary700: "bg-amber-700", primary800: "bg-amber-800",
       ring: "focus:ring-amber-500/20", focusBorder: "focus:border-amber-500/50",
       textHoverBg: "hover:text-amber-400 hover:bg-amber-500/10",
       gradientBg: "bg-gradient-to-br from-amber-600 to-amber-700 dark:from-amber-600/90 dark:to-amber-800/90",
@@ -386,8 +386,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-amber-500/20", cardHover: "hover:bg-amber-500/10 hover:border-amber-500/30", cardTextHover: "group-hover:text-amber-400"
     },
     mint: {
-      text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", bullet: "bg-emerald-400/60", heading: "text-emerald-400", codeBg: "bg-emerald-500/15", inlineCodeText: "text-emerald-300", accent: "#10b981",
-      primary: "bg-emerald-500", primary600: "bg-emerald-600", primary700: "bg-emerald-700", primary800: "bg-emerald-800",
+      text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", bullet: "bg-emerald-400", heading: "text-emerald-400", codeBg: "bg-emerald-500/15", inlineCodeText: "text-emerald-300", accent: "#10b981",
+      primary: "bg-emerald-500 text-white", primary600: "bg-emerald-600", primary700: "bg-emerald-700", primary800: "bg-emerald-800",
       ring: "focus:ring-emerald-500/20", focusBorder: "focus:border-emerald-500/50",
       textHoverBg: "hover:text-emerald-400 hover:bg-emerald-500/10",
       gradientBg: "bg-gradient-to-br from-emerald-600 to-emerald-700 dark:from-emerald-600/90 dark:to-emerald-800/90",
@@ -395,8 +395,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-emerald-500/20", cardHover: "hover:bg-emerald-500/10 hover:border-emerald-500/30", cardTextHover: "group-hover:text-emerald-400"
     },
     crimson: {
-      text: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", bullet: "bg-red-400/60", heading: "text-red-400", codeBg: "bg-red-500/15", inlineCodeText: "text-red-300", accent: "#dc143c",
-      primary: "bg-red-500", primary600: "bg-red-600", primary700: "bg-red-700", primary800: "bg-red-800",
+      text: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", bullet: "bg-red-400", heading: "text-red-400", codeBg: "bg-red-500/15", inlineCodeText: "text-red-300", accent: "#dc143c",
+      primary: "bg-red-500 text-white", primary600: "bg-red-600", primary700: "bg-red-700", primary800: "bg-red-800",
       ring: "focus:ring-red-500/20", focusBorder: "focus:border-red-500/50",
       textHoverBg: "hover:text-red-400 hover:bg-red-500/10",
       gradientBg: "bg-gradient-to-br from-red-600 to-red-700 dark:from-red-600/90 dark:to-red-800/90",
@@ -404,8 +404,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-red-500/20", cardHover: "hover:bg-red-500/10 hover:border-red-500/30", cardTextHover: "group-hover:text-red-400"
     },
     indigo: {
-      text: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", bullet: "bg-indigo-400/60", heading: "text-indigo-400", codeBg: "bg-indigo-500/15", inlineCodeText: "text-indigo-300", accent: "#6366f1",
-      primary: "bg-indigo-500", primary600: "bg-indigo-600", primary700: "bg-indigo-700", primary800: "bg-indigo-800",
+      text: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", bullet: "bg-indigo-400", heading: "text-indigo-400", codeBg: "bg-indigo-500/15", inlineCodeText: "text-indigo-300", accent: "#6366f1",
+      primary: "bg-indigo-500 text-white", primary600: "bg-indigo-600", primary700: "bg-indigo-700", primary800: "bg-indigo-800",
       ring: "focus:ring-indigo-500/20", focusBorder: "focus:border-indigo-500/50",
       textHoverBg: "hover:text-indigo-400 hover:bg-indigo-500/10",
       gradientBg: "bg-gradient-to-br from-indigo-600 to-indigo-700 dark:from-indigo-600/90 dark:to-indigo-800/90",
@@ -413,8 +413,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-indigo-500/20", cardHover: "hover:bg-indigo-500/10 hover:border-indigo-500/30", cardTextHover: "group-hover:text-indigo-400"
     },
     emerald: {
-      text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", bullet: "bg-emerald-400/60", heading: "text-emerald-400", codeBg: "bg-emerald-500/15", inlineCodeText: "text-emerald-300", accent: "#10b981",
-      primary: "bg-emerald-500", primary600: "bg-emerald-600", primary700: "bg-emerald-700", primary800: "bg-emerald-800",
+      text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", bullet: "bg-emerald-400", heading: "text-emerald-400", codeBg: "bg-emerald-500/15", inlineCodeText: "text-emerald-300", accent: "#10b981",
+      primary: "bg-emerald-500 text-white", primary600: "bg-emerald-600", primary700: "bg-emerald-700", primary800: "bg-emerald-800",
       ring: "focus:ring-emerald-500/20", focusBorder: "focus:border-emerald-500/50",
       textHoverBg: "hover:text-emerald-400 hover:bg-emerald-500/10",
       gradientBg: "bg-gradient-to-br from-emerald-600 to-emerald-700 dark:from-emerald-600/90 dark:to-emerald-800/90",
@@ -422,16 +422,70 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       sendShadow: "shadow-emerald-500/20", cardHover: "hover:bg-emerald-500/10 hover:border-emerald-500/30", cardTextHover: "group-hover:text-emerald-400"
     },
     coral: {
-      text: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", bullet: "bg-orange-400/60", heading: "text-orange-400", codeBg: "bg-orange-500/15", inlineCodeText: "text-orange-300", accent: "#ff7f50",
-      primary: "bg-orange-500", primary600: "bg-orange-600", primary700: "bg-orange-700", primary800: "bg-orange-800",
+      text: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20", bullet: "bg-orange-400", heading: "text-orange-400", codeBg: "bg-orange-500/15", inlineCodeText: "text-orange-300", accent: "#ff7f50",
+      primary: "bg-orange-500 text-white", primary600: "bg-orange-600", primary700: "bg-orange-700", primary800: "bg-orange-800",
       ring: "focus:ring-orange-500/20", focusBorder: "focus:border-orange-500/50",
       textHoverBg: "hover:text-orange-400 hover:bg-orange-500/10",
       gradientBg: "bg-gradient-to-br from-orange-600 to-orange-700 dark:from-orange-600/90 dark:to-orange-800/90",
       userBorder: "border-orange-500/30", userShadow: "shadow-orange-600/10",
       sendShadow: "shadow-orange-500/20", cardHover: "hover:bg-orange-500/10 hover:border-orange-500/30", cardTextHover: "group-hover:text-orange-400"
     },
+    cyberpunk: {
+      text: "text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/20", bullet: "bg-pink-400", heading: "text-pink-400", codeBg: "bg-pink-500/15", inlineCodeText: "text-pink-300", accent: "#f43f5e",
+      primary: "bg-pink-500 text-white", primary600: "bg-pink-600", primary700: "bg-pink-700", primary800: "bg-pink-800",
+      ring: "focus:ring-pink-500/20", focusBorder: "focus:border-pink-500/50",
+      textHoverBg: "hover:text-pink-400 hover:bg-pink-500/10",
+      gradientBg: "bg-gradient-to-br from-pink-600 to-purple-700",
+      userBorder: "border-pink-500/30", userShadow: "shadow-pink-500/20",
+      sendShadow: "shadow-pink-500/20", cardHover: "hover:bg-pink-500/10 hover:border-pink-500/30", cardTextHover: "group-hover:text-pink-400"
+    },
+    matrix: {
+      text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", bullet: "bg-emerald-400", heading: "text-emerald-400", codeBg: "bg-emerald-500/15", inlineCodeText: "text-emerald-300", accent: "#22c55e",
+      primary: "bg-emerald-500 text-white", primary600: "bg-emerald-600", primary700: "bg-emerald-700", primary800: "bg-emerald-800",
+      ring: "focus:ring-emerald-500/20", focusBorder: "focus:border-emerald-500/50",
+      textHoverBg: "hover:text-emerald-400 hover:bg-emerald-500/10",
+      gradientBg: "bg-gradient-to-br from-emerald-600 to-emerald-800",
+      userBorder: "border-emerald-500/30", userShadow: "shadow-emerald-600/10",
+      sendShadow: "shadow-emerald-500/20", cardHover: "hover:bg-emerald-500/10 hover:border-emerald-500/30", cardTextHover: "group-hover:text-emerald-400"
+    },
+    diamond: {
+      text: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20", bullet: "bg-cyan-400", heading: "text-cyan-400", codeBg: "bg-cyan-500/15", inlineCodeText: "text-cyan-300", accent: "#06b6d4",
+      primary: "bg-cyan-500 text-white", primary600: "bg-cyan-600", primary700: "bg-cyan-700", primary800: "bg-cyan-800",
+      ring: "focus:ring-cyan-500/20", focusBorder: "focus:border-cyan-500/50",
+      textHoverBg: "hover:text-cyan-400 hover:bg-cyan-500/10",
+      gradientBg: "bg-gradient-to-br from-cyan-600 to-blue-700",
+      userBorder: "border-cyan-500/30", userShadow: "shadow-cyan-500/20",
+      sendShadow: "shadow-cyan-500/20", cardHover: "hover:bg-cyan-500/10 hover:border-cyan-500/30", cardTextHover: "group-hover:text-cyan-400"
+    },
+    luxury: {
+      text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", bullet: "bg-amber-400", heading: "text-amber-400", codeBg: "bg-amber-500/15", inlineCodeText: "text-amber-300", accent: "#eab308",
+      primary: "bg-amber-500 text-white", primary600: "bg-amber-600", primary700: "bg-amber-700", primary800: "bg-amber-800",
+      ring: "focus:ring-amber-500/20", focusBorder: "focus:border-amber-500/50",
+      textHoverBg: "hover:text-amber-400 hover:bg-amber-500/10",
+      gradientBg: "bg-gradient-to-br from-amber-500 to-amber-700",
+      userBorder: "border-amber-500/30", userShadow: "shadow-amber-500/20",
+      sendShadow: "shadow-amber-500/20", cardHover: "hover:bg-amber-500/10 hover:border-amber-500/30", cardTextHover: "group-hover:text-amber-400"
+    },
+    nebula: {
+      text: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", bullet: "bg-purple-400", heading: "text-purple-400", codeBg: "bg-purple-500/15", inlineCodeText: "text-purple-300", accent: "#9333ea",
+      primary: "bg-purple-500 text-white", primary600: "bg-purple-600", primary700: "bg-purple-700", primary800: "bg-purple-800",
+      ring: "focus:ring-purple-500/20", focusBorder: "focus:border-purple-500/50",
+      textHoverBg: "hover:text-purple-400 hover:bg-purple-500/10",
+      gradientBg: "bg-gradient-to-br from-purple-600 to-pink-600",
+      userBorder: "border-purple-500/30", userShadow: "shadow-purple-600/10",
+      sendShadow: "shadow-purple-500/20", cardHover: "hover:bg-purple-500/10 hover:border-purple-500/30", cardTextHover: "group-hover:text-purple-400"
+    },
+    glacier: {
+      text: "text-teal-300", bg: "bg-teal-500/10", border: "border-teal-500/20", bullet: "bg-teal-300", heading: "text-teal-300", codeBg: "bg-teal-500/15", inlineCodeText: "text-teal-200", accent: "#2dd4bf",
+      primary: "bg-teal-500 text-white", primary600: "bg-teal-600", primary700: "bg-teal-700", primary800: "bg-teal-800",
+      ring: "focus:ring-teal-500/20", focusBorder: "focus:border-teal-500/50",
+      textHoverBg: "hover:text-teal-300 hover:bg-teal-500/10",
+      gradientBg: "bg-gradient-to-br from-teal-600 to-cyan-700",
+      userBorder: "border-teal-500/30", userShadow: "shadow-teal-500/20",
+      sendShadow: "shadow-teal-500/20", cardHover: "hover:bg-teal-500/10 hover:border-teal-500/30", cardTextHover: "group-hover:text-teal-300"
+    },
     solaris: {
-      text: "text-amber-500 dark:text-amber-400", bg: "bg-amber-500/10 dark:bg-amber-950/30", border: "border-amber-500/30", bullet: "bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500", heading: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 font-extrabold", codeBg: "bg-amber-950/30", inlineCodeText: "text-amber-300", accent: "#f59e0b",
+      text: "text-amber-500 dark:text-amber-400", bg: "bg-amber-500/10 dark:bg-amber-950/30", border: "border-amber-500/30", bullet: "bg-amber-400", heading: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 font-extrabold", codeBg: "bg-amber-950/30", inlineCodeText: "text-amber-300", accent: "#f59e0b",
       primary: "bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 text-white", primary600: "bg-amber-600", primary700: "bg-amber-700", primary800: "bg-amber-800",
       ring: "focus:ring-amber-500/30", focusBorder: "focus:border-amber-400",
       textHoverBg: "hover:text-amber-400 hover:bg-amber-500/20",
@@ -1633,28 +1687,18 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                   rehypePlugins={[[rehypeKatex, { strict: false }]]}
                                   components={{
                                     h2: ({ children }) => (
-                                      <div className="w-full">
-                                        {/* Gorgeous, glowing, custom separator line automatically rendered BEFORE any main heading h2! */}
-                                        <div className="relative my-12 flex items-center justify-center">
-                                          <div className="absolute inset-0 flex items-center">
-                                            <div className="w-full h-px" style={{ backgroundImage: `linear-gradient(to right, transparent, ${activeClasses.accent}40, ${activeClasses.accent}40, transparent)` }} />
-                                          </div>
-                                          <div className={cn("relative w-2.5 h-2.5 rounded-full border shadow-md shadow-black/30 shrink-0 animate-pulse", activeClasses.bullet)} style={{ borderColor: `${activeClasses.accent}60` }} />
-                                        </div>
-
-                                        <h2 className={cn("text-2xl md:text-3xl font-black mt-6 mb-4 pb-3 flex items-center gap-3 tracking-tight transition-all duration-300", activeClasses.heading)}>
-                                          {children}
-                                        </h2>
-                                      </div>
+                                      <h2 className={cn("text-lg sm:text-xl font-bold mt-5 mb-2.5 pb-1.5 border-b flex items-center gap-2 tracking-tight transition-all duration-300", activeClasses.heading, activeClasses.border)}>
+                                        {children}
+                                      </h2>
                                     ),
                                     h3: ({ children }) => (
-                                      <h3 className={cn("text-xs font-extrabold mt-6 mb-3 px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 shadow-sm border uppercase tracking-wider transition-all duration-300 hover:scale-[1.02]", activeClasses.bg, activeClasses.text, activeClasses.border)}>
+                                      <h3 className={cn("text-xs font-extrabold mt-4 mb-2 px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-sm border uppercase tracking-wider transition-all duration-300 hover:scale-[1.02]", activeClasses.bg, activeClasses.text, activeClasses.border)}>
                                         <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", activeClasses.bullet)} />
                                         {children}
                                       </h3>
                                     ),
                                     h4: ({ children }) => (
-                                      <h4 className={cn("text-xs font-bold uppercase tracking-widest mt-5 mb-2 flex items-center gap-2", isDark ? "text-white/90" : "text-slate-800")}>
+                                      <h4 className={cn("text-xs font-bold uppercase tracking-widest mt-4 mb-1.5 flex items-center gap-2", isDark ? "text-white/90" : "text-slate-800")}>
                                         <span className={cn("w-1.5 h-px", isDark ? "bg-white/30" : "bg-slate-300")} />
                                         {children}
                                       </h4>
@@ -1672,26 +1716,21 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                       <em className={cn("italic font-medium", isDark ? "text-white/90" : "text-slate-900")}>{children}</em>
                                     ),
                                     ul: ({ children }) => (
-                                      <ul className="space-y-2.5 my-4 ml-1 list-none">{children}</ul>
+                                      <ul className="space-y-2 my-3 ml-1 list-none">{children}</ul>
                                     ),
                                     ol: ({ children }) => (
-                                      <ol className={cn("space-y-2.5 my-4 ml-4 list-decimal list-outside", isDark ? "text-white/70" : "text-slate-700")}>{children}</ol>
+                                      <ol className={cn("space-y-2 my-3 ml-4 list-decimal list-outside", isDark ? "text-white/70" : "text-slate-700")}>{children}</ol>
                                     ),
                                     li: ({ children }) => {
                                       return (
-                                        <li className={cn("text-[13.5px] flex items-start gap-3 my-2 leading-relaxed transition-all duration-300 group/li transform hover:translate-x-1", isDark ? "text-white/80 hover:text-white" : "text-slate-800 hover:text-slate-950")}>
-                                          <span className={cn("mt-2.5 shrink-0 w-1.5 h-1.5 rounded-full shadow-sm shadow-black/20 transition-all duration-300 group-hover/li:scale-150 group-hover/li:shadow-lg", activeClasses.bullet)} style={{ boxShadow: `0 0 8px ${activeClasses.accent}` }} />
+                                        <li className={cn("text-[13.5px] flex items-start gap-2.5 my-1.5 leading-relaxed transition-all duration-300 group/li transform hover:translate-x-1", isDark ? "text-white/80 hover:text-white" : "text-slate-800 hover:text-slate-950")}>
+                                          <span className={cn("mt-2 shrink-0 w-1.5 h-1.5 rounded-full shadow-sm shadow-black/20 transition-all duration-300", activeClasses.bullet)} />
                                           <span className="flex-1 transition-all duration-300">{children}</span>
                                         </li>
                                       );
                                     },
                                     hr: () => (
-                                      <div className="relative my-10 flex items-center justify-center">
-                                        <div className="absolute inset-0 flex items-center">
-                                          <div className="w-full h-px" style={{ backgroundImage: `linear-gradient(to right, transparent, ${activeClasses.accent}40, ${activeClasses.accent}40, transparent)` }} />
-                                        </div>
-                                        <div className={cn("relative w-2.5 h-2.5 rounded-full border shadow-md shadow-black/30 shrink-0 animate-pulse", activeClasses.bullet)} style={{ borderColor: `${activeClasses.accent}60` }} />
-                                      </div>
+                                      <hr className={cn("my-3.5 border-t opacity-30 transition-colors", activeClasses.border)} />
                                     ),
                                     a: ({ href, children }) => (
                                       <a href={href} target="_blank" rel="noopener noreferrer" className={cn("hover:opacity-80 underline underline-offset-4 font-semibold transition-all", activeClasses.text)}>{children}</a>
