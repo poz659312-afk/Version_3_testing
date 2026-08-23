@@ -1791,8 +1791,11 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                 >
                                   {preprocessMathContent(msg.content)}
                                 </ReactMarkdown>
+                                {loading && idx === messages.length - 1 && msg.role === 'assistant' && (
+                                  <span className={cn("inline-block w-1.5 h-4 ml-1 rounded-sm animate-pulse align-middle", activeClasses.bullet)} />
+                                )}
                               </div>
-                              {msg.role === 'assistant' && msg.content && msg.content.trim().length > 20 && (
+                              {msg.role === 'assistant' && msg.content && msg.content.trim().length > 20 && !loading && (
                                 <div data-pdf-exclude="true" className="flex items-center gap-2 mt-4 pt-3 border-t border-border/30">
                                   <Button
                                     size="sm"
@@ -1818,7 +1821,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                     </div>
                   ))}
 
-                  {loading && (
+                  {loading && !messages.some(m => m.role === 'assistant' && m.content.trim().length > 0) && (
                     <div className={cn(
                       "w-full flex flex-col items-center justify-center p-8 my-6 border rounded-3xl shadow-2xl backdrop-blur-md animate-fade-in relative overflow-hidden",
                       isDark ? "bg-white/[0.02] border-white/5" : "bg-black/[0.02] border-black/5"
