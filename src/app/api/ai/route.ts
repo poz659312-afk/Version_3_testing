@@ -6,10 +6,8 @@ import pdf from 'pdf-parse';
 import { getCachedAIResult, setCachedAIResult } from '@/lib/persistent-ai-cache';
 
 const pdfParse = pdf;
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-// Multi-tier Fallback Providers & Models (100% Free & Highly Capable)
+// Multi-tier Fallback Models (100% Free & Fast)
 const OPENROUTER_MODELS = [
   "nvidia/nemotron-3-ultra-550b-a55b:free",
   "google/gemma-4-31b-it:free",
@@ -23,142 +21,19 @@ const GROQ_MODELS = [
   "allam-2-7b"
 ];
 
-// Helper to execute LLM calls with multi-tier fallback (OpenRouter -> Groq)
-async function executeLLMWithFallback({
-  messages,
-  max_tokens = 1500,
-  temperature = 0.2,
-  stream = false
-}: {
-  messages: any[];
-  max_tokens?: number;
-  temperature?: number;
-  stream?: boolean;
-}): Promise<{ response?: Response; data?: any; error?: string }> {
-  let lastError = "";
-
-  // TIER 1: Try OpenRouter Free Models
-  if (OPENROUTER_API_KEY) {
-    for (const model of OPENROUTER_MODELS) {
-      try {
-        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://chameleon-nu.vercel.app",
-            "X-Title": "Marline AI"
-          },
-          body: JSON.stringify({
-            model: model,
-            messages: messages,
-            max_tokens: max_tokens,
-            temperature: temperature,
-            stream: stream
-          })
-        });
-
-        if (res.ok) {
-          if (stream) {
-            return { response: res };
-          }
-          const data = await res.json();
-          if (data.choices?.[0]?.message?.content) {
-            return { data: data };
-          }
-        } else {
-          lastError = await res.text();
-          console.warn(`[Marline Drive AI] OpenRouter ${model} failed (${res.status}):`, lastError);
-        }
-      } catch (err: any) {
-        lastError = err.message;
-        console.warn(`[Marline Drive AI] OpenRouter ${model} error:`, err.message);
-      }
-    }
-  }
-
-  // TIER 2: Fallback to Groq API
-  if (GROQ_API_KEY) {
-    for (const model of GROQ_MODELS) {
-      try {
-        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${GROQ_API_KEY}`,
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            model: model,
-            messages: messages,
-            max_tokens: max_tokens,
-            temperature: temperature,
-            stream: stream
-          })
-        });
-
-        if (res.ok) {
-          if (stream) {
-            return { response: res };
-          }
-          const data = await res.json();
-          if (data.choices?.[0]?.message?.content) {
-            return { data: data };
-          }
-        } else {
-          lastError = await res.text();
-          console.warn(`[Marline Drive AI] Groq ${model} failed (${res.status}):`, lastError);
-        }
-      } catch (err: any) {
-        lastError = err.message;
-        console.warn(`[Marline Drive AI] Groq ${model} error:`, err.message);
-      }
-    }
-  }
-
-  return { error: lastError || "All AI providers failed" };
-}
-
-// Lightweight chunk summarizer with semantic caching and graceful degradation
-async function summarizeChunk(chunk: string, index: number, total: number, language: string): Promise<string> {
-  try {
-    const cached = await getCachedAIResult(chunk, 'chunk-summary', language);
-    if (cached) {
-      return cached;
-    }
-
-    const { data } = await executeLLMWithFallback({
-      messages: [
-        { role: "system", content: `You are Marline AI. Summarize concisely in ${language}. Extract key facts, definitions, formulas, and main points only.` },
-        { role: "user", content: chunk.slice(0, 10000) }
-      ],
-      max_tokens: 500,
-      temperature: 0.1,
-      stream: false
-    });
-
-    const summary = data?.choices?.[0]?.message?.content || chunk.slice(0, 800);
-
-    if (summary && summary.trim().length > 50) {
-      await setCachedAIResult(chunk, 'chunk-summary', language, summary);
-    }
-
-    return summary;
-  } catch (e) {
-    console.error(`[Marline Chunk Error] Failed for chunk ${index + 1}/${total}:`, e);
-    return chunk.slice(0, 800);
-  }
-}
-
 export async function POST(req: NextRequest) {
   try {
-    if (!OPENROUTER_API_KEY && !GROQ_API_KEY) {
-      console.error("Missing AI API keys in environment");
-      return NextResponse.json({ error: 'Server configuration error: No AI keys' }, { status: 500 });
+    const openRouterKey = process.env.OPENROUTER_API_KEY;
+    const groqKey = process.env.GROQ_API_KEY;
+
+    if (!openRouterKey && !groqKey) {
+      console.error("[Marline Drive AI] Missing API keys");
+      return NextResponse.json({ error: 'Server configuration error: Missing AI API keys' }, { status: 500 });
     }
 
     const session = await getServerStudentSession();
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized: Please log in' }, { status: 401 });
     }
 
     const rateLimit = checkRateLimit(session.auth_id, RateLimitTier.AI);
@@ -186,9 +61,9 @@ export async function POST(req: NextRequest) {
     });
     const metadata = metadataResponse.data;
 
-    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    const MAX_FILE_SIZE = 15 * 1024 * 1024;
     if (metadata.size && parseInt(metadata.size) > MAX_FILE_SIZE) {
-      return NextResponse.json({ error: 'File is too large. Maximum size is 10MB.' }, { status: 413 });
+      return NextResponse.json({ error: 'File is too large. Maximum size is 15MB.' }, { status: 413 });
     }
 
     let fileContent = '';
@@ -208,7 +83,7 @@ export async function POST(req: NextRequest) {
           );
           const buffer = Buffer.from(dlResponse.data as ArrayBuffer);
           const data = await pdfParse(buffer);
-          fileContent = data.text;
+          fileContent = data.text || '';
         } else if (metadata.mimeType?.startsWith('text/') || metadata.mimeType === 'application/json') {
           const dlResponse = await drive.files.get(
             { fileId, alt: 'media' },
@@ -218,17 +93,22 @@ export async function POST(req: NextRequest) {
           fileContent = buffer.toString('utf-8');
         }
       } catch (extractError) {
-        console.error("Error extracting file content:", extractError);
-        return NextResponse.json({ error: 'Failed to extract text from the document.' }, { status: 422 });
+        console.error("[Marline Drive AI] Error extracting file content:", extractError);
+        fileContent = `Document Name: ${metadata.name || 'Academic File'}`;
       }
     }
 
+    // Trim context to fit context window comfortably (up to 35,000 characters)
+    const sanitizedContext = fileContent.trim().length > 35000 
+      ? fileContent.slice(0, 35000) + "\n\n[... Remaining content truncated for optimal speed ...]"
+      : fileContent.trim();
+
     // 1. PERSISTENT CACHE LOOKUP
     const isCoreTask = task === 'summarize' || task === 'quiz' || task === 'translate';
-    const shouldCache = isCoreTask && messages.length === 0 && fileContent.trim().length > 0;
+    const shouldCache = isCoreTask && messages.length === 0 && sanitizedContext.length > 0;
 
     if (shouldCache) {
-      const cachedResult = await getCachedAIResult(fileContent, task, language);
+      const cachedResult = await getCachedAIResult(sanitizedContext, task, language);
       if (cachedResult) {
         console.log(`[Marline Cache Hit] Instantly returning cached result for ${task} in ${language}.`);
         if (task === 'quiz') {
@@ -256,175 +136,246 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 2. HIERARCHICAL COMPRESSION & SEMANTIC CHUNKING
-    let contextualText = '';
-    if (fileContent.trim().length > 0) {
-      if (fileContent.length <= 8000) {
-        contextualText = fileContent;
-      } else {
-        const chunkSize = 12000;
-        const chunks: string[] = [];
-        for (let i = 0; i < fileContent.length; i += chunkSize) {
-          chunks.push(fileContent.substring(i, i + chunkSize));
-        }
-
-        const totalChunks = Math.min(chunks.length, 6);
-        const chunkSummaries: string[] = new Array(totalChunks);
-        const activePromises: Promise<void>[] = [];
-
-        for (let i = 0; i < totalChunks; i++) {
-          const chunkIndex = i;
-          const chunkPromise = (async () => {
-            const summary = await summarizeChunk(
-              chunks[chunkIndex],
-              chunkIndex,
-              totalChunks,
-              language
-            );
-            chunkSummaries[chunkIndex] = summary;
-          })();
-
-          activePromises.push(chunkPromise);
-        }
-
-        await Promise.all(activePromises);
-        contextualText = chunkSummaries.join("\n\n");
-      }
-    }
-
-    // 3. QUIZ GENERATION TASK
+    // 2. QUIZ GENERATION TASK (Static JSON output)
     if (task === 'quiz') {
-      let quizContext = fileContent;
-      if (fileContent.length > 6000) {
-        const cachedSummary = await getCachedAIResult(fileContent, 'summarize', language);
-        quizContext = cachedSummary || contextualText;
-      }
-
-      const { data, error } = await executeLLMWithFallback({
-        messages: [
-          {
-            role: "system",
-            content: `You are Marline AI. Output a JSON array of 5-10 high-yield Multiple Choice Questions in ${language}. Schema: {"numb":number,"type":"Multiple Choice","question":"...","options":["...","...","...","..."],"answer":"...","explanation":"..."}. answer MUST match 1 option exactly. Return raw JSON array only, no markdown wrapping.`
-          },
-          { role: "user", content: `Context:\n${quizContext.slice(0, 12000)}\n\nGenerate MCQs.` }
-        ],
-        max_tokens: 1500,
-        temperature: 0.1,
-        stream: false
-      });
-
-      if (error || !data) {
-        return NextResponse.json({ error: `AI quiz generation failed: ${error}` }, { status: 502 });
-      }
-
-      const result = data.choices?.[0]?.message?.content;
-      try {
-        const cleaned = result.replace(/```json|```/g, '').trim();
-        const parsed = JSON.parse(cleaned);
-        const finalQuestions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
-
-        if (shouldCache && finalQuestions.length > 0) {
-          await setCachedAIResult(fileContent, task, language, finalQuestions);
+      const quizPrompt = [
+        {
+          role: "system",
+          content: `You are Marline AI. Output a JSON array of 5-8 high-yield Multiple Choice Questions in ${language}. Schema: [{"numb":1,"type":"Multiple Choice","question":"...","options":["A","B","C","D"],"answer":"A","explanation":"..."}]. answer MUST match 1 option exactly. Return raw JSON array only, no markdown wrapping, no explanation.`
+        },
+        {
+          role: "user",
+          content: `Document Content:\n${sanitizedContext || metadata.name}\n\nGenerate MCQs.`
         }
-        return NextResponse.json({ result: finalQuestions });
-      } catch (e) {
-        console.error("Failed to parse quiz JSON:", e);
-        return NextResponse.json({ error: "Failed to generate structured quiz." }, { status: 502 });
+      ];
+
+      let lastError = "";
+
+      // Tier 1: OpenRouter
+      if (openRouterKey) {
+        for (const model of OPENROUTER_MODELS) {
+          try {
+            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${openRouterKey}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://chameleon-nu.vercel.app",
+                "X-Title": "Marline AI"
+              },
+              body: JSON.stringify({
+                model: model,
+                messages: quizPrompt,
+                max_tokens: 1500,
+                temperature: 0.1
+              })
+            });
+
+            if (res.ok) {
+              const data = await res.json();
+              const rawContent = data.choices?.[0]?.message?.content || "";
+              const cleaned = rawContent.replace(/```json|```/g, '').trim();
+              const parsed = JSON.parse(cleaned);
+              const finalQuestions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
+
+              if (finalQuestions.length > 0) {
+                if (shouldCache) {
+                  await setCachedAIResult(sanitizedContext, task, language, finalQuestions);
+                }
+                return NextResponse.json({ result: finalQuestions });
+              }
+            } else {
+              lastError = await res.text();
+            }
+          } catch (err: any) {
+            lastError = err.message;
+          }
+        }
       }
+
+      // Tier 2: Groq
+      if (groqKey) {
+        for (const model of GROQ_MODELS) {
+          try {
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${groqKey}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                model: model,
+                messages: quizPrompt,
+                max_tokens: 1500,
+                temperature: 0.1
+              })
+            });
+
+            if (res.ok) {
+              const data = await res.json();
+              const rawContent = data.choices?.[0]?.message?.content || "";
+              const cleaned = rawContent.replace(/```json|```/g, '').trim();
+              const parsed = JSON.parse(cleaned);
+              const finalQuestions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
+
+              if (finalQuestions.length > 0) {
+                if (shouldCache) {
+                  await setCachedAIResult(sanitizedContext, task, language, finalQuestions);
+                }
+                return NextResponse.json({ result: finalQuestions });
+              }
+            } else {
+              lastError = await res.text();
+            }
+          } catch (err: any) {
+            lastError = err.message;
+          }
+        }
+      }
+
+      return NextResponse.json({ error: `Failed to generate quiz: ${lastError}` }, { status: 502 });
     }
 
-    // 4. SUMMARIZE, TRANSLATE & CHAT STREAMING TASKS
-    const systemPrompt = `You are Marline AI, an elite academic and coding companion for university students.
-Respond in ${language}.
-When providing summaries:
-- Create structured, high-yield, engaging study notes.
-- Use $$...$$ for LaTeX math formulas and code blocks \`\`\` for programming code.
-- Separate main sections with horizontal rules (---).
-- Include key concepts, exam tips, formulas/code examples, and bulleted takeaways.${contextualText ? `\n\nContext Document:\n${contextualText}` : ''}`;
+    // 3. SUMMARIZE, TRANSLATE & CHAT STREAMING TASKS
+    const systemPrompt = `You are Marline AI, an elite university academic and coding assistant.
+Language: ${language}.
+When summarizing:
+- Write an engaging, well-structured, high-yield study guide.
+- Format math formulas with LaTeX ($$...$$ for block, $...$ for inline).
+- Format programming code using markdown code blocks with language tags.
+- Separate major sections using horizontal lines (---).
+- Include: Overview, Core Concepts (with bullet points), Essential Formulas/Code Examples, Exam Tips, and Key Takeaways.`;
 
     const apiMessages: any[] = [
       { role: "system", content: systemPrompt }
     ];
 
     if (messages.length > 0) {
+      if (sanitizedContext) {
+        apiMessages.push({
+          role: "user",
+          content: `Document Context (${metadata.name || 'File'}):\n${sanitizedContext}`
+        });
+        apiMessages.push({
+          role: "assistant",
+          content: `I have analyzed "${metadata.name || 'this document'}". How can I assist you with it?`
+        });
+      }
       apiMessages.push(...messages);
     } else {
       if (task === 'summarize') {
         apiMessages.push({
           role: "user",
-          content: `Generate a comprehensive, structured study guide from this document.
+          content: `Document: ${metadata.name || 'Academic File'}\n\nContent:\n${sanitizedContext}\n\nPlease generate a comprehensive, structured study guide from this document.
 Format:
-1. Executive Summary & Overview
+## 📌 Executive Summary
 ---
-2. Core Concepts & Definitions (hierarchical bullets)
+## 💡 Core Concepts & Definitions
 ---
-3. Essential Formulas, Tables & Code Examples (if applicable)
+## 📐 Key Formulas, Code & Technical Details
 ---
-4. High-Yield Exam Tips & Common Pitfalls
+## 🎯 High-Yield Exam Tips & Common Mistakes
 ---
-5. Key Takeaways Summary
-Use "---" between sections. Be dense, clear, and educational.`
+## 📝 Summary Takeaways`
         });
       } else if (task === 'translate') {
         apiMessages.push({
           role: "user",
-          content: `Translate and restructure the key points of the context document into ${language}. Use structured bullet points, separate key sections with (---), and format formulas in LaTeX ($$...$$).`
+          content: `Document: ${metadata.name || 'Academic File'}\n\nContent:\n${sanitizedContext}\n\nTranslate and structure the main points of this document into ${language}.`
         });
       }
     }
 
-    const { response, error } = await executeLLMWithFallback({
-      messages: apiMessages,
-      max_tokens: 1800,
-      temperature: 0.2,
-      stream: true
-    });
+    let lastErrorText = "";
 
-    if (error || !response || !response.body) {
-      return NextResponse.json({ error: `Marline AI service error: ${error}` }, { status: 502 });
-    }
-
-    // Background caching of stream response
-    if (shouldCache) {
-      const clonedResponse = response.clone();
-      clonedResponse.text().then(streamBuffer => {
+    // TIER 1: OpenRouter Free Models
+    if (openRouterKey) {
+      for (const model of OPENROUTER_MODELS) {
         try {
-          let fullResponseText = '';
-          const lines = streamBuffer.split('\n');
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const jsonStr = line.slice(6).trim();
-              if (jsonStr === '[DONE]') continue;
-              try {
-                const parsed = JSON.parse(jsonStr);
-                const content = parsed.choices?.[0]?.delta?.content || '';
-                fullResponseText += content;
-              } catch (e) { }
-            }
+          console.log(`[Marline Drive AI] Attempting OpenRouter model: ${model}`);
+          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${openRouterKey}`,
+              "Content-Type": "application/json",
+              "HTTP-Referer": "https://chameleon-nu.vercel.app",
+              "X-Title": "Marline AI"
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: apiMessages,
+              stream: true,
+              temperature: 0.3,
+              max_tokens: 2000
+            })
+          });
+
+          if (response.ok && response.body) {
+            console.log(`[Marline Drive AI] Streaming successfully with OpenRouter ${model}`);
+            return new Response(response.body, {
+              headers: {
+                "Content-Type": "text/event-stream",
+                "Cache-Control": "no-cache, no-transform",
+                "Connection": "keep-alive"
+              }
+            });
+          } else {
+            lastErrorText = await response.text();
+            console.warn(`[Marline Drive AI] OpenRouter ${model} failed (${response.status}):`, lastErrorText);
           }
-          if (fullResponseText.trim().length > 100) {
-            setCachedAIResult(fileContent, task, language, fullResponseText);
-          }
-        } catch (cacheErr) {
-          console.error('[Marline Cache Stream Save Error]:', cacheErr);
+        } catch (err: any) {
+          console.warn(`[Marline Drive AI] OpenRouter ${model} fetch exception:`, err.message);
+          lastErrorText = err.message;
         }
-      }).catch(err => {
-        console.error('[Marline Cache Background Save Error]:', err);
-      });
+      }
     }
 
-    return new Response(response.body, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache, no-transform',
-        'Connection': 'keep-alive',
-      },
-    });
+    // TIER 2: Seamless Fallback to Groq
+    if (groqKey) {
+      for (const model of GROQ_MODELS) {
+        try {
+          console.log(`[Marline Drive AI] Falling back to Groq model: ${model}`);
+          const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${groqKey}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: apiMessages,
+              stream: true,
+              temperature: 0.3,
+              max_tokens: 2000
+            })
+          });
+
+          if (response.ok && response.body) {
+            console.log(`[Marline Drive AI] Streaming successfully with Groq ${model}`);
+            return new Response(response.body, {
+              headers: {
+                "Content-Type": "text/event-stream",
+                "Cache-Control": "no-cache, no-transform",
+                "Connection": "keep-alive"
+              }
+            });
+          } else {
+            lastErrorText = await response.text();
+            console.warn(`[Marline Drive AI] Groq ${model} failed (${response.status}):`, lastErrorText);
+          }
+        } catch (err: any) {
+          console.warn(`[Marline Drive AI] Groq ${model} fetch exception:`, err.message);
+          lastErrorText = err.message;
+        }
+      }
+    }
+
+    return NextResponse.json({ error: lastErrorText || "All AI providers failed" }, { status: 502 });
 
   } catch (error) {
-    console.error('Marline AI processing error:', error);
+    console.error('[Marline Drive AI] Global error:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ error: `Failed to process AI request: ${errorMessage}` }, { status: 500 });
+    return NextResponse.json({ error: `Internal error: ${errorMessage}` }, { status: 500 });
   }
 }
 

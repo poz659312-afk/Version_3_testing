@@ -651,13 +651,21 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             const cleanedLine = line.trim();
             if (!cleanedLine) continue;
 
-            if (cleanedLine.startsWith("data: ")) {
-              const dataStr = cleanedLine.slice(6).trim();
+            if (cleanedLine.startsWith("data:") || cleanedLine.startsWith("data: ")) {
+              const dataStr = cleanedLine.replace(/^data:\s*/, '').trim();
               if (dataStr === "[DONE]") continue;
 
               try {
                 const parsed = JSON.parse(dataStr);
-                const contentChunk = parsed.choices?.[0]?.delta?.content || "";
+                if (parsed.error) {
+                  console.error("[AI Stream Error Payload]:", parsed.error);
+                  throw new Error(parsed.error.message || "AI Stream Error");
+                }
+                const contentChunk = 
+                  parsed.choices?.[0]?.delta?.content ?? 
+                  parsed.choices?.[0]?.message?.content ?? 
+                  parsed.choices?.[0]?.text ?? 
+                  "";
                 if (contentChunk) {
                   assistantText += contentChunk;
                   setMessages(prev => {
@@ -671,8 +679,10 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                     return next;
                   });
                 }
-              } catch (_) {
-                // Ignore incomplete SSE json chunks
+              } catch (e: any) {
+                if (e?.message?.includes("AI Stream Error")) {
+                  throw e;
+                }
               }
             }
           }
@@ -1726,7 +1736,6 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                       const isInline = !className;
                                       const match = /language-(\w+)/.exec(className || '');
                                       const language = match ? match[1] : '';
-
                                       if (!isInline && language === 'mermaid') {
                                         return (
                                           <MermaidElement chart={String(children).replace(/\n$/, '')} />
@@ -1744,7 +1753,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                   {preprocessMathContent(msg.content)}
                                 </ReactMarkdown>
                               </div>
-                              {msg.role === 'assistant' && (
+                              {msg.role === 'assistant' && msg.content && msg.content.trim().length > 20 && (
                                 <div data-pdf-exclude="true" className="flex items-center gap-2 mt-4 pt-3 border-t border-border/30">
                                   <Button
                                     size="sm"
