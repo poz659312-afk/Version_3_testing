@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -21,6 +21,10 @@ import {
   Loader2,
   FileCheck,
   ChevronRight,
+  ChevronDown,
+  Check,
+  Search,
+  BookOpen,
   X
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -74,9 +78,12 @@ export default function ContributorDashboardClient({
   const [isUploadOpen, setIsUploadOpen] = useState(false)
   const [uploadTitle, setUploadTitle] = useState('')
   const [uploadTrack, setUploadTrack] = useState<'DS' | 'AI' | 'HA' | 'CS' | 'BA' | 'MA'>('DS')
-  const [uploadSubjectName, setUploadSubjectName] = useState('Data Structures & Algorithms')
+  const [uploadSubjectName, setUploadSubjectName] = useState('Data Structures and Algorithms')
+  const [isSubjectMenuOpen, setIsSubjectMenuOpen] = useState(false)
+  const [subjectSearchQuery, setSubjectSearchQuery] = useState('')
   const [isCustomSubject, setIsCustomSubject] = useState(false)
   const [uploadFolderId, setUploadFolderId] = useState<string>('root')
+  const [isFolderMenuOpen, setIsFolderMenuOpen] = useState(false)
   const [uploadFile, setUploadFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
@@ -94,6 +101,23 @@ export default function ContributorDashboardClient({
   const [editStatus, setEditStatus] = useState<'published' | 'draft' | 'archived'>('published')
   const [isSavingEdit, setIsSavingEdit] = useState(false)
 
+  const subjectMenuRef = useRef<HTMLDivElement>(null)
+  const folderMenuRef = useRef<HTMLDivElement>(null)
+
+  // Close menus on outside click
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (subjectMenuRef.current && !subjectMenuRef.current.contains(e.target as Node)) {
+        setIsSubjectMenuOpen(false)
+      }
+      if (folderMenuRef.current && !folderMenuRef.current.contains(e.target as Node)) {
+        setIsFolderMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleOutsideClick)
+    return () => document.removeEventListener('mousedown', handleOutsideClick)
+  }, [])
+
   // Open upload modal with pre-selected folder
   const openUploadModal = (targetFolderId?: string) => {
     if (targetFolderId) {
@@ -105,6 +129,9 @@ export default function ContributorDashboardClient({
     }
     setUploadProgress(0)
     setUploadStatusText('')
+    setIsSubjectMenuOpen(false)
+    setIsFolderMenuOpen(false)
+    setSubjectSearchQuery('')
     setIsUploadOpen(true)
   }
 
@@ -115,6 +142,7 @@ export default function ContributorDashboardClient({
     if (trackObj && trackObj.subjects.length > 0) {
       setUploadSubjectName(trackObj.subjects[0])
       setIsCustomSubject(false)
+      setSubjectSearchQuery('')
     }
   }
 
@@ -326,6 +354,13 @@ export default function ContributorDashboardClient({
     : validSummaries
 
   const activeTrackObj = ACADEMIC_TRACKS.find(t => t.code === uploadTrack) || ACADEMIC_TRACKS[0]
+  const filteredSubjects = activeTrackObj.subjects.filter(s =>
+    s.toLowerCase().includes(subjectSearchQuery.toLowerCase().trim())
+  )
+
+  const selectedFolderName = uploadFolderId === 'root'
+    ? '📁 Root Folder (Default)'
+    : `📂 ${subfolders.find(f => f.id === uploadFolderId)?.name || 'Subfolder'}`
 
   // Setup form if Contributor profile doesn't exist
   if (!contributor) {
@@ -746,7 +781,7 @@ export default function ContributorDashboardClient({
 
             {/* Modal Card with Radial Curve Cutout and Theme Border */}
             <div
-              className="relative z-20 w-full bg-card text-card-foreground border-2 border-primary/35 rounded-3xl sm:rounded-[2.4rem] shadow-2xl p-5 sm:p-6 md:p-7 overflow-hidden"
+              className="relative z-20 w-full bg-card text-card-foreground border-2 border-primary/35 rounded-3xl sm:rounded-[2.4rem] shadow-2xl p-5 sm:p-6 md:p-7 overflow-visible"
               style={{
                 maskImage: 'radial-gradient(circle 165px at calc(100% - 10px) 50%, transparent 164px, black 165px)',
                 WebkitMaskImage: 'radial-gradient(circle 165px at calc(100% - 10px) 50%, transparent 164px, black 165px)'
@@ -782,7 +817,7 @@ export default function ContributorDashboardClient({
                     value={uploadTitle}
                     onChange={e => setUploadTitle(e.target.value)}
                     placeholder="e.g. Full Midterm Review & Solved Questions"
-                    className="rounded-xl border-border focus:border-primary h-8 text-xs"
+                    className="rounded-xl border-border focus:border-primary h-8 text-xs bg-background/80"
                     disabled={isUploading}
                     required
                   />
@@ -810,8 +845,8 @@ export default function ContributorDashboardClient({
                   </div>
                 </div>
 
-                {/* Subject Name Selector */}
-                <div className="space-y-1">
+                {/* Custom Ultra-Sleek Subject Selector Menu */}
+                <div className="space-y-1" ref={subjectMenuRef}>
                   <div className="flex items-center justify-between">
                     <label className="text-[11px] font-bold text-foreground">Subject Name</label>
                     <button
@@ -819,7 +854,7 @@ export default function ContributorDashboardClient({
                       onClick={() => setIsCustomSubject(!isCustomSubject)}
                       className="text-[10px] font-bold text-primary hover:underline"
                     >
-                      {isCustomSubject ? 'Choose from list' : '+ Custom'}
+                      {isCustomSubject ? 'Choose from list' : '+ Custom subject'}
                     </button>
                   </div>
 
@@ -828,43 +863,159 @@ export default function ContributorDashboardClient({
                       value={uploadSubjectName}
                       onChange={e => setUploadSubjectName(e.target.value)}
                       placeholder="Type subject name..."
-                      className="rounded-xl border-border focus:border-primary h-8 text-xs"
+                      className="rounded-xl border-border focus:border-primary h-8 text-xs bg-background/80"
                       disabled={isUploading}
                       required
                     />
                   ) : (
-                    <select
-                      value={uploadSubjectName}
-                      onChange={e => setUploadSubjectName(e.target.value)}
-                      disabled={isUploading}
-                      className="w-full h-8 px-2.5 rounded-xl border border-border bg-background text-foreground text-xs font-bold focus:outline-none focus:ring-2 focus:ring-primary"
-                    >
-                      {activeTrackObj.subjects.map(subj => (
-                        <option key={subj} value={subj}>
-                          {subj}
-                        </option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      {/* Trigger Button */}
+                      <button
+                        type="button"
+                        disabled={isUploading}
+                        onClick={() => setIsSubjectMenuOpen(!isSubjectMenuOpen)}
+                        className="w-full h-8 px-2.5 rounded-xl border border-border bg-background/80 hover:border-primary/60 text-foreground text-xs font-bold flex items-center justify-between transition-all group"
+                      >
+                        <div className="flex items-center gap-1.5 truncate">
+                          <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
+                          <span className="truncate text-[11px]">{uploadSubjectName || 'Select a subject...'}</span>
+                        </div>
+                        <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-transform duration-200 ${isSubjectMenuOpen ? 'rotate-180 text-primary' : ''}`} />
+                      </button>
+
+                      {/* Dropdown List */}
+                      <AnimatePresence>
+                        {isSubjectMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                            transition={{ duration: 0.14 }}
+                            className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 rounded-2xl border-2 border-primary/30 bg-card/95 backdrop-blur-xl shadow-2xl p-2 space-y-1.5 max-h-52 flex flex-col"
+                          >
+                            {/* Search inside menu */}
+                            <div className="relative">
+                              <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                              <input
+                                type="text"
+                                value={subjectSearchQuery}
+                                onChange={(e) => setSubjectSearchQuery(e.target.value)}
+                                placeholder="Search subject..."
+                                className="w-full h-6 pl-6 pr-2 rounded-lg bg-muted/60 border border-border text-[11px] font-bold focus:outline-none focus:border-primary text-foreground placeholder:text-muted-foreground"
+                                autoFocus
+                              />
+                            </div>
+
+                            {/* List of items */}
+                            <div className="overflow-y-auto space-y-0.5 pr-1 scrollbar-thin max-h-36">
+                              {filteredSubjects.map(subj => (
+                                <button
+                                  key={subj}
+                                  type="button"
+                                  onClick={() => {
+                                    setUploadSubjectName(subj)
+                                    setIsSubjectMenuOpen(false)
+                                    setSubjectSearchQuery('')
+                                  }}
+                                  className={`w-full px-2 py-1 rounded-lg text-left text-[11px] font-bold transition-all flex items-center justify-between ${
+                                    uploadSubjectName === subj
+                                      ? 'bg-primary text-primary-foreground shadow-sm'
+                                      : 'hover:bg-primary/15 hover:text-primary text-foreground'
+                                  }`}
+                                >
+                                  <span className="truncate">{subj}</span>
+                                  {uploadSubjectName === subj && <Check className="w-3 h-3 ml-1 shrink-0" />}
+                                </button>
+                              ))}
+
+                              {filteredSubjects.length === 0 && (
+                                <div className="p-2 text-center text-xs text-muted-foreground space-y-1">
+                                  <span className="block text-[10px]">No subject matched &quot;{subjectSearchQuery}&quot;</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setUploadSubjectName(subjectSearchQuery.trim())
+                                      setIsSubjectMenuOpen(false)
+                                      setSubjectSearchQuery('')
+                                    }}
+                                    className="px-2 py-0.5 rounded-md bg-primary text-primary-foreground font-black text-[10px]"
+                                  >
+                                    Use &quot;{subjectSearchQuery.trim()}&quot; as custom
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   )}
                 </div>
 
-                {/* Subfolder Destination (if subfolders exist) */}
+                {/* Subfolder Destination Menu (if subfolders exist) */}
                 {subfolders.length > 0 && (
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-foreground">Drive Subfolder</label>
-                    <select
-                      value={uploadFolderId}
-                      onChange={e => setUploadFolderId(e.target.value)}
-                      disabled={isUploading}
-                      className="w-full h-8 px-2.5 rounded-xl border border-border bg-background text-foreground text-xs font-bold focus:outline-none focus:ring-2 focus:ring-primary"
-                    >
-                      <option value="root">📁 Root Folder (Default)</option>
-                      {subfolders.map(f => (
-                        <option key={f.id} value={f.id}>
-                          📂 {f.name}
-                        </option>
-                      ))}
-                    </select>
+                  <div className="space-y-1" ref={folderMenuRef}>
+                    <label className="text-[11px] font-bold text-foreground">Drive Destination Folder</label>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        disabled={isUploading}
+                        onClick={() => setIsFolderMenuOpen(!isFolderMenuOpen)}
+                        className="w-full h-8 px-2.5 rounded-xl border border-border bg-background/80 hover:border-primary/60 text-foreground text-xs font-bold flex items-center justify-between transition-all group"
+                      >
+                        <div className="flex items-center gap-1.5 truncate">
+                          <Folder className="w-3.5 h-3.5 text-primary shrink-0" />
+                          <span className="truncate text-[11px]">{selectedFolderName}</span>
+                        </div>
+                        <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-transform duration-200 ${isFolderMenuOpen ? 'rotate-180 text-primary' : ''}`} />
+                      </button>
+
+                      <AnimatePresence>
+                        {isFolderMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+                            transition={{ duration: 0.14 }}
+                            className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 rounded-2xl border-2 border-primary/30 bg-card/95 backdrop-blur-xl shadow-2xl p-1.5 space-y-0.5 max-h-44 overflow-y-auto"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setUploadFolderId('root')
+                                setIsFolderMenuOpen(false)
+                              }}
+                              className={`w-full px-2 py-1.5 rounded-lg text-left text-[11px] font-bold transition-all flex items-center justify-between ${
+                                uploadFolderId === 'root'
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'hover:bg-primary/15 hover:text-primary text-foreground'
+                              }`}
+                            >
+                              <span>📁 Root Folder (Default)</span>
+                              {uploadFolderId === 'root' && <Check className="w-3 h-3 ml-1 shrink-0" />}
+                            </button>
+                            {subfolders.map(f => (
+                              <button
+                                key={f.id}
+                                type="button"
+                                onClick={() => {
+                                  setUploadFolderId(f.id)
+                                  setIsFolderMenuOpen(false)
+                                }}
+                                className={`w-full px-2 py-1.5 rounded-lg text-left text-[11px] font-bold transition-all flex items-center justify-between ${
+                                  uploadFolderId === f.id
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'hover:bg-primary/15 hover:text-primary text-foreground'
+                                }`}
+                              >
+                                <span className="truncate">📂 {f.name}</span>
+                                {uploadFolderId === f.id && <Check className="w-3 h-3 ml-1 shrink-0" />}
+                              </button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </div>
                 )}
 
