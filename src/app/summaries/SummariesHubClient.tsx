@@ -1,191 +1,197 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { BookOpen, Plus, Search, Heart, Edit2, Trash2, Calendar, User } from 'lucide-react'
-import { deleteSummary } from './actions'
-import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
+import {
+  BookOpen,
+  Search,
+  Sparkles,
+  Plus,
+  Coins,
+  Heart,
+  SlidersHorizontal,
+  FolderLock,
+  UserCheck
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Summary, User as UserType } from '@/lib/types'
+import { StudentUser } from '@/lib/auth'
+import SummaryCard from '@/components/summaries/SummaryCard'
 
-interface SummaryItem {
-  code: string
-  title: string
-  likes_count: number
-  is_published: boolean
-  created_at: string
-  authorName: string
-}
+const TRACK_TABS = [
+  { id: 'ALL', label: 'All Tracks' },
+  { id: 'CDS', label: 'CDS' },
+  { id: 'AI', label: 'AI' },
+  { id: 'CYS', label: 'CYS' },
+  { id: 'MA', label: 'MA' },
+  { id: 'BA', label: 'BA' },
+  { id: 'HI', label: 'HI' },
+  { id: 'GENERAL', label: 'General' },
+]
 
 interface SummariesHubClientProps {
-  initialSummaries: SummaryItem[]
+  initialSummaries: Summary[]
+  session: any
   isAdmin: boolean
 }
 
-export default function SummariesHubClient({ initialSummaries, isAdmin }: SummariesHubClientProps) {
-  const [summaries, setSummaries] = useState<SummaryItem[]>(initialSummaries)
-  const [search, setSearch] = useState('')
-  const [filterTab, setFilterTab] = useState<'all' | 'published' | 'drafts'>('all')
+export default function SummariesHubClient({
+  initialSummaries,
+  session,
+  isAdmin
+}: SummariesHubClientProps) {
+  const [summaries, setSummaries] = useState<Summary[]>(initialSummaries)
+  const [selectedTrack, setSelectedTrack] = useState('ALL')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<'votes' | 'latest'>('votes')
+  const [studentCoins, setStudentCoins] = useState<number>(session?.coins || 0)
 
-  const handleDelete = async (code: string) => {
-    if (confirm('Are you sure you want to delete this summary? This action cannot be undone.')) {
-      try {
-        await deleteSummary(code)
-        setSummaries(prev => prev.filter(s => s.code !== code))
-        toast.success('Summary deleted successfully')
-      } catch (error: unknown) {
-        const errMsg = error instanceof Error ? error.message : 'Failed to delete summary'
-        toast.error(errMsg)
+  // Filter summaries based on search and track
+  const filteredSummaries = summaries
+    .filter(summary => {
+      // Track match
+      if (selectedTrack !== 'ALL') {
+        const subj = (summary.subject_id || '').toUpperCase()
+        if (selectedTrack === 'GENERAL') {
+          if (subj && subj !== 'GENERAL' && subj !== 'MATH' && subj !== 'PROG') return false
+        } else if (!subj.includes(selectedTrack)) {
+          return false
+        }
       }
-    }
-  }
 
-  // Filter summaries based on search and tab
-  const filteredSummaries = summaries.filter(s => {
-    const matchesSearch = s.title.toLowerCase().includes(search.toLowerCase())
-    if (!matchesSearch) return false
+      // Search match
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase()
+        const titleMatch = summary.title.toLowerCase().includes(q)
+        const descMatch = summary.description?.toLowerCase().includes(q) || false
+        const authorMatch = summary.authorName?.toLowerCase().includes(q) || false
+        const subjectMatch = summary.subject_id?.toLowerCase().includes(q) || false
+        if (!titleMatch && !descMatch && !authorMatch && !subjectMatch) return false
+      }
 
-    if (filterTab === 'published') return s.is_published
-    if (filterTab === 'drafts') return !s.is_published
-    return true
-  })
+      return true
+    })
+    .sort((a, b) => {
+      if (sortBy === 'latest') {
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      }
+      return (b.votes || 0) - (a.votes || 0)
+    })
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
-        <div>
-          <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent flex items-center gap-3">
-            <BookOpen className="w-10 h-10 text-violet-400 animate-pulse" />
-            Summaries Hub
+      {/* Header Banner */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border/80 pb-8">
+        <div className="space-y-2 max-w-2xl">
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-black tracking-wide">
+              ✨ SUMMARIES 2.0
+            </span>
+            {session && (
+              <span className="px-3 py-1 rounded-full bg-muted border border-border text-xs font-bold text-foreground flex items-center gap-1.5">
+                <Coins className="w-3.5 h-3.5 text-amber-500" />
+                <span>Your Balance: {studentCoins.toLocaleString()} Coins</span>
+              </span>
+            )}
+          </div>
+
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-foreground tracking-tight font-outfit">
+            Academic Summaries & Guides
           </h1>
-          <p className="text-gray-400 mt-2">
-            Explore summaries, study notes, formulas, and visual graphics written by experts.
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+            Verified study summaries and lecture notes prepared by top students. Support your favorite contributors with Chameleon Coins!
           </p>
         </div>
 
+        {/* Admin Contributor Dashboard Button */}
         {isAdmin && (
-          <Button asChild className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 border border-violet-500/30 text-white shadow-lg shadow-violet-500/20 px-6 py-5 rounded-xl font-bold flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all">
-            <Link href="/summaries/console">
-              <Plus className="w-5 h-5" />
-              Create Summary
+          <Button
+            asChild
+            className="rounded-2xl bg-amber-500 hover:bg-amber-600 text-black font-black px-6 py-6 text-sm shadow-xl shadow-amber-500/20 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
+          >
+            <Link href="/summaries/contributor">
+              <UserCheck className="w-4 h-4" />
+              Contributor Dashboard
             </Link>
           </Button>
         )}
       </div>
 
-      {/* Filters and Search */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input
-            placeholder="Search summaries..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-white/5 border-white/10 focus:border-violet-500/50 rounded-xl text-white placeholder-gray-400 w-full"
-          />
+      {/* Filter Tabs & Search Controls */}
+      <div className="space-y-4">
+        {/* Track / Major Tabs */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          {TRACK_TABS.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setSelectedTrack(tab.id)}
+              className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all duration-200 ${
+                selectedTrack === tab.id
+                  ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20'
+                  : 'bg-card border border-border text-muted-foreground hover:text-foreground hover:border-amber-500/40'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        {isAdmin && (
-          <Tabs value={filterTab} onValueChange={(v) => setFilterTab(v as 'all' | 'published' | 'drafts')} className="w-full md:w-auto">
-            <TabsList className="bg-white/5 border border-white/10 p-1 rounded-xl w-full grid grid-cols-3 md:w-[350px]">
-              <TabsTrigger value="all" className="rounded-lg text-gray-400 data-[state=active]:bg-violet-600 data-[state=active]:text-white">All</TabsTrigger>
-              <TabsTrigger value="published" className="rounded-lg text-gray-400 data-[state=active]:bg-violet-600 data-[state=active]:text-white">Published</TabsTrigger>
-              <TabsTrigger value="drafts" className="rounded-lg text-gray-400 data-[state=active]:bg-violet-600 data-[state=active]:text-white">Drafts</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        )}
+        {/* Search Bar + Sort Dropdown */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+          <div className="relative w-full sm:max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search by title, subject, or contributor name..."
+              className="pl-10 rounded-2xl border-border bg-card focus:border-amber-500 text-sm h-11"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <span className="text-xs text-muted-foreground font-bold whitespace-nowrap hidden sm:inline">
+              Sort by:
+            </span>
+            <Select value={sortBy} onValueChange={v => setSortBy(v as any)}>
+              <SelectTrigger className="w-full sm:w-[170px] rounded-2xl border-border bg-card text-xs font-bold h-11">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl">
+                <SelectItem value="votes">❤️ Most Supported</SelectItem>
+                <SelectItem value="latest">⏱️ Latest Uploads</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
 
-      {/* Grid of Summaries */}
+      {/* Summaries Grid */}
       {filteredSummaries.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-white/10 rounded-2xl bg-white/5 backdrop-blur-sm">
-          <BookOpen className="w-16 h-16 text-gray-600 mb-4" />
-          <h3 className="text-xl font-bold text-gray-300">No summaries found</h3>
-          <p className="text-gray-500 mt-1 max-w-md">
-            Try searching for a different keyword or check back later for new uploads.
+        <div className="rounded-3xl border-2 border-dashed border-border bg-card p-12 text-center space-y-3">
+          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto text-muted-foreground">
+            <BookOpen className="w-6 h-6" />
+          </div>
+          <h3 className="text-base font-bold text-foreground">No summaries found</h3>
+          <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+            {searchQuery || selectedTrack !== 'ALL'
+              ? 'Try changing your search terms or selecting another track.'
+              : 'Be the first contributor to upload a summary for this semester!'}
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence mode="popLayout">
-            {filteredSummaries.map((summary) => (
-              <motion.div
-                key={summary.code}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Card className="h-full relative overflow-hidden backdrop-blur-md bg-white/5 border-white/10 hover:border-violet-500/30 hover:bg-white/10 transition-all duration-300 flex flex-col group shadow-xl">
-                  {/* Glowing background card element */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-violet-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-                  <CardHeader className="relative pb-3 flex-grow">
-                    <div className="flex justify-between items-start gap-2 mb-3">
-                      <Badge className="bg-white/10 hover:bg-white/15 text-violet-300 border border-white/5 rounded-full px-3">
-                        {summary.code}
-                      </Badge>
-                      {isAdmin && (
-                        <Badge className={summary.is_published ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-amber-500/20 text-amber-400 border border-amber-500/30"}>
-                          {summary.is_published ? 'Published' : 'Draft'}
-                        </Badge>
-                      )}
-                    </div>
-                    <Link href={`/summaries/${summary.code}`} className="block group-hover:text-violet-400 transition-colors">
-                      <CardTitle className="text-2xl font-bold tracking-tight line-clamp-2">
-                        {summary.title}
-                      </CardTitle>
-                    </Link>
-                  </CardHeader>
-
-                  <CardContent className="pb-4 text-gray-400 text-sm space-y-2 relative">
-                    <div className="flex items-center gap-2">
-                      <User className="w-4 h-4 text-violet-400" />
-                      <span>{summary.authorName}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-gray-500" />
-                      <span>{new Date(summary.created_at).toLocaleDateString()}</span>
-                    </div>
-                  </CardContent>
-
-                  <CardFooter className="pt-3 border-t border-white/5 flex items-center justify-between relative bg-black/20">
-                    <div className="flex items-center gap-1.5 text-pink-400">
-                      <Heart className="w-4.5 h-4.5 fill-pink-500/20 text-pink-500" />
-                      <span className="font-bold text-sm">{summary.likes_count} likes</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <Button asChild size="sm" variant="ghost" className="hover:bg-violet-500/20 text-violet-400 hover:text-white rounded-lg">
-                        <Link href={`/summaries/${summary.code}`}>
-                          Read
-                        </Link>
-                      </Button>
-
-                      {isAdmin && (
-                        <div className="flex items-center gap-1 border-l border-white/10 pl-2 ml-1">
-                          <Button asChild size="icon" variant="ghost" className="h-8 w-8 text-amber-400 hover:text-white hover:bg-amber-500/20 rounded-lg">
-                            <Link href={`/summaries/console/${summary.code}`}>
-                              <Edit2 className="w-4 h-4" />
-                            </Link>
-                          </Button>
-                          <Button size="icon" variant="ghost" onClick={() => handleDelete(summary.code)} className="h-8 w-8 text-rose-400 hover:text-white hover:bg-rose-500/20 rounded-lg">
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </CardFooter>
-                </Card>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          {filteredSummaries.map(summary => (
+            <SummaryCard
+              key={summary.id}
+              summary={summary}
+              currentStudentCoins={studentCoins}
+              onBalanceUpdated={newBal => setStudentCoins(newBal)}
+            />
+          ))}
         </div>
       )}
     </div>
