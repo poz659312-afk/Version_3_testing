@@ -623,9 +623,6 @@ export default function MarlineAssistantPage() {
                 <h1 className="font-extrabold text-sm sm:text-base md:text-lg tracking-tight text-foreground truncate">
                   Marline <span className="text-primary">AI</span>
                 </h1>
-                <Badge variant="outline" className="text-[9px] sm:text-[10px] bg-primary/10 border-primary/20 text-primary px-1.5 sm:px-2 py-0.5 shrink-0">
-                  FCDS Companion
-                </Badge>
               </div>
               <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">
                 {isLoading ? "جاري التفكير والإجابة..." : "المساعد الأكاديمي للكلية"}
