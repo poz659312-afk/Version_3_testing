@@ -65,7 +65,7 @@ function CodeBlock({ language, codeText, children, accentColor }: { language: st
   };
 
   return (
-    <div dir="ltr" className="my-4 rounded-xl overflow-hidden border border-white/10 bg-[#1e1e2e] dark:bg-[#181825] text-slate-100 shadow-2xl font-mono text-xs text-left">
+    <div data-code-block="true" dir="ltr" className="my-4 rounded-xl overflow-hidden border border-white/10 bg-[#1e1e2e] dark:bg-[#181825] text-slate-100 shadow-2xl font-mono text-xs text-left">
       {/* IDE Top Window Bar */}
       <div dir="ltr" className="flex items-center justify-between px-4 py-2 bg-[#181825] dark:bg-[#11111b] border-b border-white/5 text-slate-400 select-none text-left">
         <div className="flex items-center gap-3">
@@ -1103,57 +1103,81 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               display: inline-block !important;
             }
             
-            /* IDE Code Box & Syntax Highlighting for PDF */
+            /* Light IDE Theme for PDF Printing */
+            .content [data-code-block="true"] {
+              background-color: #f8fafc !important;
+              border: 1px solid #cbd5e1 !important;
+              border-radius: 8px !important;
+              box-shadow: none !important;
+              margin: 16px 0 !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+
+            .content [data-code-block="true"] > div:first-child {
+              background-color: #f1f5f9 !important;
+              border-bottom: 1px solid #cbd5e1 !important;
+              color: #475569 !important;
+            }
+
+            .content [data-code-block="true"] span {
+              color: #475569 !important;
+            }
+
             .content pre { 
-              background-color: #181825 !important; 
-              color: #cdd6f4 !important;
-              padding: 16px !important; 
-              border-radius: 10px !important; 
-              border: 1px solid #313244 !important; 
+              background-color: #f8fafc !important; 
+              color: #0f172a !important;
+              padding: 14px 16px !important; 
+              border-radius: 0 0 8px 8px !important; 
+              border: none !important; 
               overflow-x: auto !important; 
-              margin: 16px 0 !important; 
+              margin: 0 !important; 
               font-family: 'Roboto Mono', monospace !important;
-              font-size: 12px !important;
-              line-height: 1.5 !important;
+              font-size: 11.5px !important;
+              line-height: 1.6 !important;
             }
             
             .content pre code { 
               background-color: transparent !important; 
               padding: 0 !important; 
-              color: #cdd6f4 !important; 
+              color: #0f172a !important; 
               border: none !important; 
               font-family: 'Roboto Mono', monospace !important;
             }
 
+            /* Light High-Contrast Syntax Highlighting Colors for Clean Print */
             .content .hljs-keyword, .content .hljs-selector-tag, .content .hljs-subst, .content .hljs-section {
-              color: #cba6f7 !important;
+              color: #cf222e !important; /* Crimson/Purple Keyword */
               font-weight: 700 !important;
             }
             .content .hljs-title, .content .hljs-title.function_, .content .hljs-title.hljs-function, .content .hljs-function {
-              color: #89b4fa !important;
+              color: #0969da !important; /* Blue for functions & defs */
               font-weight: 700 !important;
             }
             .content .hljs-string, .content .hljs-doctag, .content .hljs-regexp {
-              color: #a6e3a1 !important;
+              color: #0a3069 !important; /* Deep Blue for strings */
+              font-weight: 500 !important;
             }
             .content .hljs-number, .content .hljs-literal {
-              color: #fab387 !important;
+              color: #953800 !important; /* Bronze / Orange for numbers */
+              font-weight: 600 !important;
             }
             .content .hljs-comment, .content .hljs-quote {
-              color: #9399b2 !important;
+              color: #6e7781 !important; /* Readable Slate Gray for comments */
               font-style: italic !important;
             }
             .content .hljs-variable, .content .hljs-template-variable {
-              color: #f38ba8 !important;
+              color: #953800 !important;
             }
             .content .hljs-built_in, .content .hljs-type, .content .hljs-class {
-              color: #f9e2af !important;
+              color: #8250df !important; /* Purple for types and built-ins */
+              font-weight: 600 !important;
             }
             .content .hljs-attr, .content .hljs-property, .content .hljs-attribute {
-              color: #89dceb !important;
+              color: #0550ae !important;
             }
             .content .hljs-params {
-              color: #cdd6f4 !important;
+              color: #24292f !important;
             }
             
              .katex { 
