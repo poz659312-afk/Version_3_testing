@@ -1637,6 +1637,34 @@ html.lenis-stopped body {
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Global Smooth Popup / Modal Window Slide-Up Animation */
+@keyframes dialogSlideUpFromBottom {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 40px)) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
 
+@keyframes dialogSlideDownToBottom {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 30px)) scale(0.96);
+  }
+}
 
+/* Apply bottom-up spring animation to all Radix Dialogs, Modals, and Popups */
+[data-radix-portal] [data-state="open"].fixed.left-1\/2.top-1\/2 {
+  animation: dialogSlideUpFromBottom 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
 
+[data-radix-portal] [data-state="closed"].fixed.left-1\/2.top-1\/2 {
+  animation: dialogSlideDownToBottom 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}

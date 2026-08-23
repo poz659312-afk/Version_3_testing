@@ -565,14 +565,11 @@ export default function DrivePage() {
   const handleView = (file: DriveFile) => {
     if (file.mimeType.includes("folder")) {
       handleFolderClick(file)
-    } else if (file.mimeType.includes("pdf")) {
-      setPreviewPdfFile(file);
     } else {
-      // Open all file types in new tab
-      if (file.webViewLink) {
-        window.open(file.webViewLink, "_blank", "noopener,noreferrer")
-      } else if (file.webContentLink) {
-        window.open(file.webContentLink, "_blank", "noopener,noreferrer")
+      // Open all file types (including PDF) directly in Google Drive in a new tab
+      const driveUrl = file.webViewLink || (file.id ? `https://drive.google.com/file/d/${file.id}/view` : file.webContentLink);
+      if (driveUrl) {
+        window.open(driveUrl, "_blank", "noopener,noreferrer")
       } else {
         setError("This file cannot be displayed directly")
       }
