@@ -90,16 +90,16 @@ function preprocessMarlineContent(content: string): string {
   text = text.replace(/<think>[\s\S]*$/gi, "")
   text = text.replace(/<thought>[\s\S]*$/gi, "")
 
-  // 2. Fix rogue dividers crammed with headers (e.g. "--- ##" -> "\n\n---\n\n##")
+  // 2. Convert explicit LaTeX syntax patterns into standard $ math delimiters:
+  text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => '\n\n$$' + g1 + '$$\n\n')
+  text = text.replace(/\\\(([\s\S]*?)\\\)/g, (_m, g1) => '$' + g1 + '$')
+
+  // 3. Fix rogue dividers crammed with headers
   text = text.replace(/---\s*(#{1,6}\s+)/g, '\n\n---\n\n$1')
   text = text.replace(/([^\n])\s+---\s+([^\n])/g, '$1\n\n---\n\n$2')
 
-  // 3. Separate headers (#{1,6}) if they appear inline without preceding newlines
+  // 4. Separate headers (#{1,6}) if they appear inline
   text = text.replace(/([^\n])\s+(#{1,6}\s+[^\n]+)/g, '$1\n\n$2\n\n')
-
-  // 4. Clean rogue $ numbers (like 1$, 2$) and stray dollars
-  text = text.replace(/(\d+)\$/g, '$1')
-  text = text.replace(/\$(\d+)/g, '$1')
 
   // 5. Fix tables: Convert double pipes "||" into single "|"
   text = text.replace(/\|{2,}/g, '|')
@@ -115,7 +115,7 @@ function preprocessMarlineContent(content: string): string {
     }
 
     // Handle separator row
-    if (trimmed.includes(':---') || trimmed.includes('---:') || trimmed.includes('---')) {
+    if (trimmed.includes(':---') || trimmed.includes('---:') || (trimmed.includes('---') && trimmed.includes('|'))) {
       repairedLines.push('| :--- | :--- | :--- |')
       continue
     }
@@ -138,29 +138,17 @@ function preprocessMarlineContent(content: string): string {
   }
   text = repairedLines.join('\n')
 
-  // 7. Split merged table rows that are stuck on the same line:
-  text = text.replace(/\|\s*\|\s*\|/g, '|\n|')
-  text = text.replace(/(\|\s*[-:\s|]+\|)\s*\|/g, '$1\n|')
-  text = text.replace(/(\|[^\n|]+(?:\|[^\n|]+)+\|)\s*\|/g, '$1\n|')
-
-  // 8. Ensure clean newlines before table start
-  text = text.replace(/([^\n|])\s*(\|[^\n|]+\|[^\n|]+\|)/g, '$1\n\n$2')
-
-  // 8. Convert explicit LaTeX syntax patterns into standard $ math delimiters:
-  text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => '\n\n$$' + g1 + '$$\n\n')
-  text = text.replace(/\\\(([\s\S]*?)\\\)/g, (_m, g1) => '$' + g1 + '$')
-
-  // 9. Wrap standalone LaTeX environments with $$ if missing
+  // 7. Wrap standalone LaTeX environments with $$ if missing
   text = text.replace(
     /(?<!\$\$)\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*(?!\$\$)/g,
     (_m, g1) => '\n\n$$' + g1 + '$$\n\n'
   )
 
-  // 10. Ensure display math $$ has its own lines
+  // 8. Ensure display math $$ has its own lines
   text = text.replace(/([^\n])\s*(\$\$)/g, '$1\n\n$2')
   text = text.replace(/(\$\$)\s*([^\n$\s])/g, '$1\n\n$2')
 
-  // 11. Collapse excessive vertical blank lines
+  // 9. Collapse excessive vertical blank lines
   text = text.replace(/\n{3,}/g, '\n\n')
 
   return text.trim()
