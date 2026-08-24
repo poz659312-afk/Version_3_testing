@@ -938,26 +938,22 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600;700&display=swap');
             
-            @page {
-              size: A4;
-              margin: 14mm 14mm;
-            }
             body { 
               font-family: 'Inter', system-ui, sans-serif; 
               color: #111827; 
-              padding: 0; 
-              line-height: 1.5;
-              font-size: 12.5px;
+              padding: 40px 50px; 
+              line-height: 1.6;
+              font-size: 14px;
               background: white;
             }
             .header {
-              margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2.5px solid ${activeThemeColor};
+              margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid ${activeThemeColor};
             }
-            .header-flex { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-            .header-img { width: 36px; height: 36px; border-radius: 8px; }
-            .title { font-size: 20px; font-weight: 900; color: ${activeThemeColor}; letter-spacing: -0.5px; margin: 0; }
-            .subtitle { font-size: 10px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
-            .meta { display: flex; gap: 16px; padding: 8px 12px; background: #f8fafc; border-radius: 6px; font-size: 11px; color: #6b7280; }
+            .header-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+            .header-img { width: 45px; height: 45px; border-radius: 10px; }
+            .title { font-size: 26px; font-weight: 900; color: ${activeThemeColor}; letter-spacing: -0.5px; margin: 0; }
+            .subtitle { font-size: 11px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+            .meta { display: flex; gap: 20px; padding: 12px 16px; background: #f8fafc; border-radius: 8px; font-size: 12px; color: #6b7280; }
             .meta strong { color: #374151; }
             
             /* PDF Markdown Styles & High-Contrast overrides for White Background */
@@ -973,36 +969,33 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             .content h2 { 
-              font-size: 16px !important; 
+              font-size: 20px !important; 
               font-weight: 900 !important; 
               color: ${activeThemeColor} !important; 
-              margin: 20px 0 8px !important; 
-              padding-bottom: 4px !important;
-              border-bottom: 1.5px solid ${activeThemeColor}40 !important;
-              page-break-after: avoid !important;
+              margin: 32px 0 14px !important; 
+              padding-bottom: 6px !important;
+              border-bottom: 2px solid ${activeThemeColor} !important;
             }
             .content h2 * {
               color: ${activeThemeColor} !important;
             }
             
             .content h3 { 
-              font-size: 13.5px !important; 
+              font-size: 15px !important; 
               font-weight: 700 !important; 
               color: ${activeThemeColor} !important; 
-              margin: 14px 0 6px !important; 
-              padding-bottom: 2px !important;
-              page-break-after: avoid !important;
+              margin: 20px 0 10px !important; 
+              padding-bottom: 4px !important;
             }
             .content h3 * {
               color: ${activeThemeColor} !important;
             }
             
             .content h4 { 
-              font-size: 12px !important; 
+              font-size: 13px !important; 
               font-weight: 700 !important; 
               color: #374151 !important; 
-              margin: 10px 0 4px !important; 
-              page-break-after: avoid !important;
+              margin: 14px 0 6px !important; 
             }
             .content h4 * {
               color: #374151 !important;
@@ -1029,35 +1022,30 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             .content table { 
               width: 100% !important; 
               border-collapse: collapse !important; 
-              margin: 12px 0 !important; 
-              font-size: 11.5px !important; 
-              page-break-inside: avoid !important;
+              margin: 20px 0 !important; 
+              font-size: 13px !important; 
               break-inside: avoid !important; 
             }
             
             .content th { 
               background-color: ${activeThemeColor}14 !important;
               color: ${activeThemeColor} !important; 
-              padding: 8px 10px !important; 
+              padding: 10px 14px !important; 
               text-align: left !important; 
               font-weight: 700 !important; 
-              border: 1px solid #cbd5e1 !important; 
+              border: 1px solid ${activeThemeColor}33 !important; 
             }
             .content th * {
               color: ${activeThemeColor} !important;
             }
             
             .content td { 
-              padding: 6px 10px !important; 
-              border: 1px solid #e2e8f0 !important; 
+              padding: 10px 14px !important; 
+              border: 1px solid #e5e7eb !important; 
               color: #374151 !important; 
             }
             .content td * {
               color: #374151 !important;
-            }
-            
-            .content tr {
-              page-break-inside: avoid !important;
             }
             
             .content tr:nth-child(even) { 
@@ -1066,53 +1054,46 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             
             .content blockquote { 
               border-left: 4px solid ${activeThemeColor} !important; 
-              padding: 10px 14px !important; 
-              margin: 12px 0 !important; 
+              padding: 12px 18px !important; 
+              margin: 18px 0 !important; 
               background-color: ${activeThemeColor}0d !important;
-              border-radius: 0 6px 6px 0 !important; 
+              border-radius: 0 8px 8px 0 !important; 
               color: #1f2937 !important; 
               font-weight: 500 !important; 
               font-style: italic !important; 
-              page-break-inside: avoid !important;
             }
             .content blockquote * {
               color: #1f2937 !important;
             }
             
             .content ul { 
-              padding-left: 20px !important; 
-              margin: 8px 0 !important; 
+              padding-left: 24px !important; 
+              margin: 14px 0 !important; 
               list-style-type: disc !important;
             }
             
             .content ol { 
-              padding-left: 20px !important; 
-              margin: 8px 0 !important; 
+              padding-left: 24px !important; 
+              margin: 14px 0 !important; 
               list-style-type: decimal !important;
             }
             
             .content li { 
-              margin: 4px 0 !important;
-              padding-left: 2px !important;
+              margin: 8px 0 !important;
+              padding-left: 4px !important;
               color: #374151 !important; 
               display: list-item !important;
-              line-height: 1.5 !important;
+              line-height: 1.6 !important;
             }
             
             .content li * {
               color: #374151 !important;
             }
             
-            .content hr {
-              margin: 16px 0 !important;
-              border: 0 !important;
-              border-top: 1px solid #e2e8f0 !important;
-            }
-            
             .content hr { 
               border: none !important; 
               border-top: 1px solid #e5e7eb !important; 
-              margin: 20px 0 !important; 
+              margin: 25px 0 !important; 
             }
             
             .content code:not(pre code) { 
