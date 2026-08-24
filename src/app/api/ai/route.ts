@@ -9,20 +9,16 @@ const pdfParse = pdf;
 
 // Multi-tier Fallback Models (100% Free & Fast)
 const OPENROUTER_MODELS = [
-  "google/gemini-2.0-flash-exp:free",
-  "meta-llama/llama-3.3-70b-instruct:free",
-  "qwen/qwen-2.5-72b-instruct:free",
-  "mistralai/mistral-small-24b-instruct-2501:free",
-  "deepseek/deepseek-chat:free",
-  "nvidia/llama-3.1-nemotron-70b-instruct:free",
-  "google/gemma-2-9b-it:free"
+  "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "google/gemma-4-31b-it:free",
+  "nvidia/nemotron-3-super-120b-a12b:free",
+  "nvidia/nemotron-3.5-lightning:free"
 ];
 
 const GROQ_MODELS = [
-  "llama-3.3-70b-versatile",
-  "llama-3.1-8b-instant",
-  "mixtral-8x7b-32768",
-  "gemma2-9b-it"
+  "qwen/qwen3.6-27b",
+  "openai/gpt-oss-120b",
+  "allam-2-7b"
 ];
 
 export async function POST(req: NextRequest) {
