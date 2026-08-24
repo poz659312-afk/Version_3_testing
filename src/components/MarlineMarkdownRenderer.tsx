@@ -10,6 +10,7 @@ import rehypeHighlight from "rehype-highlight"
 import { Check, Copy, Terminal, ExternalLink } from "lucide-react"
 
 import "highlight.js/styles/github-dark.css"
+import "katex/dist/katex.min.css"
 
 interface MarlineMarkdownRendererProps {
   content: string
@@ -78,18 +79,37 @@ function CodeBlock({ language, codeText, children }: { language: string; codeTex
   )
 }
 
-// Filter out thinking and internal reasoning tokens/tags (<think>...</think>)
-function stripThinking(text: string): string {
-  if (!text) return ""
-  let cleaned = text.replace(/<think>[\s\S]*?<\/think>/gi, "")
-  cleaned = cleaned.replace(/<thought>[\s\S]*?<\/thought>/gi, "")
-  cleaned = cleaned.replace(/<think>[\s\S]*$/gi, "")
-  cleaned = cleaned.replace(/<thought>[\s\S]*$/gi, "")
-  return cleaned.trim()
+// Preprocess math & LaTeX delimiters, clean thinking tags
+function preprocessMarlineContent(content: string): string {
+  if (!content) return ""
+  let text = content
+
+  // 1. Filter out thinking / reasoning tags (<think>...</think>)
+  text = text.replace(/<think>[\s\S]*?<\/think>/gi, "")
+  text = text.replace(/<thought>[\s\S]*?<\/thought>/gi, "")
+  text = text.replace(/<think>[\s\S]*$/gi, "")
+  text = text.replace(/<thought>[\s\S]*$/gi, "")
+
+  // 2. Convert LaTeX syntax patterns into standard $ math delimiters:
+  // Convert \[ ... \] to $$ ... $$ and \( ... \) to $ ... $
+  text = text.replace(/\\\[([\s\S]*?)\\\]/g, '\n\n$$$$1$$\n\n')
+  text = text.replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$')
+
+  // 3. Wrap standalone LaTeX environments with $$ if missing
+  text = text.replace(
+    /(?<!\$\$)\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*(?!\$\$)/g,
+    '\n\n$$$1$$\n\n'
+  )
+
+  // 4. Ensure display math $$ has its own lines
+  text = text.replace(/([^\n])\s*(\$\$)/g, '$1\n\n$2')
+  text = text.replace(/(\$\$)\s*([^\n$\s])/g, '$1\n\n$2')
+
+  return text.trim()
 }
 
 export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMarkdownRendererProps) {
-  const displayContent = stripThinking(content) || content
+  const displayContent = preprocessMarlineContent(content) || content
 
   return (
     <div className={`prose dark:prose-invert max-w-none text-foreground leading-relaxed text-sm md:text-base space-y-3 ${className}`}>

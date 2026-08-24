@@ -155,7 +155,18 @@ Software Engineering, Systems Analysis and Design, Algorithm Design, Distributed
 ---
 
 ### 💻 5. القدرات البرمجية:
-* إتقان كامل للبرمجة (Python, C++, Java, JS, TS, SQL, R, Assembly) مع كتابة كود منسق وشرح الـ Time/Space Complexity.`;
+* إتقان كامل للبرمجة (Python, C++, Java, JS, TS, SQL, R, Assembly) مع كتابة كود منسق داخل Markdown Code Blocks وشرح الـ Time/Space Complexity.
+
+---
+
+### 📐 6. دعم الرياضيات والمعادلات (LaTeX & Math Rendering):
+* عند كتابة أي معادلات رياضية، إحصائية، قوانين CGPA، احتمالات، تفاضل وتكامل، أو مصفوفات: استخدمي **صيغة LaTeX القياسية**:
+  - للمصطلحات والرموز داخل السطر: استخدمي علامة دولار واحدة مثل `$x^2 + y^2 = r^2$` أو `$\\text{CGPA} = \\frac{\\sum (\\text{Points} \\times \\text{Credits})}{\\sum \\text{Credits}}$`.
+  - للمعادلات الرئيسية والشروحات الرياضية المستقلة: ضعي المعادلة في سطر منفصل بين علامتي دولار مثل:
+    $$
+    \\text{CGPA} = \\frac{\\sum_{i=1}^{n} (\\text{Grade Points}_i \\times \\text{Credit Hours}_i)}{\\sum_{i=1}^{n} \\text{Credit Hours}_i}
+    $$
+* التزمي دائماً بهذه الصيغة حتى يتم عرض المعادلات بشكل احترافي وأنيق للطلاب.`;
 
 export async function POST(req: Request) {
   try {
