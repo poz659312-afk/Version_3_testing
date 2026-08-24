@@ -94,64 +94,78 @@ function preprocessMarlineContent(content: string): string {
   text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => '\n\n$$' + g1 + '$$\n\n')
   text = text.replace(/\\\(([\s\S]*?)\\\)/g, (_m, g1) => '$' + g1 + '$')
 
-  // 3. Fix rogue dividers crammed with headers
+  // 3. Protect LaTeX norm pipes \| as \Vert so they are never confused with markdown table column pipes
+  text = text.replace(/\\\|/g, '\\Vert ')
+
+  // 4. Fix rogue dividers crammed with headers
   text = text.replace(/---\s*(#{1,6}\s+)/g, '\n\n---\n\n$1')
   text = text.replace(/([^\n])\s+---\s+([^\n])/g, '$1\n\n---\n\n$2')
 
-  // 4. Separate headers (#{1,6}) if they appear inline
+  // 5. Separate headers (#{1,6}) if they appear inline
   text = text.replace(/([^\n])\s+(#{1,6}\s+[^\n]+)/g, '$1\n\n$2\n\n')
 
-  // 5. Fix tables: Convert double pipes "||" into row newlines "|\n| "
-  text = text.replace(/\|{2,}/g, '|\n| ')
-
-  // 6. Repair and auto-normalize tables (split glued header/separator rows, invert RTL columns)
-  const rawLines = text.split('\n')
-  const repairedLines: string[] = []
-  for (let i = 0; i < rawLines.length; i++) {
-    let trimmed = rawLines[i].trim()
-    if (!trimmed.includes('|') || trimmed.startsWith('#') || trimmed.startsWith('```') || trimmed.startsWith('$$')) {
-      repairedLines.push(rawLines[i])
-      continue
-    }
-
-    // Check if line has both table headers AND separator (:---) glued on the same line
-    const sepMatch = trimmed.match(/(.+?)\s*\|\s*(:?-{2,}:?(?:\s*\|\s*:?-{2,}:?)*\s*\|?)$/)
-    if (sepMatch && sepMatch[1].includes('|')) {
-      const headerPart = sepMatch[1].endsWith('|') ? sepMatch[1] : sepMatch[1] + ' |'
-      const sepPart = sepMatch[2].startsWith('|') ? sepMatch[2] : '| ' + sepMatch[2]
-      repairedLines.push(headerPart)
-      repairedLines.push(sepPart.endsWith('|') ? sepPart : sepPart + ' |')
-      continue
-    }
-
-    // Handle standalone separator row
-    if (trimmed.includes(':---') || trimmed.includes('---:') || (trimmed.includes('---') && trimmed.includes('|'))) {
-      repairedLines.push('| :--- | :--- | :--- |')
-      continue
-    }
-
-    const parts = trimmed.split(/\|{1,2}/).map(s => s.trim()).filter(Boolean)
-    if (parts.length >= 3) {
-      const last = parts[parts.length - 1]
-      const first = parts[0]
-      // If the last column is a LaTeX symbol or variable and the first column is Arabic text (RTL inversion)
-      if (/^[a-zA-Z0-9\\_{}^\s\$]+$/.test(last) && /[\u0600-\u06FF]/.test(first)) {
-        const symbol = last.startsWith('$') ? last : `$${last}$`
-        const meaning = first
-        const unit = parts.slice(1, parts.length - 1).join(' | ')
-        repairedLines.push(`| ${symbol} | ${meaning} | ${unit} |`)
-        continue
-      }
-    }
-
-    if (!trimmed.startsWith('|')) trimmed = '| ' + trimmed
-    if (!trimmed.endsWith('|')) trimmed = trimmed + ' |'
-    repairedLines.push(trimmed)
-  }
-  text = repairedLines.join('\n')
-
-  // 7. Ensure Dividers come BEFORE Headings, not glued underneath them
+  // 6. Ensure Dividers come BEFORE Headings, not glued underneath them
   text = text.replace(/(#{1,6}\s+[^\n]+)\n+\s*---\s*\n+/g, '\n\n---\n\n$1\n\n')
+
+  // 7. Robust Token-based Table Reconstruction
+  const blocks = text.split('\n\n')
+  const processedBlocks = blocks.map(block => {
+    const trimmed = block.trim()
+    if (!trimmed.includes('|') || trimmed.startsWith('```') || trimmed.startsWith('$$')) {
+      return block
+    }
+
+    const rawTokens = trimmed
+      .split(/\|+/)
+      .map(t => t.trim())
+      .filter(t => t.length > 0)
+
+    if (rawTokens.length < 2) return block
+
+    const isSep = (t: string) => /^:?-{2,}:?$/.test(t)
+    const sepIndices: number[] = []
+    rawTokens.forEach((t, idx) => {
+      if (isSep(t)) sepIndices.push(idx)
+    })
+
+    let colCount = 0
+    let headers: string[] = []
+    let dataTokens: string[] = []
+
+    if (sepIndices.length > 0) {
+      const firstSep = sepIndices[0]
+      headers = rawTokens.slice(0, firstSep)
+      colCount = headers.length
+      let lastSep = firstSep
+      while (lastSep + 1 < rawTokens.length && isSep(rawTokens[lastSep + 1])) {
+        lastSep++
+      }
+      dataTokens = rawTokens.slice(lastSep + 1)
+    } else {
+      const lines = trimmed.split('\n')
+      const firstLineTokens = lines[0].split(/\|+/).map(t => t.trim()).filter(Boolean)
+      colCount = firstLineTokens.length
+      headers = firstLineTokens
+      dataTokens = rawTokens.slice(colCount)
+    }
+
+    if (colCount < 2) return block
+
+    const tableLines: string[] = []
+    tableLines.push('| ' + headers.join(' | ') + ' |')
+    tableLines.push('| ' + Array(colCount).fill(':---').join(' | ') + ' |')
+
+    for (let i = 0; i < dataTokens.length; i += colCount) {
+      const row = dataTokens.slice(i, i + colCount)
+      while (row.length < colCount) {
+        row.push('-')
+      }
+      tableLines.push('| ' + row.join(' | ') + ' |')
+    }
+
+    return tableLines.join('\n')
+  })
+  text = processedBlocks.join('\n\n')
 
   // 8. Wrap standalone LaTeX environments with $$ if missing
   text = text.replace(
@@ -282,11 +296,6 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
                 <ExternalLink className="w-3 h-3" />
               </a>
             )
-          },
-
-          // Custom Horizontal Rule
-          hr() {
-            return <hr className="my-6 border-border/60" />
           },
         }}
       >
