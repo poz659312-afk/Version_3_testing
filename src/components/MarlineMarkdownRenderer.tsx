@@ -104,18 +104,38 @@ function preprocessMarlineContent(content: string): string {
   // 5. Fix tables: Convert double pipes "||" into single "|"
   text = text.replace(/\|{2,}/g, '|')
 
-  // 6. Repair malformed table lines to strictly start and end with pipes
+  // 6. Repair and auto-normalize RTL tables with inverted columns or split separators
   const rawLines = text.split('\n')
-  const repairedLines = rawLines.map(line => {
-    const trimmed = line.trim()
-    if (trimmed.includes('|') && !trimmed.startsWith('#') && !trimmed.startsWith('```') && !trimmed.startsWith('$$')) {
-      let l = trimmed
-      if (!l.startsWith('|')) l = '| ' + l
-      if (!l.endsWith('|')) l = l + ' |'
-      return l
+  const repairedLines: string[] = []
+  for (let i = 0; i < rawLines.length; i++) {
+    const trimmed = rawLines[i].trim()
+    if (!trimmed.includes('|') || trimmed.startsWith('#') || trimmed.startsWith('```') || trimmed.startsWith('$$')) {
+      repairedLines.push(rawLines[i])
+      continue
     }
-    return line
-  })
+
+    // Handle separator row
+    if (trimmed.includes(':---') || trimmed.includes('---:') || trimmed.includes('---')) {
+      repairedLines.push('| :--- | :--- | :--- |')
+      continue
+    }
+
+    const parts = trimmed.split(/\|{1,2}/).map(s => s.trim()).filter(Boolean)
+    if (parts.length >= 3) {
+      const last = parts[parts.length - 1]
+      const first = parts[0]
+      // If the last column is a LaTeX symbol or variable and the first column is Arabic text (RTL inversion)
+      if (/^[a-zA-Z0-9\\_{}^\s\$]+$/.test(last) && /[\u0600-\u06FF]/.test(first)) {
+        const symbol = last.startsWith('$') ? last : `$${last}$`
+        const meaning = first
+        const unit = parts.slice(1, parts.length - 1).join(' | ')
+        repairedLines.push(`| ${symbol} | ${meaning} | ${unit} |`)
+        continue
+      }
+    }
+
+    repairedLines.push('| ' + parts.join(' | ') + ' |')
+  }
   text = repairedLines.join('\n')
 
   // 7. Split merged table rows that are stuck on the same line:
