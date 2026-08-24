@@ -1497,54 +1497,48 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             .content h2, .content h3, .content h4, .content blockquote, .content pre, .katex-display {
               break-inside: avoid !important;
               page-break-inside: avoid !important;
-            }
-            
-            .footer-divider {
-              margin: 40px 0 16px 0 !important;
-              border: none !important;
-              border-top: 1.5px solid ${activeThemeColor}40 !important;
-              clear: both !important;
-              display: block !important;
-            }
-
             .footer { 
-              margin-top: 0 !important; 
-              padding-top: 8px !important; 
+              margin-top: 55px !important; 
+              padding-top: 18px !important; 
+              border-top: 2px solid ${activeThemeColor}80 !important;
               display: flex !important; 
               flex-direction: row !important;
               align-items: center !important; 
               justify-content: space-between !important; 
               page-break-inside: avoid !important; 
               break-inside: avoid !important;
+              clear: both !important;
+              width: 100% !important;
             }
             .footer-flex { 
               display: flex !important; 
               flex-direction: row !important;
               align-items: center !important; 
-              gap: 8px !important; 
+              gap: 10px !important; 
             }
             .footer-img { 
-              width: 20px !important; 
-              height: 20px !important; 
-              max-width: 20px !important; 
-              max-height: 20px !important; 
-              min-width: 20px !important; 
-              min-height: 20px !important; 
+              width: 24px !important; 
+              height: 24px !important; 
+              max-width: 24px !important; 
+              max-height: 24px !important; 
+              min-width: 24px !important; 
+              min-height: 24px !important; 
               object-fit: contain !important;
-              border-radius: 4px !important; 
+              border-radius: 6px !important; 
               display: inline-block !important;
+              vertical-align: middle !important;
             }
             .footer-text { 
-              font-size: 11.5px !important; 
-              color: #64748b !important; 
-              font-weight: 600 !important; 
+              font-size: 13px !important; 
+              color: #475569 !important; 
+              font-weight: 700 !important; 
               display: inline-block !important;
               line-height: 1 !important;
             }
             .footer-link { 
-              font-size: 11.5px !important; 
+              font-size: 12.5px !important; 
               color: ${activeThemeColor} !important; 
-              font-weight: 700 !important; 
+              font-weight: 800 !important; 
             }
             
             @media print {
@@ -1646,11 +1640,9 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             ${bodyHtml}
           </div>
           
-          <div class="footer-divider"></div>
-
           <div class="footer">
             <div class="footer-flex">
-              <img src="${window.location.origin}/images/chameleon.png" class="footer-img" style="width: 20px; height: 20px; max-width: 20px; max-height: 20px; object-fit: contain; display: inline-block; vertical-align: middle;" onerror="this.style.display='none'" />
+              <img src="${window.location.origin}/images/chameleon.png" class="footer-img" style="width: 24px; height: 24px; max-width: 24px; max-height: 24px; border-radius: 6px; object-fit: contain; display: inline-block; vertical-align: middle;" onerror="this.style.display='none'" />
               <span class="footer-text">Generated with Chameleon Native AI (Marline)</span>
             </div>
             <span class="footer-link">chameleon-nu.vercel.app</span>
