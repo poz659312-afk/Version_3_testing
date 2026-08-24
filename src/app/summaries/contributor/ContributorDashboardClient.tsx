@@ -463,15 +463,6 @@ export default function ContributorDashboardClient({
               Public Profile
             </Link>
           </Button>
-
-          <Button
-            onClick={() => openUploadModal()}
-            size="sm"
-            className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-black gap-1.5 text-xs shadow-md shadow-primary/20"
-          >
-            <Plus className="w-4 h-4" />
-            Upload Summary
-          </Button>
         </div>
       </div>
 
@@ -789,14 +780,8 @@ export default function ContributorDashboardClient({
               </motion.div>
             </div>
 
-            {/* Modal Card with Radial Curve Cutout and Theme Border */}
-            <div
-              className="relative z-20 w-full bg-card text-card-foreground border-2 border-primary/35 rounded-3xl sm:rounded-[2.4rem] shadow-2xl p-5 sm:p-6 md:p-7 overflow-visible"
-              style={{
-                maskImage: 'radial-gradient(circle 165px at calc(100% - 10px) 50%, transparent 164px, black 165px)',
-                WebkitMaskImage: 'radial-gradient(circle 165px at calc(100% - 10px) 50%, transparent 164px, black 165px)'
-              }}
-            >
+            {/* Modal Card with Radial Curve Cutout and Theme Border (Desktop/PC only) */}
+            <div className="relative z-20 w-full bg-card text-card-foreground border-2 border-primary/35 rounded-3xl sm:rounded-[2.4rem] shadow-2xl p-5 sm:p-6 md:p-7 overflow-visible chameleon-cutout-modal">
               {/* Continuous Theme Border Arc along the circular cutout */}
               <div
                 className="hidden sm:block absolute pointer-events-none rounded-full border-2 border-primary/35 z-30"

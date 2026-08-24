@@ -547,11 +547,7 @@ export default function MarlineOnboardingTour() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.22, ease: "easeOut" }}
-                className="relative z-20 w-full bg-card text-card-foreground border-2 border-amber-500/30 rounded-3xl sm:rounded-[2.4rem] shadow-2xl p-5 sm:p-7 md:p-8 font-sans overflow-hidden min-h-[360px] sm:min-h-[400px] flex flex-col justify-between"
-                style={{
-                  maskImage: "radial-gradient(circle 168px at calc(100% - 18px) 50%, transparent 167px, black 168px)",
-                  WebkitMaskImage: "radial-gradient(circle 168px at calc(100% - 18px) 50%, transparent 167px, black 168px)"
-                }}
+                className="relative z-20 w-full bg-card text-card-foreground border-2 border-amber-500/30 rounded-3xl sm:rounded-[2.4rem] shadow-2xl p-5 sm:p-7 md:p-8 font-sans overflow-hidden min-h-[360px] sm:min-h-[400px] flex flex-col justify-between chameleon-tour-modal"
               >
                 {/* Continuous Gold/Theme Border Arc along the circular cutout */}
                 <div

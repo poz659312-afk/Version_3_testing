@@ -1829,3 +1829,17 @@ html.lenis-stopped body {
   background: transparent !important;
   border: none !important;
 }
+
+/* Chameleon Modal Cutout Curves (Desktop/PC Only) */
+@media (min-width: 640px) {
+  .chameleon-cutout-modal {
+    -webkit-mask-image: radial-gradient(circle 165px at calc(100% - 10px) 50%, transparent 164px, black 165px);
+    mask-image: radial-gradient(circle 165px at calc(100% - 10px) 50%, transparent 164px, black 165px);
+  }
+
+  .chameleon-tour-modal {
+    -webkit-mask-image: radial-gradient(circle 168px at calc(100% - 18px) 50%, transparent 167px, black 168px);
+    mask-image: radial-gradient(circle 168px at calc(100% - 18px) 50%, transparent 167px, black 168px);
+  }
+}
+
