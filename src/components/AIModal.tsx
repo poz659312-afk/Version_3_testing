@@ -46,33 +46,35 @@ function preprocessMathContent(content: string): string {
   if (!content) return "";
   let text = content;
 
-  // Clean common LLM formatting glitches:
-  // a. Convert weird unicode dotted lines or scattered underscores to clean standard horizontal rules
-  text = text.replace(/[┄┈—–]{3,}/g, '\n\n---\n\n');
+  // a. Convert weird unicode dotted lines to standard hr (only if standalone line)
+  text = text.replace(/^[┄┈—–]{3,}$/gm, '\n\n---\n\n');
 
-  // b. Convert double pipes (||) from malformed tables to single pipes (|)
-  text = text.replace(/\|{2,}/g, '|');
-
-  // c. Collapse excessive vertical blank lines (4+ newlines into 2)
+  // b. Collapse excessive vertical blank lines (3+ newlines into 2)
   text = text.replace(/\n{3,}/g, '\n\n');
 
   // 1. Separate headers (##, ###) with newlines if attached directly to preceding or subsequent text
-  text = text.replace(/([^\n])\s*(#{1,6}\s+[^\n]+)/g, '$1\n\n$2');
-  text = text.replace(/(#{1,6}\s+[^\n]+)\s*([^\n#\s])/g, '$1\n\n$2');
+  text = text.replace(/([^\n])\n*(#{1,6}\s+[^\n]+)/g, '$1\n\n$2');
+  text = text.replace(/(#{1,6}\s+[^\n]+)\n*([^\n#\s])/g, '$1\n\n$2');
 
-  // 2. Separate horizontal lines (---) with newlines so they don't break paragraphs
-  text = text.replace(/([^\n])\s*---\s*([^\n])/g, '$1\n\n---\n\n$2');
+  // 2. Separate horizontal lines (---) WITHOUT breaking table separator rows (|---|)
+  text = text.replace(/(^|[^\n|])\s*\n\s*---\s*\n\s*([^|\n]|$)/g, '$1\n\n---\n\n$2');
 
-  // 3. Separate code blocks with newlines
+  // 3. Ensure GFM tables have clean newlines before and after them
+  text = text.replace(/([^\n])\n*(\|.+?\|\n\|[-:\s|]+\|)/g, '$1\n\n$2');
+
+  // 4. Separate code blocks with newlines
   text = text.replace(/([^\n])\s*(```[a-zA-Z0-9_-]*)/g, '$1\n\n$2');
   text = text.replace(/(```)\s*([^\n`\s])/g, '$1\n\n$2');
 
-  // 4. Ensure display math $$ has its own lines
+  // 5. Ensure display math $$ has its own lines
   text = text.replace(/([^\n])\s*(\$\$)/g, '$1\n\n$2');
   text = text.replace(/(\$\$)\s*([^\n$\s])/g, '$1\n\n$2');
 
-  // 5. Wrap standalone \begin{cases} / \begin{matrix} with $$ if missing
-  text = text.replace(/(?<!\$\$)\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*(?!\$\$)/g, '\n\n$$$1$$\n\n');
+  // 6. Wrap standalone LaTeX environments with $$ if missing
+  text = text.replace(
+    /(?<!\$\$)\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*(?!\$\$)/g,
+    '\n\n$$$1$$\n\n'
+  );
 
   return text;
 }
@@ -969,33 +971,36 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             .content h2 { 
-              font-size: 20px !important; 
+              font-size: 18px !important; 
               font-weight: 900 !important; 
               color: ${activeThemeColor} !important; 
-              margin: 32px 0 14px !important; 
-              padding-bottom: 6px !important;
-              border-bottom: 2px solid ${activeThemeColor} !important;
+              margin: 20px 0 8px !important; 
+              padding-bottom: 4px !important;
+              border-bottom: 1.5px solid ${activeThemeColor}40 !important;
+              page-break-after: avoid !important;
             }
             .content h2 * {
               color: ${activeThemeColor} !important;
             }
             
             .content h3 { 
-              font-size: 15px !important; 
+              font-size: 14px !important; 
               font-weight: 700 !important; 
               color: ${activeThemeColor} !important; 
-              margin: 20px 0 10px !important; 
-              padding-bottom: 4px !important;
+              margin: 14px 0 6px !important; 
+              padding-bottom: 2px !important;
+              page-break-after: avoid !important;
             }
             .content h3 * {
               color: ${activeThemeColor} !important;
             }
             
             .content h4 { 
-              font-size: 13px !important; 
+              font-size: 12.5px !important; 
               font-weight: 700 !important; 
               color: #374151 !important; 
-              margin: 14px 0 6px !important; 
+              margin: 10px 0 4px !important; 
+              page-break-after: avoid !important;
             }
             .content h4 * {
               color: #374151 !important;
@@ -1022,26 +1027,27 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             .content table { 
               width: 100% !important; 
               border-collapse: collapse !important; 
-              margin: 20px 0 !important; 
-              font-size: 13px !important; 
+              margin: 14px 0 !important; 
+              font-size: 12.5px !important; 
+              page-break-inside: avoid !important; 
               break-inside: avoid !important; 
             }
             
             .content th { 
               background-color: ${activeThemeColor}14 !important;
               color: ${activeThemeColor} !important; 
-              padding: 10px 14px !important; 
+              padding: 8px 12px !important; 
               text-align: left !important; 
               font-weight: 700 !important; 
-              border: 1px solid ${activeThemeColor}33 !important; 
+              border: 1px solid #cbd5e1 !important; 
             }
             .content th * {
               color: ${activeThemeColor} !important;
             }
             
             .content td { 
-              padding: 10px 14px !important; 
-              border: 1px solid #e5e7eb !important; 
+              padding: 8px 12px !important; 
+              border: 1px solid #e2e8f0 !important; 
               color: #374151 !important; 
             }
             .content td * {
@@ -1054,8 +1060,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             
             .content blockquote { 
               border-left: 4px solid ${activeThemeColor} !important; 
-              padding: 12px 18px !important; 
-              margin: 18px 0 !important; 
+              padding: 10px 16px !important; 
+              margin: 14px 0 !important; 
               background-color: ${activeThemeColor}0d !important;
               border-radius: 0 8px 8px 0 !important; 
               color: #1f2937 !important; 
@@ -1067,23 +1073,23 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             .content ul { 
-              padding-left: 24px !important; 
-              margin: 14px 0 !important; 
+              padding-left: 20px !important; 
+              margin: 8px 0 !important; 
               list-style-type: disc !important;
             }
             
             .content ol { 
-              padding-left: 24px !important; 
-              margin: 14px 0 !important; 
+              padding-left: 20px !important; 
+              margin: 8px 0 !important; 
               list-style-type: decimal !important;
             }
             
             .content li { 
-              margin: 8px 0 !important;
-              padding-left: 4px !important;
+              margin: 4px 0 !important;
+              padding-left: 2px !important;
               color: #374151 !important; 
               display: list-item !important;
-              line-height: 1.6 !important;
+              line-height: 1.5 !important;
             }
             
             .content li * {
@@ -1093,7 +1099,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             .content hr { 
               border: none !important; 
               border-top: 1px solid #e5e7eb !important; 
-              margin: 25px 0 !important; 
+              margin: 18px 0 !important; 
             }
             
             .content code:not(pre code) { 

@@ -274,16 +274,17 @@ CRITICAL FORMATTING & SYNTAX STANDARDS:
      | Header 1 | Header 2 | Header 3 |
      | :--- | :--- | :--- |
      | Value 1 | Value 2 | Value 3 |
-     Keep each cell to a short phrase (roughly under 12 words). If a concept needs a long explanation, put the short label in the table and the full explanation as prose right after the table — do NOT cram long paragraphs or multiple sentences into one cell. NEVER use double pipes (||), NEVER leave a cell blank, NEVER insert blank lines inside a table, and NEVER wrap plain terms in extra bold/box/badge-style markup inside table cells — plain text only inside cells.
+     Keep each cell to a short phrase (roughly under 12 words). If a concept needs a long explanation, put the short label in the table and the full explanation as prose right after the table — do NOT cram long paragraphs or multiple sentences into one cell. NEVER use double pipes (||), NEVER leave a cell blank, NEVER insert blank lines inside a table, and NEVER wrap plain terms in extra bold/box/badge-style markup inside table cells — plain text only inside cells. Ensure one clean line per table row with exactly matching column counts across all rows.
+   - BULLET LISTS & SUB-ITEMS: Always format sub-points, properties, examples, strengths, weaknesses, steps, and explanations using explicit Markdown list bullets (\`- \` or \`* \`). NEVER write consecutive items as plain unbulleted text blocks or raw runs of text.
    - FORMULAS & CODE: LaTeX only for genuinely mathematical/statistical content; fenced code blocks (\`\`\`python, \`\`\`cpp, etc.) only when the document is actually about programming or algorithms.
    - SECTION DIVIDERS: Use a single clean markdown \`---\` between major sections only. Do NOT use unicode dotted lines, repeated dashes, or multiple consecutive dividers, and do NOT leave empty lines where content should be.
 
 2. FIXED ACADEMIC STUDY GUIDE STRUCTURE (always use this skeleton, in this order):
    - 📌 **Executive Overview**: High-level synthesis of what this lecture/chapter is about, its significance, and core learning goals.
    - 🧠 **Core Concepts & Definitions**: Clear breakdown (short table or bullet list — whichever fits the term count) of all key terminology, definitions, and foundational concepts introduced in the text.
-   - 🔍 **Detailed Thematic Analysis**: In-depth, thorough coverage of every topic, subtopic, taxonomy, and methodology in the document. Explain the "Why" and "How" with clear bullet points, using code/formulas only where genuinely relevant per Step 0.
+   - 🔍 **Detailed Thematic Analysis**: In-depth, thorough coverage of every topic, subtopic, taxonomy, and methodology in the document. Explain the "Why" and "How" with explicit bullet points (\`- \`), using code/formulas only where genuinely relevant per Step 0.
    - ⚖️ **Comparison & Evaluation Table**: Only when the document actually presents comparable methods, tools, modes, or approaches — build one clear, fully-filled table. If nothing in the document is genuinely comparable, replace this section with a short "Key Trade-offs" bullet list instead of an empty/fake table.
-   - ⚠️ **Key Pitfalls, Biases & Common Mistakes**: Common student misconceptions, edge cases, error types, or exam traps.
+   - ⚠️ **Key Pitfalls, Biases & Common Mistakes**: Common student misconceptions, edge cases, error types, or exam traps formatted with clear bullet points.
    - 💡 **Real-World Case Examples**: Concrete practical scenarios illustrating theoretical points in action (use the document's own examples first if it has any).
    - 🎯 **High-Yield Exam Review Questions**: 3 to 5 conceptual review questions with concise model answers.
 
