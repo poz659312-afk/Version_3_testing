@@ -104,13 +104,26 @@ function preprocessMarlineContent(content: string): string {
   // 5. Fix tables: Convert double pipes "||" into single "|"
   text = text.replace(/\|{2,}/g, '|')
 
-  // 6. Split merged table rows that are stuck on the same line:
-  // E.g. "| Cell 1 | Cell 2 | | Cell 3 | Cell 4 |" -> "| Cell 1 | Cell 2 |\n| Cell 3 | Cell 4 |"
+  // 6. Repair malformed table lines to strictly start and end with pipes
+  const rawLines = text.split('\n')
+  const repairedLines = rawLines.map(line => {
+    const trimmed = line.trim()
+    if (trimmed.includes('|') && !trimmed.startsWith('#') && !trimmed.startsWith('```') && !trimmed.startsWith('$$')) {
+      let l = trimmed
+      if (!l.startsWith('|')) l = '| ' + l
+      if (!l.endsWith('|')) l = l + ' |'
+      return l
+    }
+    return line
+  })
+  text = repairedLines.join('\n')
+
+  // 7. Split merged table rows that are stuck on the same line:
   text = text.replace(/\|\s*\|\s*\|/g, '|\n|')
   text = text.replace(/(\|\s*[-:\s|]+\|)\s*\|/g, '$1\n|')
   text = text.replace(/(\|[^\n|]+(?:\|[^\n|]+)+\|)\s*\|/g, '$1\n|')
 
-  // 7. Ensure clean newlines before table start
+  // 8. Ensure clean newlines before table start
   text = text.replace(/([^\n|])\s*(\|[^\n|]+\|[^\n|]+\|)/g, '$1\n\n$2')
 
   // 8. Convert explicit LaTeX syntax patterns into standard $ math delimiters:
