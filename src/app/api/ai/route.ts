@@ -127,9 +127,11 @@ export async function POST(req: NextRequest) {
       fileContent = `Document Name: ${metadata.name || 'Academic File'}`;
     }
 
-    // Trim context to fit context window comfortably (up to 35,000 characters)
-    const sanitizedContext = fileContent.trim().length > 35000
-      ? fileContent.slice(0, 35000) + "\n\n[... Remaining content truncated for optimal speed ...]"
+    // Trim context to fit context window comfortably
+    // 14,000 characters is safe for 8k-token models (especially for Arabic which takes more tokens per char)
+    const MAX_CONTEXT_CHARS = 14000;
+    const sanitizedContext = fileContent.trim().length > MAX_CONTEXT_CHARS
+      ? fileContent.slice(0, MAX_CONTEXT_CHARS) + "\n\n[... Remaining content truncated for optimal speed and memory ...]"
       : fileContent.trim();
 
     // Dynamic token cost calculation:
@@ -401,7 +403,10 @@ Rules:
           content: `I have analyzed "${metadata.name || 'this document'}". How can I assist you with it?`
         });
       }
-      apiMessages.push(...messages);
+      
+      // Trim chat history to the last 6 messages to prevent token limit overflow
+      const recentMessages = messages.slice(-6);
+      apiMessages.push(...recentMessages);
     }
 
     // Filter and sanitize all messages to ensure strictly valid non-empty string contents
