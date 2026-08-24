@@ -79,7 +79,7 @@ function CodeBlock({ language, codeText, children }: { language: string; codeTex
   )
 }
 
-// Preprocess math & LaTeX delimiters, clean thinking tags
+// Preprocess math & LaTeX delimiters, clean thinking tags and rogue symbols
 function preprocessMarlineContent(content: string): string {
   if (!content) return ""
   let text = content
@@ -90,18 +90,25 @@ function preprocessMarlineContent(content: string): string {
   text = text.replace(/<think>[\s\S]*$/gi, "")
   text = text.replace(/<thought>[\s\S]*$/gi, "")
 
-  // 2. Convert LaTeX syntax patterns into standard $ math delimiters:
-  // Convert \[ ... \] to $$ ... $$ and \( ... \) to $ ... $
+  // 2. Fix double pipe table headers/cells (e.g. || header || -> | header |)
+  text = text.replace(/\|{2,}/g, "|")
+
+  // 3. Remove rogue $ numbers like 1$, 2$, 3$ or $ followed by Arabic text
+  text = text.replace(/(\d+)\$/g, "$1")
+  text = text.replace(/\$(\d+)/g, "$1")
+  text = text.replace(/\$\s+([^\$\n]+)/g, "$1")
+
+  // 4. Convert explicit LaTeX syntax patterns into standard $ math delimiters:
   text = text.replace(/\\\[([\s\S]*?)\\\]/g, '\n\n$$$$1$$\n\n')
   text = text.replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$')
 
-  // 3. Wrap standalone LaTeX environments with $$ if missing
+  // 5. Wrap standalone LaTeX environments with $$ if missing
   text = text.replace(
     /(?<!\$\$)\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*(?!\$\$)/g,
     '\n\n$$$1$$\n\n'
   )
 
-  // 4. Ensure display math $$ has its own lines
+  // 6. Ensure display math $$ has its own lines
   text = text.replace(/([^\n])\s*(\$\$)/g, '$1\n\n$2')
   text = text.replace(/(\$\$)\s*([^\n$\s])/g, '$1\n\n$2')
 
@@ -115,7 +122,7 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
     <div className={`prose dark:prose-invert max-w-none text-foreground leading-relaxed text-sm md:text-base space-y-3 ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={[[rehypeKatex, { strict: false }], rehypeRaw, rehypeHighlight]}
+        rehypePlugins={[[rehypeKatex, { strict: false, throwOnError: false, errorColor: "inherit" }], rehypeRaw, rehypeHighlight]}
         components={{
           // Custom Code Block Renderer fixing [object Object] bug
           code({ node, inline, className, children, ...props }: any) {

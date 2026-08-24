@@ -1768,3 +1768,26 @@ html.lenis-stopped body {
 .dark .hljs-deletion {
   color: #f38ba8;
 }
+
+/* ============================================= */
+/* KaTeX Math Styling & Error Text Protection    */
+/* ============================================= */
+.katex {
+  font-size: 1.05em !important;
+  direction: ltr !important;
+  display: inline-block;
+}
+
+.katex-display {
+  margin: 1em 0 !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  padding: 0.5em 0 !important;
+}
+
+/* Never show red text for parse errors in KaTeX */
+.katex-error {
+  color: inherit !important;
+  background: transparent !important;
+  border: none !important;
+}
