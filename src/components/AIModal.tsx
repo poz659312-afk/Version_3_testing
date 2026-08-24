@@ -46,6 +46,16 @@ function preprocessMathContent(content: string): string {
   if (!content) return "";
   let text = content;
 
+  // Clean common LLM formatting glitches:
+  // a. Convert weird unicode dotted lines or scattered underscores to clean standard horizontal rules
+  text = text.replace(/[┄┈—–]{3,}/g, '\n\n---\n\n');
+
+  // b. Convert double pipes (||) from malformed tables to single pipes (|)
+  text = text.replace(/\|{2,}/g, '|');
+
+  // c. Collapse excessive vertical blank lines (4+ newlines into 2)
+  text = text.replace(/\n{3,}/g, '\n\n');
+
   // 1. Separate headers (##, ###) with newlines if attached directly to preceding or subsequent text
   text = text.replace(/([^\n])\s*(#{1,6}\s+[^\n]+)/g, '$1\n\n$2');
   text = text.replace(/(#{1,6}\s+[^\n]+)\s*([^\n#\s])/g, '$1\n\n$2');
