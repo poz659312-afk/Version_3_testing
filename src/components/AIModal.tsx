@@ -209,6 +209,27 @@ function preprocessMathContent(content: string): string {
   return text;
 }
 
+function adjustColorBrightness(hex: string, percent: number): string {
+  if (!hex || !hex.startsWith("#")) return hex;
+  const cleanHex = hex.replace("#", "");
+  const num = parseInt(cleanHex.length === 3 ? cleanHex.split("").map(c => c + c).join("") : cleanHex, 16);
+  if (isNaN(num)) return hex;
+  const r = (num >> 16);
+  const g = ((num >> 8) & 0x00ff);
+  const b = (num & 0x0000ff);
+
+  const adjust = (val: number) => {
+    const newVal = Math.round(val * (1 + percent / 100));
+    return Math.min(255, Math.max(0, newVal));
+  };
+
+  const newR = adjust(r);
+  const newG = adjust(g);
+  const newB = adjust(b);
+
+  return `#${((1 << 24) + (newR << 16) + (newG << 8) + newB).toString(16).slice(1)}`;
+}
+
 function extractCodeText(node: any): string {
   if (!node) return "";
   if (typeof node === "string") return node;
@@ -218,12 +239,23 @@ function extractCodeText(node: any): string {
   return "";
 }
 
-function CodeBlock({ language, codeText, children, accentColor }: { language: string; codeText: string; children: React.ReactNode; accentColor?: string }) {
+function CodeBlock({ language, codeText, children, accentColor }: { language: string; codeText: string; children?: React.ReactNode; accentColor?: string }) {
   const [copied, setCopied] = useState(false);
+
+  // Clean the copy text (strip duplicate language line), but don't use this for display
+  let cleanCopyText = (codeText || "").trim();
+  const langKey = (language || "code").toLowerCase();
+  const codeLines = cleanCopyText.split("\n");
+  if (codeLines.length > 1) {
+    const firstLine = codeLines[0].trim().toLowerCase();
+    if (firstLine === langKey || firstLine === `language-${langKey}`) {
+      cleanCopyText = codeLines.slice(1).join("\n").trim();
+    }
+  }
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(codeText);
+      await navigator.clipboard.writeText(cleanCopyText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -231,28 +263,31 @@ function CodeBlock({ language, codeText, children, accentColor }: { language: st
     }
   };
 
+  const displayLang = (language || "code").toUpperCase();
+  const themeColor = accentColor || "#10b981";
+
   return (
-    <div data-code-block="true" dir="ltr" className="my-4 rounded-xl overflow-hidden border border-white/10 bg-[#1e1e2e] dark:bg-[#181825] text-slate-100 shadow-2xl font-mono text-xs text-left">
+    <div data-code-block="true" dir="ltr" className="my-4 rounded-xl overflow-hidden border border-slate-200 dark:border-white/15 bg-white dark:bg-[#1e1e2e] shadow-lg font-mono text-xs text-left" style={{ maxWidth: '100%' }}>
       {/* IDE Top Window Bar */}
-      <div dir="ltr" className="flex items-center justify-between px-4 py-2 bg-[#181825] dark:bg-[#11111b] border-b border-white/5 text-slate-400 select-none text-left">
+      <div dir="ltr" className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-[#181825] border-b border-slate-200 dark:border-white/10 select-none text-left">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 ml-2 border-l border-white/10 pl-3">
-            <Terminal className="w-3.5 h-3.5 text-primary" style={accentColor ? { color: accentColor } : undefined} />
-            <span className="font-bold uppercase tracking-wider text-[10.5px] text-slate-300">
-              {language || "code"}
+          <div className="flex items-center gap-1.5 ml-2 border-l border-slate-300 dark:border-white/10 pl-3">
+            <Terminal className="w-3.5 h-3.5" style={{ color: themeColor }} />
+            <span className="font-bold uppercase tracking-wider text-[10.5px] text-slate-500 dark:text-slate-300">
+              {displayLang}
             </span>
           </div>
         </div>
         <button
           data-pdf-exclude="true"
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition-colors text-[11px] font-medium cursor-pointer border border-white/5"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-300 transition-colors text-[11px] font-medium cursor-pointer border border-slate-200 dark:border-white/5"
           title="Copy code"
         >
           {copied ? (
             <>
-              <Check className="w-3 h-3 text-emerald-400" />
-              <span className="text-emerald-400 font-semibold">Copied!</span>
+              <Check className="w-3 h-3 text-emerald-500" />
+              <span className="text-emerald-500 font-semibold">Copied!</span>
             </>
           ) : (
             <>
@@ -263,10 +298,10 @@ function CodeBlock({ language, codeText, children, accentColor }: { language: st
         </button>
       </div>
 
-      {/* Code Content */}
-      <div dir="ltr" className="p-4 overflow-x-auto text-[13px] leading-relaxed select-text text-left font-mono">
-        <pre dir="ltr" className="font-mono text-left m-0 p-0 bg-transparent border-0">
-          <code dir="ltr" className="font-mono text-left hljs bg-transparent">{children || codeText}</code>
+      {/* Code Content — use children (syntax-highlighted JSX from rehype-highlight), fallback to plain text */}
+      <div dir="ltr" className="p-4 overflow-x-auto text-[13px] leading-relaxed select-text text-left font-mono" style={{ maxWidth: '100%' }}>
+        <pre dir="ltr" className="font-mono text-left m-0 p-0 bg-transparent border-0" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+          <code dir="ltr" className="font-mono text-left hljs bg-transparent text-slate-800 dark:text-slate-100">{children || cleanCopyText}</code>
         </pre>
       </div>
     </div>
@@ -1063,13 +1098,31 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         const clone = msgElement.cloneNode(true) as HTMLElement;
         clone.querySelectorAll('[data-pdf-exclude]').forEach(el => el.remove());
 
-        // Ensure all text in dark mode is cleanly converted to rich black/dark slate for the PDF
+        // Ensure all text in dark mode is cleanly converted to rich black/dark slate for the PDF, while preserving highlights
         clone.querySelectorAll('*').forEach(el => {
           const htmlEl = el as HTMLElement;
           const isCode = htmlEl.closest('pre') || htmlEl.closest('code') || htmlEl.classList.contains('hljs') || (typeof htmlEl.className === 'string' && htmlEl.className.includes('hljs'));
+          const isCodeBlock = htmlEl.closest('[data-code-block="true"]') || htmlEl.getAttribute('data-code-block') === 'true';
           const isSvg = htmlEl.closest('svg');
           const isKatex = htmlEl.closest('.katex') || htmlEl.classList.contains('katex');
-          if (!isCode && !isSvg && !isKatex) {
+          const isStrong = htmlEl.tagName === 'STRONG' || htmlEl.closest('strong');
+
+          if (isStrong) {
+            htmlEl.style.backgroundColor = `${activeThemeColor}18`;
+            htmlEl.style.color = '#1e293b';
+            htmlEl.style.borderRadius = '5px';
+            htmlEl.style.padding = '2px 7px';
+            htmlEl.style.fontWeight = '700';
+            htmlEl.style.display = 'inline-block';
+            htmlEl.style.border = `1.5px solid ${activeThemeColor}`;
+          } else if (isCode && !htmlEl.closest('pre')) {
+            htmlEl.style.backgroundColor = `${activeThemeColor}18`;
+            htmlEl.style.color = '#1e293b';
+            htmlEl.style.borderRadius = '4px';
+            htmlEl.style.padding = '2px 6px';
+            htmlEl.style.fontWeight = '700';
+            htmlEl.style.border = `1.5px solid ${activeThemeColor}`;
+          } else if (!isCode && !isCodeBlock && !isSvg && !isKatex) {
             htmlEl.style.color = '#1f2937';
             htmlEl.style.backgroundColor = '';
             if (htmlEl.className && typeof htmlEl.className === 'string') {
@@ -1451,7 +1504,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               line-height: 1.5 !important;
             }
             
-            .content li * {
+            .content li *:not(strong):not(strong *):not(code) {
               color: #374151 !important;
             }
             
@@ -1461,40 +1514,57 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               margin: 18px 0 !important; 
             }
             
+            .content strong {
+              background-color: ${activeThemeColor}18 !important;
+              color: #1e293b !important;
+              padding: 2px 7px !important;
+              border-radius: 5px !important;
+              font-weight: 700 !important;
+              display: inline-block !important;
+              border: 1.5px solid ${activeThemeColor} !important;
+            }
+            .content strong * {
+              color: #1e293b !important;
+            }
+
             .content code:not(pre code) { 
-              background-color: #f1f5f9 !important; 
-              color: ${activeThemeColor} !important; 
+              background-color: ${activeThemeColor}18 !important; 
+              color: #1e293b !important; 
               padding: 2px 6px !important; 
               border-radius: 4px !important; 
-              border: 1px solid ${activeThemeColor}25 !important;
-              font-size: 13px !important; 
+              border: 1.5px solid ${activeThemeColor} !important;
+              font-size: 12px !important; 
+              font-weight: 700 !important;
               font-family: 'Roboto Mono', monospace !important; 
               display: inline-block !important;
             }
             
-            /* Light IDE Theme for PDF Printing */
+            /* Light IDE Code Block for Clean PDF Printing */
             .content [data-code-block="true"] {
-              background-color: #f8fafc !important;
-              border: 1px solid #cbd5e1 !important;
+              background-color: #ffffff !important;
+              border: 1.5px solid ${activeThemeColor} !important;
               border-radius: 8px !important;
-              box-shadow: none !important;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
               margin: 16px 0 !important;
               page-break-inside: avoid !important;
               break-inside: avoid !important;
+              overflow: hidden !important;
+              color: #0f172a !important;
             }
 
             .content [data-code-block="true"] > div:first-child {
               background-color: #f1f5f9 !important;
-              border-bottom: 1px solid #cbd5e1 !important;
+              border-bottom: 1px solid ${activeThemeColor}40 !important;
               color: #475569 !important;
+              padding: 6px 12px !important;
             }
 
             .content [data-code-block="true"] span {
-              color: #475569 !important;
+              color: #0f172a !important;
             }
 
             .content pre { 
-              background-color: #f8fafc !important; 
+              background-color: #ffffff !important; 
               color: #0f172a !important;
               padding: 14px 16px !important; 
               border-radius: 0 0 8px 8px !important; 
@@ -1514,39 +1584,39 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               font-family: 'Roboto Mono', monospace !important;
             }
 
-            /* Light High-Contrast Syntax Highlighting Colors for Clean Print */
+            /* Rich Colorful Syntax Highlighting for White Code Blocks in Print */
             .content .hljs-keyword, .content .hljs-selector-tag, .content .hljs-subst, .content .hljs-section {
-              color: #cf222e !important; /* Crimson/Purple Keyword */
+              color: #d32f2f !important; /* Crimson Red Keywords */
               font-weight: 700 !important;
             }
             .content .hljs-title, .content .hljs-title.function_, .content .hljs-title.hljs-function, .content .hljs-function {
-              color: #0969da !important; /* Blue for functions & defs */
+              color: #1565c0 !important; /* Bold Blue for functions */
               font-weight: 700 !important;
             }
             .content .hljs-string, .content .hljs-doctag, .content .hljs-regexp {
-              color: #0a3069 !important; /* Deep Blue for strings */
+              color: #2e7d32 !important; /* Forest Green for strings */
               font-weight: 500 !important;
             }
             .content .hljs-number, .content .hljs-literal {
-              color: #953800 !important; /* Bronze / Orange for numbers */
+              color: #e65100 !important; /* Burnt Orange for numbers */
               font-weight: 600 !important;
             }
             .content .hljs-comment, .content .hljs-quote {
-              color: #6e7781 !important; /* Readable Slate Gray for comments */
+              color: #78909c !important; /* Cool Slate for comments */
               font-style: italic !important;
             }
             .content .hljs-variable, .content .hljs-template-variable {
-              color: #953800 !important;
+              color: #e65100 !important;
             }
             .content .hljs-built_in, .content .hljs-type, .content .hljs-class {
-              color: #8250df !important; /* Purple for types and built-ins */
+              color: #7b1fa2 !important; /* Deep Purple for types */
               font-weight: 600 !important;
             }
             .content .hljs-attr, .content .hljs-property, .content .hljs-attribute {
-              color: #0550ae !important;
+              color: #0277bd !important;
             }
             .content .hljs-params {
-              color: #24292f !important;
+              color: #37474f !important;
             }
             
              .katex { 
@@ -2410,8 +2480,20 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                     ),
                                     h3: ({ children }) => (
                                       <div className="my-3 block">
-                                        <h3 className={cn("text-xs font-extrabold px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-sm border uppercase tracking-wider transition-all duration-300 hover:scale-[1.02]", activeClasses.bg, activeClasses.text, activeClasses.border)}>
-                                          <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", activeClasses.bullet)} />
+                                        <h3
+                                          className={cn(
+                                            "text-xs font-extrabold px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-sm border uppercase tracking-wider transition-all duration-300 hover:scale-[1.02]",
+                                            isDark ? "text-white" : "text-slate-900"
+                                          )}
+                                          style={{
+                                            backgroundColor: `${activeClasses.accent}18`,
+                                            borderColor: activeClasses.accent,
+                                          }}
+                                        >
+                                          <span
+                                            className="w-1.5 h-1.5 rounded-full animate-pulse"
+                                            style={{ backgroundColor: activeClasses.accent }}
+                                          />
                                           {children}
                                         </h3>
                                       </div>
@@ -2425,12 +2507,22 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                     p: ({ children }) => (
                                       <p className={cn("text-[13.5px] leading-relaxed my-2", isDark ? "text-white/80" : "text-slate-800")}>{children}</p>
                                     ),
-                                    strong: ({ children }) => (
-                                      <strong className={cn(
-                                        "font-extrabold px-2 py-0.5 rounded-lg border text-[13px] inline-flex items-center gap-1 my-0.5 transition-all shadow-sm duration-300 hover:scale-[1.03]",
-                                        activeClasses.text, activeClasses.border
-                                      )} style={{ backgroundColor: `${activeClasses.accent}0d` }}>{children}</strong>
-                                    ),
+                                    strong: ({ children }) => {
+                                      return (
+                                        <strong
+                                          className={cn(
+                                            "font-bold px-2 py-0.5 rounded-lg text-[12.5px] inline-flex items-center gap-1 my-0.5 shadow-sm transition-all duration-300 hover:scale-[1.03]",
+                                            isDark ? "text-white" : "text-slate-900"
+                                          )}
+                                          style={{
+                                            backgroundColor: `${activeClasses.accent}18`,
+                                            border: `1.5px solid ${activeClasses.accent}`,
+                                          }}
+                                        >
+                                          {children}
+                                        </strong>
+                                      );
+                                    },
                                     em: ({ children }) => (
                                       <em className={cn("italic font-medium", isDark ? "text-white/90" : "text-slate-900")}>{children}</em>
                                     ),
@@ -2503,7 +2595,14 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                       return (
                                         <code
                                           dir="ltr"
-                                          className={cn("px-1.5 py-0.5 rounded-md text-xs font-mono border", activeClasses.codeBg, activeClasses.inlineCodeText, activeClasses.border)}
+                                          className={cn(
+                                            "px-1.5 py-0.5 rounded-md text-xs font-mono font-bold border inline-block my-0.5 shadow-sm",
+                                            isDark ? "text-slate-100" : "text-slate-900"
+                                          )}
+                                          style={{
+                                            backgroundColor: `${activeClasses.accent}18`,
+                                            border: `1.5px solid ${activeClasses.accent}`,
+                                          }}
                                           {...props}
                                         >
                                           {children}

@@ -1668,3 +1668,103 @@ html.lenis-stopped body {
 [data-radix-portal] [data-state="closed"].fixed.left-1\/2.top-1\/2 {
   animation: dialogSlideDownToBottom 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
+
+/* ============================================= */
+/* Highlight.js Syntax Colors — Light Mode       */
+/* (White code block background, colorful code)  */
+/* ============================================= */
+.hljs-keyword, .hljs-selector-tag, .hljs-subst, .hljs-section {
+  color: #d32f2f; /* Crimson Red */
+  font-weight: 700;
+}
+.hljs-title, .hljs-title.function_, .hljs-title.class_, .hljs-function {
+  color: #1565c0; /* Bold Blue */
+  font-weight: 700;
+}
+.hljs-string, .hljs-doctag, .hljs-regexp {
+  color: #2e7d32; /* Forest Green */
+}
+.hljs-number, .hljs-literal {
+  color: #e65100; /* Burnt Orange */
+  font-weight: 600;
+}
+.hljs-comment, .hljs-quote {
+  color: #78909c; /* Cool Slate */
+  font-style: italic;
+}
+.hljs-variable, .hljs-template-variable {
+  color: #e65100;
+}
+.hljs-built_in, .hljs-type, .hljs-class {
+  color: #7b1fa2; /* Deep Purple */
+  font-weight: 600;
+}
+.hljs-attr, .hljs-property, .hljs-attribute {
+  color: #0277bd; /* Teal Blue */
+}
+.hljs-params {
+  color: #37474f;
+}
+.hljs-meta {
+  color: #6a1b9a;
+}
+.hljs-symbol, .hljs-bullet {
+  color: #0277bd;
+}
+.hljs-addition {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+}
+.hljs-deletion {
+  color: #c62828;
+  background-color: #ffebee;
+}
+
+/* ============================================= */
+/* Highlight.js Syntax Colors — Dark Mode        */
+/* (Catppuccin Mocha palette for dark bg)        */
+/* ============================================= */
+.dark .hljs-keyword, .dark .hljs-selector-tag, .dark .hljs-subst, .dark .hljs-section {
+  color: #f38ba8;
+  font-weight: 700;
+}
+.dark .hljs-title, .dark .hljs-title.function_, .dark .hljs-title.class_, .dark .hljs-function {
+  color: #89b4fa;
+  font-weight: 700;
+}
+.dark .hljs-string, .dark .hljs-doctag, .dark .hljs-regexp {
+  color: #a6e3a1;
+}
+.dark .hljs-number, .dark .hljs-literal {
+  color: #fab387;
+  font-weight: 600;
+}
+.dark .hljs-comment, .dark .hljs-quote {
+  color: #6c7086;
+  font-style: italic;
+}
+.dark .hljs-variable, .dark .hljs-template-variable {
+  color: #fab387;
+}
+.dark .hljs-built_in, .dark .hljs-type, .dark .hljs-class {
+  color: #cba6f7;
+  font-weight: 600;
+}
+.dark .hljs-attr, .dark .hljs-property, .dark .hljs-attribute {
+  color: #89dceb;
+}
+.dark .hljs-params {
+  color: #cdd6f4;
+}
+.dark .hljs-meta {
+  color: #f5c2e7;
+}
+.dark .hljs-symbol, .dark .hljs-bullet {
+  color: #89dceb;
+}
+.dark .hljs-addition {
+  color: #a6e3a1;
+}
+.dark .hljs-deletion {
+  color: #f38ba8;
+}

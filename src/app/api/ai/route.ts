@@ -343,9 +343,9 @@ Rules:
     Language: ${language}.
 
     STEP 0 — SILENT CONTENT PLANNING (do this internally before writing, do not output it):
-    Read the document and identify its actual subject domain (e.g. math/engineering, programming, medical/clinical, methodology/social-science, business, law, literature, language learning, mixed...). Decide, for THIS specific document:
+    Read the document and identify its actual subject domain (e.g. math/engineering, programming, databases/SQL, medical/clinical, methodology/social-science, business, law, literature, mixed...). Decide, for THIS specific document:
     - Does it contain real formulas/statistics? → include LaTeX (\$\$...\$\$ / \$...\$) only if yes.
-    - Does it contain real algorithms/code? → include fenced code blocks only if yes.
+    - Does it involve programming, databases (SQL), algorithms, or scripts? → you MUST provide realistic, functional code examples / SQL queries in fenced code blocks (\`\`\`sql, \`\`\`python, etc.) inside both "Detailed Thematic Analysis" and "Real-World Case Examples" so students see exact implementation syntax.
     - Does it contain genuinely comparable items (methods, tools, modes, approaches, pros/cons)? → build a comparison table only if such pairs/sets actually exist in the document.
     - Does it describe a process, workflow, or protocol? → represent it as a clear numbered sequence.
     This plan controls what you fill into the fixed structure below — skip a section's specialized content type gracefully (plain explanation instead) if it truly doesn't apply, but keep the section itself so the study guide stays complete and predictable.
