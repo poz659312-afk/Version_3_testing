@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+@import "katex/dist/katex.min.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
@@ -303,17 +304,21 @@
   font-family: 'Rubik', var(--font-rubik), system-ui, sans-serif !important;
 }
 
-/* Marline page — force Rubik font globally for all elements (Arabic and English) */
+/* Marline page — force Rubik font for UI text (Arabic and English), preserving authentic LaTeX math & code fonts */
 .marline-page,
-.marline-page *,
 .marline-page textarea,
 .marline-page input,
 .marline-page button,
-.marline-page p,
-.marline-page span,
-.marline-page div,
-[data-marline-page],
-[data-marline-page] * {
+.marline-page p:not(.katex *):not(code):not(pre),
+.marline-page span:not(.katex *):not(code):not(pre),
+.marline-page div:not(.katex *):not(code):not(pre),
+.marline-page h1:not(.katex *),
+.marline-page h2:not(.katex *),
+.marline-page h3:not(.katex *),
+.marline-page td:not(.katex *),
+.marline-page th:not(.katex *),
+.marline-page li:not(.katex *),
+[data-marline-page]:not(.katex):not(.katex *):not(code):not(pre) {
   font-family: 'Rubik', var(--font-rubik), 'Cairo', system-ui, -apple-system, sans-serif !important;
 }
 
@@ -1772,17 +1777,50 @@ html.lenis-stopped body {
 /* ============================================= */
 /* KaTeX Math Styling & Error Text Protection    */
 /* ============================================= */
+.katex,
+.katex * {
+  font-family: KaTeX_Main, KaTeX_Math, KaTeX_AMS, 'Times New Roman', serif !important;
+}
+
 .katex {
-  font-size: 1.05em !important;
+  font-size: 1.1em !important;
   direction: ltr !important;
   display: inline-block;
+  text-rendering: auto;
+}
+
+.katex .mathnormal {
+  font-family: KaTeX_Math, 'Times New Roman', italic, serif !important;
+  font-style: italic !important;
+}
+
+.katex .mathbf {
+  font-family: KaTeX_Main, 'Times New Roman', serif !important;
+  font-weight: bold !important;
+}
+
+.katex .amsrm {
+  font-family: KaTeX_AMS, KaTeX_Main, serif !important;
+}
+
+.katex .mathcal {
+  font-family: KaTeX_Caligraphic, KaTeX_Main, cursive, serif !important;
+}
+
+.katex .mathfrak {
+  font-family: KaTeX_Fraktur, KaTeX_Main, serif !important;
+}
+
+.katex .mathtt {
+  font-family: KaTeX_Typewriter, monospace !important;
 }
 
 .katex-display {
-  margin: 1em 0 !important;
+  margin: 1.25em 0 !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
   padding: 0.5em 0 !important;
+  text-align: center !important;
 }
 
 /* Never show red text for parse errors in KaTeX */
