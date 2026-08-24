@@ -20,7 +20,9 @@ import {
   X,
   Check,
   Copy,
-  Terminal
+  Terminal,
+  Palette,
+  Coins
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -36,6 +38,30 @@ import { useColorTheme } from "@/components/color-theme-provider";
 import { useTheme } from "@/components/theme-provider";
 import { useRouter } from "next/navigation";
 import { getStudentSession } from "@/lib/auth";
+
+export const THEME_OPTIONS = [
+  { id: "default", name: "Emerald", hex: "#10b981" },
+  { id: "volcano", name: "Volcano", hex: "#f97316" },
+  { id: "sunset", name: "Sunset", hex: "#f43f5e" },
+  { id: "ocean", name: "Ocean", hex: "#2563eb" },
+  { id: "skyblue", name: "Sky Blue", hex: "#38bdf8" },
+  { id: "nightowl", name: "Night Owl", hex: "#0ea5e9" },
+  { id: "forest", name: "Forest", hex: "#16a34a" },
+  { id: "lavender", name: "Lavender", hex: "#a78bfa" },
+  { id: "rose", name: "Rose", hex: "#fb7185" },
+  { id: "amber", name: "Amber", hex: "#f59e0b" },
+  { id: "mint", name: "Mint", hex: "#34d399" },
+  { id: "crimson", name: "Crimson", hex: "#e11d48" },
+  { id: "indigo", name: "Indigo", hex: "#6366f1" },
+  { id: "coral", name: "Coral", hex: "#ff7f50" },
+  { id: "diamond", name: "Diamond", hex: "#06b6d4" },
+  { id: "luxury", name: "Luxury Gold", hex: "#eab308" },
+  { id: "cyberpunk", name: "Cyberpunk", hex: "#ec4899" },
+  { id: "matrix", name: "Matrix Green", hex: "#22c55e" },
+  { id: "nebula", name: "Nebula Purple", hex: "#9333ea" },
+  { id: "glacier", name: "Glacier Teal", hex: "#2dd4bf" },
+  { id: "solaris", name: "Solaris Flare", hex: "#f59e0b" }
+];
 
 interface Message {
   role: "user" | "assistant";
@@ -373,7 +399,6 @@ function MermaidElement({ chart }: { chart: string }) {
 }
 
 export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
-  const { colorTheme } = useColorTheme();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -582,7 +607,25 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
     }
   };
 
-  const activeClasses = themeClasses[colorTheme] || themeClasses.default;
+  const { colorTheme, setColorTheme } = useColorTheme();
+  const [currentTheme, setCurrentTheme] = useState<string>(colorTheme || "default");
+
+  useEffect(() => {
+    if (colorTheme) {
+      setCurrentTheme(colorTheme);
+    }
+  }, [colorTheme]);
+
+  const handleSelectTheme = (newThemeId: string) => {
+    setCurrentTheme(newThemeId);
+    setColorTheme(newThemeId as any);
+    const themeName = THEME_OPTIONS.find(t => t.id === newThemeId)?.name || newThemeId;
+    toast.success(`Theme switched to ${themeName}!`);
+    setThemePickerOpen(false);
+  };
+
+  const activeClasses = themeClasses[currentTheme] || themeClasses.default;
+  const activeThemeColor = activeClasses.accent;
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -598,6 +641,27 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
   const [selectedQuestionCount, setSelectedQuestionCount] = useState<number>(10);
   const [isCustomCount, setIsCustomCount] = useState<boolean>(false);
   const [customCountValue, setCustomCountValue] = useState<string>("10");
+  const [userCredits, setUserCredits] = useState<number | null>(null);
+  const [themePickerOpen, setThemePickerOpen] = useState(false);
+
+  // Fetch real-time AI credits balance from chameleons table
+  const fetchCredits = useCallback(async () => {
+    try {
+      const res = await fetch("/api/ai");
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof data.credits === "number") {
+          setUserCredits(data.credits);
+        }
+      }
+    } catch (_) {}
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchCredits();
+    }
+  }, [isOpen, fetchCredits]);
 
   const loadingMessages = [
     "Our AI is deeply analyzing your academic file...",
@@ -764,6 +828,15 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         throw new Error(errorMsg);
       }
 
+      // Update real-time token credits from response header
+      const remCreditsHeader = response.headers.get('X-AI-Credits-Remaining');
+      if (remCreditsHeader !== null) {
+        const parsedCredits = parseInt(remCreditsHeader, 10);
+        if (!isNaN(parsedCredits)) {
+          setUserCredits(parsedCredits);
+        }
+      }
+
       // Handle Quiz generation as static JSON response
       if (task === 'quiz') {
         const data = await response.json();
@@ -807,6 +880,14 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
 
               try {
                 const parsed = JSON.parse(dataStr);
+                if (parsed.tier_notice) {
+                  toast.info(parsed.message || "Redirected to Tier 2 backup models.", {
+                    duration: 4500,
+                    icon: "⚡"
+                  });
+                  continue;
+                }
+
                 if (parsed.error) {
                   console.error("[AI Stream Error Payload]:", parsed.error);
                   throw new Error(parsed.error.message || "AI Stream Error");
@@ -864,6 +945,11 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             });
           }
         } catch (_) { }
+      }
+
+      // Safety check: if stream closed with empty content, notify the user with an error
+      if (!assistantText.trim()) {
+        throw new Error("The AI model took too long or returned an empty response. Please try again.");
       }
     } catch (err: any) {
       if (err.name === 'AbortError') {
@@ -988,6 +1074,22 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             .content .katex, .content .katex * {
               color: inherit !important;
             }
+
+            .content .katex-display {
+              display: block !important;
+              width: 100% !important;
+              text-align: center !important;
+              margin: 16px 0 !important;
+              padding: 14px 18px !important;
+              background: #f8fafc !important;
+              border: 1px solid #e2e8f0 !important;
+              border-radius: 8px !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+            .content .katex-display::before {
+              display: none !important;
+            }
             
             .content h2 { 
               font-size: 18px !important; 
@@ -997,6 +1099,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               padding-bottom: 4px !important;
               border-bottom: 1.5px solid ${activeThemeColor}40 !important;
               page-break-after: avoid !important;
+              break-after: avoid-page !important;
             }
             .content h2 * {
               color: ${activeThemeColor} !important;
@@ -1009,6 +1112,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               margin: 14px 0 6px !important; 
               padding-bottom: 2px !important;
               page-break-after: avoid !important;
+              break-after: avoid-page !important;
             }
             .content h3 * {
               color: ${activeThemeColor} !important;
@@ -1020,9 +1124,15 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               color: #374151 !important; 
               margin: 10px 0 4px !important; 
               page-break-after: avoid !important;
+              break-after: avoid-page !important;
             }
             .content h4 * {
               color: #374151 !important;
+            }
+
+            .content h2 + *, .content h3 + *, .content h4 + * {
+              page-break-before: avoid !important;
+              break-before: avoid-page !important;
             }
             
             .content strong { 
@@ -1144,9 +1254,35 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               list-style-type: decimal !important;
             }
             
-            .content li { 
-              margin: 4px 0 !important;
+            /* Top-level list items (Subtopic sections with nested lists) get clean divider lines */
+            .content > ul > li,
+            .content > ol > li,
+            .content div > ul > li { 
+              margin: 10px 0 14px 0 !important;
+              padding-bottom: 10px !important;
+              border-bottom: 1px dashed #e2e8f0 !important;
+              color: #374151 !important; 
+              display: list-item !important;
+              line-height: 1.55 !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+
+            .content > ul > li:last-child,
+            .content > ol > li:last-child,
+            .content div > ul > li:last-child {
+              border-bottom: none !important;
+              margin-bottom: 6px !important;
+              padding-bottom: 0 !important;
+            }
+            
+            /* Nested sub-items inside a category should NOT have borders */
+            .content li ul > li,
+            .content li ol > li { 
+              margin: 3px 0 !important;
               padding-left: 2px !important;
+              padding-bottom: 0 !important;
+              border-bottom: none !important;
               color: #374151 !important; 
               display: list-item !important;
               line-height: 1.5 !important;
@@ -1588,10 +1724,100 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                <Badge variant="outline" className={cn("px-2.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold rounded-full border shadow-sm", isDark ? "bg-white/[0.02]" : "bg-black/[0.02]", activeClasses.border, activeClasses.text)}>
-                  PRO
-                </Badge>
+              <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+                {/* 1. Real-time AI Tokens Balance Badge */}
+                <div 
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] sm:text-xs font-bold transition-all shadow-sm",
+                    isDark ? "bg-white/[0.03] border-white/10" : "bg-black/[0.03] border-black/10"
+                  )} 
+                  title="Daily AI Tokens (20/day) — Deducted dynamically up to 10 max based on PDF length"
+                >
+                  <Coins className={cn("w-3.5 h-3.5", activeClasses.text)} />
+                  <span className={cn("font-mono font-extrabold", activeClasses.text)}>
+                    {userCredits !== null ? userCredits : 20}
+                  </span>
+                  <span className="text-[9px] opacity-60 font-semibold">/20</span>
+                </div>
+
+                {/* 2. Live Color Theme Picker (Direct Inline Dropdown) */}
+                <div className="relative">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setThemePickerOpen((prev) => !prev);
+                    }}
+                    className={cn(
+                      "h-7 sm:h-8 px-2 sm:px-2.5 rounded-full border gap-1.5 text-xs font-bold transition-all shadow-sm cursor-pointer",
+                      isDark ? "bg-white/[0.03] hover:bg-white/10 border-white/10" : "bg-black/[0.03] hover:bg-black/10 border-black/10",
+                      activeClasses.border
+                    )}
+                    title="Change Color Theme Live"
+                  >
+                    <Palette className={cn("w-3.5 h-3.5", activeClasses.text)} />
+                    <span className="hidden sm:inline capitalize text-[11px] font-semibold">Theme</span>
+                    <span
+                      className="w-2.5 h-2.5 rounded-full shadow-sm border border-black/20"
+                      style={{ backgroundColor: activeThemeColor }}
+                    />
+                  </Button>
+
+                  {themePickerOpen && (
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className={cn(
+                        "absolute right-0 top-full mt-2 w-72 p-3 rounded-2xl border shadow-2xl backdrop-blur-2xl z-[99999] animate-in fade-in zoom-in-95 duration-150",
+                        isDark ? "bg-[#0c0d12]/98 border-white/15 shadow-black/80" : "bg-white/98 border-black/15 shadow-black/20"
+                      )}
+                    >
+                      <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-border/50">
+                        <div className="flex items-center gap-1.5">
+                          <Palette className={cn("w-4 h-4", activeClasses.text)} />
+                          <span className="text-xs font-bold text-foreground">Live Theme Palette</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setThemePickerOpen(false)}
+                          className="text-muted-foreground hover:text-foreground p-1 rounded-md text-xs font-bold cursor-pointer"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-1.5 max-h-56 overflow-y-auto pr-1">
+                        {THEME_OPTIONS.map((theme) => {
+                          const isSelected = currentTheme === theme.id;
+                          return (
+                            <button
+                              key={theme.id}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSelectTheme(theme.id);
+                              }}
+                              className={cn(
+                                "flex items-center gap-2 p-1.5 rounded-xl border text-[11px] font-bold transition-all cursor-pointer text-left",
+                                isSelected
+                                  ? cn("border-primary shadow-sm scale-[1.02]", activeClasses.primary)
+                                  : isDark
+                                  ? "bg-white/5 border-white/5 text-slate-300 hover:bg-white/10 hover:border-white/15"
+                                  : "bg-black/5 border-black/5 text-slate-700 hover:bg-black/10 hover:border-black/15"
+                              )}
+                            >
+                              <span
+                                className="w-3.5 h-3.5 rounded-full shrink-0 shadow-sm border border-black/20"
+                                style={{ backgroundColor: theme.hex }}
+                              />
+                              <span className="truncate">{theme.name}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 <div className={cn("h-7 sm:h-8 w-[1px] mx-0.5 sm:mx-1", isDark ? "bg-white/10" : "bg-black/10")} />
 
@@ -2202,7 +2428,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                     <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-xl text-destructive text-sm flex items-center gap-3">
                       <AlertCircle className="w-5 h-5 shrink-0" />
                       <p>{error}</p>
-                      <Button variant="ghost" size="sm" onClick={() => sendMessage("")} className="h-7 ml-auto text-xs bg-destructive/20 hover:bg-destructive/30">
+                      <Button variant="ghost" size="sm" onClick={() => sendMessage("", activeTask || undefined)} className="h-7 ml-auto text-xs bg-destructive/20 hover:bg-destructive/30">
                         Retry
                       </Button>
                     </div>
