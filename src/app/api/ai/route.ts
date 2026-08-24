@@ -44,11 +44,20 @@ export async function POST(req: NextRequest) {
       }, { status: 429 });
     }
 
-    const { fileId, task, language = 'English', messages = [] } = await req.json();
+    const {
+      fileId,
+      task,
+      language = 'English',
+      messages = [],
+      questionCount = 8
+    } = await req.json();
 
     if (!fileId) {
       return NextResponse.json({ error: 'Missing fileId' }, { status: 400 });
     }
+
+    // Clamp question count to a sane range so the model isn't abused into huge outputs
+    const safeQuestionCount = Math.min(Math.max(parseInt(String(questionCount), 10) || 8, 1), 30);
 
     const drive = google.drive({
       version: 'v3',
@@ -99,18 +108,20 @@ export async function POST(req: NextRequest) {
     }
 
     // Trim context to fit context window comfortably (up to 35,000 characters)
-    const sanitizedContext = fileContent.trim().length > 35000 
+    const sanitizedContext = fileContent.trim().length > 35000
       ? fileContent.slice(0, 35000) + "\n\n[... Remaining content truncated for optimal speed ...]"
       : fileContent.trim();
 
     // 1. PERSISTENT CACHE LOOKUP
+    // NOTE: quiz cache key now includes question count so different counts don't collide
     const isCoreTask = task === 'summarize' || task === 'quiz' || task === 'translate';
     const shouldCache = isCoreTask && messages.length === 0 && sanitizedContext.length > 0;
+    const cacheTaskKey = task === 'quiz' ? `quiz:${safeQuestionCount}` : task;
 
     if (shouldCache) {
-      const cachedResult = await getCachedAIResult(sanitizedContext, task, language);
+      const cachedResult = await getCachedAIResult(sanitizedContext, cacheTaskKey, language);
       if (cachedResult) {
-        console.log(`[Marline Cache Hit] Instantly returning cached result for ${task} in ${language}.`);
+        console.log(`[Marline Cache Hit] Instantly returning cached result for ${cacheTaskKey} in ${language}.`);
         if (task === 'quiz') {
           return NextResponse.json({ result: cachedResult });
         } else {
@@ -141,11 +152,20 @@ export async function POST(req: NextRequest) {
       const quizPrompt = [
         {
           role: "system",
-          content: `You are Marline AI. Output a JSON array of 5-8 high-yield Multiple Choice Questions in ${language}. Schema: [{"numb":1,"type":"Multiple Choice","question":"...","options":["A","B","C","D"],"answer":"A","explanation":"..."}]. answer MUST match 1 option exactly. Return raw JSON array only, no markdown wrapping, no explanation.`
+          content: `You are Marline AI, an expert quiz author. Output a JSON array of exactly ${safeQuestionCount} high-yield Multiple Choice Questions in ${language}, based strictly on the provided document content.
+
+Schema: [{"numb":1,"type":"Multiple Choice","question":"...","options":["A) <full option text>","B) <full option text>","C) <full option text>","D) <full option text>"],"answer":"A) <full option text>","explanation":"..."}]
+
+Rules:
+- Each option string MUST include its letter prefix ("A) ", "B) ", "C) ", "D) ") followed by the FULL, complete answer text (not just the letter).
+- "answer" MUST be an exact, character-for-character match of one full string from "options" (letter prefix included).
+- Questions must test real understanding of the document (concepts, definitions, application, calculations, distinctions between similar ideas) — avoid trivial or out-of-context questions.
+- Vary difficulty and question style where the material allows it.
+- Return raw JSON array only. No markdown wrapping, no commentary, no trailing text.`
         },
         {
           role: "user",
-          content: `Document Content:\n${sanitizedContext || metadata.name}\n\nGenerate MCQs.`
+          content: `Document Content:\n${sanitizedContext || metadata.name}\n\nGenerate ${safeQuestionCount} MCQs.`
         }
       ];
 
@@ -166,7 +186,7 @@ export async function POST(req: NextRequest) {
               body: JSON.stringify({
                 model: model,
                 messages: quizPrompt,
-                max_tokens: 1500,
+                max_tokens: Math.min(400 * safeQuestionCount, 6000),
                 temperature: 0.1
               })
             });
@@ -180,7 +200,7 @@ export async function POST(req: NextRequest) {
 
               if (finalQuestions.length > 0) {
                 if (shouldCache) {
-                  await setCachedAIResult(sanitizedContext, task, language, finalQuestions);
+                  await setCachedAIResult(sanitizedContext, cacheTaskKey, language, finalQuestions);
                 }
                 return NextResponse.json({ result: finalQuestions });
               }
@@ -206,7 +226,7 @@ export async function POST(req: NextRequest) {
               body: JSON.stringify({
                 model: model,
                 messages: quizPrompt,
-                max_tokens: 1500,
+                max_tokens: Math.min(400 * safeQuestionCount, 6000),
                 temperature: 0.1
               })
             });
@@ -220,7 +240,7 @@ export async function POST(req: NextRequest) {
 
               if (finalQuestions.length > 0) {
                 if (shouldCache) {
-                  await setCachedAIResult(sanitizedContext, task, language, finalQuestions);
+                  await setCachedAIResult(sanitizedContext, cacheTaskKey, language, finalQuestions);
                 }
                 return NextResponse.json({ result: finalQuestions });
               }
@@ -237,25 +257,23 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. SUMMARIZE, TRANSLATE & CHAT STREAMING TASKS
-    const systemPrompt = `You are Marline AI, an elite university academic, research, and coding assistant for Chameleon Platform (كامليون) and Alexandria University Faculty of Computer and Data Science (FCDS).
+    const systemPrompt = `You are Marline AI, an elite university academic, research, and study assistant.
 Language: ${language}.
 
-Creator & Platform Owner Knowledge:
-- You were created and engineered by Levi Ackerman (Levo), whose real name outside the tech sphere is Abdelrahman Ahmed Abdelmonem (عبدالرحمن احمد عبدالمنعم).
-- He is an elite Full-Stack Software Engineer & Problem Solver (Alextream Competitive Programming Bootcamp graduate) from Alexandria, Egypt, who founded and built the Chameleon platform, Marline AI, HackerRank FCDS (https://hr-fcds-materials.vercel.app/), MORX (https://morx-team.vercel.app/), and advanced data systems.
-- Portfolio: https://levi-abdoahmed.vercel.app/
-- GitHub: https://github.com/AbdoAhmedAbdelmonem
-- LinkedIn: https://www.linkedin.com/in/abdoahmed/
-- Facebook: https://www.facebook.com/profile.php?id=100065484038724
-- Codeforces: https://codeforces.com/profile/roshen
-- Whenever asked about who made you, who is Levi / Abdelrahman, or the owner/creator of Chameleon, answer proudly, accurately, and share his achievements and markdown links.
+CORE PRINCIPLE — Adapt to the subject, never force a fixed template:
+Before writing anything, silently identify what kind of material this is (e.g. math/engineering, programming, medical/first-aid, literature, business, law, history, language learning...) and what it actually needs. Do NOT default to the same structure for every document.
+- Only include code blocks if the material is actually about programming/algorithms.
+- Only include LaTeX formulas ($$...$$ block, $...$ inline) if the material is genuinely mathematical/quantitative.
+- If the material calls for comparing two or more things (e.g. two conditions, two techniques, two eras), use a clear comparison table.
+- If the material describes a process, sequence, or relationships that are easier to grasp visually, describe it as a simple step list or a short textual "graph"/flow description instead of forcing an irrelevant formula or code block.
+- For procedural/practical subjects (e.g. first aid, lab protocols), prioritize clear numbered steps and warnings over any technical notation.
+- Choose section headings that fit the actual content of this specific document — don't reuse a fixed set of headings across unrelated subjects.
 
-When summarizing:
-- Write a clean, engaging, beautifully structured study guide.
-- Format math formulas with LaTeX ($$...$$ for block, $...$ for inline).
-- Format code with language-tagged markdown code blocks.
-- Use clear markdown headings (## for main sections, ### for subsections).
-- Do NOT output empty horizontal lines (---) or redundant dividers. Keep content compact, dense, and educational.`;
+Content rules:
+- Keep the explanation simplified and student-friendly — clarify jargon in plain language the first time it appears.
+- Base everything primarily on the provided document. If you add outside knowledge that is NOT found in the document (e.g. extra context, a fact to fill a gap, a clarifying example), prefix that specific point with a small tag like "**[Not in the PDF]**" so the student knows it's supplementary.
+- Separate distinct points/sections with a dotted horizontal rule (e.g. a line of "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" or similar), not a plain "---" and not empty blank dividers.
+- Keep everything dense, well-organized, and genuinely useful for exam prep — no filler, no repeated ideas, no empty horizontal lines used as spacing.`;
 
     const apiMessages: any[] = [
       { role: "system", content: systemPrompt }
@@ -277,17 +295,12 @@ When summarizing:
       if (task === 'summarize') {
         apiMessages.push({
           role: "user",
-          content: `Document: ${metadata.name || 'Academic File'}\n\nContent:\n${sanitizedContext}\n\nPlease generate a comprehensive, structured study guide from this document using these sections:
-## 📌 Executive Summary
-## 💡 Core Concepts & Key Terminology
-## 📐 Formulas, Code & Technical Details (if applicable)
-## 🎯 High-Yield Exam Tips & Common Pitfalls
-## 📝 Summary Takeaways`
+          content: `Document: ${metadata.name || 'Academic File'}\n\nContent:\n${sanitizedContext}\n\nFirst figure out what subject/type of material this is, then generate a structured study guide with sections and elements (code, formulas, comparison tables, step lists, warnings, etc.) that actually fit THIS material — do not use a generic fixed template. Follow the CORE PRINCIPLE and content rules from your system instructions exactly, including the dotted separators between distinct points and the "[Not in the PDF]" tag for anything not sourced from the document.`
         });
       } else if (task === 'translate') {
         apiMessages.push({
           role: "user",
-          content: `Document: ${metadata.name || 'Academic File'}\n\nContent:\n${sanitizedContext}\n\nTranslate and structure the main points of this document into ${language}.`
+          content: `Document: ${metadata.name || 'Academic File'}\n\nContent:\n${sanitizedContext}\n\nTranslate and structure the main points of this document into ${language}, adapting the structure to fit this specific material as described in your instructions.`
         });
       }
     }
