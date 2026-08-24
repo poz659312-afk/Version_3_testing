@@ -978,15 +978,52 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         const clone = msgElement.cloneNode(true) as HTMLElement;
         clone.querySelectorAll('[data-pdf-exclude]').forEach(el => el.remove());
 
-        // Ensure white text in dark mode is converted to dark text for the PDF (exempting code blocks, syntax tokens, and diagrams)
+        // Ensure all text in dark mode is cleanly converted to rich black/dark slate for the PDF
         clone.querySelectorAll('*').forEach(el => {
           const htmlEl = el as HTMLElement;
-          const isCode = htmlEl.closest('pre') || htmlEl.closest('code') || htmlEl.classList.contains('hljs') || typeof htmlEl.className === 'string' && htmlEl.className.includes('hljs');
+          const isCode = htmlEl.closest('pre') || htmlEl.closest('code') || htmlEl.classList.contains('hljs') || (typeof htmlEl.className === 'string' && htmlEl.className.includes('hljs'));
           const isSvg = htmlEl.closest('svg');
-          if (!isCode && !isSvg) {
-            htmlEl.style.color = '';
+          const isKatex = htmlEl.closest('.katex') || htmlEl.classList.contains('katex');
+          if (!isCode && !isSvg && !isKatex) {
+            htmlEl.style.color = '#1f2937';
             htmlEl.style.backgroundColor = '';
+            if (htmlEl.className && typeof htmlEl.className === 'string') {
+              htmlEl.className = htmlEl.className
+                .replace(/text-white(\/\d+)?/g, 'text-slate-900')
+                .replace(/text-\[#.*?\]/g, '')
+                .replace(/bg-\[#.*?\]/g, '');
+            }
           }
+        });
+
+        // Flawlessly inject absolute SVG overrides directly inside each Mermaid SVG to force clean white backgrounds and black text for print
+        clone.querySelectorAll('.mermaid-dark svg, .mermaid-light svg, [class*="mermaid"] svg').forEach(svgEl => {
+          const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+          style.innerHTML = `
+            rect, polygon, circle, path.node, [class*="label"] rect, .edgeLabel rect, .label rect, rect.label-container, rect.edgeLabel {
+              fill: #ffffff !important;
+              background-color: #ffffff !important;
+              background: #ffffff !important;
+              stroke: #94a3b8 !important;
+              stroke-width: 1.5px !important;
+            }
+            foreignObject, foreignObject div, foreignObject span, foreignObject *, .edgeLabel span, .label div, div.label {
+              background: #ffffff !important;
+              background-color: #ffffff !important;
+              color: #000000 !important;
+            }
+            text, tspan, span, div, *, [class*="label"] *, .edgeLabel * {
+              color: #000000 !important;
+              fill: #000000 !important;
+              font-weight: 800 !important;
+            }
+            path.edgePath, .edgePath .path, .edgePath path, marker path, .arrowheadPath {
+              stroke: #475569 !important;
+              fill: #475569 !important;
+              stroke-width: 1.5px !important;
+            }
+          `;
+          svgEl.appendChild(style);
         });
 
         // Clean table wrappers and ensure all parents have breakInside: auto so tables paginate seamlessly like MS Word
@@ -1447,16 +1484,51 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             /* Prevent ugly splitting of layout cards across pages */
-            .content h2, .content h3, .content h4, .content table, .content blockquote, .content pre, .katex-display {
+            .content h2, .content h3, .content h4, .content blockquote, .content pre, .katex-display {
               break-inside: avoid !important;
               page-break-inside: avoid !important;
             }
             
-            .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid ${activeThemeColor}2b; display: flex; align-items: center; justify-content: space-between; page-break-inside: avoid; }
-            .footer-flex { display: flex; align-items: center; gap: 10px; }
-            .footer-img { width: 24px; height: 24px; border-radius: 6px; }
-            .footer-text { font-size: 12px; color: #6b7280; font-weight: 600; }
-            .footer-link { font-size: 12px; color: ${activeThemeColor}; font-weight: 700; }
+            .footer { 
+              margin-top: 30px !important; 
+              padding-top: 15px !important; 
+              border-top: 2px solid ${activeThemeColor}2b !important; 
+              display: flex !important; 
+              flex-direction: row !important;
+              align-items: center !important; 
+              justify-content: space-between !important; 
+              page-break-inside: avoid !important; 
+              break-inside: avoid !important;
+            }
+            .footer-flex { 
+              display: flex !important; 
+              flex-direction: row !important;
+              align-items: center !important; 
+              gap: 8px !important; 
+            }
+            .footer-img { 
+              width: 20px !important; 
+              height: 20px !important; 
+              max-width: 20px !important; 
+              max-height: 20px !important; 
+              min-width: 20px !important; 
+              min-height: 20px !important; 
+              object-fit: contain !important;
+              border-radius: 4px !important; 
+              display: inline-block !important;
+            }
+            .footer-text { 
+              font-size: 11px !important; 
+              color: #64748b !important; 
+              font-weight: 600 !important; 
+              display: inline-block !important;
+              line-height: 1 !important;
+            }
+            .footer-link { 
+              font-size: 11px !important; 
+              color: ${activeThemeColor} !important; 
+              font-weight: 700 !important; 
+            }
             
             @media print {
               body { padding: 0; }
@@ -1540,7 +1612,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         <body>
           <div class="header">
             <div class="header-flex">
-              <img src="${window.location.origin}/images/chameleon/01_chameleon_front.png" class="header-img" onerror="this.style.display='none'" />
+              <img src="${window.location.origin}/images/chameleon/01_chameleon_front.png" class="header-img" style="width: 36px; height: 36px; max-width: 36px; max-height: 36px; object-fit: contain;" onerror="this.style.display='none'" />
               <div>
                 <h1 class="title">Marline AI Summary</h1>
                 <div class="subtitle">AI-Powered Academic & Coding Assistant</div>
@@ -1559,7 +1631,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           
           <div class="footer">
             <div class="footer-flex">
-              <img src="${window.location.origin}/images/chameleon.png" class="footer-img" onerror="this.style.display='none'" />
+              <img src="${window.location.origin}/images/chameleon/01_chameleon_front.png" class="footer-img" style="width: 20px; height: 20px; max-width: 20px; max-height: 20px; object-fit: contain; display: inline-block; vertical-align: middle;" onerror="this.style.display='none'" />
               <span class="footer-text">Generated with Chameleon Native AI (Marline)</span>
             </div>
             <span class="footer-link">chameleon-nu.vercel.app</span>
