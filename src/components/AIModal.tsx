@@ -1778,7 +1778,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         <body>
           <div class="header">
             <div class="header-flex">
-              <img src="${window.location.origin}/images/chameleon.png" class="header-img" style="width: 38px; height: 38px; max-width: 38px; max-height: 38px; object-fit: contain;" onerror="this.style.display='none'" />
+              <img src="${window.location.origin}/images/chameleon/01_chameleon_front.webp" class="header-img" style="width: 38px; height: 38px; max-width: 38px; max-height: 38px; object-fit: contain;" onerror="this.style.display='none'" />
               <div>
                 <h1 class="title">Marline AI Summary</h1>
                 <div class="subtitle">AI-Powered Academic & Coding Assistant</div>
@@ -1796,6 +1796,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           </div>
           <br>
           <hr>
+          <br>
+
           <div class="footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
             <div class="footer-flex" style="display: flex; align-items: center; gap: 8px;">
               <img 
