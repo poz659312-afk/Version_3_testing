@@ -569,6 +569,10 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
   const [quizQuestions, setQuizQuestions] = useState<any[] | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
   const [sessionUser, setSessionUser] = useState<any | null>(null);
+  const [isQuizConfigOpen, setIsQuizConfigOpen] = useState(false);
+  const [selectedQuestionCount, setSelectedQuestionCount] = useState<number>(10);
+  const [isCustomCount, setIsCustomCount] = useState<boolean>(false);
+  const [customCountValue, setCustomCountValue] = useState<string>("10");
 
   const loadingMessages = [
     "Our AI is deeply analyzing your academic file...",
@@ -675,7 +679,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
     }
   };
 
-  const sendMessage = async (userText: string, task?: string) => {
+  const sendMessage = async (userText: string, task?: string, customQCount?: number) => {
     if (!userText.trim() && !task) return;
 
     // Abort any ongoing stream
@@ -697,6 +701,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
     if (task) setActiveTask(task);
 
     try {
+      const qCount = customQCount || selectedQuestionCount || 10;
       const response = await fetch("/api/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -705,7 +710,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           fileId: file.id,
           task,
           language,
-          messages: newMessages
+          messages: newMessages,
+          questionCount: qCount
         }),
       });
 
@@ -1595,16 +1601,146 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                             </div>
                             <span className={cn("text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors", activeClasses.cardTextHover)}>Summarize</span>
                           </Button>
-                          <Button
-                            variant="outline"
-                            className={cn("flex-col gap-2.5 sm:gap-3 h-auto py-3.5 sm:py-5 transition-all rounded-2xl group shadow-lg", isDark ? "bg-white/5 border-white/5" : "bg-black/5 border-black/5", activeClasses.cardHover)}
-                            onClick={() => sendMessage("", "quiz")}
-                          >
-                            <div className={cn("p-2 sm:p-3 rounded-xl transition-colors", activeClasses.bg)}>
-                              <Brain className={cn("w-5 h-5 sm:w-6 sm:h-6", activeClasses.text)} />
-                            </div>
-                            <span className={cn("text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors", activeClasses.cardTextHover)}>Generate Quiz</span>
-                          </Button>
+                          <Popover open={isQuizConfigOpen} onOpenChange={setIsQuizConfigOpen}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className={cn("flex-col gap-2.5 sm:gap-3 h-auto py-3.5 sm:py-5 transition-all rounded-2xl group shadow-lg cursor-pointer", isDark ? "bg-white/5 border-white/5" : "bg-black/5 border-black/5", activeClasses.cardHover)}
+                              >
+                                <div className={cn("p-2 sm:p-3 rounded-xl transition-colors", activeClasses.bg)}>
+                                  <Brain className={cn("w-5 h-5 sm:w-6 sm:h-6", activeClasses.text)} />
+                                </div>
+                                <span className={cn("text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors", activeClasses.cardTextHover)}>Generate Quiz</span>
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              align="center"
+                              side="top"
+                              sideOffset={12}
+                              className="w-[320px] sm:w-[360px] p-5 bg-background/95 backdrop-blur-2xl border border-border/80 rounded-3xl shadow-2xl z-[1000000] animate-in fade-in zoom-in-95 duration-200"
+                            >
+                              <div className="flex items-center justify-between pb-3 border-b border-border/50 mb-3">
+                                <div className="flex items-center gap-2">
+                                  <div className={cn("p-1.5 rounded-lg", activeClasses.bg)}>
+                                    <Brain className={cn("w-4 h-4", activeClasses.text)} />
+                                  </div>
+                                  <div>
+                                    <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">Quiz Questions</h4>
+                                    <p className="text-[10.5px] text-muted-foreground">Select question count</p>
+                                  </div>
+                                </div>
+                                <Badge variant="outline" className={cn("text-[11px] font-mono font-bold px-2 py-0.5", activeClasses.text, activeClasses.border)}>
+                                  {isCustomCount ? `${customCountValue || 1} Qs` : `${selectedQuestionCount} Qs`}
+                                </Badge>
+                              </div>
+
+                              {/* Preset Options: 5, 10, 15, 20 */}
+                              <div className="grid grid-cols-4 gap-2 mb-3">
+                                {[5, 10, 15, 20].map((count) => (
+                                  <button
+                                    key={count}
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedQuestionCount(count);
+                                      setIsCustomCount(false);
+                                    }}
+                                    className={cn(
+                                      "flex flex-col items-center justify-center py-2 px-1 rounded-xl border font-bold text-xs transition-all cursor-pointer",
+                                      !isCustomCount && selectedQuestionCount === count
+                                        ? cn("border-primary text-white shadow-md scale-[1.02]", activeClasses.primary)
+                                        : isDark
+                                        ? "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20"
+                                        : "bg-black/5 border-black/10 text-slate-700 hover:bg-black/10"
+                                    )}
+                                  >
+                                    <span className="text-sm font-black">{count}</span>
+                                    <span className="text-[9px] uppercase tracking-wider opacity-70">Questions</span>
+                                  </button>
+                                ))}
+                              </div>
+
+                              {/* Custom Option Toggle & Slider */}
+                              <div className="mb-4">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setIsCustomCount(true);
+                                  }}
+                                  className={cn(
+                                    "w-full flex items-center justify-between px-3 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer",
+                                    isCustomCount
+                                      ? cn("border-primary text-white shadow-md", activeClasses.primary)
+                                      : isDark
+                                      ? "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                                      : "bg-black/5 border-black/10 text-slate-700 hover:bg-black/10"
+                                  )}
+                                >
+                                  <span className="flex items-center gap-1.5">
+                                    <span>⚙️</span>
+                                    <span>Custom Count (1 – 50)</span>
+                                  </span>
+                                  <span className="text-[10px] uppercase tracking-wider font-mono opacity-80">
+                                    {isCustomCount ? "Selected" : "Custom"}
+                                  </span>
+                                </button>
+
+                                {isCustomCount && (
+                                  <div className="mt-2.5 p-3 rounded-2xl bg-muted/40 border border-border/60 space-y-2 animate-in fade-in duration-200">
+                                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                      <span>Range: 1 to 50 questions</span>
+                                      <span className="font-mono font-bold text-foreground">{customCountValue || 1}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <input
+                                        type="range"
+                                        min="1"
+                                        max="50"
+                                        value={parseInt(customCountValue, 10) || 1}
+                                        onChange={(e) => {
+                                          setCustomCountValue(e.target.value);
+                                          setSelectedQuestionCount(parseInt(e.target.value, 10));
+                                        }}
+                                        className="flex-1 accent-primary h-1.5 bg-muted rounded-lg cursor-pointer"
+                                      />
+                                      <input
+                                        type="number"
+                                        min="1"
+                                        max="50"
+                                        value={customCountValue}
+                                        onChange={(e) => {
+                                          const val = e.target.value;
+                                          setCustomCountValue(val);
+                                          const num = parseInt(val, 10);
+                                          if (!isNaN(num)) {
+                                            setSelectedQuestionCount(Math.min(Math.max(num, 1), 50));
+                                          }
+                                        }}
+                                        className="w-14 h-8 text-center text-xs font-mono font-bold bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Confirm Action Button */}
+                              <Button
+                                onClick={() => {
+                                  setIsQuizConfigOpen(false);
+                                  const finalCount = isCustomCount ? Math.min(Math.max(parseInt(customCountValue, 10) || 10, 1), 50) : selectedQuestionCount;
+                                  sendMessage("", "quiz", finalCount);
+                                }}
+                                className={cn(
+                                  "w-full h-10 font-bold text-xs uppercase tracking-wider rounded-xl text-white shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer",
+                                  activeClasses.primary600,
+                                  activeClasses.primary700,
+                                  activeClasses.sendShadow
+                                )}
+                              >
+                                <Sparkles className="w-4 h-4" />
+                                <span>Generate {isCustomCount ? (customCountValue || 1) : selectedQuestionCount} Questions</span>
+                              </Button>
+                            </PopoverContent>
+                          </Popover>
                         </div>
                       </div>
                     </div>

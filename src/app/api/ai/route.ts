@@ -56,8 +56,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing fileId' }, { status: 400 });
     }
 
-    // Clamp question count to a sane range so the model isn't abused into huge outputs
-    const safeQuestionCount = Math.min(Math.max(parseInt(String(questionCount), 10) || 8, 1), 30);
+    // Clamp question count to a sane range so the model isn't abused into huge outputs (supports up to 50 questions)
+    const safeQuestionCount = Math.min(Math.max(parseInt(String(questionCount), 10) || 8, 1), 50);
 
     const drive = google.drive({
       version: 'v3',
