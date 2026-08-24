@@ -104,17 +104,27 @@ function preprocessMarlineContent(content: string): string {
   // 5. Fix tables: Convert double pipes "||" into single "|"
   text = text.replace(/\|{2,}/g, '|')
 
-  // 6. Repair and auto-normalize RTL tables with inverted columns or split separators
+  // 6. Repair and auto-normalize tables (split glued header/separator rows, invert RTL columns)
   const rawLines = text.split('\n')
   const repairedLines: string[] = []
   for (let i = 0; i < rawLines.length; i++) {
-    const trimmed = rawLines[i].trim()
+    let trimmed = rawLines[i].trim()
     if (!trimmed.includes('|') || trimmed.startsWith('#') || trimmed.startsWith('```') || trimmed.startsWith('$$')) {
       repairedLines.push(rawLines[i])
       continue
     }
 
-    // Handle separator row
+    // Check if line has both table headers AND separator (:---) glued on the same line
+    const sepMatch = trimmed.match(/(.+?)\s*\|\s*(:?-{2,}:?(?:\s*\|\s*:?-{2,}:?)*\s*\|?)$/)
+    if (sepMatch && sepMatch[1].includes('|')) {
+      const headerPart = sepMatch[1].endsWith('|') ? sepMatch[1] : sepMatch[1] + ' |'
+      const sepPart = sepMatch[2].startsWith('|') ? sepMatch[2] : '| ' + sepMatch[2]
+      repairedLines.push(headerPart)
+      repairedLines.push(sepPart.endsWith('|') ? sepPart : sepPart + ' |')
+      continue
+    }
+
+    // Handle standalone separator row
     if (trimmed.includes(':---') || trimmed.includes('---:') || (trimmed.includes('---') && trimmed.includes('|'))) {
       repairedLines.push('| :--- | :--- | :--- |')
       continue
@@ -134,21 +144,26 @@ function preprocessMarlineContent(content: string): string {
       }
     }
 
-    repairedLines.push('| ' + parts.join(' | ') + ' |')
+    if (!trimmed.startsWith('|')) trimmed = '| ' + trimmed
+    if (!trimmed.endsWith('|')) trimmed = trimmed + ' |'
+    repairedLines.push(trimmed)
   }
   text = repairedLines.join('\n')
 
-  // 7. Wrap standalone LaTeX environments with $$ if missing
+  // 7. Ensure Dividers come BEFORE Headings, not glued underneath them
+  text = text.replace(/(#{1,6}\s+[^\n]+)\n+\s*---\s*\n+/g, '\n\n---\n\n$1\n\n')
+
+  // 8. Wrap standalone LaTeX environments with $$ if missing
   text = text.replace(
     /(?<!\$\$)\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*(?!\$\$)/g,
     (_m, g1) => '\n\n$$' + g1 + '$$\n\n'
   )
 
-  // 8. Ensure display math $$ has its own lines
+  // 9. Ensure display math $$ has its own lines
   text = text.replace(/([^\n])\s*(\$\$)/g, '$1\n\n$2')
   text = text.replace(/(\$\$)\s*([^\n$\s])/g, '$1\n\n$2')
 
-  // 9. Collapse excessive vertical blank lines
+  // 10. Collapse excessive vertical blank lines
   text = text.replace(/\n{3,}/g, '\n\n')
 
   return text.trim()
@@ -186,7 +201,7 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
           // Custom Table Renderer
           table({ children }: any) {
             return (
-              <div className="my-4 overflow-x-auto rounded-xl border border-border/80 bg-card shadow-sm">
+              <div className="my-5 overflow-x-auto rounded-xl border border-border/80 bg-card/90 shadow-sm">
                 <table className="w-full text-sm text-right dir-rtl divide-y divide-border">
                   {children}
                 </table>
@@ -194,19 +209,24 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
             )
           },
           thead({ children }: any) {
-            return <thead className="bg-muted/50 font-bold text-foreground">{children}</thead>
+            return <thead className="bg-muted/60 font-bold text-foreground">{children}</thead>
           },
           th({ children }: any) {
-            return <th className="px-4 py-3 text-right font-semibold text-xs uppercase tracking-wider">{children}</th>
+            return <th className="px-4 py-3 text-right font-bold text-xs uppercase tracking-wider">{children}</th>
           },
           td({ children }: any) {
-            return <td className="px-4 py-3 text-sm border-t border-border/40">{children}</td>
+            return <td className="px-4 py-3 text-sm border-t border-border/40 leading-relaxed">{children}</td>
           },
 
-          // Custom Headings
+          // Custom Divider
+          hr() {
+            return <hr className="my-6 border-t border-border/70" />
+          },
+
+          // Custom Headings with generous top spacing
           h1({ children }: any) {
             return (
-              <h1 className="text-xl md:text-2xl font-extrabold tracking-tight text-foreground border-b border-border/60 pb-2 mt-6 mb-3 flex items-center gap-2">
+              <h1 className="text-xl md:text-2xl font-extrabold tracking-tight text-foreground border-b border-border/60 pb-2 mt-8 mb-4 flex items-center gap-2">
                 <span className="w-2 h-6 rounded-full bg-primary inline-block" />
                 {children}
               </h1>
@@ -214,14 +234,14 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
           },
           h2({ children }: any) {
             return (
-              <h2 className="text-lg md:text-xl font-bold text-foreground mt-5 mb-2.5 flex items-center gap-2">
+              <h2 className="text-lg md:text-xl font-bold text-foreground mt-7 mb-3.5 flex items-center gap-2">
                 <span className="w-1.5 h-4 rounded-full bg-accent inline-block" />
                 {children}
               </h2>
             )
           },
           h3({ children }: any) {
-            return <h3 className="text-base font-bold text-foreground mt-4 mb-2">{children}</h3>
+            return <h3 className="text-base font-bold text-foreground mt-6 mb-2.5">{children}</h3>
           },
 
           // Custom Paragraph
