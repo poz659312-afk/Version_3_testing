@@ -569,7 +569,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
   const [quizQuestions, setQuizQuestions] = useState<any[] | null>(null);
   const [showQuiz, setShowQuiz] = useState(false);
   const [sessionUser, setSessionUser] = useState<any | null>(null);
-  const [isQuizConfigOpen, setIsQuizConfigOpen] = useState(false);
+  const [showQuizConfigModal, setShowQuizConfigModal] = useState(false);
   const [selectedQuestionCount, setSelectedQuestionCount] = useState<number>(10);
   const [isCustomCount, setIsCustomCount] = useState<boolean>(false);
   const [customCountValue, setCustomCountValue] = useState<string>("10");
@@ -928,22 +928,26 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600;700&display=swap');
             
+            @page {
+              size: A4;
+              margin: 14mm 14mm;
+            }
             body { 
               font-family: 'Inter', system-ui, sans-serif; 
               color: #111827; 
-              padding: 40px 50px; 
-              line-height: 1.6;
-              font-size: 14px;
+              padding: 0; 
+              line-height: 1.5;
+              font-size: 12.5px;
               background: white;
             }
             .header {
-              margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid ${activeThemeColor};
+              margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2.5px solid ${activeThemeColor};
             }
-            .header-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-            .header-img { width: 45px; height: 45px; border-radius: 10px; }
-            .title { font-size: 26px; font-weight: 900; color: ${activeThemeColor}; letter-spacing: -0.5px; margin: 0; }
-            .subtitle { font-size: 11px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
-            .meta { display: flex; gap: 20px; padding: 12px 16px; background: #f8fafc; border-radius: 8px; font-size: 12px; color: #6b7280; }
+            .header-flex { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+            .header-img { width: 36px; height: 36px; border-radius: 8px; }
+            .title { font-size: 20px; font-weight: 900; color: ${activeThemeColor}; letter-spacing: -0.5px; margin: 0; }
+            .subtitle { font-size: 10px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+            .meta { display: flex; gap: 16px; padding: 8px 12px; background: #f8fafc; border-radius: 6px; font-size: 11px; color: #6b7280; }
             .meta strong { color: #374151; }
             
             /* PDF Markdown Styles & High-Contrast overrides for White Background */
@@ -959,33 +963,36 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             .content h2 { 
-              font-size: 20px !important; 
+              font-size: 16px !important; 
               font-weight: 900 !important; 
               color: ${activeThemeColor} !important; 
-              margin: 32px 0 14px !important; 
-              padding-bottom: 6px !important;
-              border-bottom: 2px solid ${activeThemeColor} !important;
+              margin: 20px 0 8px !important; 
+              padding-bottom: 4px !important;
+              border-bottom: 1.5px solid ${activeThemeColor}40 !important;
+              page-break-after: avoid !important;
             }
             .content h2 * {
               color: ${activeThemeColor} !important;
             }
             
             .content h3 { 
-              font-size: 15px !important; 
+              font-size: 13.5px !important; 
               font-weight: 700 !important; 
               color: ${activeThemeColor} !important; 
-              margin: 20px 0 10px !important; 
-              padding-bottom: 4px !important;
+              margin: 14px 0 6px !important; 
+              padding-bottom: 2px !important;
+              page-break-after: avoid !important;
             }
             .content h3 * {
               color: ${activeThemeColor} !important;
             }
             
             .content h4 { 
-              font-size: 13px !important; 
+              font-size: 12px !important; 
               font-weight: 700 !important; 
               color: #374151 !important; 
-              margin: 14px 0 6px !important; 
+              margin: 10px 0 4px !important; 
+              page-break-after: avoid !important;
             }
             .content h4 * {
               color: #374151 !important;
@@ -1012,30 +1019,35 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             .content table { 
               width: 100% !important; 
               border-collapse: collapse !important; 
-              margin: 20px 0 !important; 
-              font-size: 13px !important; 
+              margin: 12px 0 !important; 
+              font-size: 11.5px !important; 
+              page-break-inside: avoid !important;
               break-inside: avoid !important; 
             }
             
             .content th { 
               background-color: ${activeThemeColor}14 !important;
               color: ${activeThemeColor} !important; 
-              padding: 10px 14px !important; 
+              padding: 8px 10px !important; 
               text-align: left !important; 
               font-weight: 700 !important; 
-              border: 1px solid ${activeThemeColor}33 !important; 
+              border: 1px solid #cbd5e1 !important; 
             }
             .content th * {
               color: ${activeThemeColor} !important;
             }
             
             .content td { 
-              padding: 10px 14px !important; 
-              border: 1px solid #e5e7eb !important; 
+              padding: 6px 10px !important; 
+              border: 1px solid #e2e8f0 !important; 
               color: #374151 !important; 
             }
             .content td * {
               color: #374151 !important;
+            }
+            
+            .content tr {
+              page-break-inside: avoid !important;
             }
             
             .content tr:nth-child(even) { 
@@ -1044,40 +1056,47 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             
             .content blockquote { 
               border-left: 4px solid ${activeThemeColor} !important; 
-              padding: 12px 18px !important; 
-              margin: 18px 0 !important; 
+              padding: 10px 14px !important; 
+              margin: 12px 0 !important; 
               background-color: ${activeThemeColor}0d !important;
-              border-radius: 0 8px 8px 0 !important; 
+              border-radius: 0 6px 6px 0 !important; 
               color: #1f2937 !important; 
               font-weight: 500 !important; 
               font-style: italic !important; 
+              page-break-inside: avoid !important;
             }
             .content blockquote * {
               color: #1f2937 !important;
             }
             
             .content ul { 
-              padding-left: 24px !important; 
-              margin: 14px 0 !important; 
+              padding-left: 20px !important; 
+              margin: 8px 0 !important; 
               list-style-type: disc !important;
             }
             
             .content ol { 
-              padding-left: 24px !important; 
-              margin: 14px 0 !important; 
+              padding-left: 20px !important; 
+              margin: 8px 0 !important; 
               list-style-type: decimal !important;
             }
             
             .content li { 
-              margin: 8px 0 !important;
-              padding-left: 4px !important;
+              margin: 4px 0 !important;
+              padding-left: 2px !important;
               color: #374151 !important; 
               display: list-item !important;
-              line-height: 1.6 !important;
+              line-height: 1.5 !important;
             }
             
             .content li * {
               color: #374151 !important;
+            }
+            
+            .content hr {
+              margin: 16px 0 !important;
+              border: 0 !important;
+              border-top: 1px solid #e2e8f0 !important;
             }
             
             .content hr { 
@@ -1513,33 +1532,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               </div>
 
               <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className={cn("h-7 sm:h-8 text-[9px] sm:text-[10px] gap-1 sm:gap-2 transition-all rounded-full px-2.5 sm:px-3", isDark ? "border-white/10 bg-white/5 hover:bg-white/10" : "border-black/10 bg-black/5 hover:bg-black/10")}>
-                      <FileText className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                      <span className="hidden xs:inline">Preview</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-72 sm:w-80 p-3 bg-background/95 backdrop-blur-xl border-border rounded-2xl shadow-2xl" align="end">
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 px-1">Context Preview</h4>
-                    {renderPreview()}
-                  </PopoverContent>
-                </Popover>
-
-                <Select value={language} onValueChange={setLanguage}>
-                  <SelectTrigger className={cn("w-[85px] sm:w-[100px] h-7 sm:h-8 text-[9px] sm:text-[10px] rounded-full px-2 sm:px-3 focus:ring-offset-0 focus:ring-0 focus:ring-transparent", isDark ? "bg-white/5 border-white/10 focus:border-white/20" : "bg-black/5 border-black/10 focus:border-black/20", activeClasses.ring)}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background/95 backdrop-blur-xl border-border">
-                    {languages.map(lang => (
-                      <SelectItem key={lang.value} value={lang.value} className="text-[9px] sm:text-[10px]">{lang.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <div className={cn("h-7 sm:h-8 w-[1px] mx-0.5 sm:mx-1", isDark ? "bg-white/10" : "bg-black/10")} />
-
-                <Badge variant="outline" className={cn("px-2 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold rounded-full border shadow-sm", isDark ? "bg-white/[0.02]" : "bg-black/[0.02]", activeClasses.border, activeClasses.text)}>
+                <Badge variant="outline" className={cn("px-2.5 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold rounded-full border shadow-sm", isDark ? "bg-white/[0.02]" : "bg-black/[0.02]", activeClasses.border, activeClasses.text)}>
                   PRO
                 </Badge>
 
@@ -1548,7 +1541,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className={cn("h-7 w-7 sm:h-8 sm:w-8 rounded-full transition-all flex items-center justify-center shrink-0", isDark ? "hover:bg-white/5 text-muted-foreground hover:text-white" : "hover:bg-black/5 text-muted-foreground hover:text-black")}
+                  className={cn("h-7 w-7 sm:h-8 sm:w-8 rounded-full transition-all flex items-center justify-center shrink-0 cursor-pointer", isDark ? "hover:bg-white/5 text-muted-foreground hover:text-white" : "hover:bg-black/5 text-muted-foreground hover:text-black")}
                   onClick={onClose}
                 >
                   <X className="w-3.5 h-3.5 sm:w-4 h-4" />
@@ -1558,6 +1551,147 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           </DialogHeader>
 
           <div className="flex-1 overflow-hidden relative flex flex-col">
+            {/* Quiz Configuration Modal Overlay */}
+            {showQuizConfigModal && (
+              <div className="absolute inset-0 z-[100] bg-black/75 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+                <div className="w-full max-w-md bg-background border border-border rounded-3xl p-6 shadow-2xl space-y-5 animate-in zoom-in-95 duration-200 relative">
+                  {/* Close X */}
+                  <button
+                    onClick={() => setShowQuizConfigModal(false)}
+                    className="absolute top-4 right-4 text-muted-foreground hover:text-foreground p-1.5 rounded-full hover:bg-muted/50 transition-colors cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+
+                  {/* Header */}
+                  <div className="flex items-center gap-3">
+                    <div className={cn("p-2.5 rounded-2xl", activeClasses.bg)}>
+                      <Brain className={cn("w-6 h-6", activeClasses.text)} />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-foreground">Quiz Setup & Question Count</h3>
+                      <p className="text-xs text-muted-foreground">Select question count for this quiz</p>
+                    </div>
+                  </div>
+
+                  {/* Presets: 5, 10, 15, 20 */}
+                  <div className="grid grid-cols-4 gap-2">
+                    {[5, 10, 15, 20].map((count) => (
+                      <button
+                        key={count}
+                        type="button"
+                        onClick={() => {
+                          setSelectedQuestionCount(count);
+                          setIsCustomCount(false);
+                        }}
+                        className={cn(
+                          "flex flex-col items-center justify-center py-2.5 px-2 rounded-2xl border font-bold transition-all cursor-pointer",
+                          !isCustomCount && selectedQuestionCount === count
+                            ? cn("border-primary text-white shadow-lg scale-[1.02]", activeClasses.primary)
+                            : isDark
+                            ? "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20"
+                            : "bg-black/5 border-black/10 text-slate-700 hover:bg-black/10"
+                        )}
+                      >
+                        <span className="text-base font-black">{count}</span>
+                        <span className="text-[9px] uppercase tracking-wider opacity-70">Questions</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Custom Toggle */}
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsCustomCount(true)}
+                      className={cn(
+                        "w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl border text-xs font-semibold transition-all cursor-pointer",
+                        isCustomCount
+                          ? cn("border-primary text-white shadow-md", activeClasses.primary)
+                          : isDark
+                          ? "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
+                          : "bg-black/5 border-black/10 text-slate-700 hover:bg-black/10"
+                      )}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span>⚙️</span>
+                        <span>Custom Question Count (1 – 50)</span>
+                      </span>
+                      <Badge variant="outline" className="text-[10px] font-mono font-bold">
+                        {isCustomCount ? `${customCountValue || 1} Qs` : "Custom"}
+                      </Badge>
+                    </button>
+
+                    {isCustomCount && (
+                      <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/60 space-y-2.5 animate-in fade-in duration-200">
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>Range: 1 to 50 questions</span>
+                          <span className="font-mono font-bold text-foreground">{customCountValue || 1} Questions</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="range"
+                            min="1"
+                            max="50"
+                            value={parseInt(customCountValue, 10) || 1}
+                            onChange={(e) => {
+                              setCustomCountValue(e.target.value);
+                              setSelectedQuestionCount(parseInt(e.target.value, 10));
+                            }}
+                            className="flex-1 accent-primary h-2 bg-muted rounded-lg cursor-pointer"
+                          />
+                          <input
+                            type="number"
+                            min="1"
+                            max="50"
+                            value={customCountValue}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setCustomCountValue(val);
+                              const num = parseInt(val, 10);
+                              if (!isNaN(num)) {
+                                setSelectedQuestionCount(Math.min(Math.max(num, 1), 50));
+                              }
+                            }}
+                            className="w-16 h-9 text-center text-sm font-mono font-bold bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Confirm & Cancel Actions */}
+                  <div className="flex items-center gap-2 pt-1">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowQuizConfigModal(false)}
+                      className="flex-1 rounded-2xl h-11 border-border cursor-pointer"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setShowQuizConfigModal(false);
+                        const finalCount = isCustomCount
+                          ? Math.min(Math.max(parseInt(customCountValue, 10) || 10, 1), 50)
+                          : selectedQuestionCount;
+                        sendMessage("", "quiz", finalCount);
+                      }}
+                      className={cn(
+                        "flex-[2] rounded-2xl h-11 text-white font-bold gap-2 shadow-lg transition-all cursor-pointer",
+                        activeClasses.primary600,
+                        activeClasses.primary700,
+                        activeClasses.sendShadow
+                      )}
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      <span>Generate {isCustomCount ? (customCountValue || 1) : selectedQuestionCount} Questions</span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Main Content Area */}
             <div
               className="flex-1 flex flex-col bg-transparent relative overflow-y-auto custom-scrollbar"
@@ -1593,7 +1727,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                         <div className="grid grid-cols-2 gap-3 w-full max-w-md">
                           <Button
                             variant="outline"
-                            className={cn("flex-col gap-2.5 sm:gap-3 h-auto py-3.5 sm:py-5 transition-all rounded-2xl group shadow-lg", isDark ? "bg-white/5 border-white/5" : "bg-black/5 border-black/5", activeClasses.cardHover)}
+                            className={cn("flex-col gap-2.5 sm:gap-3 h-auto py-3.5 sm:py-5 transition-all rounded-2xl group shadow-lg cursor-pointer", isDark ? "bg-white/5 border-white/5" : "bg-black/5 border-black/5", activeClasses.cardHover)}
                             onClick={() => sendMessage("", "summarize")}
                           >
                             <div className={cn("p-2 sm:p-3 rounded-xl transition-colors", activeClasses.bg)}>
@@ -1601,146 +1735,16 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                             </div>
                             <span className={cn("text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors", activeClasses.cardTextHover)}>Summarize</span>
                           </Button>
-                          <Popover open={isQuizConfigOpen} onOpenChange={setIsQuizConfigOpen}>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className={cn("flex-col gap-2.5 sm:gap-3 h-auto py-3.5 sm:py-5 transition-all rounded-2xl group shadow-lg cursor-pointer", isDark ? "bg-white/5 border-white/5" : "bg-black/5 border-black/5", activeClasses.cardHover)}
-                              >
-                                <div className={cn("p-2 sm:p-3 rounded-xl transition-colors", activeClasses.bg)}>
-                                  <Brain className={cn("w-5 h-5 sm:w-6 sm:h-6", activeClasses.text)} />
-                                </div>
-                                <span className={cn("text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors", activeClasses.cardTextHover)}>Generate Quiz</span>
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              align="center"
-                              side="top"
-                              sideOffset={12}
-                              className="w-[320px] sm:w-[360px] p-5 bg-background/95 backdrop-blur-2xl border border-border/80 rounded-3xl shadow-2xl z-[1000000] animate-in fade-in zoom-in-95 duration-200"
-                            >
-                              <div className="flex items-center justify-between pb-3 border-b border-border/50 mb-3">
-                                <div className="flex items-center gap-2">
-                                  <div className={cn("p-1.5 rounded-lg", activeClasses.bg)}>
-                                    <Brain className={cn("w-4 h-4", activeClasses.text)} />
-                                  </div>
-                                  <div>
-                                    <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">Quiz Questions</h4>
-                                    <p className="text-[10.5px] text-muted-foreground">Select question count</p>
-                                  </div>
-                                </div>
-                                <Badge variant="outline" className={cn("text-[11px] font-mono font-bold px-2 py-0.5", activeClasses.text, activeClasses.border)}>
-                                  {isCustomCount ? `${customCountValue || 1} Qs` : `${selectedQuestionCount} Qs`}
-                                </Badge>
-                              </div>
-
-                              {/* Preset Options: 5, 10, 15, 20 */}
-                              <div className="grid grid-cols-4 gap-2 mb-3">
-                                {[5, 10, 15, 20].map((count) => (
-                                  <button
-                                    key={count}
-                                    type="button"
-                                    onClick={() => {
-                                      setSelectedQuestionCount(count);
-                                      setIsCustomCount(false);
-                                    }}
-                                    className={cn(
-                                      "flex flex-col items-center justify-center py-2 px-1 rounded-xl border font-bold text-xs transition-all cursor-pointer",
-                                      !isCustomCount && selectedQuestionCount === count
-                                        ? cn("border-primary text-white shadow-md scale-[1.02]", activeClasses.primary)
-                                        : isDark
-                                        ? "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20"
-                                        : "bg-black/5 border-black/10 text-slate-700 hover:bg-black/10"
-                                    )}
-                                  >
-                                    <span className="text-sm font-black">{count}</span>
-                                    <span className="text-[9px] uppercase tracking-wider opacity-70">Questions</span>
-                                  </button>
-                                ))}
-                              </div>
-
-                              {/* Custom Option Toggle & Slider */}
-                              <div className="mb-4">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setIsCustomCount(true);
-                                  }}
-                                  className={cn(
-                                    "w-full flex items-center justify-between px-3 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer",
-                                    isCustomCount
-                                      ? cn("border-primary text-white shadow-md", activeClasses.primary)
-                                      : isDark
-                                      ? "bg-white/5 border-white/10 text-slate-300 hover:bg-white/10"
-                                      : "bg-black/5 border-black/10 text-slate-700 hover:bg-black/10"
-                                  )}
-                                >
-                                  <span className="flex items-center gap-1.5">
-                                    <span>⚙️</span>
-                                    <span>Custom Count (1 – 50)</span>
-                                  </span>
-                                  <span className="text-[10px] uppercase tracking-wider font-mono opacity-80">
-                                    {isCustomCount ? "Selected" : "Custom"}
-                                  </span>
-                                </button>
-
-                                {isCustomCount && (
-                                  <div className="mt-2.5 p-3 rounded-2xl bg-muted/40 border border-border/60 space-y-2 animate-in fade-in duration-200">
-                                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                      <span>Range: 1 to 50 questions</span>
-                                      <span className="font-mono font-bold text-foreground">{customCountValue || 1}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <input
-                                        type="range"
-                                        min="1"
-                                        max="50"
-                                        value={parseInt(customCountValue, 10) || 1}
-                                        onChange={(e) => {
-                                          setCustomCountValue(e.target.value);
-                                          setSelectedQuestionCount(parseInt(e.target.value, 10));
-                                        }}
-                                        className="flex-1 accent-primary h-1.5 bg-muted rounded-lg cursor-pointer"
-                                      />
-                                      <input
-                                        type="number"
-                                        min="1"
-                                        max="50"
-                                        value={customCountValue}
-                                        onChange={(e) => {
-                                          const val = e.target.value;
-                                          setCustomCountValue(val);
-                                          const num = parseInt(val, 10);
-                                          if (!isNaN(num)) {
-                                            setSelectedQuestionCount(Math.min(Math.max(num, 1), 50));
-                                          }
-                                        }}
-                                        className="w-14 h-8 text-center text-xs font-mono font-bold bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary"
-                                      />
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Confirm Action Button */}
-                              <Button
-                                onClick={() => {
-                                  setIsQuizConfigOpen(false);
-                                  const finalCount = isCustomCount ? Math.min(Math.max(parseInt(customCountValue, 10) || 10, 1), 50) : selectedQuestionCount;
-                                  sendMessage("", "quiz", finalCount);
-                                }}
-                                className={cn(
-                                  "w-full h-10 font-bold text-xs uppercase tracking-wider rounded-xl text-white shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer",
-                                  activeClasses.primary600,
-                                  activeClasses.primary700,
-                                  activeClasses.sendShadow
-                                )}
-                              >
-                                <Sparkles className="w-4 h-4" />
-                                <span>Generate {isCustomCount ? (customCountValue || 1) : selectedQuestionCount} Questions</span>
-                              </Button>
-                            </PopoverContent>
-                          </Popover>
+                          <Button
+                            variant="outline"
+                            className={cn("flex-col gap-2.5 sm:gap-3 h-auto py-3.5 sm:py-5 transition-all rounded-2xl group shadow-lg cursor-pointer", isDark ? "bg-white/5 border-white/5" : "bg-black/5 border-black/5", activeClasses.cardHover)}
+                            onClick={() => setShowQuizConfigModal(true)}
+                          >
+                            <div className={cn("p-2 sm:p-3 rounded-xl transition-colors", activeClasses.bg)}>
+                              <Brain className={cn("w-5 h-5 sm:w-6 sm:h-6", activeClasses.text)} />
+                            </div>
+                            <span className={cn("text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors", activeClasses.cardTextHover)}>Generate Quiz</span>
+                          </Button>
                         </div>
                       </div>
                     </div>

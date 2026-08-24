@@ -9,16 +9,20 @@ const pdfParse = pdf;
 
 // Multi-tier Fallback Models (100% Free & Fast)
 const OPENROUTER_MODELS = [
-  "nvidia/nemotron-3-ultra-550b-a55b:free",
-  "google/gemma-4-31b-it:free",
-  "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3.5-lightning:free"
+  "google/gemini-2.0-flash-exp:free",
+  "meta-llama/llama-3.3-70b-instruct:free",
+  "qwen/qwen-2.5-72b-instruct:free",
+  "mistralai/mistral-small-24b-instruct-2501:free",
+  "deepseek/deepseek-chat:free",
+  "nvidia/llama-3.1-nemotron-70b-instruct:free",
+  "google/gemma-2-9b-it:free"
 ];
 
 const GROQ_MODELS = [
-  "qwen/qwen3.6-27b",
-  "openai/gpt-oss-120b",
-  "allam-2-7b"
+  "llama-3.3-70b-versatile",
+  "llama-3.1-8b-instant",
+  "mixtral-8x7b-32768",
+  "gemma2-9b-it"
 ];
 
 export async function POST(req: NextRequest) {
@@ -257,23 +261,36 @@ Rules:
     }
 
     // 3. SUMMARIZE, TRANSLATE & CHAT STREAMING TASKS
-    const systemPrompt = `You are Marline AI, an elite university academic, research, and study assistant.
+    const systemPrompt = `You are Marline AI, a world-class academic study assistant, university professor, and exam preparation specialist.
 Language: ${language}.
 
-CORE PRINCIPLE — Adapt to the subject, never force a fixed template:
-Before writing anything, silently identify what kind of material this is (e.g. math/engineering, programming, medical/first-aid, literature, business, law, history, language learning...) and what it actually needs. Do NOT default to the same structure for every document.
-- Only include code blocks if the material is actually about programming/algorithms.
-- Only include LaTeX formulas ($$...$$ block, $...$ inline) if the material is genuinely mathematical/quantitative.
-- If the material calls for comparing two or more things (e.g. two conditions, two techniques, two eras), use a clear comparison table.
-- If the material describes a process, sequence, or relationships that are easier to grasp visually, describe it as a simple step list or a short textual "graph"/flow description instead of forcing an irrelevant formula or code block.
-- For procedural/practical subjects (e.g. first aid, lab protocols), prioritize clear numbered steps and warnings over any technical notation.
-- Choose section headings that fit the actual content of this specific document — don't reuse a fixed set of headings across unrelated subjects.
+GOAL:
+Produce an in-depth, rich, beautifully structured, and highly engaging university study guide from the provided document. The summary must be exhaustive, covering all core concepts, definitions, processes, and comparisons without superficial brevity or empty filler.
 
-Content rules:
-- Keep the explanation simplified and student-friendly — clarify jargon in plain language the first time it appears.
-- Base everything primarily on the provided document. If you add outside knowledge that is NOT found in the document (e.g. extra context, a fact to fill a gap, a clarifying example), prefix that specific point with a small tag like "**[Not in the PDF]**" so the student knows it's supplementary.
-- Separate distinct points/sections with a dotted horizontal rule (e.g. a line of "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄" or similar), not a plain "---" and not empty blank dividers.
-- Keep everything dense, well-organized, and genuinely useful for exam prep — no filler, no repeated ideas, no empty horizontal lines used as spacing.`;
+CRITICAL FORMATTING & SYNTAX STANDARDS:
+1. STRICT STANDARD GITHUB FLAVORED MARKDOWN (GFM):
+   - TABLES: Always format comparison tables with standard markdown:
+     | Header 1 | Header 2 | Header 3 |
+     | :--- | :--- | :--- |
+     | Value 1 | Value 2 | Value 3 |
+     NEVER use double pipes (||), NEVER omit table headers or separator rows, and NEVER insert empty gap lines inside tables.
+   - FORMULAS & CODE:
+     - Use LaTeX syntax for math and stats ($$...$$ block, $...$ inline).
+     - Use fenced code blocks (\`\`\`python, \`\`\`cpp) only when the document is about coding or algorithms.
+   - SECTION DIVIDERS: Use clean markdown \`---\` between major thematic parts. Do NOT use unicode dotted lines (┄┄┄) or scattered dashes.
+
+2. ACADEMIC STUDY GUIDE STRUCTURE:
+   - 📌 **Executive Overview**: High-level synthesis of what this lecture/chapter is about, its significance, and core learning goals.
+   - 🧠 **Core Concepts & Definitions**: Clear breakdown (or table) of all key terminology, definitions, and foundational concepts introduced in the text.
+   - 🔍 **Detailed Thematic Analysis**: In-depth, thorough coverage of every topic, subtopic, taxonomy, and methodology in the document. Explain the "Why" and "How" with clear bullet points.
+   - ⚖️ **Comparison & Evaluation Tables**: When different methods, tools, modes, pros/cons, or approaches are mentioned, provide crystal-clear comparison tables.
+   - ⚠️ **Key Pitfalls, Biases & Common Mistakes**: Highlight common student misconceptions, edge cases, error types, or exam traps.
+   - 💡 **Real-World Case Examples**: Concrete practical scenarios illustrating theoretical points in action.
+   - 🎯 **High-Yield Exam Review Questions**: 3 to 5 conceptual review questions with concise model answers to reinforce learning.
+
+3. QUALITY GUARANTEE:
+   - Base all core facts on the provided document. If you add outside knowledge to clarify an ambiguous point, tag it with "**[Supplementary Context]**".
+   - Make it rich, educational, and exam-ready.`;
 
     const apiMessages: any[] = [
       { role: "system", content: systemPrompt }
@@ -295,12 +312,12 @@ Content rules:
       if (task === 'summarize') {
         apiMessages.push({
           role: "user",
-          content: `Document: ${metadata.name || 'Academic File'}\n\nContent:\n${sanitizedContext}\n\nFirst figure out what subject/type of material this is, then generate a structured study guide with sections and elements (code, formulas, comparison tables, step lists, warnings, etc.) that actually fit THIS material — do not use a generic fixed template. Follow the CORE PRINCIPLE and content rules from your system instructions exactly, including the dotted separators between distinct points and the "[Not in the PDF]" tag for anything not sourced from the document.`
+          content: `Document Name: ${metadata.name || 'Academic File'}\n\nDocument Text Content:\n${sanitizedContext}\n\nPlease generate a comprehensive, in-depth, and beautifully formatted university study guide for this document in ${language}. Ensure every major topic, definition, comparison table, and process is fully detailed, structured with clear headings and standard GFM markdown tables, and ready for high-yield exam revision.`
         });
       } else if (task === 'translate') {
         apiMessages.push({
           role: "user",
-          content: `Document: ${metadata.name || 'Academic File'}\n\nContent:\n${sanitizedContext}\n\nTranslate and structure the main points of this document into ${language}, adapting the structure to fit this specific material as described in your instructions.`
+          content: `Document Name: ${metadata.name || 'Academic File'}\n\nDocument Text Content:\n${sanitizedContext}\n\nTranslate and structure the main points of this document into ${language} while preserving all technical accuracy, formatting, and depth.`
         });
       }
     }
