@@ -52,9 +52,9 @@ function preprocessMathContent(content: string): string {
   // b. Collapse excessive vertical blank lines (3+ newlines into 2)
   text = text.replace(/\n{3,}/g, '\n\n');
 
-  // 1. Separate headers (##, ###) with newlines if attached directly to preceding or subsequent text
+  // 1. Separate headers (##, ###) with clean newlines before and after
   text = text.replace(/([^\n])\n*(#{1,6}\s+[^\n]+)/g, '$1\n\n$2');
-  text = text.replace(/(#{1,6}\s+[^\n]+)\n*([^\n#\s])/g, '$1\n\n$2');
+  text = text.replace(/(#{1,6}\s+[^\n]+)\n+(?!\n)/g, '$1\n\n');
 
   // 2. Separate horizontal lines (---) WITHOUT breaking table separator rows (|---|)
   text = text.replace(/(^|[^\n|])\s*\n\s*---\s*\n\s*([^|\n]|$)/g, '$1\n\n---\n\n$2');
@@ -706,6 +706,12 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       newMessages.push({ role: "user", content: userText });
       setMessages(newMessages);
       setInput("");
+    } else if (task === 'summarize') {
+      newMessages.push({ role: "user", content: "Summarize this document" });
+      setMessages(newMessages);
+    } else if (task === 'translate') {
+      newMessages.push({ role: "user", content: `Translate this document into ${language}` });
+      setMessages(newMessages);
     }
 
     setLoading(true);
@@ -1024,38 +1030,65 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               font-style: italic !important;
             }
             
+            /* ==========================================================================
+               ACADEMIC DATA TABLES (PDF EXPORT)
+               ========================================================================== */
             .content table { 
               width: 100% !important; 
               border-collapse: collapse !important; 
-              margin: 14px 0 !important; 
-              font-size: 12.5px !important; 
-              page-break-inside: avoid !important; 
-              break-inside: avoid !important; 
+              table-layout: auto !important;
+              margin: 18px 0 !important; 
+              font-size: 11.5px !important; 
+              line-height: 1.45 !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+              border: 1.5px solid #cbd5e1 !important;
+              border-radius: 6px !important;
+              overflow: hidden !important;
             }
-            
+
+            .content thead {
+              display: table-header-group !important;
+            }
+
             .content th { 
-              background-color: ${activeThemeColor}14 !important;
-              color: ${activeThemeColor} !important; 
-              padding: 8px 12px !important; 
+              background-color: #f1f5f9 !important;
+              color: #0f172a !important; 
+              padding: 9px 12px !important; 
               text-align: left !important; 
-              font-weight: 700 !important; 
+              font-weight: 800 !important; 
+              font-size: 10.5px !important;
+              text-transform: uppercase !important;
+              letter-spacing: 0.6px !important;
               border: 1px solid #cbd5e1 !important; 
+              border-bottom: 2px solid #94a3b8 !important;
+              vertical-align: middle !important;
             }
+
             .content th * {
-              color: ${activeThemeColor} !important;
+              color: #0f172a !important;
+              font-weight: 800 !important;
             }
-            
+
             .content td { 
               padding: 8px 12px !important; 
               border: 1px solid #e2e8f0 !important; 
               color: #374151 !important; 
+              vertical-align: top !important;
+              font-size: 11.5px !important;
+              word-break: break-word !important;
             }
+
             .content td * {
               color: #374151 !important;
             }
-            
-            .content tr:nth-child(even) { 
+
+            .content tr:nth-child(even) td { 
               background-color: #f8fafc !important; 
+            }
+
+            .content tr:hover td {
+              background-color: #f1f5f9 !important;
             }
             
             .content blockquote { 
@@ -2204,7 +2237,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                   )}
                 </div>
                 <p className="text-[10px] text-center text-muted-foreground mt-3 uppercase tracking-tighter opacity-50">
-                  AI can make mistakes. Verify important info.
+                  Marline can make mistakes even in-generating or hallucinating. Verify important info if needed.
                 </p>
               </div>
             </div>

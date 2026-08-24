@@ -9,10 +9,9 @@ const pdfParse = pdf;
 
 // Multi-tier Fallback Models (100% Free & Fast)
 const OPENROUTER_MODELS = [
-  "nvidia/nemotron-3-ultra-550b-a55b:free",
-  "google/gemma-4-31b-it:free",
   "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3.5-lightning:free"
+  "nvidia/nemotron-3.5-lightning:free",
+  "nvidia/nemotron-3-ultra-550b-a55b:free"
 ];
 
 const GROQ_MODELS = [
@@ -296,7 +295,17 @@ CRITICAL FORMATTING & SYNTAX STANDARDS:
       { role: "system", content: systemPrompt }
     ];
 
-    if (messages.length > 0) {
+    if (task === 'summarize') {
+      apiMessages.push({
+        role: "user",
+        content: `Document Name: ${metadata.name || 'Academic File'}\n\nDocument Text Content:\n${sanitizedContext}\n\nPlease generate a comprehensive, in-depth, and beautifully formatted university study guide for this document in ${language}, following the fixed structure and formatting rules exactly. Every section and every table must be fully written out and complete — do not leave any table row, section, or placeholder empty.`
+      });
+    } else if (task === 'translate') {
+      apiMessages.push({
+        role: "user",
+        content: `Document Name: ${metadata.name || 'Academic File'}\n\nDocument Text Content:\n${sanitizedContext}\n\nTranslate and structure the main points of this document into ${language} while preserving all technical accuracy, formatting, and depth.`
+      });
+    } else if (messages.length > 0) {
       if (sanitizedContext) {
         apiMessages.push({
           role: "user",
@@ -308,18 +317,6 @@ CRITICAL FORMATTING & SYNTAX STANDARDS:
         });
       }
       apiMessages.push(...messages);
-    } else {
-      if (task === 'summarize') {
-        apiMessages.push({
-          role: "user",
-          content: `Document Name: ${metadata.name || 'Academic File'}\n\nDocument Text Content:\n${sanitizedContext}\n\nPlease generate a comprehensive, in-depth, and beautifully formatted university study guide for this document in ${language}, following the fixed structure and formatting rules exactly. Every section and every table must be fully written out and complete — do not leave any table row, section, or placeholder empty.`
-        });
-      } else if (task === 'translate') {
-        apiMessages.push({
-          role: "user",
-          content: `Document Name: ${metadata.name || 'Academic File'}\n\nDocument Text Content:\n${sanitizedContext}\n\nTranslate and structure the main points of this document into ${language} while preserving all technical accuracy, formatting, and depth.`
-        });
-      }
     }
 
     let lastErrorText = "";
@@ -346,7 +343,9 @@ CRITICAL FORMATTING & SYNTAX STANDARDS:
             })
           });
 
-          if (response.ok && response.body) {
+          const contentType = response.headers.get("content-type") || "";
+
+          if (response.ok && response.body && contentType.includes("text/event-stream")) {
             console.log(`[Marline Drive AI] Streaming successfully with OpenRouter ${model}`);
             return new Response(response.body, {
               headers: {
@@ -357,7 +356,7 @@ CRITICAL FORMATTING & SYNTAX STANDARDS:
             });
           } else {
             lastErrorText = await response.text();
-            console.warn(`[Marline Drive AI] OpenRouter ${model} failed (${response.status}):`, lastErrorText);
+            console.warn(`[Marline Drive AI] OpenRouter ${model} failed (${response.status}, ctype: ${contentType}):`, lastErrorText);
           }
         } catch (err: any) {
           console.warn(`[Marline Drive AI] OpenRouter ${model} fetch exception:`, err.message);
@@ -386,7 +385,9 @@ CRITICAL FORMATTING & SYNTAX STANDARDS:
             })
           });
 
-          if (response.ok && response.body) {
+          const contentType = response.headers.get("content-type") || "";
+
+          if (response.ok && response.body && contentType.includes("text/event-stream")) {
             console.log(`[Marline Drive AI] Streaming successfully with Groq ${model}`);
             return new Response(response.body, {
               headers: {
@@ -397,7 +398,7 @@ CRITICAL FORMATTING & SYNTAX STANDARDS:
             });
           } else {
             lastErrorText = await response.text();
-            console.warn(`[Marline Drive AI] Groq ${model} failed (${response.status}):`, lastErrorText);
+            console.warn(`[Marline Drive AI] Groq ${model} failed (${response.status}, ctype: ${contentType}):`, lastErrorText);
           }
         } catch (err: any) {
           console.warn(`[Marline Drive AI] Groq ${model} fetch exception:`, err.message);
