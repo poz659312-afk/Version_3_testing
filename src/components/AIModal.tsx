@@ -140,38 +140,32 @@ function CodeBlock({ language, codeText, children, accentColor }: { language: st
     }
   };
 
+  const displayLang = (language || "code").toUpperCase();
+
   return (
-    <div data-code-block="true" dir="ltr" className="my-4 rounded-xl overflow-hidden border border-white/10 bg-[#1e1e2e] dark:bg-[#181825] text-slate-100 shadow-2xl font-mono text-xs text-left">
-      {/* IDE Top Window Bar */}
-      <div dir="ltr" className="flex items-center justify-between px-4 py-2 bg-[#181825] dark:bg-[#11111b] border-b border-white/5 text-slate-400 select-none text-left">
-        <div className="flex items-center gap-3">
-          {/* Mac/IDE window 3 dots */}
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#f38ba8]/80 inline-block shadow-sm" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#f9e2af]/80 inline-block shadow-sm" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#a6e3a1]/80 inline-block shadow-sm" />
-          </div>
-          <div className="flex items-center gap-1.5 ml-2 border-l border-white/10 pl-3">
-            <Terminal className="w-3.5 h-3.5 text-primary" style={accentColor ? { color: accentColor } : undefined} />
-            <span className="font-bold uppercase tracking-wider text-[10.5px] text-slate-300">
-              {language || "code"}
-            </span>
-          </div>
+    <div data-code-block="true" data-language={displayLang} dir="ltr" className="my-3 rounded-lg overflow-hidden border border-slate-300/50 dark:border-white/10 bg-[#eef2f6] dark:bg-[#181825] text-slate-900 dark:text-slate-100 shadow-sm font-mono text-xs text-left">
+      {/* Simple Window Title Bar */}
+      <div dir="ltr" className="flex items-center justify-between px-3 py-1.5 bg-[#dbe3ed] dark:bg-[#11111b] border-b border-slate-300/60 dark:border-white/10 text-slate-700 dark:text-slate-300 select-none text-left">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: accentColor || "#3b82f6" }} />
+          <span className="font-bold uppercase tracking-wider text-[10.5px] text-slate-800 dark:text-slate-200">
+            {displayLang}
+          </span>
         </div>
         <button
           data-pdf-exclude="true"
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 transition-colors text-[11px] font-medium cursor-pointer border border-white/5"
+          className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 transition-colors text-[10px] font-semibold cursor-pointer border border-slate-300/40 dark:border-white/5"
           title="Copy code"
         >
           {copied ? (
             <>
-              <Check className="w-3 h-3 text-emerald-400" />
-              <span className="text-emerald-400 font-semibold">Copied!</span>
+              <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+              <span className="text-emerald-600 dark:text-emerald-400">Copied!</span>
             </>
           ) : (
             <>
-              <Copy className="w-3 h-3 text-slate-400" />
+              <Copy className="w-3 h-3 text-slate-500" />
               <span>Copy</span>
             </>
           )}
@@ -179,7 +173,7 @@ function CodeBlock({ language, codeText, children, accentColor }: { language: st
       </div>
 
       {/* Code Content */}
-      <div dir="ltr" className="p-4 overflow-x-auto text-[13px] leading-relaxed select-text text-left font-mono">
+      <div dir="ltr" className="p-3 overflow-x-auto text-[12px] leading-relaxed select-text text-left font-mono">
         <pre dir="ltr" className="font-mono text-left m-0 p-0 bg-transparent border-0">
           <code dir="ltr" className="font-mono text-left hljs bg-transparent">{children || codeText}</code>
         </pre>
@@ -1064,12 +1058,14 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
 
       const fileName = file?.name?.split('.')[0] || 'summary';
 
-      // Inject full CSS including KaTeX for native vector rendering
+      // Inject full CSS including KaTeX and Highlight.js for native vector rendering and automated language highlighting
       const htmlContent = `
         <!DOCTYPE html>
         <html>
         <head>
           <title>${fileName}_marline_summary</title>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600;700&display=swap');
             
@@ -1387,38 +1383,44 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               display: inline-block !important;
             }
             
-            /* Light IDE Theme for PDF Printing */
+            /* Light Compact Window for PDF Printing (15-20% darker than white) */
             .content [data-code-block="true"] {
-              background-color: #f8fafc !important;
+              background-color: #e9eef4 !important;
               border: 1px solid #cbd5e1 !important;
-              border-radius: 8px !important;
+              border-radius: 6px !important;
               box-shadow: none !important;
-              margin: 16px 0 !important;
+              margin: 10px 0 !important;
               page-break-inside: avoid !important;
               break-inside: avoid !important;
+              overflow: hidden !important;
             }
 
             .content [data-code-block="true"] > div:first-child {
-              background-color: #f1f5f9 !important;
+              background-color: #dbe3ed !important;
               border-bottom: 1px solid #cbd5e1 !important;
-              color: #475569 !important;
+              color: #334155 !important;
+              padding: 4px 10px !important;
+              font-size: 10px !important;
+              font-weight: 800 !important;
+              letter-spacing: 0.5px !important;
+              text-transform: uppercase !important;
             }
 
             .content [data-code-block="true"] span {
-              color: #475569 !important;
+              color: #334155 !important;
             }
 
             .content pre { 
-              background-color: #f8fafc !important; 
+              background-color: #e9eef4 !important; 
               color: #0f172a !important;
-              padding: 14px 16px !important; 
-              border-radius: 0 0 8px 8px !important; 
+              padding: 9px 12px !important; 
+              border-radius: 0 0 6px 6px !important; 
               border: none !important; 
               overflow-x: auto !important; 
               margin: 0 !important; 
               font-family: 'Roboto Mono', monospace !important;
-              font-size: 11.5px !important;
-              line-height: 1.6 !important;
+              font-size: 11px !important;
+              line-height: 1.5 !important;
             }
             
             .content pre code { 
@@ -1429,39 +1431,39 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               font-family: 'Roboto Mono', monospace !important;
             }
 
-            /* Light High-Contrast Syntax Highlighting Colors for Clean Print */
+            /* Rich Syntax Highlighting Colors for Clean Print */
             .content .hljs-keyword, .content .hljs-selector-tag, .content .hljs-subst, .content .hljs-section {
-              color: #cf222e !important; /* Crimson/Purple Keyword */
+              color: #0969da !important;
               font-weight: 700 !important;
             }
             .content .hljs-title, .content .hljs-title.function_, .content .hljs-title.hljs-function, .content .hljs-function {
-              color: #0969da !important; /* Blue for functions & defs */
+              color: #8250df !important;
               font-weight: 700 !important;
             }
             .content .hljs-string, .content .hljs-doctag, .content .hljs-regexp {
-              color: #0a3069 !important; /* Deep Blue for strings */
-              font-weight: 500 !important;
+              color: #0a3069 !important;
+              font-weight: 600 !important;
             }
             .content .hljs-number, .content .hljs-literal {
-              color: #953800 !important; /* Bronze / Orange for numbers */
-              font-weight: 600 !important;
+              color: #b45309 !important;
+              font-weight: 700 !important;
             }
             .content .hljs-comment, .content .hljs-quote {
-              color: #6e7781 !important; /* Readable Slate Gray for comments */
+              color: #64748b !important;
               font-style: italic !important;
             }
-            .content .hljs-variable, .content .hljs-template-variable {
-              color: #953800 !important;
+            .content .hljs-type, .content .hljs-built_in, .content .hljs-class {
+              color: #cf222e !important;
+              font-weight: 700 !important;
             }
-            .content .hljs-built_in, .content .hljs-type, .content .hljs-class {
-              color: #8250df !important; /* Purple for types and built-ins */
-              font-weight: 600 !important;
+            .content .hljs-variable, .content .hljs-template-variable {
+              color: #0f172a !important;
             }
             .content .hljs-attr, .content .hljs-property, .content .hljs-attribute {
               color: #0550ae !important;
             }
             .content .hljs-params {
-              color: #24292f !important;
+              color: #1e293b !important;
             }
             
              .katex { 
@@ -1497,9 +1499,11 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             .content h2, .content h3, .content h4, .content blockquote, .content pre, .katex-display {
               break-inside: avoid !important;
               page-break-inside: avoid !important;
+            }
+            
             .footer { 
-              margin-top: 55px !important; 
-              padding-top: 18px !important; 
+              margin-top: 45px !important; 
+              padding-top: 14px !important; 
               border-top: 2px solid ${activeThemeColor}80 !important;
               display: flex !important; 
               flex-direction: row !important;
@@ -1514,31 +1518,38 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               display: flex !important; 
               flex-direction: row !important;
               align-items: center !important; 
-              gap: 10px !important; 
+              gap: 8px !important; 
+              flex-wrap: nowrap !important;
             }
             .footer-img { 
-              width: 24px !important; 
-              height: 24px !important; 
-              max-width: 24px !important; 
-              max-height: 24px !important; 
-              min-width: 24px !important; 
-              min-height: 24px !important; 
+              width: 20px !important; 
+              height: 20px !important; 
+              max-width: 20px !important; 
+              max-height: 20px !important; 
+              min-width: 20px !important; 
+              min-height: 20px !important; 
               object-fit: contain !important;
-              border-radius: 6px !important; 
+              border-radius: 5px !important; 
               display: inline-block !important;
               vertical-align: middle !important;
             }
             .footer-text { 
-              font-size: 13px !important; 
+              font-size: 11.5px !important; 
               color: #475569 !important; 
-              font-weight: 700 !important; 
-              display: inline-block !important;
+              font-weight: 600 !important; 
+              display: inline-flex !important;
+              align-items: center !important;
+              gap: 8px !important;
               line-height: 1 !important;
             }
+            .footer-dot {
+              color: #94a3b8 !important;
+              font-weight: 900 !important;
+            }
             .footer-link { 
-              font-size: 12.5px !important; 
+              font-size: 11.5px !important; 
               color: ${activeThemeColor} !important; 
-              font-weight: 800 !important; 
+              font-weight: 700 !important; 
             }
             
             @media print {
@@ -1623,7 +1634,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         <body>
           <div class="header">
             <div class="header-flex">
-              <img src="${window.location.origin}/images/chameleon.png" class="header-img" style="width: 38px; height: 38px; max-width: 38px; max-height: 38px; object-fit: contain;" onerror="this.style.display='none'" />
+              <img src="${window.location.origin}/images/chameleon/01_chameleon_front.png" class="header-img" style="width: 44px; height: 44px; max-width: 44px; max-height: 44px; object-fit: contain; border-radius: 10px;" onerror="this.style.display='none'" />
               <div>
                 <h1 class="title">Marline AI Summary</h1>
                 <div class="subtitle">AI-Powered Academic & Coding Assistant</div>
@@ -1642,10 +1653,13 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           
           <div class="footer">
             <div class="footer-flex">
-              <img src="${window.location.origin}/images/chameleon.png" class="footer-img" style="width: 24px; height: 24px; max-width: 24px; max-height: 24px; border-radius: 6px; object-fit: contain; display: inline-block; vertical-align: middle;" onerror="this.style.display='none'" />
-              <span class="footer-text">Generated with Chameleon Native AI (Marline)</span>
+              <img src="${window.location.origin}/images/chameleon.png" class="footer-img" style="width: 22px; height: 22px; max-width: 22px; max-height: 22px; border-radius: 6px; object-fit: contain; display: inline-block; vertical-align: middle;" onerror="this.style.display='none'" />
+              <span class="footer-text">
+                Generated with Chameleon Native AI (Marline)
+                <span class="footer-dot">•</span>
+                <span class="footer-link">chameleon-nu.vercel.app</span>
+              </span>
             </div>
-            <span class="footer-link">chameleon-nu.vercel.app</span>
           </div>
           
           <script>
