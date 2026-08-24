@@ -9,11 +9,12 @@ import { getCachedAIResult, setCachedAIResult } from '@/lib/persistent-ai-cache'
 const pdfParse = pdf;
 
 // Multi-tier Fallback Models (100% Free & Lightning Fast)
-// TIER 1 (Default): Ultra-fast Groq Models with GPT-OSS 120B as primary
+// TIER 1 (Default): Ultra-fast Groq Models with 131k context windows
 const GROQ_MODELS = [
   "openai/gpt-oss-120b",
   "qwen/qwen3.6-27b",
-  "allam-2-7b",
+  "groq/compound",
+  "groq/compound-mini",
   "openai/gpt-oss-20b"
 ];
 
@@ -509,7 +510,7 @@ Rules:
           const contentType = response.headers.get("content-type") || "";
 
           if (response.ok && response.body && contentType.includes("text/event-stream")) {
-            const validatedStream = await testAndWrapStream(response, 7000);
+            const validatedStream = await testAndWrapStream(response, 12000);
             await deductCredits();
             console.log(`[Marline Drive AI] Streaming successfully with Tier 1: Groq ${model}`);
             return new Response(validatedStream, {

@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-limit";
 
 // Multi-tier Fallback Providers & Models (100% Free & Lightning Fast)
-// TIER 1 (Default): Ultra-fast Groq Models with GPT-OSS 120B as primary
+// TIER 1 (Default): Ultra-fast Groq Models with 131k context windows
 const GROQ_MODELS = [
   "openai/gpt-oss-120b",
   "qwen/qwen3.6-27b",
-  "allam-2-7b",
+  "groq/compound",
+  "groq/compound-mini",
   "openai/gpt-oss-20b"
 ];
 
