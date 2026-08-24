@@ -101,8 +101,8 @@ function preprocessMarlineContent(content: string): string {
   // 4. Separate headers (#{1,6}) if they appear inline
   text = text.replace(/([^\n])\s+(#{1,6}\s+[^\n]+)/g, '$1\n\n$2\n\n')
 
-  // 5. Fix tables: Convert double pipes "||" into single "|"
-  text = text.replace(/\|{2,}/g, '|')
+  // 5. Fix tables: Convert double pipes "||" into row newlines "|\n| "
+  text = text.replace(/\|{2,}/g, '|\n| ')
 
   // 6. Repair and auto-normalize tables (split glued header/separator rows, invert RTL columns)
   const rawLines = text.split('\n')
