@@ -86,7 +86,7 @@ function autoWrapCodeBlocks(text: string): string {
     const sqlStartRegex = /^\s*([*-]\s+)?(SELECT\b|INSERT\s+INTO\b|UPDATE\s+\w+\s+SET\b|DELETE\s+FROM\b|CREATE\s+(TABLE|DATABASE|VIEW|INDEX|PROCEDURE|TRIGGER)\b|ALTER\s+TABLE\b|DROP\s+(TABLE|DATABASE|VIEW|INDEX)\b|GRANT\s+.+?\bTO\b|REVOKE\s+.+?\bFROM\b|BEGIN\s+(TRANSACTION|TRAN)\b|COMMIT\b|ROLLBACK\b|OUTPUT\s+(DELETED|INSERTED)\b|IF\s+@@ERROR\b|MERGE\s+INTO\b|TRUNCATE\s+TABLE\b)/i;
     const sqlContinuationRegex = /^\s*(FROM|WHERE|GROUP\s+BY|HAVING|ORDER\s+BY|JOIN|LEFT\s+JOIN|RIGHT\s+JOIN|INNER\s+JOIN|FULL\s+JOIN|CROSS\s+JOIN|UNION|VALUES|SET|AND|OR|ON|LIMIT|OFFSET|INTO)\b/i;
 
-    const progStartRegex = /^\s*([*-]\s+)?(def\s+\w+\(|class\s+\w+[\(:]|import\s+[\w{},* ]+\s+from|from\s+[\w.]+\s+import|function\s+\w+\(|public\s+class\s+\w+|#include\s*<|npm\s+install|pip\s+install|git\s+clone|docker\s+run)/i;
+    const progStartRegex = /^\s*([*-]\s+)?(def\s+\w+\(|class\s+\w+[\(:]|import\s+[\w{},* ]+\s+from|from\s+[\w.]+\s+import|function\s*\w*\(|const\s+\w+\s*=|let\s+\w+\s*=|var\s+\w+\s*=|export\s+(default|const|function|class)\b|console\.log\(|public\s+(class|static|void|int|String)\b|private\s+\w+\b|#include\s*<|int\s+main\(|namespace\s+\w+|using\s+namespace\b|using\s+System;|fn\s+\w+\(|pub\s+fn\s+\w+\(|func\s+\w+\(|package\s+\w+|<\?php|npm\s+(install|run|init)|npx\s+\w+|pip\s+install|git\s+(clone|commit|push|pull|checkout)|docker\s+(run|build|compose)|yarn\s+(add|dev)|pnpm\s+(add|install)|curl\s+-|wget\s+)/i;
 
     function flushCode() {
       if (currentCode.length > 0) {
@@ -120,10 +120,14 @@ function autoWrapCodeBlocks(text: string): string {
         flushCode();
         inCodeBlock = true;
         if (/def\s|class\s.*:|from\s.*import/i.test(line)) detectedLang = 'python';
-        else if (/npm\s|pip\s|git\s|docker\s/i.test(line)) detectedLang = 'bash';
-        else if (/function\s|const\s|let\s|import\s.*from/i.test(line)) detectedLang = 'javascript';
-        else if (/#include/i.test(line)) detectedLang = 'cpp';
-        else if (/public\s+class/i.test(line)) detectedLang = 'java';
+        else if (/npm\s|npx\s|pip\s|git\s|docker\s|yarn\s|pnpm\s|curl\s|wget\s/i.test(line)) detectedLang = 'bash';
+        else if (/function\s|const\s|let\s|var\s|export\s|console\.log/i.test(line)) detectedLang = 'javascript';
+        else if (/#include|int\s+main|std::/i.test(line)) detectedLang = 'cpp';
+        else if (/public\s+class|public\s+static|System\.out/i.test(line)) detectedLang = 'java';
+        else if (/using\s+System|namespace\b/i.test(line)) detectedLang = 'csharp';
+        else if (/fn\s|pub\s+fn|impl\b/i.test(line)) detectedLang = 'rust';
+        else if (/func\s|package\b/i.test(line)) detectedLang = 'go';
+        else if (/<\?php/i.test(line)) detectedLang = 'php';
         else detectedLang = 'code';
 
         isBullet = !!progMatch[1];
