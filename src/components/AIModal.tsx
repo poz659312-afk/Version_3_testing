@@ -989,34 +989,25 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           }
         });
 
-        // Flawlessly inject absolute SVG overrides directly inside each Mermaid SVG to force clean white backgrounds and black text for print
-        clone.querySelectorAll('svg').forEach(svgEl => {
-          const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
-          style.innerHTML = `
-            rect, polygon, circle, path.node, [class*="label"] rect, .edgeLabel rect, .label rect, rect.label-container, rect.edgeLabel {
-              fill: #ffffff !important;
-              background-color: #ffffff !important;
-              background: #ffffff !important;
-              stroke: #94a3b8 !important;
-              stroke-width: 1.5px !important;
-            }
-            foreignObject, foreignObject div, foreignObject span, foreignObject *, .edgeLabel span, .label div, div.label {
-              background: #ffffff !important;
-              background-color: #ffffff !important;
-              color: #000000 !important;
-            }
-            text, tspan, span, div, *, [class*="label"] *, .edgeLabel * {
-              color: #000000 !important;
-              fill: #000000 !important;
-              font-weight: 800 !important;
-            }
-            path.edgePath, .edgePath .path, .edgePath path, marker path, .arrowheadPath {
-              stroke: #475569 !important;
-              fill: #475569 !important;
-              stroke-width: 1.5px !important;
-            }
-          `;
-          svgEl.appendChild(style);
+        // Clean table wrappers and ensure all parents have breakInside: auto so tables paginate seamlessly like MS Word
+        clone.querySelectorAll('.overflow-x-auto, [class*="overflow"]').forEach(el => {
+          el.classList.remove('overflow-x-auto', 'overflow-hidden', 'overflow-auto', 'border', 'rounded-xl', 'shadow-sm');
+          (el as HTMLElement).style.overflow = 'visible';
+          (el as HTMLElement).style.border = 'none';
+          (el as HTMLElement).style.boxShadow = 'none';
+          (el as HTMLElement).style.borderRadius = '0';
+        });
+
+        clone.querySelectorAll('table').forEach(tableEl => {
+          (tableEl as HTMLElement).style.pageBreakInside = 'auto';
+          (tableEl as HTMLElement).style.breakInside = 'auto';
+          let parent = tableEl.parentElement;
+          while (parent && parent !== clone) {
+            (parent as HTMLElement).style.pageBreakInside = 'auto';
+            (parent as HTMLElement).style.breakInside = 'auto';
+            (parent as HTMLElement).style.overflow = 'visible';
+            parent = parent.parentElement;
+          }
         });
 
         bodyHtml = clone.innerHTML;
@@ -1151,20 +1142,37 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             .content em * {
               color: ${activeThemeColor} !important;
               font-style: italic !important;
-            }
-            
-            /* ==========================================================================
-               ACADEMIC DATA TABLES (PDF EXPORT)
+                 /* ==========================================================================
+               ACADEMIC DATA TABLES (PDF EXPORT — WORD-LIKE AUTO SPLIT)
                ========================================================================== */
+            .table-print-wrapper,
+            .content .overflow-x-auto,
+            .content div.overflow-x-auto {
+              overflow: visible !important;
+              overflow-x: visible !important;
+              overflow-y: visible !important;
+              display: block !important;
+              width: 100% !important;
+              border: none !important;
+              box-shadow: none !important;
+              border-radius: 0 !important;
+              margin: 10px 0 !important;
+              padding: 0 !important;
+              page-break-inside: auto !important;
+              break-inside: auto !important;
+            }
+
             .content table { 
               width: 100% !important; 
               border-collapse: collapse !important; 
               table-layout: auto !important;
-              margin: 16px 0 !important; 
-              font-size: 11.5px !important; 
-              line-height: 1.45 !important;
+              margin: 10px 0 !important; 
+              font-size: 11px !important; 
+              line-height: 1.4 !important;
               page-break-inside: auto !important;
               break-inside: auto !important;
+              page-break-before: auto !important;
+              break-before: auto !important;
               border: 1.5px solid #cbd5e1 !important;
             }
 
@@ -1172,14 +1180,24 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               display: table-header-group !important;
               page-break-inside: avoid !important;
               break-inside: avoid !important;
+              page-break-after: avoid !important;
+              break-after: avoid !important;
+            }
+
+            .content thead tr {
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+              page-break-after: avoid !important;
+              break-after: avoid !important;
             }
 
             .content tbody {
+              display: table-row-group !important;
               page-break-inside: auto !important;
               break-inside: auto !important;
             }
 
-            .content tr {
+            .content tbody tr, .content tr {
               page-break-inside: avoid !important;
               break-inside: avoid !important;
             }
@@ -1187,12 +1205,12 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             .content th { 
               background-color: #f1f5f9 !important;
               color: #0f172a !important; 
-              padding: 9px 12px !important; 
+              padding: 7px 10px !important; 
               text-align: left !important; 
               font-weight: 800 !important; 
-              font-size: 10.5px !important;
+              font-size: 10px !important;
               text-transform: uppercase !important;
-              letter-spacing: 0.6px !important;
+              letter-spacing: 0.5px !important;
               border: 1px solid #cbd5e1 !important; 
               border-bottom: 2px solid #94a3b8 !important;
               vertical-align: middle !important;
@@ -1206,11 +1224,11 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
 
             .content td { 
-              padding: 8px 12px !important; 
+              padding: 7px 10px !important; 
               border: 1px solid #e2e8f0 !important; 
               color: #374151 !important; 
               vertical-align: top !important;
-              font-size: 11.5px !important;
+              font-size: 11px !important; 
               word-break: break-word !important;
               page-break-inside: avoid !important;
               break-inside: avoid !important;
@@ -1246,33 +1264,46 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               padding-left: 20px !important; 
               margin: 8px 0 !important; 
               list-style-type: disc !important;
+              page-break-inside: auto !important;
+              break-inside: auto !important;
             }
             
             .content ol { 
               padding-left: 20px !important; 
               margin: 8px 0 !important; 
               list-style-type: decimal !important;
+              page-break-inside: auto !important;
+              break-inside: auto !important;
             }
             
-            /* Top-level list items (Subtopic sections with nested lists) get clean divider lines */
+            /* Top-level list items: allow natural page flow */
             .content > ul > li,
             .content > ol > li,
             .content div > ul > li { 
-              margin: 10px 0 14px 0 !important;
-              padding-bottom: 10px !important;
+              margin: 8px 0 12px 0 !important;
+              padding-bottom: 8px !important;
               border-bottom: 1px dashed #e2e8f0 !important;
               color: #374151 !important; 
               display: list-item !important;
-              line-height: 1.55 !important;
-              page-break-inside: avoid !important;
-              break-inside: avoid !important;
+              line-height: 1.5 !important;
+              page-break-inside: auto !important;
+              break-inside: auto !important;
+            }
+
+            .content li:has(table), 
+            .content li:has(tbody),
+            .content div:has(table) {
+              page-break-inside: auto !important;
+              break-inside: auto !important;
+              page-break-before: auto !important;
+              break-before: auto !important;
             }
 
             .content > ul > li:last-child,
             .content > ol > li:last-child,
             .content div > ul > li:last-child {
               border-bottom: none !important;
-              margin-bottom: 6px !important;
+              margin-bottom: 4px !important;
               padding-bottom: 0 !important;
             }
             
