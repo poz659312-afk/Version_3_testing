@@ -160,6 +160,12 @@ function preprocessMathContent(content: string): string {
   if (!content) return "";
   let text = content;
 
+  // Filter out any internal thinking / reasoning tags (<think>...</think>)
+  text = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
+  text = text.replace(/<thought>[\s\S]*?<\/thought>/gi, '');
+  text = text.replace(/<think>[\s\S]*$/gi, '');
+  text = text.replace(/<thought>[\s\S]*$/gi, '');
+
   // 0. Automatically wrap standalone code & SQL statements into proper code blocks
   text = autoWrapCodeBlocks(text);
 

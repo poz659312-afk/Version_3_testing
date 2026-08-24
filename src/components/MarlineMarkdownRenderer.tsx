@@ -78,7 +78,19 @@ function CodeBlock({ language, codeText, children }: { language: string; codeTex
   )
 }
 
+// Filter out thinking and internal reasoning tokens/tags (<think>...</think>)
+function stripThinking(text: string): string {
+  if (!text) return ""
+  let cleaned = text.replace(/<think>[\s\S]*?<\/think>/gi, "")
+  cleaned = cleaned.replace(/<thought>[\s\S]*?<\/thought>/gi, "")
+  cleaned = cleaned.replace(/<think>[\s\S]*$/gi, "")
+  cleaned = cleaned.replace(/<thought>[\s\S]*$/gi, "")
+  return cleaned.trim()
+}
+
 export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMarkdownRendererProps) {
+  const displayContent = stripThinking(content) || content
+
   return (
     <div className={`prose dark:prose-invert max-w-none text-foreground leading-relaxed text-sm md:text-base space-y-3 ${className}`}>
       <ReactMarkdown
@@ -192,7 +204,7 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
           },
         }}
       >
-        {content}
+        {displayContent}
       </ReactMarkdown>
     </div>
   )
