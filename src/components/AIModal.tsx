@@ -191,8 +191,8 @@ function preprocessMathContent(content: string): string {
 
   // 5. Convert LaTeX syntax patterns into standard $ math delimiters:
   // 5a. Convert \[ ... \] to $$ ... $$ and \( ... \) to $ ... $
-  text = text.replace(/\\\[([\s\S]*?)\\\]/g, '\n\n$$$$1$$\n\n');
-  text = text.replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$');
+  text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => '\n\n$$' + g1 + '$$\n\n');
+  text = text.replace(/\\\(([\s\S]*?)\\\)/g, (_m, g1) => '$' + g1 + '$');
 
   // 5b. Convert parenthesized LaTeX formulas like (n = \frac{...}) or (\frac{...})
   text = text.replace(/\(([^()\n]*?(?:\{[^{}]*\}|\([^()]*\)|[^{}()\n])*\\[a-zA-Z]+(?:\{[^{}]*\}|\([^()]*\)|[^{}()\n])*)\)/g, (match, formula) => {
@@ -209,7 +209,7 @@ function preprocessMathContent(content: string): string {
   // 6. Wrap standalone LaTeX environments with $$ if missing
   text = text.replace(
     /(?<!\$\$)\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*(?!\$\$)/g,
-    '\n\n$$$1$$\n\n'
+    (_m, g1) => '\n\n$$' + g1 + '$$\n\n'
   );
 
   return text;
