@@ -1,90 +1,73 @@
 import { NextResponse } from "next/server";
 import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-limit";
-import fcdsBylawsData from "@/lib/fcds_bylaws.json";
-import { ACADEMIC_TRACKS } from "@/lib/course-subjects";
 
-// Multi-tier Fallback Providers & Models (100% Free & Highly Capable)
+// Multi-tier Fallback Providers & Models (100% Free & Lightning Fast)
+// TIER 1 (Default): Ultra-fast Groq Models with GPT-OSS 120B as primary
+const GROQ_MODELS = [
+  "openai/gpt-oss-120b",
+  "qwen/qwen3.6-27b",
+  "allam-2-7b",
+  "openai/gpt-oss-20b"
+];
+
+// TIER 2 (Fallback): OpenRouter Nemotron & Free Models
 const OPENROUTER_MODELS = [
+  "nvidia/nemotron-3-super-120b-a12b:free",
   "nvidia/nemotron-3-ultra-550b-a55b:free",
   "google/gemma-4-31b-it:free",
-  "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3.5-lightning:free",
+  "nvidia/nemotron-3.5-lightning:free"
 ];
 
-const GROQ_MODELS = [
-  "qwen/qwen3.6-27b",
-  "openai/gpt-oss-120b",
-  "allam-2-7b"
-];
+// Concise, Token-Optimized System Prompt for Marline AI
+const MARLINE_SYSTEM_PROMPT = `أنتِ "مارلين" (Marline AI) - المساعد الأكاديمي والبرمجي والرفيق الذكي لطلاب كلية الحاسبات وعلوم البيانات بجامعة الإسكندرية (FCDS) ومنصة Chameleon.
 
-// College Tracks & Subjects Summary for Context Grounding
-const COLLEGE_TRACKS_SUMMARY = ACADEMIC_TRACKS.map(t => ({
-  track: t.name,
-  code: t.code,
-  subjects: t.subjects
-}));
+### 👑 1. هوية صانعك ومؤسس منصة Chameleon:
+* **صانعك ومطورك ومؤسس منصة كامليون**: هو **Levi Ackerman** (يُعرف بلقب **Levo**)، واسمه الحقيقي: **عبدالرحمن احمد عبدالمنعم** (Abdelrahman Ahmed Abdelmonem / Abdo Ahmed).
+* **نبذة عنه**: مهندس برمجيات و Full-Stack Developer محترف ومتميز، خريج معسكر Alextream للبرمجة التنافسية وحل أكثر من 200+ مسألة على Codeforces.
+* **موقعه وحساباته**:
+  - الموقع الشخصي: https://levi-abdoahmed.vercel.app/
+  - GitHub: https://github.com/AbdoAhmedAbdelmonem
+  - LinkedIn: https://www.linkedin.com/in/abdoahmed/
+* عند السؤال عن مطورك أو صاحب المنصة، تحدثي عنه بكل فخر واعتزاز كونه العقل المدبر الذي بناكِ وأسس منصة Chameleon.
 
-// System Prompt for Marline AI
-const MARLINE_SYSTEM_PROMPT = `أنتِ "مارلين" (Marline AI) - المساعد الأكاديمي والبرمجي والرفيق الذكي المتميز لطلاب كلية الحاسبات وعلوم البيانات بجامعة الإسكندرية (FCDS) ومنصة Chameleon (كامليون).
+### 🌟 2. أسلوبك وشخصيتك:
+* تتحدثين باللهجة المصرية العامية الذكية والودودة جداً (أو العربية الفصحى أو الإنجليزية حسب رغبة الطالب).
+* تخاطبين الطلاب بألقاب مشجعة: "يا باشمهندس"، "يا دكتور"، "يا بطل".
+* إجاباتك منظمة، دقيقة، ومباشرة.
 
-### 👑 1. هوية صانعك ومؤسس منصة Chameleon (Creator & Owner Profile):
-أنتِ تعرفين صانعك ومؤسس منصة Chameleon ومطورك بكل تفاصيله وتحفظين بياناته وإنجازاته عن ظهر قلب:
-* **صانعك ومطورك ومؤسس منصة كامليون**: هو **Levi Ackerman** (ويُعرف بلقب **Levo**)، والمعروف خارج الوسط التقني باسمه الحقيقي: **عبدالرحمن احمد عبدالمنعم** (Abdelrahman Ahmed Abdelmonem / Abdo Ahmed).
-* **نبذة عنه**: مهندس برمجيات و Full-Stack Developer محترف ومتميز وخبير في حل المشكلات والخوارزميات (Problem Solver) من الإسكندرية، مصر. يدرس بكلية الحاسبات وعلوم البيانات بجامعة الإسكندرية (FCDS Alexandria University).
-* **الخلفية التقنية والتنافسية**:
-  - خريج معسكر البرمجة التنافسية المكثف **Alextream Bootcamp**.
-  - حل أكثر من 200+ مسألة خوارزمية وبرمجية معقدة على منصات الـ Competitive Programming مثل Codeforces.
-  - خبير في أحدث التقنيات: React, Next.js, TypeScript, Python (Flask), PostgreSQL, Tailwind CSS, Supabase, Three.js, AWS Cloud (S3, EC2), REST APIs, Machine Learning & AI Engineering.
-* **أبرز إنجازاته وماريعه الرائدة**:
-  1. 🌟 **منصة Chameleon (كامليون - chameleonFCDS)**: المنصة الأكاديمية الأولى والرائدة لطلاب كلية الحاسبات وعلوم البيانات بجامعة الإسكندرية (FCDS) التي توفر مكتبة درايف سحابية، مساحات مذاكرة تفاعلية Study Spaces، أدوات التلخيص والاختبارات الذكية، وحساب المعدل واللائحة.
-  2. 🤖 **مارلين (Marline AI)**: أنتِ صنيعته وابتكاره الذكي، صممك وبرمجك بنفسك لتكوني رفيق الطلاب الأكاديمي والبرمجي الأول.
-  3. 💻 **HackerRank FCDS**: منصة تدريب الطلاب وتطوير المهارات البرمجية الخاصة بـ HackerRank FCDS Campus (https://hr-fcds-materials.vercel.app/).
-  4. 👥 **MORX Team Platform**: منصة إدارة الفرق والمشاريع والمهام للإنتاجية والعمل الجماعي (https://morx-team.vercel.app/).
-  5. 🛒 **Next-Gen Shop E-Commerce**: منصة تجارة إلكترونية كاملة بنية Full-Stack مبنية بـ Python Flask و SQL.
-  6. ☁️ **AWS S3 Storage Hub**: منصة سحابية تفاعلية لإدارة ورفع الملفات على Amazon S3 و EC2 (https://aws-s3-sand.vercel.app/).
-  7. 📊 **AURA MLR**: تطبيق ويب متكامل لتحليلات الانحدار الخطي المتعدد والإحصاءات المتقدمة (https://aura-mlr.netlify.app/).
-* **روابطه الرسمية ووسائل التواصل (عند طلبها أو السؤال عنه، اعرضيها له بروابط منسقة)**:
-  - 🌐 **الموقع الشخصي والبورتفوليو (Portfolio)**: [https://levi-abdoahmed.vercel.app/](https://levi-abdoahmed.vercel.app/)
-  - 🐙 **GitHub**: [https://github.com/AbdoAhmedAbdelmonem](https://github.com/AbdoAhmedAbdelmonem)
-  - 💼 **LinkedIn**: [https://www.linkedin.com/in/abdoahmed/](https://www.linkedin.com/in/abdoahmed/)
-  - 👥 **Facebook**: [https://www.facebook.com/profile.php?id=100065484038724](https://www.facebook.com/profile.php?id=100065484038724)
-  - ⚔️ **Codeforces**: [https://codeforces.com/profile/roshen](https://codeforces.com/profile/roshen)
-  - 📧 **Email**: tokyo9900777@gmail.com
+### 💻 3. القدرات البرمجية والتقنية:
+* إتقان تام للبرمجة (Python, C++, Java, JavaScript, TypeScript, SQL, R, Assembly, HTML/CSS).
+* شرح وتنسيق الأكواد داخل Markdown Code Blocks مع تعليقات توضيحية.
 
-* **تعليمات الرد عند السؤال عن صانعك أو صاحب الموقع أو عبدالرحمن / Levi**:
-  - إذا سألك المستخدم "مين اللي عملك؟" أو "مين صاحب الموقع؟" أو "مين ليفاي؟" أو "مين عبدالرحمن؟" أو عن صاحب منصة كامليون أو مطور الموقع أو طلب حساباته وروابطه، تحدثي عنه بكل فخر وتقدير واعتزاز كونه العقل المدبر والمطور الموهوب الذي بناكِ وأسس منصة Chameleon، واستعرضي إنجازاته ومشاريعه وروابطه بشكل جميل ومنظم.
-
----
-
-### 🌟 2. شخصيتك وأسلوبك:
-1. **طبيعية وبشرية 100%**: تتحدثين باللهجة المصرية العامية الذكية والودودة جداً (أو العربية الفصحى أو الإنجليزية بطلاقة تامة حسب لغة وطلب الطالب).
-2. **الاحترام والتشجيع**: تخاطبين الطلاب بألقاب محببة ومشجعة مثل "يا باشمهندس"، "يا دكتور"، "يا بطل"، "يا غالي".
-3. **الدقة والوضوح**: إجاباتك خالية تماماً من الفذلكة أو المعلومات المغلوطة، ومصاغة بأسلوب سلس يسهل فهمه.
-
----
-
-### 💻 3. القدرات البرمجية والتقنية (Coding Mastery):
-* **فهم وتوليد الأكواد**: قادرة على فهم، كتابة، تصحيح، وشرح الأكواد في مختلف لغات البرمجة (Python, C++, Java, JavaScript, TypeScript, SQL, Assembly, R, HTML/CSS).
-* **الخوارزميات وهياكل البيانات**: شرح المسائل الرياضية، الـ Time/Space Complexity، وحل مشكلات الـ Data Structures & Algorithms مع كتابة كود نظيف وتوضيح الـ Edge Cases.
-* **تنسيق الكود**: كتابة الأكواد داخل Markdown Code Blocks منسقة وموثقة مع تعليقات تشرح أهم السطور.
-
----
-
-### 🎓 4. الإلمام التام بلائحة ومقررات الكلية (FCDS Academic Authority):
-* **المرجعية الصارمة**: لديكِ اللائحة الداخلية المعتمدة للكلية، ولا تقدمين أي معلومة إدارية أو أكاديمية تخالفها.
-* **حساب الـ CGPA والتقديرات**: نظام النقاط (A: 4.0, A-: 3.666, B+: 3.333, B: 3.0, B-: 2.666, C+: 2.333, C: 2.0, D: 1.0, F: 0.0). الحد الأدنى للتخرج هو CGPA 2.00 وساعات التخرج 140 ساعة معتمدة.
-* **الإنذار الأكاديمي**: الطالب يوضع تحت الملاحظة إذا انخفض معدله عن 2.00، ويفصل إذا استمر لعدد فصول محدد باللائحة.
-* **الأقسام والمسارات**: (Data Science, Artificial Intelligence, Cybersecurity, Business Analytics, Media Analytics, Healthcare Informatics).
-
----
-
-### 📚 بيانات الكلية واللائحة المعتمدة (FCDS Official Bylaws & Tracks):
-اللائحة الداخلية:
-${JSON.stringify(fcdsBylawsData)}
-
-المسارات والمواد الدراسية:
-${JSON.stringify(COLLEGE_TRACKS_SUMMARY)}
-`;
+### 🎓 4. لائحة كلية الحاسبات وعلوم البيانات (FCDS Alexandria University):
+* **نظام الدراسة**: ساعات معتمدة (Credit Hours). لغة الدراسة الرسمية: الإنجليزية.
+* **ساعات التخرج**: 140 ساعة معتمدة مقسمة: 10 ساعات متطلبات جامعة (منها التفكير الناقد وريادة الأعمال إجباري)، 60 ساعة متطلبات كلية، 70 ساعة متطلبات تخصص وبرنامج (منها 4 ساعات تدريب ميداني).
+* **شروط التخرج**: إتمام 140 ساعة بنجاح مع معدل تراكمي CGPA لا يقل عن 2.00 / 4.00 وقضاء 7 فصول دراسية كحد أدنى.
+* **العبء الدراسي بالفصل**:
+  - المعدل 3.00 فأكثر: حتى 21 ساعة معتمدة.
+  - المعدل من 2.00 إلى أقل من 3.00: حتى 18 ساعة معتمدة.
+  - المعدل أقل من 2.00 (تحت الملاحظة): حتى 14 ساعة معتمدة.
+  - الفصل الصيفي: بحد أقصى 6 ساعات (ويجوز 9 ساعات للتخرج).
+* **حساب المعدل والتقديرات (Scale 4.00)**:
+  - A: 90%+ (4.000) ممتاز
+  - A-: 85% إلى <90% (3.666) ممتاز منخفض
+  - B+: 80% إلى <85% (3.333) جيد جداً مرتفع
+  - B: 75% إلى <80% (3.000) جيد جداً
+  - B-: 70% إلى <75% (2.666) جيد مرتفع
+  - C+: 65% إلى <70% (2.333) جيد
+  - C: 60% إلى <65% (2.000) مقبول (الحد الأدنى للنجاح والتخرج)
+  - D: 50% إلى <60% (1.000) راسب مؤقت / ضعيف (يحتاج إعادة)
+  - F: أقل من 50% (0.000) راسب
+* **الإنذار الأكاديمي والملاحظة**:
+  - يوضع الطالب تحت الملاحظة الأكاديمية (Academic Probation) إذا قل CGPA عن 2.00.
+  - يُنذر الطالب وإذا استمر انخفاض المعدل لعدد فصول متتالية (4 فصول أساسية) يُعرض على لجنة شؤون التعليم والطلاب.
+* **برامج الكلية الـ 6**:
+  1. الحوسبة وعلوم البيانات (General Program)
+  2. تحليلات الأعمال (Business Analytics)
+  3. النظم الذكية (Intelligent Systems)
+  4. تحليلات الوسائط الإعلامية (Media Analytics)
+  5. تحليلات ومعلوماتية الرعاية الصحية (Healthcare Informatics)
+  6. الأمن السيبراني (Cybersecurity)`;
 
 export async function POST(req: Request) {
   try {
@@ -141,13 +124,13 @@ export async function POST(req: Request) {
       }
     }
 
-    // Keep last 10 messages for rich conversational & coding context
+    // Keep last 8 messages for safe, fast conversational context
     const recentMessages = (messages || [])
       .filter((m: any) => m.role !== "system")
-      .slice(-10)
+      .slice(-8)
       .map((m: any) => ({
         role: m.role,
-        content: typeof m.content === "string" ? m.content.slice(0, 3000) : m.content
+        content: typeof m.content === "string" ? m.content.slice(0, 2500) : m.content
       }));
 
     const formattedMessages = [
@@ -157,46 +140,7 @@ export async function POST(req: Request) {
 
     let lastErrorText = "";
 
-    // TIER 1: Try OpenRouter Free Models
-    if (openRouterKey) {
-      for (const model of OPENROUTER_MODELS) {
-        try {
-          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${openRouterKey}`,
-              "HTTP-Referer": "https://chameleon-nu.vercel.app",
-              "X-Title": "Marline AI",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: model,
-              messages: formattedMessages,
-              stream: true,
-              temperature: 0.4,
-              max_tokens: 1800
-            }),
-          });
-
-          if (response.ok && response.body) {
-            return new Response(response.body, {
-              headers: {
-                "Content-Type": "text/event-stream",
-                "Cache-Control": "no-cache, no-transform",
-                "Connection": "keep-alive",
-              },
-            });
-          } else {
-            lastErrorText = await response.text();
-            console.warn(`[Marline AI] OpenRouter model ${model} failed (${response.status}):`, lastErrorText);
-          }
-        } catch (err) {
-          console.warn(`[Marline AI] OpenRouter fetch error for ${model}:`, err);
-        }
-      }
-    }
-
-    // TIER 2: Seamless Fallback to Groq API
+    // TIER 1: Try Groq API First (Ultra Fast, Default)
     if (groqKey) {
       for (const model of GROQ_MODELS) {
         try {
@@ -211,7 +155,7 @@ export async function POST(req: Request) {
               messages: formattedMessages,
               stream: true,
               temperature: 0.4,
-              max_tokens: 1800
+              max_tokens: 2048
             }),
           });
 
@@ -229,6 +173,45 @@ export async function POST(req: Request) {
           }
         } catch (err) {
           console.warn(`[Marline AI] Groq fetch error for ${model}:`, err);
+        }
+      }
+    }
+
+    // TIER 2: Seamless Fallback to OpenRouter Nemotron Models
+    if (openRouterKey) {
+      for (const model of OPENROUTER_MODELS) {
+        try {
+          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${openRouterKey}`,
+              "HTTP-Referer": "https://chameleon-nu.vercel.app",
+              "X-Title": "Marline AI",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: formattedMessages,
+              stream: true,
+              temperature: 0.4,
+              max_tokens: 2048
+            }),
+          });
+
+          if (response.ok && response.body) {
+            return new Response(response.body, {
+              headers: {
+                "Content-Type": "text/event-stream",
+                "Cache-Control": "no-cache, no-transform",
+                "Connection": "keep-alive",
+              },
+            });
+          } else {
+            lastErrorText = await response.text();
+            console.warn(`[Marline AI] OpenRouter model ${model} failed (${response.status}):`, lastErrorText);
+          }
+        } catch (err) {
+          console.warn(`[Marline AI] OpenRouter fetch error for ${model}:`, err);
         }
       }
     }

@@ -8,17 +8,21 @@ import { getCachedAIResult, setCachedAIResult } from '@/lib/persistent-ai-cache'
 
 const pdfParse = pdf;
 
-// Multi-tier Fallback Models (100% Free & Fast)
-const OPENROUTER_MODELS = [
-  "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3.5-lightning:free",
-  "nvidia/nemotron-3-ultra-550b-a55b:free"
+// Multi-tier Fallback Models (100% Free & Lightning Fast)
+// TIER 1 (Default): Ultra-fast Groq Models with GPT-OSS 120B as primary
+const GROQ_MODELS = [
+  "openai/gpt-oss-120b",
+  "qwen/qwen3.6-27b",
+  "allam-2-7b",
+  "openai/gpt-oss-20b"
 ];
 
-const GROQ_MODELS = [
-  "qwen/qwen3.6-27b",
-  "openai/gpt-oss-120b",
-  "allam-2-7b"
+// TIER 2 (Fallback): OpenRouter Nemotron & Free Models
+const OPENROUTER_MODELS = [
+  "nvidia/nemotron-3-super-120b-a12b:free",
+  "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "google/gemma-4-31b-it:free",
+  "nvidia/nemotron-3.5-lightning:free"
 ];
 
 export async function GET(req: NextRequest) {
@@ -243,17 +247,15 @@ Rules:
 
       let lastError = "";
 
-      // Tier 1: OpenRouter
-      if (openRouterKey) {
-        for (const model of OPENROUTER_MODELS) {
+      // Tier 1: Groq (Primary & Fast)
+      if (groqKey) {
+        for (const model of GROQ_MODELS) {
           try {
-            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
               method: "POST",
               headers: {
-                "Authorization": `Bearer ${openRouterKey}`,
-                "Content-Type": "application/json",
-                "HTTP-Referer": "https://chameleon-nu.vercel.app",
-                "X-Title": "Marline AI"
+                "Authorization": `Bearer ${groqKey}`,
+                "Content-Type": "application/json"
               },
               body: JSON.stringify({
                 model: model,
@@ -291,15 +293,17 @@ Rules:
         }
       }
 
-      // Tier 2: Groq
-      if (groqKey) {
-        for (const model of GROQ_MODELS) {
+      // Tier 2: OpenRouter Nemotron (Fallback)
+      if (openRouterKey) {
+        for (const model of OPENROUTER_MODELS) {
           try {
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
               method: "POST",
               headers: {
-                "Authorization": `Bearer ${groqKey}`,
-                "Content-Type": "application/json"
+                "Authorization": `Bearer ${openRouterKey}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://chameleon-nu.vercel.app",
+                "X-Title": "Marline AI"
               },
               body: JSON.stringify({
                 model: model,
@@ -482,11 +486,57 @@ Rules:
       });
     }
 
-    // TIER 1: OpenRouter Models (Primary)
+    // TIER 1: Groq Models (Primary & Ultra Fast)
+    if (groqKey) {
+      for (const model of GROQ_MODELS) {
+        try {
+          console.log(`[Marline Drive AI] Tier 1: Attempting Groq model: ${model}`);
+          const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${groqKey}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: sanitizedApiMessages,
+              stream: true,
+              temperature: 0.3,
+              max_tokens: 4096
+            })
+          });
+
+          const contentType = response.headers.get("content-type") || "";
+
+          if (response.ok && response.body && contentType.includes("text/event-stream")) {
+            const validatedStream = await testAndWrapStream(response, 7000);
+            await deductCredits();
+            console.log(`[Marline Drive AI] Streaming successfully with Tier 1: Groq ${model}`);
+            return new Response(validatedStream, {
+              headers: {
+                "Content-Type": "text/event-stream",
+                "Cache-Control": "no-cache, no-transform",
+                "Connection": "keep-alive",
+                "X-AI-Credits-Remaining": Math.max(0, currentCredits - dynamicTokenCost).toString(),
+                "X-AI-Credits-Cost": dynamicTokenCost.toString()
+              }
+            });
+          } else {
+            lastErrorText = await response.text();
+            console.warn(`[Marline Drive AI] Tier 1 Groq ${model} rejected (${response.status}):`, lastErrorText);
+          }
+        } catch (err: any) {
+          console.warn(`[Marline Drive AI] Tier 1 Groq ${model} error/timeout:`, err.message);
+          lastErrorText = err.message;
+        }
+      }
+    }
+
+    // TIER 2: Seamless Auto-Failover to OpenRouter Nemotron Models (Fallback)
     if (openRouterKey) {
       for (const model of OPENROUTER_MODELS) {
         try {
-          console.log(`[Marline Drive AI] Tier 1: Attempting OpenRouter model: ${model}`);
+          console.log(`[Marline Drive AI] Tier 2: Falling back to OpenRouter model: ${model}`);
           const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -507,59 +557,13 @@ Rules:
           const contentType = response.headers.get("content-type") || "";
 
           if (response.ok && response.body && contentType.includes("text/event-stream")) {
-            const validatedStream = await testAndWrapStream(response, 7000);
-            await deductCredits();
-            console.log(`[Marline Drive AI] Streaming successfully with Tier 1: OpenRouter ${model}`);
-            return new Response(validatedStream, {
-              headers: {
-                "Content-Type": "text/event-stream",
-                "Cache-Control": "no-cache, no-transform",
-                "Connection": "keep-alive",
-                "X-AI-Credits-Remaining": Math.max(0, currentCredits - dynamicTokenCost).toString(),
-                "X-AI-Credits-Cost": dynamicTokenCost.toString()
-              }
-            });
-          } else {
-            lastErrorText = await response.text();
-            console.warn(`[Marline Drive AI] Tier 1 OpenRouter ${model} rejected (${response.status}):`, lastErrorText);
-          }
-        } catch (err: any) {
-          console.warn(`[Marline Drive AI] Tier 1 OpenRouter ${model} error/timeout:`, err.message);
-          lastErrorText = err.message;
-        }
-      }
-    }
-
-    // TIER 2: Seamless Auto-Failover to Groq Models
-    if (groqKey) {
-      for (const model of GROQ_MODELS) {
-        try {
-          console.log(`[Marline Drive AI] Tier 2: Falling back to Groq model: ${model}`);
-          const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${groqKey}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              model: model,
-              messages: sanitizedApiMessages,
-              stream: true,
-              temperature: 0.3,
-              max_tokens: 4096
-            })
-          });
-
-          const contentType = response.headers.get("content-type") || "";
-
-          if (response.ok && response.body && contentType.includes("text/event-stream")) {
             const validatedStream = await testAndWrapStream(
               response,
               7000,
               `Tier 1 busy. Redirected automatically to Tier 2 (${model}).`
             );
             await deductCredits();
-            console.log(`[Marline Drive AI] Streaming successfully with Tier 2: Groq ${model}`);
+            console.log(`[Marline Drive AI] Streaming successfully with Tier 2: OpenRouter ${model}`);
             return new Response(validatedStream, {
               headers: {
                 "Content-Type": "text/event-stream",
@@ -571,10 +575,10 @@ Rules:
             });
           } else {
             lastErrorText = await response.text();
-            console.warn(`[Marline Drive AI] Tier 2 Groq ${model} failed (${response.status}):`, lastErrorText);
+            console.warn(`[Marline Drive AI] Tier 2 OpenRouter ${model} failed (${response.status}):`, lastErrorText);
           }
         } catch (err: any) {
-          console.warn(`[Marline Drive AI] Tier 2 Groq ${model} exception:`, err.message);
+          console.warn(`[Marline Drive AI] Tier 2 OpenRouter ${model} exception:`, err.message);
           lastErrorText = err.message;
         }
       }
