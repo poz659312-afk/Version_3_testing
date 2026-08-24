@@ -1077,25 +1077,34 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               font-family: 'Inter', system-ui, sans-serif; 
               color: #111827; 
               padding: 40px 50px; 
-              line-height: 1.6;
-              font-size: 14px;
+              line-height: 1.68;
+              font-size: 15px;
               background: white;
             }
             .header {
-              margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid ${activeThemeColor};
+              margin-bottom: 28px; padding-bottom: 20px; border-bottom: 3px solid ${activeThemeColor};
             }
             .header-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
-            .header-img { width: 45px; height: 45px; border-radius: 10px; }
+            .header-img { width: 42px; height: 42px; border-radius: 10px; object-fit: contain; }
             .title { font-size: 26px; font-weight: 900; color: ${activeThemeColor}; letter-spacing: -0.5px; margin: 0; }
-            .subtitle { font-size: 11px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
-            .meta { display: flex; gap: 20px; padding: 12px 16px; background: #f8fafc; border-radius: 8px; font-size: 12px; color: #6b7280; }
+            .subtitle { font-size: 11.5px; color: #6b7280; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+            .meta { display: flex; gap: 20px; padding: 12px 16px; background: #f8fafc; border-radius: 8px; font-size: 12.5px; color: #6b7280; }
             .meta strong { color: #374151; }
             
             /* PDF Markdown Styles & High-Contrast overrides for White Background */
+            .content {
+              margin-top: 24px !important;
+            }
             .content, .content p, .content li, 
             .content span:not([class*="mermaid"] *):not([class*="hljs"] *):not(pre *), 
             .content div:not([class*="mermaid"] *):not([class*="hljs"] *):not(pre *):not([class*="rounded-xl"]) {
               color: #1f2937 !important;
+            }
+
+            .content p {
+              margin: 12px 0 !important;
+              font-size: 14.5px !important;
+              line-height: 1.7 !important;
             }
             
             /* Preserve KaTeX specific internal colors */
@@ -1107,8 +1116,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               display: block !important;
               width: 100% !important;
               text-align: center !important;
-              margin: 16px 0 !important;
-              padding: 14px 18px !important;
+              margin: 20px 0 !important;
+              padding: 16px 20px !important;
               background: #f8fafc !important;
               border: 1px solid #e2e8f0 !important;
               border-radius: 8px !important;
@@ -1120,11 +1129,12 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             .content h2 { 
-              font-size: 18px !important; 
+              font-size: 19.5px !important; 
               font-weight: 900 !important; 
               color: ${activeThemeColor} !important; 
-              margin: 20px 0 8px !important; 
-              padding-bottom: 4px !important;
+              margin: 28px 0 10px !important; 
+              padding-top: 6px !important;
+              padding-bottom: 5px !important;
               border-bottom: 1.5px solid ${activeThemeColor}40 !important;
               page-break-after: avoid !important;
               break-after: avoid-page !important;
@@ -1134,11 +1144,11 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             .content h3 { 
-              font-size: 14px !important; 
+              font-size: 15px !important; 
               font-weight: 700 !important; 
               color: ${activeThemeColor} !important; 
-              margin: 14px 0 6px !important; 
-              padding-bottom: 2px !important;
+              margin: 20px 0 8px !important; 
+              padding-bottom: 3px !important;
               page-break-after: avoid !important;
               break-after: avoid-page !important;
             }
@@ -1147,10 +1157,10 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
             
             .content h4 { 
-              font-size: 12.5px !important; 
+              font-size: 13px !important; 
               font-weight: 700 !important; 
               color: #374151 !important; 
-              margin: 10px 0 4px !important; 
+              margin: 14px 0 6px !important; 
               page-break-after: avoid !important;
               break-after: avoid-page !important;
             }
@@ -1489,10 +1499,17 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               page-break-inside: avoid !important;
             }
             
+            .footer-divider {
+              margin: 40px 0 16px 0 !important;
+              border: none !important;
+              border-top: 1.5px solid ${activeThemeColor}40 !important;
+              clear: both !important;
+              display: block !important;
+            }
+
             .footer { 
-              margin-top: 30px !important; 
-              padding-top: 15px !important; 
-              border-top: 2px solid ${activeThemeColor}2b !important; 
+              margin-top: 0 !important; 
+              padding-top: 8px !important; 
               display: flex !important; 
               flex-direction: row !important;
               align-items: center !important; 
@@ -1518,14 +1535,14 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               display: inline-block !important;
             }
             .footer-text { 
-              font-size: 11px !important; 
+              font-size: 11.5px !important; 
               color: #64748b !important; 
               font-weight: 600 !important; 
               display: inline-block !important;
               line-height: 1 !important;
             }
             .footer-link { 
-              font-size: 11px !important; 
+              font-size: 11.5px !important; 
               color: ${activeThemeColor} !important; 
               font-weight: 700 !important; 
             }
@@ -1612,7 +1629,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         <body>
           <div class="header">
             <div class="header-flex">
-              <img src="${window.location.origin}/images/chameleon/01_chameleon_front.png" class="header-img" style="width: 36px; height: 36px; max-width: 36px; max-height: 36px; object-fit: contain;" onerror="this.style.display='none'" />
+              <img src="${window.location.origin}/images/chameleon.png" class="header-img" style="width: 38px; height: 38px; max-width: 38px; max-height: 38px; object-fit: contain;" onerror="this.style.display='none'" />
               <div>
                 <h1 class="title">Marline AI Summary</h1>
                 <div class="subtitle">AI-Powered Academic & Coding Assistant</div>
@@ -1629,9 +1646,11 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             ${bodyHtml}
           </div>
           
+          <div class="footer-divider"></div>
+
           <div class="footer">
             <div class="footer-flex">
-              <img src="${window.location.origin}/images/chameleon/01_chameleon_front.png" class="footer-img" style="width: 20px; height: 20px; max-width: 20px; max-height: 20px; object-fit: contain; display: inline-block; vertical-align: middle;" onerror="this.style.display='none'" />
+              <img src="${window.location.origin}/images/chameleon.png" class="footer-img" style="width: 20px; height: 20px; max-width: 20px; max-height: 20px; object-fit: contain; display: inline-block; vertical-align: middle;" onerror="this.style.display='none'" />
               <span class="footer-text">Generated with Chameleon Native AI (Marline)</span>
             </div>
             <span class="footer-link">chameleon-nu.vercel.app</span>
