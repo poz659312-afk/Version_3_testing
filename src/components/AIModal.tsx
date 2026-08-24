@@ -66,7 +66,20 @@ function preprocessMathContent(content: string): string {
   text = text.replace(/([^\n])\s*(```[a-zA-Z0-9_-]*)/g, '$1\n\n$2');
   text = text.replace(/(```)\s*([^\n`\s])/g, '$1\n\n$2');
 
-  // 5. Ensure display math $$ has its own lines
+  // 5. Convert LaTeX syntax patterns into standard $ math delimiters:
+  // 5a. Convert \[ ... \] to $$ ... $$ and \( ... \) to $ ... $
+  text = text.replace(/\\\[([\s\S]*?)\\\]/g, '\n\n$$$$1$$\n\n');
+  text = text.replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$');
+
+  // 5b. Convert parenthesized LaTeX formulas like (n = \frac{...}) or (\frac{...})
+  text = text.replace(/\(([^()\n]*?(?:\{[^{}]*\}|\([^()]*\)|[^{}()\n])*\\[a-zA-Z]+(?:\{[^{}]*\}|\([^()]*\)|[^{}()\n])*)\)/g, (match, formula) => {
+    if (/\\(?:frac|times|sqrt|sum|int|prod|alpha|beta|gamma|mu|sigma|theta|lambda|chi|Delta|partial|pm|le|ge|neq|approx|infty|cdot|overline|hat|left|right)\b/.test(formula)) {
+      return `$${formula.trim()}$`;
+    }
+    return match;
+  });
+
+  // 5c. Ensure display math $$ has its own lines
   text = text.replace(/([^\n])\s*(\$\$)/g, '$1\n\n$2');
   text = text.replace(/(\$\$)\s*([^\n$\s])/g, '$1\n\n$2');
 
@@ -1037,18 +1050,28 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               width: 100% !important; 
               border-collapse: collapse !important; 
               table-layout: auto !important;
-              margin: 18px 0 !important; 
+              margin: 16px 0 !important; 
               font-size: 11.5px !important; 
               line-height: 1.45 !important;
-              page-break-inside: avoid !important;
-              break-inside: avoid !important;
+              page-break-inside: auto !important;
+              break-inside: auto !important;
               border: 1.5px solid #cbd5e1 !important;
-              border-radius: 6px !important;
-              overflow: hidden !important;
             }
 
             .content thead {
               display: table-header-group !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+
+            .content tbody {
+              page-break-inside: auto !important;
+              break-inside: auto !important;
+            }
+
+            .content tr {
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
             }
 
             .content th { 
@@ -1063,6 +1086,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               border: 1px solid #cbd5e1 !important; 
               border-bottom: 2px solid #94a3b8 !important;
               vertical-align: middle !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
             }
 
             .content th * {
@@ -1077,6 +1102,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               vertical-align: top !important;
               font-size: 11.5px !important;
               word-break: break-word !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
             }
 
             .content td * {

@@ -275,8 +275,8 @@ CRITICAL FORMATTING & SYNTAX STANDARDS:
      | Value 1 | Value 2 | Value 3 |
      Keep each cell to a short phrase (roughly under 12 words). If a concept needs a long explanation, put the short label in the table and the full explanation as prose right after the table — do NOT cram long paragraphs or multiple sentences into one cell. NEVER use double pipes (||), NEVER leave a cell blank, NEVER insert blank lines inside a table, and NEVER wrap plain terms in extra bold/box/badge-style markup inside table cells — plain text only inside cells. Ensure one clean line per table row with exactly matching column counts across all rows.
    - BULLET LISTS & SUB-ITEMS: Always format sub-points, properties, examples, strengths, weaknesses, steps, and explanations using explicit Markdown list bullets (\`- \` or \`* \`). NEVER write consecutive items as plain unbulleted text blocks or raw runs of text.
-   - FORMULAS & CODE: LaTeX only for genuinely mathematical/statistical content; fenced code blocks (\`\`\`python, \`\`\`cpp, etc.) only when the document is actually about programming or algorithms.
-   - SECTION DIVIDERS: Use a single clean markdown \`---\` between major sections only. Do NOT use unicode dotted lines, repeated dashes, or multiple consecutive dividers, and do NOT leave empty lines where content should be.
+   - FORMULAS & CODE: Always wrap mathematical and statistical formulas in standard LaTeX dollar delimiters ($$...$$ for standalone block equations, $...$ for inline formulas, e.g. $n = \frac{Z^2 \times p(1-p)}{E^2}$). NEVER output raw LaTeX without enclosing $ or $$ delimiters. Use fenced code blocks (```python, ```cpp, etc.) only when the document is actually about programming or algorithms.
+   - SECTION DIVIDERS: Use a single clean markdown `---` between major sections only. Do NOT use unicode dotted lines, repeated dashes, or multiple consecutive dividers, and do NOT leave empty lines where content should be.
 
 2. FIXED ACADEMIC STUDY GUIDE STRUCTURE (always use this skeleton, in this order):
    - 📌 **Executive Overview**: High-level synthesis of what this lecture/chapter is about, its significance, and core learning goals.
