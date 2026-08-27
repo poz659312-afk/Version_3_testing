@@ -18,7 +18,10 @@ import {
   ArrowRight,
   Loader2,
   GraduationCap,
-  Layers
+  Layers,
+  Share2,
+  Copy,
+  Check
 } from 'lucide-react'
 import { createStudyRoom, joinStudyRoom, getRoomsList } from './actions'
 import { cn } from '@/lib/utils'
@@ -40,10 +43,24 @@ export default function StudySpacesDirectoryClient({
   isAdmin
 }: StudySpacesDirectoryClientProps) {
   const router = useRouter()
-  const [rooms, setRooms] = useState(initialRooms || [])
+  const [rooms, setRooms] = useState<any[]>(initialRooms)
   const [searchQuery, setSearchQuery] = useState('')
   const [isPending, setIsPending] = useState(false)
+  const [openCreate, setOpenCreate] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [copiedRoomId, setCopiedRoomId] = useState<string | null>(null)
+
+  const handleCopyRoomLink = (e: React.MouseEvent, roomId: string) => {
+    e.stopPropagation()
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://chameleon-nu.vercel.app'
+    const url = `${origin}/study-spaces/${roomId}`
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(url)
+    }
+    setCopiedRoomId(roomId)
+    toast.success('Study space link copied to clipboard!')
+    setTimeout(() => setCopiedRoomId(null), 2000)
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -128,7 +145,6 @@ export default function StudySpacesDirectoryClient({
   }, [])
   
   // Dialog state
-  const [openCreate, setOpenCreate] = useState(false)
   const [newRoomName, setNewRoomName] = useState('')
   const [newRoomDesc, setNewRoomDesc] = useState('')
   const [newRoomVisibility, setNewRoomVisibility] = useState('public')
@@ -440,14 +456,28 @@ export default function StudySpacesDirectoryClient({
               >
                 <div className="flex flex-col h-full justify-between p-6 relative z-10">
                   <div className="space-y-4">
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start justify-between gap-2">
                       <h3 className="text-base font-bold group-hover:text-primary transition-colors line-clamp-1 text-foreground">
                         {room.name}
                       </h3>
-                      <Badge className="bg-muted border-border/85 dark:bg-white/[0.04] dark:border-white/[0.08] text-[10px] font-medium flex items-center gap-1 h-5 py-0 px-2 shrink-0">
-                        <Users className="w-3 h-3 text-muted-foreground" />
-                        {room.memberCount}
-                      </Badge>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={(e) => handleCopyRoomLink(e, room.id)}
+                          title="Copy Link"
+                          className="w-6 h-6 rounded-md bg-muted/60 hover:bg-primary/20 hover:text-primary border border-border/80 flex items-center justify-center transition-colors cursor-pointer text-muted-foreground"
+                        >
+                          {copiedRoomId === room.id ? (
+                            <Check className="w-3 h-3 text-emerald-400" />
+                          ) : (
+                            <Share2 className="w-3 h-3" />
+                          )}
+                        </button>
+                        <Badge className="bg-muted border-border/85 dark:bg-white/[0.04] dark:border-white/[0.08] text-[10px] font-medium flex items-center gap-1 h-5 py-0 px-2 shrink-0">
+                          <Users className="w-3 h-3 text-muted-foreground" />
+                          {room.memberCount}
+                        </Badge>
+                      </div>
                     </div>
                     <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">
                       {room.description || 'No description provided.'}

@@ -675,10 +675,20 @@ export async function approveMember(roomId: string, userId: string) {
  */
 export async function rejectMember(roomId: string, userId: string) {
   try {
+    if (!userId || userId === 'undefined') {
+      return { success: false, error: 'Invalid user ID provided.' }
+    }
+
     const session = await checkAuth()
     const supabase = await createServerClient()
 
     // Guard: Only room creator or super admin can reject/kick
+    const { data: roomData } = await supabase
+      .from('study_rooms')
+      .select('created_by')
+      .eq('id', roomId)
+      .single()
+
     const { data: memberRole } = await supabase
       .from('study_room_members')
       .select('role')
@@ -686,7 +696,7 @@ export async function rejectMember(roomId: string, userId: string) {
       .eq('user_id', session.auth_id)
       .single()
 
-    const isAdminOrCreator = memberRole?.role === 'creator' || memberRole?.role === 'admin'
+    const isAdminOrCreator = memberRole?.role === 'creator' || memberRole?.role === 'admin' || roomData?.created_by === session.auth_id
     if (!isAdminOrCreator && !session.is_super_admin) {
       return { success: false, error: 'Unauthorized. Only the owner or admins can manage access.' }
     }
@@ -720,10 +730,20 @@ export async function removeMember(roomId: string, userId: string) {
  */
 export async function toggleMemberRole(roomId: string, userId: string, newRole: 'admin' | 'member') {
   try {
+    if (!userId || userId === 'undefined') {
+      return { success: false, error: 'Invalid user ID provided.' }
+    }
+
     const session = await checkAuth()
     const supabase = await createServerClient()
 
     // Guard: Only room creator can promote/demote
+    const { data: roomData } = await supabase
+      .from('study_rooms')
+      .select('created_by')
+      .eq('id', roomId)
+      .single()
+
     const { data: memberRole } = await supabase
       .from('study_room_members')
       .select('role')
@@ -731,7 +751,8 @@ export async function toggleMemberRole(roomId: string, userId: string, newRole: 
       .eq('user_id', session.auth_id)
       .single()
 
-    if (memberRole?.role !== 'creator' && !session.is_super_admin) {
+    const isCreator = memberRole?.role === 'creator' || roomData?.created_by === session.auth_id
+    if (!isCreator && !session.is_super_admin) {
       return { success: false, error: 'Unauthorized. Only the owner can promote or demote members.' }
     }
 

@@ -132,12 +132,12 @@ export async function POST(req: NextRequest) {
       fileContent = `Document Name: ${metadata.name || 'Academic File'}`;
     }
 
-    // Trim context to fit context window comfortably
-    // 14,000 characters is safe for 8k-token models (especially for Arabic which takes more tokens per char)
-    const MAX_CONTEXT_CHARS = 14000;
-    const sanitizedContext = fileContent.trim().length > MAX_CONTEXT_CHARS
-      ? fileContent.slice(0, MAX_CONTEXT_CHARS) + "\n\n[... Remaining content truncated for optimal speed and memory ...]"
-      : fileContent.trim();
+    // Clean excessive blank lines and whitespace to maximize information density per character
+    const cleanedFileContent = fileContent.replace(/\r\n/g, '\n').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+    const MAX_CONTEXT_CHARS = 9500;
+    const sanitizedContext = cleanedFileContent.length > MAX_CONTEXT_CHARS
+      ? cleanedFileContent.slice(0, MAX_CONTEXT_CHARS) + "\n\n[... Content truncated for optimal response speed ...]"
+      : cleanedFileContent;
 
     // Dynamic token cost calculation:
     // Scale smoothly from 1 to 10 tokens max based on extracted document size:
@@ -346,42 +346,25 @@ Rules:
     }
 
     // 3. SUMMARIZE, TRANSLATE & CHAT STREAMING TASKS
-    const systemPrompt = `You are Marline AI, a world-class academic study assistant, university professor, and exam preparation specialist.
+    const systemPrompt = `You are Marline AI, an elite university professor and academic study guide author.
     Language: ${language}.
 
-    STEP 0 — SILENT CONTENT PLANNING (do this internally before writing, do not output it):
-    Read the document and identify its actual subject domain (e.g. math/engineering, programming, databases/SQL, medical/clinical, methodology/social-science, business, law, literature, mixed...). Decide, for THIS specific document:
-    - Does it contain real formulas/statistics? → include LaTeX (\$\$...\$\$ / \$...\$) only if yes.
-    - Does it involve programming, databases (SQL), algorithms, or scripts? → you MUST provide realistic, functional code examples / SQL queries in fenced code blocks (\`\`\`sql, \`\`\`python, etc.) inside both "Detailed Thematic Analysis" and "Real-World Case Examples" so students see exact implementation syntax.
-    - Does it contain genuinely comparable items (methods, tools, modes, approaches, pros/cons)? → build a comparison table only if such pairs/sets actually exist in the document.
-    - Does it describe a process, workflow, or protocol? → represent it as a clear numbered sequence.
-    This plan controls what you fill into the fixed structure below — skip a section's specialized content type gracefully (plain explanation instead) if it truly doesn't apply, but keep the section itself so the study guide stays complete and predictable.
+    FORMATTING & SYNTAX STANDARDS:
+    1. GFM Tables: Each row on a single line starting and ending with |. Plain text inside cells.
+    2. Formulas: Wrap inline math in $...$ and block equations in $$...$$.
+    3. Code/SQL: Always enclose code and SQL queries in fenced code blocks (\`\`\`sql, \`\`\`python, etc.).
+    4. Section Dividers: Use a single \`---\` before major section headings.
 
-    CRITICAL FORMATTING & SYNTAX STANDARDS:
-    1. STRICT STANDARD GITHUB FLAVORED MARKDOWN (GFM) — this output is rendered directly into a PDF, so malformed markdown breaks the document:
-      - TABLES: Every table MUST have a header row, a separator row, and EVERY data row fully filled in the SAME pass — never emit a header/separator followed by placeholder or empty rows to be filled later. Format:
-        | Header 1 | Header 2 | Header 3 |
-        | :--- | :--- | :--- |
-        | Value 1 | Value 2 | Value 3 |
-        Keep each cell to a short phrase (roughly under 12 words). If a concept needs a long explanation, put the short label in the table and the full explanation as prose right after the table — do NOT cram long paragraphs or multiple sentences into one cell. NEVER use double pipes (||), NEVER leave a cell blank, NEVER insert blank lines inside a table, and NEVER wrap plain terms in extra bold/box/badge-style markup inside table cells — plain text only inside cells. Ensure one clean line per table row with exactly matching column counts across all rows.
-      - FORMULAS, CODE & SQL QUERIES:
-        * MATH & STATS: Always wrap mathematical and statistical formulas in standard LaTeX dollar delimiters (\$\$...\$\$ for standalone block equations, \$...\$ for inline formulas). NEVER output raw LaTeX without enclosing \$ or \$\$ delimiters.
-        * CODE, SCRIPTS & SQL: Whenever writing code examples, SQL queries (e.g. SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, DROP, GRANT, REVOKE, JOIN, etc.), scripts, commands, or technical implementations — even when providing examples inside bullet points or subtopics — you MUST ALWAYS enclose them in dedicated multi-line fenced code blocks with the correct language tag (e.g. \`\`\`sql, \`\`\`python, \`\`\`javascript, \`\`\`cpp, \`\`\`bash, etc.). NEVER output standalone code statements or queries as plain text or raw bullet items.
-      - SECTION DIVIDERS: Use a single clean markdown \`---\` between major sections only. Do NOT use unicode dotted lines, repeated dashes, or multiple consecutive dividers, and do NOT leave empty lines where content should be.
+    FIXED ACADEMIC STUDY GUIDE STRUCTURE:
+    - 📌 **Executive Overview**: High-level synthesis of learning goals and core concepts.
+    - 🧠 **Core Concepts & Definitions**: Key terminology and foundational definitions.
+    - 🔍 **Detailed Thematic Analysis**: In-depth explanations of every topic/methodology with bullet points, code, and LaTeX where relevant.
+    - ⚖️ **Comparison & Evaluation Table**: A clean GFM table comparing methods/approaches (or "Key Trade-offs" if not applicable).
+    - ⚠️ **Key Pitfalls & Exam Traps**: Common misconceptions and edge cases.
+    - 💡 **Real-World Case Examples**: Practical implementation scenarios.
+    - 🎯 **High-Yield Exam Review Questions**: 3 to 5 conceptual review questions with model answers.
 
-    2. FIXED ACADEMIC STUDY GUIDE STRUCTURE (always use this skeleton, in this order):
-      - 📌 **Executive Overview**: High-level synthesis of what this lecture/chapter is about, its significance, and core learning goals.
-      - 🧠 **Core Concepts & Definitions**: Clear breakdown (short table or bullet list — whichever fits the term count) of all key terminology, definitions, and foundational concepts introduced in the text.
-      - 🔍 **Detailed Thematic Analysis**: In-depth, thorough coverage of every topic, subtopic, taxonomy, and methodology in the document. Explain the "Why" and "How" with explicit bullet points (\`- \`), using code/formulas only where genuinely relevant per Step 0.
-      - ⚖️ **Comparison & Evaluation Table**: Only when the document actually presents comparable methods, tools, modes, or approaches — build one clear, fully-filled table. If nothing in the document is genuinely comparable, replace this section with a short "Key Trade-offs" bullet list instead of an empty/fake table.
-      - ⚠️ **Key Pitfalls, Biases & Common Mistakes**: Common student misconceptions, edge cases, error types, or exam traps formatted with clear bullet points.
-      - 💡 **Real-World Case Examples**: Concrete practical scenarios illustrating theoretical points in action (use the document's own examples first if it has any).
-      - 🎯 **High-Yield Exam Review Questions**: 3 to 5 conceptual review questions with concise model answers.
-
-    3. QUALITY GUARANTEE:
-      - Base all core facts on the provided document. If you add outside knowledge to clarify an ambiguous point, tag it with "**[Supplementary Context]**".
-      - STRICTLY FORBIDDEN: NEVER output meta-commentary, compliance notes, or self-explanations (e.g. do NOT write "Explanation: Each cell contains...", "as required by formatting rules", etc.). Output ONLY the clean study guide content itself.
-      - Make it rich, educational, exam-ready, and fully self-contained — every table and section must be complete with no gaps before moving to the next one.`;
+    Output only the clean, complete study guide without meta-commentary.`;
 
     const apiMessages: any[] = [
       { role: "system", content: systemPrompt }
@@ -503,7 +486,7 @@ Rules:
               messages: sanitizedApiMessages,
               stream: true,
               temperature: 0.3,
-              max_tokens: 4096
+              max_tokens: task === 'summarize' ? 2800 : 1536
             })
           });
 
@@ -551,7 +534,7 @@ Rules:
               messages: sanitizedApiMessages,
               stream: true,
               temperature: 0.3,
-              max_tokens: 4096
+              max_tokens: task === 'summarize' ? 2800 : 1536
             })
           });
 

@@ -53,7 +53,10 @@ import {
   Settings,
   Edit3,
   Eye,
-  FileText
+  FileText,
+  Share2,
+  Copy,
+  Check
 } from 'lucide-react'
 import SummaryRenderer from '@/components/SummaryRenderer'
 import { 
@@ -118,6 +121,17 @@ export default function StudySpaceClient({
   const router = useRouter()
   const [isPending, setIsPending] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [copiedLink, setCopiedLink] = useState(false)
+
+  const handleCopyLink = () => {
+    const url = typeof window !== 'undefined' ? window.location.href : `https://chameleon-nu.vercel.app/study-spaces/${roomId}`
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(url)
+    }
+    setCopiedLink(true)
+    toast.success('Study space link copied to clipboard!')
+    setTimeout(() => setCopiedLink(false), 2200)
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -138,7 +152,10 @@ export default function StudySpaceClient({
   const currentUserId = initialDetails?.currentUserId
   const [isEditingNotes, setIsEditingNotes] = useState(false)
 
-  const isOwner = room.created_by === currentUserId
+  const currentMember = members.find((m: any) => m.user?.auth_id === currentUserId || m.user_id === currentUserId)
+  const isOwner = room.created_by === currentUserId || currentMember?.role === 'creator'
+  const isAdmin = currentMember?.role === 'admin'
+  const canManage = isOwner || isAdmin
 
   const [settingsName, setSettingsName] = useState(room.name || '')
   const [settingsDesc, setSettingsDesc] = useState(room.description || '')
@@ -157,10 +174,6 @@ export default function StudySpaceClient({
   const [pendingActionUser, setPendingActionUser] = useState<any>(null)
   const [pendingPromoteRole, setPendingPromoteRole] = useState<'admin' | 'member'>('admin')
   const [confirmDeleteText, setConfirmDeleteText] = useState('')
-
-  const currentMember = members.find((m: any) => m.user?.auth_id === currentUserId)
-  const isAdmin = currentMember?.role === 'admin'
-  const canManage = isOwner || isAdmin
 
   // --- FOCUS MODE STATES ---
   const [isFocusing, setIsFocusing] = useState(currentMember?.is_focusing || false)
@@ -1049,11 +1062,17 @@ export default function StudySpaceClient({
   // --- ACTIONS HANDLERS ---
   
   const handleApprove = async (userId: string) => {
+    if (!userId || userId === 'undefined') {
+      toast.error('Invalid user ID')
+      return
+    }
     try {
       const res = await approveMember(roomId, userId)
       if (res.success) {
         toast.success('Member approved successfully!')
-        setMembers((prev: any[]) => prev.map((m: any) => m.user?.auth_id === userId ? { ...m, status: 'approved' } : m))
+        setMembers((prev: any[]) => prev.map((m: any) => 
+          (m.user?.auth_id === userId || m.user_id === userId) ? { ...m, status: 'approved' } : m
+        ))
       } else {
         toast.error(res.error || 'Failed to approve member')
       }
@@ -1063,11 +1082,17 @@ export default function StudySpaceClient({
   }
 
   const handleReject = async (userId: string) => {
+    if (!userId || userId === 'undefined') {
+      toast.error('Invalid user ID')
+      return
+    }
     try {
       const res = await rejectMember(roomId, userId)
       if (res.success) {
         toast.success('Member request rejected.')
-        setMembers((prev: any[]) => prev.filter((m: any) => m.user?.auth_id !== userId))
+        setMembers((prev: any[]) => prev.filter((m: any) => 
+          m.user?.auth_id !== userId && m.user_id !== userId
+        ))
       } else {
         toast.error(res.error || 'Failed to reject request')
       }
@@ -1077,12 +1102,18 @@ export default function StudySpaceClient({
   }
 
   const handleRemoveMember = async (userId: string) => {
+    if (!userId || userId === 'undefined') {
+      toast.error('Invalid user ID')
+      return
+    }
     setIsPending(true)
     try {
       const res = await removeMember(roomId, userId)
       if (res.success) {
         toast.success('Member removed successfully.')
-        setMembers((prev: any[]) => prev.filter((m: any) => m.user?.auth_id !== userId))
+        setMembers((prev: any[]) => prev.filter((m: any) => 
+          m.user?.auth_id !== userId && m.user_id !== userId
+        ))
       } else {
         toast.error(res.error || 'Failed to remove member')
       }
@@ -1096,12 +1127,18 @@ export default function StudySpaceClient({
   }
 
   const handleToggleRole = async (userId: string, newRole: 'admin' | 'member') => {
+    if (!userId || userId === 'undefined') {
+      toast.error('Invalid user ID')
+      return
+    }
     setIsPending(true)
     try {
       const res = await toggleMemberRole(roomId, userId, newRole)
       if (res.success) {
         toast.success(newRole === 'admin' ? 'Member promoted to Admin!' : 'Admin demoted to Member.')
-        setMembers((prev: any[]) => prev.map((m: any) => m.user?.auth_id === userId ? { ...m, role: newRole } : m))
+        setMembers((prev: any[]) => prev.map((m: any) => 
+          (m.user?.auth_id === userId || m.user_id === userId) ? { ...m, role: newRole } : m
+        ))
       } else {
         toast.error(res.error || 'Failed to update role')
       }
@@ -1768,13 +1805,34 @@ export default function StudySpaceClient({
               </DialogContent>
             </Dialog>
 
+            {/* Copy Link / Share Space Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCopyLink}
+              className="border-border hover:bg-primary hover:text-white text-xs h-10 px-4 rounded-2xl cursor-pointer flex items-center gap-1.5 transition-all group"
+              title="Copy share link for this study space"
+            >
+              {copiedLink ? (
+                <>
+                  <Check className="w-4 h-4 text-emerald-400 group-hover:text-white transition-colors" />
+                  <span className="text-emerald-400 group-hover:text-white font-semibold">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-4 h-4 text-primary group-hover:text-white transition-colors" />
+                  <span>Share Space</span>
+                </>
+              )}
+            </Button>
+
             <Button
               variant="outline"
               size="sm"
               onClick={() => router.push(`/study-spaces/${roomId}/report`)}
-              className="border-border hover:bg-primary hover:text-white text-xs h-10 px-4 rounded-2xl cursor-pointer flex items-center gap-1.5 "
+              className="border-border hover:bg-primary hover:text-white text-xs h-10 px-4 rounded-2xl cursor-pointer flex items-center gap-1.5 transition-colors group"
             >
-              <Award className="w-4 h-4 text-primary" />
+              <Award className="w-4 h-4 text-primary group-hover:text-white transition-colors" />
               Report
             </Button>
           </div>
@@ -2199,56 +2257,65 @@ export default function StudySpaceClient({
         </Card>
 
         {/* Right Column: Workspace Tabs */}
-        <Card className="xl:col-span-7 bg-card/40 border-border/60 backdrop-blur-md rounded-3xl flex flex-col justify-between min-h-[440px] sm:min-h-[560px] xl:h-[75vh]">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col">
-            <CardHeader className="pb-2 border-b border-border shrink-0">
-              <div className="flex flex-col gap-3">
-                <div>
-                  <CardTitle className="text-sm font-bold flex items-center gap-1.5">
-                    <BookOpen className="w-4 h-4 text-primary" />
-                    Workspace
-                  </CardTitle>
-                  <CardDescription className="text-[10px]">Notes scratchpad, quiz battles, polls and drive libraries.</CardDescription>
+        <Card className="xl:col-span-7 bg-card/40 border-border/60 backdrop-blur-md rounded-3xl flex flex-col justify-between min-h-[500px] sm:min-h-[600px] xl:h-[75vh] max-h-[500px] sm:max-h-[600px] xl:max-h-[75vh] overflow-hidden">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col min-h-0">
+            <CardHeader className="pb-2.5 pt-3.5 px-3 sm:px-4 border-b border-border/70 shrink-0 bg-card/20">
+              <div className="flex flex-col gap-2.5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-sm font-bold flex items-center gap-1.5 text-foreground">
+                      <BookOpen className="w-4 h-4 text-primary" />
+                      Workspace
+                    </CardTitle>
+                    <CardDescription className="text-[10px] text-muted-foreground">Notes scratchpad, quiz battles, polls, daily tasks and drive files.</CardDescription>
+                  </div>
+                  {activeTab === 'settings' && (
+                    <Badge variant="outline" className="text-[9px] py-0 h-5 border-primary/30 bg-primary/10 text-primary font-bold">
+                      Settings
+                    </Badge>
+                  )}
                 </div>
-                <div className="flex items-start gap-2">
-                  {/* 6 tabs in 2 rows of 3 */}
-                  <TabsList className="grid grid-cols-3 gap-0.5 bg-muted/50 border border-border p-0.5 rounded-lg h-auto flex-1">
-                    <TabsTrigger value="notes" className="text-[10px] h-7 rounded-md data-[state=active]:bg-card px-2 cursor-pointer">
-                      Scratchpad
-                    </TabsTrigger>
-                    <TabsTrigger value="quizzes" className="text-[10px] h-7 rounded-md data-[state=active]:bg-card px-2 cursor-pointer">
-                      Quiz Battles
-                    </TabsTrigger>
-                    <TabsTrigger value="polls" className="text-[10px] h-7 rounded-md data-[state=active]:bg-card px-2 cursor-pointer">
-                      Live Polls {polls.length > 0 && <span className="ml-0.5 opacity-70">({polls.length})</span>}
-                    </TabsTrigger>
-                    <TabsTrigger value="daily" className="text-[10px] h-7 rounded-md data-[state=active]:bg-card px-2 cursor-pointer">
-                      Daily Tasks
-                    </TabsTrigger>
-                    <TabsTrigger value="resources" className="text-[10px] h-7 rounded-md data-[state=active]:bg-card px-2 cursor-pointer">
-                      Resources {resources.length > 0 && <span className="ml-0.5 opacity-70">({resources.length})</span>}
-                    </TabsTrigger>
-                    <TabsTrigger value="members" className="text-[10px] h-7 rounded-md data-[state=active]:bg-card px-2 cursor-pointer">
-                      Leaderboard
-                    </TabsTrigger>
-                  </TabsList>
-                  {/* Settings gear icon */}
-                  <button
-                    onClick={() => setActiveTab('settings')}
-                    className={`shrink-0 w-8 h-8 mt-0.5 rounded-lg border flex items-center justify-center transition-colors cursor-pointer ${
-                      activeTab === 'settings'
-                        ? 'bg-card border-primary text-primary'
-                        : 'bg-muted/50 border-border text-muted-foreground hover:text-foreground hover:bg-muted'
-                    }`}
-                    title="Settings"
-                  >
-                    <Settings className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+                
+                {/* 7 Clean Workspace Tabs */}
+                <TabsList className="grid grid-cols-4 sm:grid-cols-7 gap-1 bg-muted/40 border border-border/60 p-1 rounded-xl h-auto">
+                  <TabsTrigger value="notes" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                    <FileText className="w-3 h-3 text-primary shrink-0" />
+                    <span className="truncate">Notes</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="quizzes" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                    <Swords className="w-3 h-3 text-rose-500 shrink-0" />
+                    <span className="truncate">Quizzes</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="polls" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                    <Pin className="w-3 h-3 text-indigo-400 shrink-0" />
+                    <span className="truncate">Polls</span>
+                    {polls.length > 0 && <span className="text-[8px] px-1 py-0.2 rounded-full bg-indigo-500/20 text-indigo-400 font-bold shrink-0">{polls.length}</span>}
+                  </TabsTrigger>
+                  <TabsTrigger value="daily" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                    <CheckCircle className="w-3 h-3 text-emerald-400 shrink-0" />
+                    <span className="truncate">Tasks</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="resources" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                    <FolderOpen className="w-3 h-3 text-amber-400 shrink-0" />
+                    <span className="truncate">Drive</span>
+                    {resources.length > 0 && <span className="text-[8px] px-1 py-0.2 rounded-full bg-amber-500/20 text-amber-400 font-bold shrink-0">{resources.length}</span>}
+                  </TabsTrigger>
+                  <TabsTrigger value="members" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                    <Trophy className="w-3 h-3 text-yellow-500 shrink-0" />
+                    <span className="truncate">Ranks</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="settings" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                    <Settings className="w-3 h-3 text-muted-foreground shrink-0" />
+                    <span className="truncate">Settings</span>
+                    {members.filter((m: any) => m.status === 'pending').length > 0 && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
+                    )}
+                  </TabsTrigger>
+                </TabsList>
               </div>
             </CardHeader>
             
-            <CardContent className="flex-1 overflow-y-auto p-3 sm:p-4" data-lenis-prevent>
+            <CardContent className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-4 ss-chat-scrollbar" data-lenis-prevent>
               
               {/* Tab 1: Scratchpad */}
               <TabsContent value="notes" className="h-full mt-0 focus-visible:outline-none flex flex-col relative">
@@ -2850,185 +2917,221 @@ export default function StudySpaceClient({
               </TabsContent>
 
               {/* Tab 6: Study Consistency Leaderboard */}
-              <TabsContent value="members" className="flex-1 overflow-y-auto p-2 mt-0 focus-visible:outline-none" data-lenis-prevent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between pb-2 border-b border-border">
-                    <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
-                      <Trophy className="w-4 h-4 text-yellow-500" />
+              <TabsContent value="members" className="mt-0 focus-visible:outline-none space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-border">
+                  <div className="flex items-center gap-1.5">
+                    <Trophy className="w-4 h-4 text-yellow-500" />
+                    <span className="text-xs font-bold text-foreground">
                       Consistency Leaderboard
                     </span>
                   </div>
+                  <span className="text-[10px] text-muted-foreground font-medium">
+                    {leaderboardMembers.length} Members Ranked
+                  </span>
+                </div>
 
-                  <div className="space-y-2">
-                    {leaderboardMembers.map((member: any, index: number) => {
-                      const user = member.user
-                      if (!user) return null
-                      const totalMins = Math.round((member.total_study_time || 0) / 60)
-                      const isTop3 = index < 3
+                <div className="space-y-2">
+                  {leaderboardMembers.map((member: any, index: number) => {
+                    const user = member.user
+                    if (!user) return null
+                    const totalMins = Math.round((member.total_study_time || 0) / 60)
+                    const isCreator = member.role === 'creator'
+                    const isAdminUser = member.role === 'admin'
 
-                      return (
-                        <div 
-                          key={user.auth_id}
-                          className="p-3 bg-muted/20 border border-border rounded-xl flex items-center justify-between gap-4 hover:border-primary/20 transition-all cursor-pointer"
-                          onClick={() => {
-                            setSelectedProfile(user)
-                            setShowProfileModal(true)
-                          }}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${
-                              index === 0 ? 'bg-yellow-500 text-yellow-950' :
-                              index === 1 ? 'bg-slate-300 text-slate-900' :
-                              index === 2 ? 'bg-amber-600 text-amber-50' : 'bg-muted text-muted-foreground'
-                            }`}>
-                              {index + 1}
-                            </div>
-                            
-                            <div className="w-8 h-8 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
-                              {user.profile_image ? (
-                                <img src={user.profile_image} alt={user.username} className="w-full h-full object-cover" />
-                              ) : (
-                                <Users className="w-3.5 h-3.5 text-primary" />
-                              )}
-                            </div>
-
-                            <div>
-                              <h4 className="text-xs font-bold text-foreground flex items-center gap-1">
-                                {user.username}
-                                {member.role === 'creator' && <Crown className="w-3 h-3 text-yellow-500" />}
-                              </h4>
-                              <p className="text-[9px] text-muted-foreground">{user.specialization}</p>
-                            </div>
+                    return (
+                      <div 
+                        key={user.auth_id || member.user_id}
+                        className="p-3 bg-muted/20 hover:bg-muted/30 border border-border/80 rounded-2xl flex items-center justify-between gap-4 transition-all cursor-pointer group"
+                        onClick={() => {
+                          setSelectedProfile(user)
+                          setShowProfileModal(true)
+                        }}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm ${
+                            index === 0 ? 'bg-yellow-500 text-yellow-950 ring-2 ring-yellow-500/20' :
+                            index === 1 ? 'bg-slate-300 text-slate-900 ring-2 ring-slate-300/20' :
+                            index === 2 ? 'bg-amber-600 text-amber-50 ring-2 ring-amber-600/20' : 'bg-muted text-muted-foreground'
+                          }`}>
+                            {index + 1}
+                          </div>
+                          
+                          <div className="w-8 h-8 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
+                            {user.profile_image ? (
+                              <img src={user.profile_image} alt={user.username} className="w-full h-full object-cover" />
+                            ) : (
+                              <Users className="w-3.5 h-3.5 text-primary" />
+                            )}
                           </div>
 
-                          <div className="flex items-center gap-3 text-right">
-                            <div className="flex items-center gap-1 text-[10px] text-amber-500 font-bold bg-amber-500/5 px-2 py-0.5 rounded-full border border-amber-500/10">
-                              <Flame className="w-3.5 h-3.5" />
-                              <span>{member.current_streak || 0}d</span>
-                            </div>
-                            <div>
-                              <span className="text-xs font-black text-foreground block">{totalMins}m</span>
-                              <span className="text-[9px] text-muted-foreground uppercase block font-bold tracking-wider">STUDIED</span>
-                            </div>
+                          <div className="min-w-0">
+                            <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 truncate">
+                              <span className="truncate">{user.username}</span>
+                              {isCreator && <Crown className="w-3 h-3 text-yellow-500 shrink-0" title="Space Owner" />}
+                              {isAdminUser && !isCreator && <Shield className="w-3 h-3 text-blue-400 shrink-0" title="Admin" />}
+                            </h4>
+                            <p className="text-[9px] text-muted-foreground truncate">{user.specialization || 'Student'}</p>
                           </div>
                         </div>
-                      )
-                    })}
-                  </div>
+
+                        <div className="flex items-center gap-3 text-right shrink-0">
+                          <div className="flex items-center gap-1 text-[10px] text-amber-500 font-bold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                            <Flame className="w-3.5 h-3.5" />
+                            <span>{member.current_streak || 0}d</span>
+                          </div>
+                          <div className="min-w-[48px]">
+                            <span className="text-xs font-black text-foreground block">{totalMins}m</span>
+                            <span className="text-[8px] text-muted-foreground uppercase block font-bold tracking-wider">STUDIED</span>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               </TabsContent>
 
               {/* Tab 7: Settings Tab */}
-              <TabsContent value="settings" className="flex-1 overflow-y-auto p-2 mt-0 focus-visible:outline-none space-y-5" data-lenis-prevent>
+              <TabsContent value="settings" className="mt-0 focus-visible:outline-none space-y-4">
                 {canManage ? (
                   <>
-                    {/* ── Pending Join Requests ── */}
+                    {/* ── Section 1: Pending Join Requests ── */}
                     {members.filter((m: any) => m.status === 'pending').length > 0 && (
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-1.5 pb-1 border-b border-border">
-                          <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
-                          <span className="text-xs font-bold text-amber-500">
-                            Pending Requests ({members.filter((m: any) => m.status === 'pending').length})
+                      <div className="p-4 bg-amber-500/5 border border-amber-500/30 rounded-2xl space-y-3">
+                        <div className="flex items-center justify-between pb-1 border-b border-amber-500/20">
+                          <span className="text-xs font-bold text-amber-500 flex items-center gap-1.5">
+                            <AlertCircle className="w-4 h-4" />
+                            Pending Join Requests
                           </span>
+                          <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30 text-[10px] font-bold">
+                            {members.filter((m: any) => m.status === 'pending').length} Waiting
+                          </Badge>
                         </div>
                         <div className="space-y-2">
                           {members
                             .filter((m: any) => m.status === 'pending')
-                            .map((m: any) => (
-                              <div key={m.user?.auth_id} className="flex items-center justify-between gap-3 p-2.5 bg-amber-500/5 border border-amber-500/20 rounded-xl">
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <div className="w-7 h-7 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
-                                    {m.user?.profile_image
-                                      ? <img src={m.user.profile_image} alt={m.user.username} className="w-full h-full object-cover" />
-                                      : <span className="text-[10px] font-bold text-muted-foreground">{(m.user?.username || 'S').substring(0, 1).toUpperCase()}</span>
-                                    }
+                            .map((m: any) => {
+                              const targetId = m.user?.auth_id || m.user_id
+                              return (
+                                <div key={targetId} className="flex items-center justify-between gap-3 p-2.5 bg-card/60 border border-amber-500/20 rounded-xl">
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    <div className="w-8 h-8 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
+                                      {m.user?.profile_image
+                                        ? <img src={m.user.profile_image} alt={m.user.username} className="w-full h-full object-cover" />
+                                        : <span className="text-[10px] font-bold text-muted-foreground">{(m.user?.username || 'S').substring(0, 1).toUpperCase()}</span>
+                                      }
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p className="text-xs font-bold text-foreground truncate">{m.user?.username || 'Unknown'}</p>
+                                      <p className="text-[9px] text-muted-foreground truncate">{m.user?.specialization || 'Student'}</p>
+                                    </div>
                                   </div>
-                                  <div className="min-w-0">
-                                    <p className="text-xs font-bold text-foreground truncate">{m.user?.username || 'Unknown'}</p>
-                                    <p className="text-[9px] text-muted-foreground truncate">{m.user?.specialization || ''}</p>
+                                  <div className="flex gap-1.5 shrink-0">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleApprove(targetId)}
+                                      className="h-7 px-2.5 text-[10px] bg-green-500 hover:bg-green-600 text-white font-bold cursor-pointer rounded-lg"
+                                    >
+                                      <UserCheck className="w-3 h-3 mr-1" /> Approve
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="destructive"
+                                      onClick={() => handleReject(targetId)}
+                                      className="h-7 px-2.5 text-[10px] font-bold cursor-pointer rounded-lg"
+                                    >
+                                      Reject
+                                    </Button>
                                   </div>
                                 </div>
-                                <div className="flex gap-1.5 shrink-0">
-                                  <Button
-                                    size="sm"
-                                    onClick={() => handleApprove(m.user?.auth_id)}
-                                    className="h-7 px-2.5 text-[10px] bg-green-500 hover:bg-green-600 text-white font-bold cursor-pointer"
-                                  >
-                                    <UserCheck className="w-3 h-3 mr-1" /> Approve
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    onClick={() => handleReject(m.user?.auth_id)}
-                                    className="h-7 px-2.5 text-[10px] font-bold cursor-pointer"
-                                  >
-                                    Reject
-                                  </Button>
-                                </div>
-                              </div>
-                            ))}
+                              )
+                            })}
                         </div>
                       </div>
                     )}
 
-                    {/* ── Active Members Management ── */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 pb-1 border-b border-border">
-                        <Users className="w-3.5 h-3.5 text-primary" />
-                        <span className="text-xs font-bold text-muted-foreground">
-                          Members ({members.filter((m: any) => m.status === 'approved').length})
+                    {/* ── Section 2: Active Members Management ── */}
+                    <div className="p-4 bg-muted/20 border border-border/80 rounded-2xl space-y-3">
+                      <div className="flex items-center justify-between pb-1 border-b border-border">
+                        <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                          <Users className="w-4 h-4 text-primary" />
+                          Members & Role Management
+                        </span>
+                        <span className="text-[10px] text-muted-foreground font-semibold">
+                          {members.filter((m: any) => m.status === 'approved').length} Active Members
                         </span>
                       </div>
-                      <div className="space-y-1.5">
+                      
+                      <div className="space-y-2 max-h-64 overflow-y-auto ss-chat-scrollbar pr-1">
                         {members
                           .filter((m: any) => m.status === 'approved')
                           .map((m: any) => {
-                            const isSelf = m.user?.auth_id === currentUserId
-                            const isCreator = m.role === 'creator'
+                            const memberId = m.user?.auth_id || m.user_id
+                            const isSelf = memberId === currentUserId
+                            const isMemberCreator = m.role === 'creator'
+                            const isMemberAdmin = m.role === 'admin'
+                            
                             return (
-                              <div key={m.user?.auth_id} className="flex items-center justify-between gap-2 p-2.5 bg-muted/20 border border-border rounded-xl">
-                                <div className="flex items-center gap-2 min-w-0">
-                                  <div className="w-7 h-7 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
+                              <div key={memberId} className="flex items-center justify-between gap-2 p-2.5 bg-card/60 border border-border/80 rounded-xl hover:border-primary/20 transition-all">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
                                     {m.user?.profile_image
-                                      ? <img src={m.user.profile_image} alt={m.user.username} className="w-full h-full object-cover" />
+                                      ? <img src={m.user?.profile_image} alt={m.user?.username} className="w-full h-full object-cover" />
                                       : <span className="text-[10px] font-bold text-muted-foreground">{(m.user?.username || 'S').substring(0, 1).toUpperCase()}</span>
                                     }
                                   </div>
                                   <div className="min-w-0">
-                                    <p className="text-xs font-bold text-foreground truncate flex items-center gap-1">
-                                      {m.user?.username || 'Unknown'}
-                                      {isCreator && <Crown className="w-3 h-3 text-yellow-500 shrink-0" />}
-                                      {m.role === 'admin' && !isCreator && <Shield className="w-3 h-3 text-blue-400 shrink-0" />}
+                                    <p className="text-xs font-bold text-foreground truncate flex items-center gap-1.5">
+                                      <span className="truncate">{m.user?.username || 'Unknown'}</span>
+                                      {isMemberCreator && (
+                                        <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 text-[8px] h-4 py-0 px-1 font-bold flex items-center gap-0.5">
+                                          <Crown className="w-2.5 h-2.5" /> Owner
+                                        </Badge>
+                                      )}
+                                      {isMemberAdmin && !isMemberCreator && (
+                                        <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-[8px] h-4 py-0 px-1 font-bold flex items-center gap-0.5">
+                                          <Shield className="w-2.5 h-2.5" /> Admin
+                                        </Badge>
+                                      )}
+                                      {isSelf && (
+                                        <span className="text-[9px] text-muted-foreground font-medium">(You)</span>
+                                      )}
                                     </p>
-                                    <p className="text-[9px] text-muted-foreground capitalize">{isCreator ? 'Owner' : m.role}</p>
+                                    <p className="text-[9px] text-muted-foreground truncate">{m.user?.specialization || 'Member'}</p>
                                   </div>
                                 </div>
-                                {!isSelf && !isCreator && (
-                                  <div className="flex gap-1.5 shrink-0">
+
+                                {!isSelf && !isMemberCreator && (
+                                  <div className="flex items-center gap-1.5 shrink-0">
                                     {isOwner && (
                                       <Button
                                         size="sm"
                                         variant="outline"
+                                        title={isMemberAdmin ? 'Demote to Member' : 'Promote to Admin'}
                                         onClick={() => {
                                           setPendingActionUser(m)
-                                          setPendingPromoteRole(m.role === 'admin' ? 'member' : 'admin')
+                                          setPendingPromoteRole(isMemberAdmin ? 'member' : 'admin')
                                           setShowPromoteDialog(true)
                                         }}
-                                        className="h-7 px-2 text-[10px] border-border cursor-pointer hover:bg-primary hover:text-white"
+                                        className={`h-7 px-2 text-[10px] border-border cursor-pointer transition-colors ${
+                                          isMemberAdmin 
+                                            ? 'text-orange-400 hover:bg-orange-500/10 hover:border-orange-500/30' 
+                                            : 'text-blue-400 hover:bg-blue-500/10 hover:border-blue-500/30'
+                                        }`}
                                       >
-                                        {m.role === 'admin' ? <ShieldOff className="w-3 h-3" /> : <Shield className="w-3 h-3" />}
+                                        {isMemberAdmin ? <ShieldOff className="w-3.5 h-3.5" /> : <Shield className="w-3.5 h-3.5" />}
                                       </Button>
                                     )}
                                     <Button
                                       size="sm"
                                       variant="destructive"
+                                      title="Remove Member"
                                       onClick={() => {
                                         setPendingActionUser(m)
                                         setShowRemoveDialog(true)
                                       }}
                                       className="h-7 px-2 text-[10px] cursor-pointer"
                                     >
-                                      <Trash2 className="w-3 h-3" />
+                                      <Trash2 className="w-3.5 h-3.5" />
                                     </Button>
                                   </div>
                                 )}
@@ -3038,119 +3141,173 @@ export default function StudySpaceClient({
                       </div>
                     </div>
 
-                    {/* ── Space Settings Form ── */}
-                    <div className="space-y-3 pt-1 border-t border-border/60">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Space Settings</span>
-                      <form onSubmit={handleSaveSettings} className="space-y-4 max-w-md">
+                    {/* ── Section 3: Space Settings Form ── */}
+                    <div className="p-4 bg-muted/20 border border-border/80 rounded-2xl space-y-3">
+                      <div className="flex items-center justify-between pb-1 border-b border-border">
+                        <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                          <Settings className="w-4 h-4 text-primary" />
+                          Space Configuration
+                        </span>
+                      </div>
+                      
+                      <form onSubmit={handleSaveSettings} className="space-y-3">
                         <div className="space-y-1.5">
                           <label htmlFor="settings-name" className="text-xs font-semibold text-muted-foreground">Space Name</label>
                           <Input
                             id="settings-name"
                             value={settingsName}
                             onChange={e => setSettingsName(e.target.value)}
-                            className="bg-muted/30 border-border text-xs"
+                            className="bg-card border-border text-xs rounded-xl"
                             disabled={isSavingSettings || isPending}
                             maxLength={60}
                           />
                         </div>
+                        
                         <div className="space-y-1.5">
                           <label htmlFor="settings-desc" className="text-xs font-semibold text-muted-foreground">Description</label>
                           <Textarea
                             id="settings-desc"
                             value={settingsDesc}
                             onChange={e => setSettingsDesc(e.target.value)}
-                            className="bg-muted/30 border-border text-xs min-h-[80px]"
+                            className="bg-card border-border text-xs min-h-[70px] rounded-xl resize-none"
                             disabled={isSavingSettings || isPending}
                             maxLength={180}
                           />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div className="space-y-1.5">
                             <label htmlFor="settings-visibility" className="text-xs font-semibold text-muted-foreground">Visibility</label>
                             <select
                               id="settings-visibility"
                               value={settingsVisibility}
                               onChange={e => setSettingsVisibility(e.target.value)}
-                              className="w-full bg-muted/30 border border-border rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                              className="w-full bg-card border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
                               disabled={isSavingSettings || isPending}
                             >
-                              <option value="public">Public</option>
-                              <option value="private">Private</option>
+                              <option value="public">Public Space</option>
+                              <option value="private">Private Space</option>
                             </select>
                           </div>
+                          
                           <div className="space-y-1.5">
-                            <label htmlFor="settings-approval" className="text-xs font-semibold text-muted-foreground">Join Setting</label>
+                            <label htmlFor="settings-approval" className="text-xs font-semibold text-muted-foreground">Join Permission</label>
                             <select
                               id="settings-approval"
                               value={settingsJoinApproval}
                               onChange={e => setSettingsJoinApproval(e.target.value)}
-                              className="w-full bg-muted/30 border border-border rounded-md px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                              className="w-full bg-card border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
                               disabled={isSavingSettings || isPending}
                             >
-                              <option value="immediate">Immediate</option>
-                              <option value="requires_approval">Needs Approval</option>
+                              <option value="immediate">Immediate Access</option>
+                              <option value="requires_approval">Requires Approval</option>
                             </select>
                           </div>
                         </div>
 
-                        <div className="flex items-center space-x-2 pt-2">
+                        <div className="flex items-center gap-2 pt-1">
                           <input
                             type="checkbox"
                             id="settings-admins-only"
                             checked={settingsOnlyAdminsChat}
                             onChange={e => setSettingsOnlyAdminsChat(e.target.checked)}
-                            className="w-4 h-4 rounded border-border text-primary bg-muted/30 focus:ring-primary cursor-pointer"
+                            className="w-4 h-4 rounded border-border text-primary bg-card focus:ring-primary cursor-pointer"
                             disabled={isSavingSettings || isPending}
                           />
-                          <label htmlFor="settings-admins-only" className="text-xs font-semibold text-muted-foreground cursor-pointer select-none">
+                          <label htmlFor="settings-admins-only" className="text-xs font-medium text-muted-foreground cursor-pointer select-none">
                             Only admins can send messages in chat
                           </label>
                         </div>
 
-                        <div className="pt-4 border-t border-border/60 flex flex-wrap items-center justify-between gap-4">
-                          <div className="flex gap-2">
-                            <Button
-                              type="submit"
-                              disabled={isSavingSettings || isPending}
-                              size="sm"
-                              className="bg-primary text-white text-xs font-semibold cursor-pointer"
-                            >
-                              {isSavingSettings ? 'Saving...' : 'Save Settings'}
-                            </Button>
-                            {isOwner && (
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                onClick={() => setShowDeleteDialog(true)}
-                                disabled={isPending}
-                                size="sm"
-                                className="text-xs font-semibold cursor-pointer"
-                              >
-                                Delete Study Space
-                              </Button>
-                            )}
-                          </div>
+                        <div className="pt-2 flex justify-end">
                           <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setShowLeaveDialog(true)}
-                            disabled={isPending}
+                            type="submit"
+                            disabled={isSavingSettings || isPending}
                             size="sm"
-                            className="text-xs font-semibold cursor-pointer border-red-500/20 text-red-405 hover:bg-red-500/10 shrink-0"
+                            className="bg-primary text-primary-foreground text-xs font-semibold cursor-pointer rounded-xl h-8 px-4"
                           >
-                            Leave Space
+                            {isSavingSettings ? 'Saving Settings...' : 'Save Changes'}
                           </Button>
                         </div>
                       </form>
                     </div>
+
+                    {/* ── Section 4: Share & Invite Link ── */}
+                    <div className="p-4 bg-muted/20 border border-border/80 rounded-2xl space-y-2.5">
+                      <div className="flex items-center justify-between pb-1 border-b border-border">
+                        <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                          <Share2 className="w-4 h-4 text-primary" />
+                          Share & Invite Link
+                        </span>
+                        <span className="text-[10px] text-muted-foreground font-medium">Direct URL</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          readOnly
+                          value={typeof window !== 'undefined' ? window.location.href : `https://chameleon-nu.vercel.app/study-spaces/${roomId}`}
+                          className="bg-card border-border text-xs rounded-xl text-muted-foreground select-all h-8"
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={handleCopyLink}
+                          className="h-8 px-3 text-xs bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shrink-0 rounded-xl cursor-pointer flex items-center gap-1.5"
+                        >
+                          {copiedLink ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-300" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Copy Link</span>
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* ── Section 5: Danger Zone ── */}
+                    <div className="p-4 bg-rose-500/5 border border-rose-500/20 rounded-2xl space-y-3">
+                      <span className="text-xs font-bold text-rose-500 flex items-center gap-1.5">
+                        <AlertCircle className="w-4 h-4" />
+                        Danger Zone
+                      </span>
+                      <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setShowLeaveDialog(true)}
+                          disabled={isPending}
+                          size="sm"
+                          className="text-xs font-semibold cursor-pointer border-rose-500/30 text-rose-400 hover:bg-rose-500/10 rounded-xl h-8"
+                        >
+                          <LogOut className="w-3.5 h-3.5 mr-1" /> Leave Study Space
+                        </Button>
+                        
+                        {isOwner && (
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={() => setShowDeleteDialog(true)}
+                            disabled={isPending}
+                            size="sm"
+                            className="text-xs font-semibold cursor-pointer rounded-xl h-8"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 mr-1" /> Delete Study Space
+                          </Button>
+                        )}
+                      </div>
+                    </div>
                   </>
                 ) : (
-                  <div className="space-y-4 max-w-md">
-                    <Card className="bg-muted/20 border-border">
-                      <CardHeader className="p-4">
+                  <div className="space-y-4">
+                    <Card className="bg-muted/20 border-border rounded-2xl overflow-hidden">
+                      <CardHeader className="p-4 border-b border-border/60">
                         <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Space Information</CardTitle>
                       </CardHeader>
-                      <CardContent className="p-4 pt-0 space-y-3 text-xs">
+                      <CardContent className="p-4 space-y-3 text-xs">
                         <div>
                           <span className="text-muted-foreground block font-medium">Name:</span>
                           <span className="font-semibold text-foreground">{room.name}</span>
@@ -3159,7 +3316,7 @@ export default function StudySpaceClient({
                           <span className="text-muted-foreground block font-medium">Description:</span>
                           <span className="text-foreground">{room.description || 'No description provided.'}</span>
                         </div>
-                        <div className="grid grid-cols-3 gap-2 pt-2">
+                        <div className="grid grid-cols-3 gap-2 pt-2 border-t border-border/40">
                           <div>
                             <span className="text-[10px] text-muted-foreground block font-medium">Visibility:</span>
                             <span className="font-semibold text-foreground uppercase text-[9px]">{room.visibility || 'public'}</span>
@@ -3175,16 +3332,56 @@ export default function StudySpaceClient({
                         </div>
                       </CardContent>
                     </Card>
-                    <div className="pt-2">
+
+                    {/* Share Space for regular members */}
+                    <div className="p-4 bg-muted/20 border border-border/80 rounded-2xl space-y-2.5">
+                      <div className="flex items-center justify-between pb-1 border-b border-border">
+                        <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                          <Share2 className="w-4 h-4 text-primary" />
+                          Share Study Space
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          readOnly
+                          value={typeof window !== 'undefined' ? window.location.href : `https://chameleon-nu.vercel.app/study-spaces/${roomId}`}
+                          className="bg-card border-border text-xs rounded-xl text-muted-foreground select-all h-8"
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={handleCopyLink}
+                          className="h-8 px-3 text-xs bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shrink-0 rounded-xl cursor-pointer flex items-center gap-1.5"
+                        >
+                          {copiedLink ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-300" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Copy Link</span>
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 bg-rose-500/5 border border-rose-500/20 rounded-2xl flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-bold text-foreground">Leave this Study Space</p>
+                        <p className="text-[10px] text-muted-foreground">You can rejoin later if the space is public.</p>
+                      </div>
                       <Button 
                         type="button"
                         variant="destructive"
                         onClick={() => setShowLeaveDialog(true)}
                         disabled={isPending}
                         size="sm"
-                        className="w-full text-xs font-semibold cursor-pointer"
+                        className="text-xs font-semibold cursor-pointer rounded-xl h-8"
                       >
-                        Leave Study Space
+                        <LogOut className="w-3.5 h-3.5 mr-1" /> Leave Space
                       </Button>
                     </div>
                   </div>
@@ -3497,8 +3694,8 @@ export default function StudySpaceClient({
               <Trash2 className="w-5 h-5" />
               Remove Member
             </DialogTitle>
-            <DialogDescription className="text-xs mt-1 text-muted-foreground">
-              Are you sure you want to remove <span className="font-bold text-foreground">{pendingActionUser?.username}</span> from this study space? They will need to rejoin.
+            <DialogDescription className="text-xs mt-1 text-muted-foreground leading-relaxed">
+              Are you sure you want to remove <span className="font-bold text-foreground">{pendingActionUser?.user?.username || pendingActionUser?.username || 'this member'}</span> from this study space? They will need to rejoin.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 pt-4">
@@ -3514,11 +3711,18 @@ export default function StudySpaceClient({
             </Button>
             <Button 
               variant="destructive"
-              onClick={() => pendingActionUser && handleRemoveMember(pendingActionUser.auth_id)}
+              onClick={() => {
+                const targetUserId = pendingActionUser?.user?.auth_id || pendingActionUser?.user_id || pendingActionUser?.auth_id
+                if (targetUserId) {
+                  handleRemoveMember(targetUserId)
+                } else {
+                  toast.error('Invalid member selected')
+                }
+              }}
               disabled={isPending}
               className="text-xs font-semibold cursor-pointer"
             >
-              Confirm
+              {isPending ? 'Removing...' : 'Confirm Remove'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -3581,13 +3785,13 @@ export default function StudySpaceClient({
         <DialogContent className="bg-card border-border shadow-2xl max-w-sm">
           <DialogHeader>
             <DialogTitle className={`text-lg font-bold flex items-center gap-2 ${pendingPromoteRole === 'admin' ? 'text-blue-400' : 'text-orange-400'}`}>
-              {pendingPromoteRole === 'admin' ? <Shield className="w-5 h-5 hover:text-white" /> : <ShieldOff className="w-5 h-5 hover:text-white" />}
+              {pendingPromoteRole === 'admin' ? <Shield className="w-5 h-5" /> : <ShieldOff className="w-5 h-5" />}
               {pendingPromoteRole === 'admin' ? 'Promote to Admin' : 'Demote to Member'}
             </DialogTitle>
-            <DialogDescription className="text-xs mt-1 text-muted-foreground">
+            <DialogDescription className="text-xs mt-1 text-muted-foreground leading-relaxed">
               {pendingPromoteRole === 'admin' 
-                ? <>Are you sure you want to promote <span className="font-bold text-foreground">{pendingActionUser?.username}</span> to Admin? They will be able to manage members and space settings.</>
-                : <>Are you sure you want to demote <span className="font-bold text-foreground">{pendingActionUser?.username}</span> back to a regular Member?</>
+                ? <>Are you sure you want to promote <span className="font-bold text-foreground">{pendingActionUser?.user?.username || pendingActionUser?.username || 'this member'}</span> to Admin? They will be able to manage members and space settings.</>
+                : <>Are you sure you want to demote <span className="font-bold text-foreground">{pendingActionUser?.user?.username || pendingActionUser?.username || 'this member'}</span> back to a regular Member?</>
               }
             </DialogDescription>
           </DialogHeader>
@@ -3603,7 +3807,14 @@ export default function StudySpaceClient({
               Cancel
             </Button>
             <Button 
-              onClick={() => pendingActionUser && handleToggleRole(pendingActionUser.auth_id, pendingPromoteRole)}
+              onClick={() => {
+                const targetUserId = pendingActionUser?.user?.auth_id || pendingActionUser?.user_id || pendingActionUser?.auth_id
+                if (targetUserId) {
+                  handleToggleRole(targetUserId, pendingPromoteRole)
+                } else {
+                  toast.error('Invalid member selected')
+                }
+              }}
               disabled={isPending}
               className={`text-xs font-semibold cursor-pointer text-white ${
                 pendingPromoteRole === 'admin' 
@@ -3611,7 +3822,7 @@ export default function StudySpaceClient({
                   : 'bg-orange-500 hover:bg-orange-600'
               }`}
             >
-              Confirm
+              {isPending ? 'Updating...' : 'Confirm'}
             </Button>
           </DialogFooter>
         </DialogContent>
