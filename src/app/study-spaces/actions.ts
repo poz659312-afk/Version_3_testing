@@ -250,16 +250,28 @@ export async function getRoomDetails(roomId: string) {
   // 5. Fetch available quizzes for the room's level and specialization to allow starting challenges
   let quizzes: any[] = []
   if (room) {
+    const isLevel1 = Number(room.level_num) === 1
     const specCandidates = buildDepartmentSlugCandidates(room.specialization || '')
     const resolvedSpec = specCandidates.length > 0
       ? await resolveDepartmentKey(specCandidates[0])
       : null
-    const allCandidates = Array.from(new Set([...(resolvedSpec ? [resolvedSpec] : []), ...specCandidates]))
+
+    // For Level 1, all subjects are common across the faculty.
+    // For higher levels, combine room-specific candidates with shared college course departments.
+    const allCandidates = isLevel1
+      ? []
+      : Array.from(new Set([
+          ...(resolvedSpec ? [resolvedSpec] : []),
+          ...specCandidates,
+          'computing-data-sciences',
+          'cybersecurity'
+        ]))
 
     const query = supabase
       .from('quiz_department')
       .select('code, name, questions_count, subject_id, term, department_slug')
       .eq('level_num', room.level_num)
+      .order('code', { ascending: true })
 
     const { data: quizzesData, error: quizzesError } =
       allCandidates.length > 0
