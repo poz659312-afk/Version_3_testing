@@ -51,13 +51,18 @@ import {
   ExternalLink,
   ChevronRight,
   ChevronUp,
+  ChevronDown,
   Settings,
   Edit3,
   Eye,
   FileText,
   Share2,
   Copy,
-  Check
+  Check,
+  Medal,
+  Target,
+  Gift,
+  Zap
 } from 'lucide-react'
 import SummaryRenderer from '@/components/SummaryRenderer'
 import { 
@@ -65,6 +70,7 @@ import {
   getEarlierRoomMessages,
   getRoomMembers,
   getRoomChallenges,
+  getRoomTasks,
   leaveStudyRoom, 
   sendRoomMessage, 
   updateScratchpad, 
@@ -1538,8 +1544,20 @@ export default function StudySpaceClient({
     }
   }
 
-  const handleProgressSliderChange = async (challengeId: string, progressVal: number) => {
-    // Optimistic progress slider update
+  const [expandedStandings, setExpandedStandings] = useState<Record<string, boolean>>({})
+
+  const toggleExpandStandings = (challengeId: string) => {
+    setExpandedStandings(prev => ({
+      ...prev,
+      [challengeId]: !prev[challengeId]
+    }))
+  }
+
+  const handleUpdateTaskMilestone = async (challengeId: string, progressVal: number) => {
+    const safeProgress = Math.min(100, Math.max(0, progressVal))
+    const isNowCompleted = safeProgress >= 100
+
+    // Optimistic progress update
     setDailyChallenges((prev: any[]) => {
       return prev.map(c => {
         if (c.id === challengeId) {
@@ -1547,9 +1565,9 @@ export default function StudySpaceClient({
           const myProg = progressList.find((p: any) => p.user_id === currentUserId)
           let nextProgList
           if (myProg) {
-            nextProgList = progressList.map((p: any) => p.user_id === currentUserId ? { ...p, progress: progressVal, is_completed: progressVal >= 100 } : p)
+            nextProgList = progressList.map((p: any) => p.user_id === currentUserId ? { ...p, progress: safeProgress, is_completed: isNowCompleted } : p)
           } else {
-            nextProgList = [...progressList, { challenge_id: challengeId, user_id: currentUserId, progress: progressVal, is_completed: progressVal >= 100 }]
+            nextProgList = [...progressList, { challenge_id: challengeId, user_id: currentUserId, progress: safeProgress, is_completed: isNowCompleted }]
           }
           return { ...c, progress: nextProgList }
         }
@@ -1557,15 +1575,38 @@ export default function StudySpaceClient({
       })
     })
 
-    const res = await updateDailyChallengeProgress(challengeId, progressVal)
+    const res = await updateDailyChallengeProgress(challengeId, safeProgress)
     if (res.success) {
-      if (progressVal >= 100) {
-        toast.success('Challenge completed! Coins awarded!')
+      if (isNowCompleted) {
+        toast.success('🎉 Task fully achieved! Reward claimed!')
         playSystemSound('success')
+      } else {
+        toast.success(`Progress updated to ${safeProgress}%`)
       }
     } else {
       toast.error(res.error || 'Failed to update progress')
-      getRoomDetails(roomId).then(d => setDailyChallenges(d.dailyChallenges))
+      getRoomTasks(roomId).then(d => setDailyChallenges(d))
+    }
+  }
+
+  const handleClaimTaskReward = async (challenge: any) => {
+    await handleUpdateTaskMilestone(challenge.id, 100)
+  }
+
+  const handleAutoSyncPomodoro = async (challenge: any) => {
+    const currentProg = challenge.progress?.find((p: any) => p.user_id === currentUserId)?.progress || 0
+    const nextProg = Math.min(100, currentProg + 25)
+    await handleUpdateTaskMilestone(challenge.id, nextProg)
+    toast.success(`⚡ Synced Pomodoro focus session! +25% progress`)
+  }
+
+  const handleAutoSyncBattle = async (challenge: any) => {
+    const hasSolvedBattle = challenges.some((c: any) => c.standings?.some((s: any) => s.userId === currentUserId))
+    if (hasSolvedBattle) {
+      await handleUpdateTaskMilestone(challenge.id, 100)
+      toast.success(`⚔️ Quiz Battle verified! Task completed at 100%`)
+    } else {
+      toast.info(`Complete any Quiz Battle in this room to auto-verify this task!`)
     }
   }
 
@@ -2655,14 +2696,17 @@ export default function StudySpaceClient({
                 </div>
               </TabsContent>
               
-              {/* Tab 2: Quiz Battles */}
+              {/* Tab 2: Quiz Battles & Standings */}
               <TabsContent value="quizzes" className="h-full mt-0 focus-visible:outline-none flex flex-col">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-border">
-                    <span className="text-[10px] text-muted-foreground font-bold flex items-center gap-1">
+                    <div className="flex items-center gap-1.5">
                       <Swords className="w-4 h-4 text-rose-500 animate-bounce" />
-                      Active Quiz Challenges
-                    </span>
+                      <span className="text-xs font-bold text-foreground">Quiz Battles & Standings</span>
+                      <Badge variant="outline" className="text-[9px] py-0 h-4 border-rose-500/30 bg-rose-500/10 text-rose-500 font-bold">
+                        {challenges.length} Active
+                      </Badge>
+                    </div>
                     
                     {canManage && (
                       <Dialog open={openChallenge} onOpenChange={setOpenChallenge}>
@@ -2670,58 +2714,58 @@ export default function StudySpaceClient({
                           <Button
                             size="sm"
                             disabled={availableQuizzes.length === 0}
-                            className="h-6 text-[10px] bg-rose-500 text-white hover:bg-rose-600 font-bold cursor-pointer rounded-lg"
+                            className="h-6 text-[10px] bg-rose-500 text-white hover:bg-rose-600 font-bold cursor-pointer rounded-lg shadow-sm"
                           >
                             <Plus className="w-3 h-3 mr-1" />
-                            Start Challenge
+                            Start Battle
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="bg-card border-border shadow-2xl">
-                        <DialogHeader>
-                          <DialogTitle className="text-lg font-bold">Start a Quiz Challenge</DialogTitle>
-                          <DialogDescription className="text-xs mt-1 text-muted-foreground">
-                            Start a shared quiz challenge. Members will be notified and can solve the quiz together.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="py-4 space-y-4">
-                          <div className="space-y-1.5">
-                            <label className="text-xs font-semibold text-muted-foreground">Select Quiz</label>
-                            <Select value={selectedQuizCode} onValueChange={setSelectedQuizCode}>
-                              <SelectTrigger className="bg-muted/30 border-border text-sm">
-                                <SelectValue placeholder="Choose a department quiz..." />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {availableQuizzes.length === 0 ? (
-                                  <SelectItem value="none" disabled>No quizzes available for your level</SelectItem>
-                                ) : (
-                                  availableQuizzes.map((q: any) => (
-                                    <SelectItem key={q.code} value={q.code}>
-                                      {q.name} ({q.questions_count} Qs)
-                                    </SelectItem>
-                                  ))
-                                )}
-                              </SelectContent>
-                            </Select>
+                          <DialogHeader>
+                            <DialogTitle className="text-lg font-bold">Launch a Quiz Battle</DialogTitle>
+                            <DialogDescription className="text-xs mt-1 text-muted-foreground">
+                              Start a live quiz challenge for all space members. Scores & live standings will be tracked in real time.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="py-4 space-y-4">
+                            <div className="space-y-1.5">
+                              <label className="text-xs font-semibold text-muted-foreground">Select Quiz</label>
+                              <Select value={selectedQuizCode} onValueChange={setSelectedQuizCode}>
+                                <SelectTrigger className="bg-muted/30 border-border text-sm">
+                                  <SelectValue placeholder="Choose a department quiz..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {availableQuizzes.length === 0 ? (
+                                    <SelectItem value="none" disabled>No quizzes available for your level</SelectItem>
+                                  ) : (
+                                    availableQuizzes.map((q: any) => (
+                                      <SelectItem key={q.code} value={q.code}>
+                                        {q.name} ({q.questions_count} Qs)
+                                      </SelectItem>
+                                    ))
+                                  )}
+                                </SelectContent>
+                              </Select>
+                            </div>
                           </div>
-                        </div>
-                        <DialogFooter>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => setOpenChallenge(false)}
-                            className="border-border hover:bg-muted text-sm cursor-pointer"
-                          >
-                            Cancel
-                          </Button>
-                          <Button 
-                            onClick={handleLaunchChallenge}
-                            disabled={isPending || availableQuizzes.length === 0 || !selectedQuizCode}
-                            className="bg-rose-500 text-white hover:bg-rose-600 font-semibold text-sm cursor-pointer"
-                          >
-                            Launch
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
+                          <DialogFooter>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => setOpenChallenge(false)}
+                              className="border-border hover:bg-muted text-sm cursor-pointer"
+                            >
+                              Cancel
+                            </Button>
+                            <Button 
+                              onClick={handleLaunchChallenge}
+                              disabled={isPending || availableQuizzes.length === 0 || !selectedQuizCode}
+                              className="bg-rose-500 text-white hover:bg-rose-600 font-semibold text-sm cursor-pointer"
+                            >
+                              Launch Battle
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
                       </Dialog>
                     )}
                   </div>
@@ -2729,30 +2773,130 @@ export default function StudySpaceClient({
                   {challenges.length === 0 ? (
                     <div className="py-12 text-center text-muted-foreground flex flex-col items-center justify-center">
                       <Swords className="w-8 h-8 text-muted-foreground/30 mb-2" />
-                      <p className="text-xs">No active challenges. Start one to compete with your team!</p>
+                      <p className="text-xs font-medium">No active battles yet. Launch a quiz to ignite the competition!</p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-3.5">
                       {challenges.map((c: any) => {
                         const quizLink = `/quiz/${c.quiz?.department_slug}/${c.quiz?.subject_id}/${c.quiz_code}?roomId=${roomId}&challengeId=${c.id}`
+                        const standings = c.standings || []
+                        const myStanding = standings.find((s: any) => s.userId === currentUserId)
+                        const myRank = standings.findIndex((s: any) => s.userId === currentUserId) + 1
+                        const isExpanded = !!expandedStandings[c.id]
+                        const top3 = standings.slice(0, 3)
+
                         return (
                           <div 
                             key={c.id}
-                            className="p-3 bg-muted/20 border border-border rounded-xl flex items-center justify-between gap-4"
+                            className="p-3.5 bg-gradient-to-br from-card/80 via-card/40 to-muted/20 border border-border/80 rounded-2xl space-y-3 shadow-sm hover:border-rose-500/30 transition-all"
                           >
-                            <div className="space-y-1">
-                              <h4 className="text-xs font-bold text-foreground line-clamp-1">{c.quiz?.name || 'Quiz'}</h4>
-                              <p className="text-[10px] text-muted-foreground">
-                                {c.quiz?.questions_count} Qs • Started by {c.starter?.username || 'Student'}
-                              </p>
+                            {/* Header: Title, info & Solve button */}
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="space-y-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <h4 className="text-xs font-black text-foreground line-clamp-1">{c.quiz?.name || 'Quiz Challenge'}</h4>
+                                  <Badge className="bg-rose-500/10 text-rose-500 border-rose-500/20 text-[9px] py-0 h-4 font-bold">
+                                    {c.status === 'completed' ? '🏁 Finished' : '⚔️ Live Battle'}
+                                  </Badge>
+                                </div>
+                                <p className="text-[10px] text-muted-foreground flex items-center gap-2">
+                                  <span>{c.quiz?.questions_count || 10} Questions</span>
+                                  <span>•</span>
+                                  <span>Started by <strong className="text-foreground/80">{c.starter?.username || 'Member'}</strong></span>
+                                  <span>•</span>
+                                  <span className="text-primary font-semibold">{standings.length} completed</span>
+                                </p>
+                              </div>
+
+                              <Button 
+                                size="sm" 
+                                onClick={() => router.push(quizLink)}
+                                className={`text-[10px] h-7 px-3.5 font-bold cursor-pointer rounded-xl shrink-0 transition-all active:scale-95 shadow-sm ${
+                                  myStanding 
+                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30' 
+                                    : 'bg-rose-500 text-white hover:bg-rose-600 shadow-rose-500/20'
+                                }`}
+                              >
+                                {myStanding ? `✓ Solved (${myStanding.score}%)` : '⚔️ Solve Quiz'}
+                              </Button>
                             </div>
-                            <Button 
-                              size="sm" 
-                              onClick={() => router.push(quizLink)}
-                              className="bg-rose-500 text-white hover:bg-rose-600 font-bold text-[10px] h-7 px-3.5 cursor-pointer rounded-lg shrink-0"
-                            >
-                              Solve Quiz
-                            </Button>
+
+                            {/* Battle Standings Podium / Summary */}
+                            {standings.length > 0 ? (
+                              <div className="bg-muted/30 border border-border/50 rounded-xl p-2.5 space-y-2">
+                                <div className="flex items-center justify-between text-[10px] text-muted-foreground font-semibold">
+                                  <span className="flex items-center gap-1 text-foreground font-bold">
+                                    <Trophy className="w-3.5 h-3.5 text-yellow-500" />
+                                    Battle Standings
+                                  </span>
+                                  {myStanding && (
+                                    <span className="text-emerald-400 font-bold bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/20">
+                                      Your Rank: #{myRank} ({myStanding.score}%)
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* Top 3 Podium Cards */}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                                  {top3.map((s: any, idx: number) => {
+                                    const medals = ['🥇', '🥈', '🥉']
+                                    const medalBorders = [
+                                      'border-yellow-500/40 bg-yellow-500/5',
+                                      'border-slate-300/40 bg-slate-300/5',
+                                      'border-amber-700/40 bg-amber-700/5'
+                                    ]
+                                    return (
+                                      <div 
+                                        key={s.userId}
+                                        className={`p-2 rounded-lg border flex items-center justify-between gap-2 ${medalBorders[idx] || 'border-border/60 bg-muted/20'}`}
+                                      >
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                          <span className="text-sm shrink-0">{medals[idx] || `#${idx + 1}`}</span>
+                                          <span className="text-[11px] font-bold text-foreground truncate">{s.username}</span>
+                                        </div>
+                                        <Badge className="bg-primary/10 text-primary border-primary/20 text-[9px] font-black shrink-0 px-1.5 py-0">
+                                          {s.score}%
+                                        </Badge>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+
+                                {/* Expand full leaderboard if > 3 */}
+                                {standings.length > 3 && (
+                                  <div className="pt-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => toggleExpandStandings(c.id)}
+                                      className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1 font-semibold cursor-pointer transition-colors"
+                                    >
+                                      <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                                      {isExpanded ? 'Hide remaining standings' : `Show all ${standings.length} participants`}
+                                    </button>
+
+                                    {isExpanded && (
+                                      <div className="mt-2 space-y-1 border-t border-border/40 pt-2">
+                                        {standings.slice(3).map((s: any, idx: number) => (
+                                          <div key={s.userId} className="flex items-center justify-between text-[10px] px-2 py-1 bg-background/50 rounded-md">
+                                            <span className="font-semibold text-muted-foreground">
+                                              #{idx + 4} {s.username}
+                                            </span>
+                                            <span className="font-bold text-foreground">{s.score}%</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="bg-muted/15 border border-dashed border-border/60 rounded-xl p-2.5 text-center">
+                                <p className="text-[10px] text-muted-foreground flex items-center justify-center gap-1">
+                                  <Medal className="w-3.5 h-3.5 text-muted-foreground/50" />
+                                  No scores submitted yet. Solve the quiz now to claim 1st place!
+                                </p>
+                              </div>
+                            )}
                           </div>
                         )
                       })}
@@ -2849,61 +2993,177 @@ export default function StudySpaceClient({
                 </div>
               </TabsContent>
 
-              {/* Tab 4: Daily Challenges */}
+              {/* Tab 4: Interactive Space Tasks */}
               <TabsContent value="daily" className="h-full mt-0 focus-visible:outline-none flex flex-col">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-2 border-b border-border">
-                    <span className="text-xs font-bold text-muted-foreground">Space Daily Tasks</span>
+                    <div className="flex items-center gap-1.5">
+                      <Target className="w-4 h-4 text-emerald-400" />
+                      <span className="text-xs font-bold text-foreground">Interactive Space Tasks</span>
+                      <Badge variant="outline" className="text-[9px] py-0 h-4 border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-bold">
+                        {dailyChallenges.length} Goals
+                      </Badge>
+                    </div>
                     {canManage && (
                       <Button
                         size="sm"
                         onClick={() => setOpenDcCreator(true)}
-                        className="h-6 text-[10px] bg-primary text-primary-foreground font-bold cursor-pointer rounded-lg"
+                        className="h-6 text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer rounded-lg shadow-sm"
                       >
                         <Plus className="w-3.5 h-3.5 mr-1" />
-                        Add Daily Task
+                        Add Task
                       </Button>
                     )}
                   </div>
 
                   {dailyChallenges.length === 0 ? (
                     <div className="py-12 text-center text-muted-foreground flex flex-col items-center justify-center">
-                      <Trophy className="w-8 h-8 text-muted-foreground/30 mb-2" />
-                      <p className="text-xs">No active daily tasks yet. Define goals to keep members aligned!</p>
+                      <Target className="w-8 h-8 text-muted-foreground/30 mb-2" />
+                      <p className="text-xs font-medium">No active daily tasks yet. Define goals to keep members focused!</p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-3.5">
                       {dailyChallenges.map((challenge: any) => {
                         const myProgress = challenge.progress?.find((p: any) => p.user_id === currentUserId)
                         const currentProgressVal = myProgress?.progress || 0
+                        const isDone = currentProgressVal >= 100
+                        const completedMembers = (challenge.progress || []).filter((p: any) => p.is_completed)
+
+                        const milestones = [
+                          { label: '25% Started', val: 25 },
+                          { label: '50% Halfway', val: 50 },
+                          { label: '75% Refining', val: 75 },
+                          { label: '100% Done', val: 100 }
+                        ]
 
                         return (
-                          <div key={challenge.id} className="p-4 bg-muted/20 border border-border/80 rounded-2xl space-y-3">
-                            <div className="flex items-center justify-between gap-4">
-                              <div>
-                                <h4 className="text-xs font-black text-foreground">{challenge.title}</h4>
-                                <p className="text-[10px] text-muted-foreground mt-0.5">{challenge.description}</p>
+                          <div 
+                            key={challenge.id} 
+                            className={`p-4 rounded-2xl border transition-all space-y-3 shadow-sm ${
+                              isDone 
+                                ? 'bg-gradient-to-br from-emerald-500/5 via-card to-background border-emerald-500/30' 
+                                : 'bg-gradient-to-br from-card/90 via-card/50 to-muted/20 border-border/80 hover:border-emerald-500/20'
+                            }`}
+                          >
+                            {/* Task Header */}
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="space-y-0.5 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <h4 className="text-xs font-black text-foreground">{challenge.title}</h4>
+                                  {isDone && (
+                                    <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[9px] py-0 h-4 font-bold">
+                                      ✓ Completed
+                                    </Badge>
+                                  )}
+                                </div>
+                                {challenge.description && (
+                                  <p className="text-[10px] text-muted-foreground leading-relaxed">{challenge.description}</p>
+                                )}
                               </div>
-                              <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 font-bold text-[9px]">
-                                +{challenge.xp_reward} Coins
+                              <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 font-black text-[9px] shrink-0">
+                                +{challenge.xp_reward} Coins 🪙
                               </Badge>
                             </div>
 
-                            {/* Progress bar and slider */}
-                            <div className="space-y-1">
+                            {/* Progress Visual Bar */}
+                            <div className="space-y-1.5">
                               <div className="flex items-center justify-between text-[10px]">
-                                <span className="text-muted-foreground font-semibold">Your Progress</span>
-                                <span className="font-black text-primary">{currentProgressVal}%</span>
+                                <span className="text-muted-foreground font-semibold flex items-center gap-1">
+                                  <Sparkles className="w-3 h-3 text-primary" />
+                                  Your Progress
+                                </span>
+                                <span className={`font-black ${isDone ? 'text-emerald-400' : 'text-primary'}`}>
+                                  {currentProgressVal}%
+                                </span>
                               </div>
-                              <input
-                                type="range"
-                                min="0"
-                                max="100"
-                                value={currentProgressVal}
-                                onChange={(e) => handleProgressSliderChange(challenge.id, Number(e.target.value))}
-                                className="w-full h-1 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
-                              />
+                              <div className="w-full h-2 bg-muted/60 rounded-full overflow-hidden border border-border/40 relative">
+                                <div 
+                                  className={`h-full transition-all duration-300 rounded-full ${
+                                    isDone 
+                                      ? 'bg-gradient-to-r from-emerald-500 to-teal-400' 
+                                      : 'bg-gradient-to-r from-primary to-indigo-500'
+                                  }`}
+                                  style={{ width: `${currentProgressVal}%` }}
+                                />
+                              </div>
                             </div>
+
+                            {/* Milestone Click Buttons (Zero Request Flood) */}
+                            <div className="space-y-2 pt-1 border-t border-border/40">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider">Milestone Stages</span>
+                                <span className="text-[9px] text-muted-foreground">Click to update</span>
+                              </div>
+
+                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                                {milestones.map((m) => {
+                                  const isActive = currentProgressVal >= m.val
+                                  return (
+                                    <button
+                                      key={m.val}
+                                      type="button"
+                                      onClick={() => handleUpdateTaskMilestone(challenge.id, m.val)}
+                                      className={`text-[10px] py-1.5 px-2 rounded-xl font-bold border transition-all cursor-pointer flex items-center justify-center gap-1 active:scale-95 ${
+                                        isActive
+                                          ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 shadow-sm'
+                                          : 'bg-muted/20 border-border/60 text-muted-foreground hover:bg-muted/40 hover:text-foreground'
+                                      }`}
+                                    >
+                                      {isActive ? <CheckCircle className="w-3 h-3 text-emerald-400" /> : <div className="w-2 h-2 rounded-full bg-border" />}
+                                      <span>{m.label}</span>
+                                    </button>
+                                  )
+                                })}
+                              </div>
+                            </div>
+
+                            {/* Smart Auto-Sync Shortcuts & Claim Celebration */}
+                            <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/30 flex-wrap">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleAutoSyncPomodoro(challenge)}
+                                  className="h-6 text-[9px] px-2 text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 rounded-lg flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Clock className="w-3 h-3" />
+                                  Sync Pomodoro (+25%)
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleAutoSyncBattle(challenge)}
+                                  className="h-6 text-[9px] px-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Swords className="w-3 h-3" />
+                                  Sync Quiz Battle
+                                </Button>
+                              </div>
+
+                              {currentProgressVal === 100 && (
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  onClick={() => handleClaimTaskReward(challenge)}
+                                  className="h-6 text-[10px] bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-black hover:opacity-90 px-3 rounded-lg shadow-sm cursor-pointer flex items-center gap-1"
+                                >
+                                  <Gift className="w-3 h-3" />
+                                  Claim +{challenge.xp_reward} 🪙
+                                </Button>
+                              )}
+                            </div>
+
+                            {/* Space Hall of Fame / Completed Members */}
+                            {completedMembers.length > 0 && (
+                              <div className="bg-muted/15 border border-border/40 rounded-xl px-2.5 py-1.5 flex items-center justify-between text-[10px] text-muted-foreground">
+                                <span className="flex items-center gap-1 font-semibold">
+                                  <Crown className="w-3 h-3 text-yellow-500" />
+                                  {completedMembers.length} space {completedMembers.length === 1 ? 'member' : 'members'} completed today!
+                                </span>
+                              </div>
+                            )}
                           </div>
                         )
                       })}
@@ -2911,6 +3171,7 @@ export default function StudySpaceClient({
                   )}
                 </div>
               </TabsContent>
+
 
               {/* Tab 5: Drive Resources Library */}
               <TabsContent value="resources" className="h-full mt-0 focus-visible:outline-none flex flex-col">

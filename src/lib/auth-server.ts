@@ -11,12 +11,11 @@ export const getServerStudentSession = cache(async (): Promise<StudentUser | nul
   try {
     const supabase = await createServerSupabaseClient();
     
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
     
-    if (authError || !session?.user) {
+    if (authError || !user) {
       return null;
     }
-    const user = session.user;
 
     let userData: any = null;
     let dbError: any = null;

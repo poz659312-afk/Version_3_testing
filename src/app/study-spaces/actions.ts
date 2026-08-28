@@ -159,7 +159,7 @@ export async function getRoomDetails(roomId: string) {
 
   
   // 4. Fetch Active & Pending Room Challenges
-  const { data: challenges, error: challengesError } = await supabase
+  const { data: rawChallenges, error: challengesError } = await supabase
     .from('study_room_challenges')
     .select(`
       id,
@@ -167,7 +167,8 @@ export async function getRoomDetails(roomId: string) {
       status,
       created_at,
       starter:started_by (
-        username
+        username,
+        profile_image
       ),
       quiz:quiz_department (
         name,
@@ -182,6 +183,68 @@ export async function getRoomDetails(roomId: string) {
 
   if (challengesError) {
     console.error('Failed to fetch challenges:', challengesError)
+  }
+
+  let challenges: any[] = []
+  if (rawChallenges && rawChallenges.length > 0) {
+    const memberMap = new Map<string, any>()
+    members?.forEach((m: any) => {
+      const u = m.user
+      if (u?.auth_id) {
+        memberMap.set(u.auth_id, u)
+      }
+    })
+
+    const memberIds = Array.from(memberMap.keys())
+    const quizCodes = Array.from(new Set(rawChallenges.map((c: any) => c.quiz_code).filter(Boolean)))
+
+    if (memberIds.length > 0 && quizCodes.length > 0) {
+      const { data: quizAttempts } = await supabase
+        .from('quiz_data')
+        .select('auth_id, quiz_id, score, duration_selected, created_at')
+        .in('auth_id', memberIds)
+        .in('quiz_id', quizCodes)
+
+      challenges = rawChallenges.map((challenge: any) => {
+        const challengeCreated = new Date(challenge.created_at).getTime() - 60000
+
+        const userBestScore = new Map<string, any>()
+        quizAttempts?.forEach((attempt: any) => {
+          if (attempt.quiz_id === challenge.quiz_code) {
+            const attemptTime = new Date(attempt.created_at || 0).getTime()
+            if (attemptTime >= challengeCreated) {
+              const existing = userBestScore.get(attempt.auth_id)
+              if (!existing || attempt.score > existing.score) {
+                userBestScore.set(attempt.auth_id, attempt)
+              }
+            }
+          }
+        })
+
+        const standings = Array.from(userBestScore.entries())
+          .map(([userId, attempt]) => {
+            const userMeta = memberMap.get(userId)
+            return {
+              userId,
+              username: userMeta?.username || 'Student',
+              profileImage: userMeta?.profile_image || '',
+              specialization: userMeta?.specialization || '',
+              score: attempt.score,
+              duration: attempt.duration_selected || '',
+              completedAt: attempt.created_at
+            }
+          })
+          .sort((a, b) => b.score - a.score)
+
+        return {
+          ...challenge,
+          standings,
+          participantsCount: standings.length
+        }
+      })
+    } else {
+      challenges = rawChallenges.map((c: any) => ({ ...c, standings: [], participantsCount: 0 }))
+    }
   }
 
   // 5. Fetch available quizzes for the room's level and specialization to allow starting challenges
@@ -1227,19 +1290,30 @@ export async function updateDailyChallengeProgress(challengeId: string, progress
     const supabase = await createServerClient()
     const isCompleted = progress >= 100
 
+    // Check if previously already completed before awarding coins (prevents double-crediting)
+    const { data: previousProgress } = await supabase
+      .from('study_room_challenge_progress')
+      .select('is_completed')
+      .eq('challenge_id', challengeId)
+      .eq('user_id', session.auth_id)
+      .maybeSingle()
+
+    const wasAlreadyCompleted = previousProgress?.is_completed || false
+
     const { error } = await supabase
       .from('study_room_challenge_progress')
       .upsert({
         challenge_id: challengeId,
         user_id: session.auth_id,
-        progress,
+        progress: Math.min(100, Math.max(0, progress)),
         is_completed: isCompleted,
         completed_at: isCompleted ? new Date().toISOString() : null
       })
 
     if (error) return { success: false, error: error.message }
 
-    if (isCompleted) {
+    // Only award coins on initial completion transition
+    if (isCompleted && !wasAlreadyCompleted) {
       const { data: challenge } = await supabase
         .from('study_room_daily_challenges')
         .select('xp_reward')
@@ -1262,7 +1336,7 @@ export async function updateDailyChallengeProgress(challengeId: string, progress
       }
     }
 
-    return { success: true }
+    return { success: true, isCompleted }
   } catch (err: any) {
     return { success: false, error: err.message }
   }
@@ -1609,7 +1683,7 @@ export async function getRoomMembers(roomId: string) {
 }
 
 /**
- * Fetch only challenges for a study space (lightweight for realtime updates)
+ * Fetch only challenges for a study space with live standings leaderboard (lightweight for realtime updates)
  */
 export async function getRoomChallenges(roomId: string) {
   try {
@@ -1623,7 +1697,8 @@ export async function getRoomChallenges(roomId: string) {
         status,
         created_at,
         starter:started_by (
-          username
+          username,
+          profile_image
         ),
         quiz:quiz_department (
           name,
@@ -1636,13 +1711,105 @@ export async function getRoomChallenges(roomId: string) {
       .eq('room_id', roomId)
       .order('created_at', { ascending: false })
 
-    if (challengesError) {
-      console.error('Failed to fetch challenges:', challengesError)
-      return []
+    if (challengesError || !challenges || challenges.length === 0) {
+      return (challenges || []).map((c: any) => ({ ...c, standings: [], participantsCount: 0 }))
     }
-    return challenges || []
+
+    // Fetch approved members in room to resolve participants
+    const { data: members } = await supabase
+      .from('study_room_members')
+      .select('user_id, user:chameleons(username, profile_image, specialization)')
+      .eq('room_id', roomId)
+
+    const memberMap = new Map<string, any>()
+    members?.forEach((m: any) => {
+      if (m.user_id) {
+        memberMap.set(m.user_id, m.user || { username: 'Student', profile_image: '' })
+      }
+    })
+
+    const memberIds = Array.from(memberMap.keys())
+    const quizCodes = Array.from(new Set(challenges.map((c: any) => c.quiz_code).filter(Boolean)))
+
+    if (memberIds.length > 0 && quizCodes.length > 0) {
+      const { data: quizAttempts } = await supabase
+        .from('quiz_data')
+        .select('auth_id, quiz_id, score, duration_selected, created_at')
+        .in('auth_id', memberIds)
+        .in('quiz_id', quizCodes)
+
+      const challengesWithStandings = challenges.map((challenge: any) => {
+        const challengeCreated = new Date(challenge.created_at).getTime() - 60000 // 1min margin
+        
+        // Find best attempt for each member for this challenge's quiz
+        const userBestScore = new Map<string, any>()
+        quizAttempts?.forEach((attempt: any) => {
+          if (attempt.quiz_id === challenge.quiz_code) {
+            const attemptTime = new Date(attempt.created_at || 0).getTime()
+            if (attemptTime >= challengeCreated) {
+              const existing = userBestScore.get(attempt.auth_id)
+              if (!existing || attempt.score > existing.score) {
+                userBestScore.set(attempt.auth_id, attempt)
+              }
+            }
+          }
+        })
+
+        const standings = Array.from(userBestScore.entries())
+          .map(([userId, attempt]) => {
+            const userMeta = memberMap.get(userId)
+            return {
+              userId,
+              username: userMeta?.username || 'Student',
+              profileImage: userMeta?.profile_image || '',
+              specialization: userMeta?.specialization || '',
+              score: attempt.score,
+              duration: attempt.duration_selected || '',
+              completedAt: attempt.created_at
+            }
+          })
+          .sort((a, b) => b.score - a.score)
+
+        return {
+          ...challenge,
+          standings,
+          participantsCount: standings.length
+        }
+      })
+
+      return challengesWithStandings
+    }
+
+    return challenges.map((c: any) => ({ ...c, standings: [], participantsCount: 0 }))
   } catch (err) {
     console.error('Error in getRoomChallenges:', err)
+    return []
+  }
+}
+
+/**
+ * Fetch only daily tasks for a study space (lightweight for realtime updates)
+ */
+export async function getRoomTasks(roomId: string) {
+  try {
+    await checkAuth()
+    const supabase = await createServerClient()
+    const { data: dailyChallenges, error: dcError } = await supabase
+      .from('study_room_daily_challenges')
+      .select(`
+        *,
+        progress:study_room_challenge_progress(*)
+      `)
+      .eq('room_id', roomId)
+      .order('challenge_date', { ascending: false })
+
+    if (dcError) {
+      console.error('Failed to fetch daily tasks:', dcError)
+      return []
+    }
+    return dailyChallenges || []
+  } catch (err) {
+    console.error('Error in getRoomTasks:', err)
     return []
   }
 }
