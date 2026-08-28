@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-limit";
+import { getServerStudentSession } from "@/lib/auth-server";
 
 // Multi-tier Fallback Providers & Models (100% Free & Lightning Fast)
 // TIER 1 (Default): Ultra-fast Groq Models with 131k context windows
@@ -77,34 +78,50 @@ export async function POST(req: Request) {
       );
     }
 
-    const { messages, auth_id } = await req.json();
+    const { messages } = await req.json();
 
-    // Deduct daily question credit from DB if authenticated
-    if (auth_id) {
-      try {
-        const { createAdminClient } = await import("@/lib/supabase/admin");
-        const supabaseAdmin = createAdminClient() as any;
-        const { data: userRecord } = await supabaseAdmin
-          .from('chameleons')
-          .select('ai_credits')
-          .eq('auth_id', auth_id)
-          .single();
+    // Securely derive identity from authenticated server session
+    const session = await getServerStudentSession();
+    if (!session || !session.auth_id) {
+      return NextResponse.json(
+        { error: "Unauthorized: Please log in to use Marline AI." },
+        { status: 401 }
+      );
+    }
 
-        const currentCredits = userRecord?.ai_credits ?? 20;
-        if (currentCredits <= 0) {
-          return NextResponse.json(
-            { error: "لقد استنفدت رصيد الأسئلة اليومي (0/20 سؤالاً). يرجى العودة غداً عند تجديد الرصيد!" },
-            { status: 429 }
-          );
-        }
+    if (session.is_banned) {
+      return NextResponse.json(
+        { error: "Your account has been suspended." },
+        { status: 403 }
+      );
+    }
 
-        await supabaseAdmin
-          .from('chameleons')
-          .update({ ai_credits: Math.max(0, currentCredits - 1) })
-          .eq('auth_id', auth_id);
-      } catch (dbErr) {
-        console.warn("Could not update ai_credits in DB:", dbErr);
+    const auth_id = session.auth_id;
+
+    // Deduct daily question credit from DB for authenticated user
+    try {
+      const { createAdminClient } = await import("@/lib/supabase/admin");
+      const supabaseAdmin = createAdminClient() as any;
+      const { data: userRecord } = await supabaseAdmin
+        .from('chameleons')
+        .select('ai_credits')
+        .eq('auth_id', auth_id)
+        .single();
+
+      const currentCredits = userRecord?.ai_credits ?? 20;
+      if (currentCredits <= 0) {
+        return NextResponse.json(
+          { error: "لقد استنفدت رصيد الأسئلة اليومي (0/20 سؤالاً). يرجى العودة غداً عند تجديد الرصيد!" },
+          { status: 429 }
+        );
       }
+
+      await supabaseAdmin
+        .from('chameleons')
+        .update({ ai_credits: Math.max(0, currentCredits - 1) })
+        .eq('auth_id', auth_id);
+    } catch (dbErr) {
+      console.warn("Could not update ai_credits in DB:", dbErr);
     }
 
     // Token-efficient conversational history pruning (keep last 5 messages, truncate older turns)

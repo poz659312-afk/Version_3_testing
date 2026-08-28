@@ -132,8 +132,8 @@ export async function getRoomDetails(roomId: string) {
     console.error('Failed to fetch members:', membersError)
   }
 
-  // 3. Fetch recent Q&A and Chat messages
-  const { data: messages, error: messagesError } = await supabase
+  // 3. Fetch latest 50 Q&A and Chat messages (paginated)
+  const { data: messagesData, error: messagesError } = await supabase
     .from('study_room_messages')
     .select(`
       id,
@@ -147,11 +147,15 @@ export async function getRoomDetails(roomId: string) {
       )
     `)
     .eq('room_id', roomId)
-    .order('created_at', { ascending: true })
+    .order('created_at', { ascending: false })
+    .limit(50)
 
   if (messagesError) {
     console.error('Failed to fetch messages:', messagesError)
   }
+
+  // Reverse so they are in ascending chronological order for chat rendering
+  const messages = (messagesData || []).reverse()
 
   
   // 4. Fetch Active & Pending Room Challenges
@@ -1504,5 +1508,141 @@ export async function incrementResourceViews(resourceId: string) {
     return { success: true }
   } catch (err: any) {
     return { success: false, error: err.message }
+  }
+}
+
+/**
+ * Fetch earlier messages before a given timestamp (cursor pagination)
+ */
+export async function getEarlierRoomMessages(roomId: string, beforeDate: string, limit = 50) {
+  try {
+    await checkAuth()
+    const supabase = await createServerClient()
+
+    const { data: messagesData, error: messagesError } = await supabase
+      .from('study_room_messages')
+      .select(`
+        id,
+        content,
+        is_question,
+        created_at,
+        user_id,
+        user:user_id (
+          username,
+          profile_image
+        )
+      `)
+      .eq('room_id', roomId)
+      .lt('created_at', beforeDate)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (messagesError || !messagesData) {
+      return { messages: [], reactions: [] }
+    }
+
+    let messageReactions: any[] = []
+    if (messagesData.length > 0) {
+      const { data: reactionsData } = await supabase
+        .from('study_room_message_reactions')
+        .select('*')
+        .in('message_id', messagesData.map((m: any) => m.id))
+      messageReactions = reactionsData || []
+    }
+
+    const decrypted = messagesData.reverse().map((m: any) => ({
+      ...m,
+      content: decryptSpaceText(m.content, roomId),
+      user: m.user || { username: 'Anonymous Student', profile_image: null }
+    }))
+
+    return { messages: decrypted, reactions: messageReactions }
+  } catch (err) {
+    console.error('Error fetching earlier messages:', err)
+    return { messages: [], reactions: [] }
+  }
+}
+
+/**
+ * Fetch only members for a study space (lightweight for realtime updates)
+ */
+export async function getRoomMembers(roomId: string) {
+  try {
+    await checkAuth()
+    const supabase = await createServerClient()
+    const { data: members, error: membersError } = await supabase
+      .from('study_room_members')
+      .select(`
+        role,
+        joined_at,
+        status,
+        total_study_time,
+        current_streak,
+        longest_streak,
+        last_active_at,
+        last_study_date,
+        weekly_study_time,
+        is_focusing,
+        focus_timer_ends_at,
+        user:user_id (
+          auth_id,
+          username,
+          email,
+          current_level,
+          specialization,
+          phone_number,
+          coins,
+          profile_image
+        )
+      `)
+      .eq('room_id', roomId)
+
+    if (membersError) {
+      console.error('Failed to fetch members:', membersError)
+      return []
+    }
+    return members || []
+  } catch (err) {
+    console.error('Error in getRoomMembers:', err)
+    return []
+  }
+}
+
+/**
+ * Fetch only challenges for a study space (lightweight for realtime updates)
+ */
+export async function getRoomChallenges(roomId: string) {
+  try {
+    await checkAuth()
+    const supabase = await createServerClient()
+    const { data: challenges, error: challengesError } = await supabase
+      .from('study_room_challenges')
+      .select(`
+        id,
+        quiz_code,
+        status,
+        created_at,
+        starter:started_by (
+          username
+        ),
+        quiz:quiz_department (
+          name,
+          questions_count,
+          department_slug,
+          subject_id,
+          term
+        )
+      `)
+      .eq('room_id', roomId)
+      .order('created_at', { ascending: false })
+
+    if (challengesError) {
+      console.error('Failed to fetch challenges:', challengesError)
+      return []
+    }
+    return challenges || []
+  } catch (err) {
+    console.error('Error in getRoomChallenges:', err)
+    return []
   }
 }

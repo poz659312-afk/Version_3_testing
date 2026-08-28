@@ -785,35 +785,8 @@ export default function ProfilePage() {
 
       const supabase = createBrowserClient()
 
-      // Fetch deletion status AND existence check in single query (was previously 2 separate queries)
-      const { data: freshUserData } = await supabase
-        .from("chameleons")
-        .select("auth_id, deletion_scheduled_at, Registrations")
-        .eq("auth_id", session.auth_id)
-        .maybeSingle()
-
-      // Check if user account was deleted (not found in database)
-      if (!freshUserData) {
-        console.log("🗑️ User account has been deleted, clearing local storage...")
-        localStorage.clear()
-        sessionStorage.clear()
-        document.cookie.split(";").forEach((c) => {
-          const eqPos = c.indexOf("=")
-          const name = eqPos > -1 ? c.substr(0, eqPos) : c
-          document.cookie = `${name.trim()}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`
-        })
-        setIsRedirecting(true)
-        router.push("/auth/signin")
-        return
-      }
-
-      setUserData((prev: any) => ({
-        ...prev,
-        deletion_scheduled_at: freshUserData.deletion_scheduled_at
-      }))
-
       // Check and reset registrations if expired
-      let currentReg = freshUserData.Registrations
+      let currentReg = session.Registrations
       const resetResult = checkAndResetRegistrations(currentReg)
       if (resetResult) {
         console.log("⏰ Registrations expired or uninitialized. Resetting...")
@@ -832,7 +805,10 @@ export default function ProfilePage() {
         }
       }
 
-      const activeReg = currentReg || { lastUpdated: new Date().toISOString(), courses: [] }
+      const activeReg = {
+        lastUpdated: currentReg?.lastUpdated || new Date().toISOString(),
+        courses: currentReg?.courses || []
+      }
       setRegistrations(activeReg)
 
       // Lazy load user subjects using department-data-accessor

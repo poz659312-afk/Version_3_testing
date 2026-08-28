@@ -54,6 +54,8 @@ import {
   previewFolderChanges, 
   createAccessRule, 
   deleteAccessRule,
+  getAccessRules,
+  getAuditLogs,
   getAllUsers,
   syncUserCustomFolderAccess,
   previewCustomFolderChanges,
@@ -123,6 +125,12 @@ export default function AdminDashboardClient({
   const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(false)
   const [selectedAnalyticsLevel, setSelectedAnalyticsLevel] = useState<string>('ALL')
 
+  // Rules & Audit Logs Lazy-Loading States
+  const [rulesLoaded, setRulesLoaded] = useState(initialRules.length > 0)
+  const [isRulesLoading, setIsRulesLoading] = useState(false)
+  const [logsLoaded, setLogsLoaded] = useState(initialLogs.length > 0)
+  const [isLogsLoading, setIsLogsLoading] = useState(false)
+
   useEffect(() => {
     if (activeTab === 'analytics' && !analyticsData) {
       const fetchAnalytics = async () => {
@@ -143,6 +151,42 @@ export default function AdminDashboardClient({
       fetchAnalytics()
     }
   }, [activeTab, analyticsData])
+
+  useEffect(() => {
+    if (activeTab === 'rules' && !rulesLoaded) {
+      const fetchRules = async () => {
+        setIsRulesLoading(true)
+        try {
+          const res = await getAccessRules()
+          setRules(res)
+          setRulesLoaded(true)
+        } catch (err: any) {
+          toast.error(err.message || 'Failed to load access rules')
+        } finally {
+          setIsRulesLoading(false)
+        }
+      }
+      fetchRules()
+    }
+  }, [activeTab, rulesLoaded])
+
+  useEffect(() => {
+    if (activeTab === 'logs' && !logsLoaded) {
+      const fetchLogs = async () => {
+        setIsLogsLoading(true)
+        try {
+          const res = await getAuditLogs()
+          setLogs(res)
+          setLogsLoaded(true)
+        } catch (err: any) {
+          toast.error(err.message || 'Failed to load audit logs')
+        } finally {
+          setIsLogsLoading(false)
+        }
+      }
+      fetchLogs()
+    }
+  }, [activeTab, logsLoaded])
 
   const computedMetrics = useMemo(() => {
     if (!analyticsData) return null
@@ -228,6 +272,7 @@ export default function AdminDashboardClient({
   const [quizCode, setQuizCode] = useState<string>('')
   const [quizTerm, setQuizTerm] = useState<string>('')
   const [questionsCount, setQuestionsCount] = useState<number>(0)
+  const [parsedQuestions, setParsedQuestions] = useState<any[] | null>(null)
   const [isVerifyingQuiz, setIsVerifyingQuiz] = useState<boolean>(false)
   const [isUploadingQuiz, setIsUploadingQuiz] = useState<boolean>(false)
   const [verificationResult, setVerificationResult] = useState<{
@@ -313,8 +358,9 @@ export default function AdminDashboardClient({
         birthDate: ownerBirthDate,
         monitorType: ownerMonitorType
       })
-      if (res.success && res.result) {
-        setRolloverResult(res.result)
+      const anyRes = res as any
+      if (anyRes?.success && anyRes?.result) {
+        setRolloverResult(anyRes.result)
         toast.success(`Academic Rollover for Class of ${rolloverYear} completed successfully!`)
         setIsRolloverDialogOpen(false)
         setRolloverConfirmation('')
@@ -325,8 +371,9 @@ export default function AdminDashboardClient({
         loadRolloverPreview()
         router.refresh()
       } else {
-        setSecurityError(res.error || 'Security verification failed or rollover aborted.')
-        toast.error(res.error || 'Failed to execute academic rollover.')
+        const errMsg = anyRes?.error || 'Security verification failed or rollover aborted.'
+        setSecurityError(errMsg)
+        toast.error(errMsg)
       }
     } catch (err: any) {
       setSecurityError(err.message || 'Security verification failed.')
@@ -977,14 +1024,15 @@ export default function AdminDashboardClient({
         folderName: newRuleFolderName
       })
 
-      if (res.success && res.data) {
+      const anyRes = res as any
+      if (anyRes?.success && anyRes?.data) {
         toast.success(`Access rule created for "${newRuleFolderName}"`)
-        setRules([res.data, ...rules])
+        setRules([anyRes.data, ...rules])
         setNewRuleFolderName('')
         setNewRuleFolderUrl('')
         router.refresh()
       } else {
-        toast.error(res.error || 'Failed to create access rule')
+        toast.error(anyRes?.error || 'Failed to create access rule')
       }
     } catch (err: any) {
       toast.error(err.message || 'Failed to add rule')

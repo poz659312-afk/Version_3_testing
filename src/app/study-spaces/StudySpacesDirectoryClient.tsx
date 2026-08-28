@@ -113,11 +113,11 @@ export default function StudySpacesDirectoryClient({
       }
     }
 
-    const debouncedFetch = () => {
+    const debouncedFetch = (delay = 1500) => {
       if (debounceTimer) clearTimeout(debounceTimer)
       debounceTimer = setTimeout(() => {
         fetchFreshRooms()
-      }, 1500)
+      }, delay)
     }
 
     const channel = supabase
@@ -126,14 +126,21 @@ export default function StudySpacesDirectoryClient({
         'postgres_changes',
         { event: '*', schema: 'public', table: 'study_rooms' },
         () => {
-          debouncedFetch()
+          debouncedFetch(1500)
         }
       )
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'study_room_members' },
+        { event: 'INSERT', schema: 'public', table: 'study_room_members' },
         () => {
-          debouncedFetch()
+          debouncedFetch(3500)
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'study_room_members' },
+        () => {
+          debouncedFetch(3500)
         }
       )
       .subscribe()

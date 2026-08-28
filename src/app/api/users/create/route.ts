@@ -16,7 +16,32 @@ export async function POST(request: NextRequest) {
     // Create Supabase admin client (bypasses RLS for server-side operations)
     const supabase = createAdminClient()
 
-    // Auto-confirm the user's email since we generate a temp.local email for them
+    // 1. Verify that the auth_id actually exists in Supabase Auth
+    const { data: authUserData, error: authUserError } = await supabase.auth.admin.getUserById(
+      userData.auth_id
+    )
+    if (authUserError || !authUserData?.user) {
+      return NextResponse.json(
+        { error: 'Invalid auth_id: User not found in authentication system.' },
+        { status: 400 }
+      )
+    }
+
+    // 2. Prevent duplicate profile creation for the same auth_id
+    const { data: existingUser } = await (supabase
+      .from('chameleons') as any)
+      .select('auth_id')
+      .eq('auth_id', userData.auth_id)
+      .maybeSingle()
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: 'A profile already exists for this account.' },
+        { status: 409 }
+      )
+    }
+
+    // Auto-confirm the user's email if needed
     const { error: confirmError } = await supabase.auth.admin.updateUserById(
       userData.auth_id,
       { email_confirm: true }
@@ -25,7 +50,7 @@ export async function POST(request: NextRequest) {
       console.error('Error auto-confirming user email:', confirmError)
     }
 
-    // Insert user into chameleons table
+    // Insert user into chameleons table — enforce non-privileged defaults
     const { data: newUser, error: insertError } = await supabase
       .from('chameleons')
       .insert({
@@ -35,13 +60,13 @@ export async function POST(request: NextRequest) {
         age: userData.age,
         current_level: userData.current_level,
         status: userData.status || 'student',
-        is_admin: userData.is_admin || false,
-        is_banned: userData.is_banned || false,
-        email: userData.email,
-        profile_image: userData.profile_image,
+        is_admin: false,
+        is_banned: false,
+        email: authUserData.user.email || userData.email,
+        profile_image: userData.profile_image || '',
         phone_number: userData.phone_number || '',
         auth_id: userData.auth_id,
-      } as any) // Type assertion for Supabase insert
+      } as any)
       .select()
       .single()
 

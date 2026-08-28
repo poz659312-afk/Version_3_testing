@@ -50,6 +50,7 @@ import {
   Pause,
   ExternalLink,
   ChevronRight,
+  ChevronUp,
   Settings,
   Edit3,
   Eye,
@@ -60,7 +61,10 @@ import {
 } from 'lucide-react'
 import SummaryRenderer from '@/components/SummaryRenderer'
 import { 
-  getRoomDetails, 
+  getRoomDetails,
+  getEarlierRoomMessages,
+  getRoomMembers,
+  getRoomChallenges,
   leaveStudyRoom, 
   sendRoomMessage, 
   updateScratchpad, 
@@ -551,11 +555,65 @@ export default function StudySpaceClient({
       }
     }
 
+    if (isPrependingEarlierRef.current) return
     // Scroll immediately and after a short paint delay to handle DOM rendering correctly
     scroll()
     const timer = setTimeout(scroll, 100)
     return () => clearTimeout(timer)
   }, [messages, chatTab])
+
+  const [isLoadingEarlierMessages, setIsLoadingEarlierMessages] = useState(false)
+  const [hasMoreEarlierMessages, setHasMoreEarlierMessages] = useState((initialDetails?.messages?.length || 0) >= 50)
+  const isPrependingEarlierRef = useRef(false)
+
+  const handleLoadEarlierMessages = async () => {
+    if (messages.length === 0 || isLoadingEarlierMessages) return
+    const oldestMsg = messages[0]
+    if (!oldestMsg?.created_at) return
+
+    const container = chatContainerRef.current
+    const prevScrollHeight = container ? container.scrollHeight : 0
+
+    setIsLoadingEarlierMessages(true)
+    isPrependingEarlierRef.current = true
+
+    try {
+      const res = await getEarlierRoomMessages(roomId, oldestMsg.created_at, 50)
+      if (res.messages && res.messages.length > 0) {
+        setMessages((prev: any[]) => {
+          const existingIds = new Set(prev.map(m => m.id))
+          const newEarlier = res.messages.filter((m: any) => !existingIds.has(m.id))
+          return [...newEarlier, ...prev]
+        })
+        if (res.reactions && res.reactions.length > 0) {
+          setMessageReactions((prev: any[]) => {
+            const existingIds = new Set(prev.map(r => r.id))
+            const newReactions = res.reactions.filter((r: any) => !existingIds.has(r.id))
+            return [...prev, ...newReactions]
+          })
+        }
+        if (res.messages.length < 50) {
+          setHasMoreEarlierMessages(false)
+        }
+        // Preserve scroll position relative to newly prepended items
+        requestAnimationFrame(() => {
+          if (container) {
+            const newScrollHeight = container.scrollHeight
+            container.scrollTop = newScrollHeight - prevScrollHeight
+          }
+          isPrependingEarlierRef.current = false
+        })
+      } else {
+        setHasMoreEarlierMessages(false)
+        isPrependingEarlierRef.current = false
+      }
+    } catch (err) {
+      console.error('Failed to load earlier messages:', err)
+      isPrependingEarlierRef.current = false
+    } finally {
+      setIsLoadingEarlierMessages(false)
+    }
+  }
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
@@ -779,8 +837,8 @@ export default function StudySpaceClient({
               })
             })
           } else {
-            // For inserts or deletes, perform a soft reload
-            getRoomDetails(roomId).then(d => setMembers(d.members))
+            // For inserts or deletes, perform a lightweight members reload
+            getRoomMembers(roomId).then(members => setMembers(members))
           }
         }
       )
@@ -1026,14 +1084,14 @@ export default function StudySpaceClient({
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_challenges', filter: `room_id=eq.${roomId}` },
         (payload: any) => {
-          getRoomDetails(roomId).then(d => setChallenges(d.challenges))
+          getRoomChallenges(roomId).then(challenges => setChallenges(challenges))
         }
       )
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'study_room_challenges', filter: `room_id=eq.${roomId}` },
         (payload: any) => {
-          getRoomDetails(roomId).then(d => setChallenges(d.challenges))
+          getRoomChallenges(roomId).then(challenges => setChallenges(challenges))
         }
       )
       .on(
@@ -1896,6 +1954,25 @@ export default function StudySpaceClient({
               className="px-6 flex-1 h-full overflow-y-auto ss-chat-scrollbar p-3 sm:p-4 space-y-3" 
               data-lenis-prevent
             >
+
+              {hasMoreEarlierMessages && displayedMessages.length > 0 && (
+                <div className="flex justify-center my-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={isLoadingEarlierMessages}
+                    onClick={handleLoadEarlierMessages}
+                    className="text-[11px] h-7 text-muted-foreground hover:text-foreground bg-muted/40 hover:bg-muted/70 rounded-full px-3 transition-all"
+                  >
+                    {isLoadingEarlierMessages ? (
+                      <Loader2 className="w-3 h-3 animate-spin mr-1.5" />
+                    ) : (
+                      <ChevronUp className="w-3 h-3 mr-1.5" />
+                    )}
+                    Load earlier messages
+                  </Button>
+                </div>
+              )}
 
               {displayedMessages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-10">
@@ -2967,8 +3044,8 @@ export default function StudySpaceClient({
                           <div className="min-w-0">
                             <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 truncate">
                               <span className="truncate">{user.username}</span>
-                              {isCreator && <Crown className="w-3 h-3 text-yellow-500 shrink-0" title="Space Owner" />}
-                              {isAdminUser && !isCreator && <Shield className="w-3 h-3 text-blue-400 shrink-0" title="Admin" />}
+                              {isCreator && <span title="Space Owner"><Crown className="w-3 h-3 text-yellow-500 shrink-0" /></span>}
+                              {isAdminUser && !isCreator && <span title="Admin"><Shield className="w-3 h-3 text-blue-400 shrink-0" /></span>}
                             </h4>
                             <p className="text-[9px] text-muted-foreground truncate">{user.specialization || 'Student'}</p>
                           </div>

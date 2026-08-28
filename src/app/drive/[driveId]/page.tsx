@@ -540,6 +540,34 @@ export default function DriveRootPage() {
         const data: DriveResponse = await response.json();
         const files = data.files || [];
 
+        // Batch pre-fetch all owner usernames to eliminate N+1 queries
+        const ownerEmails = Array.from(new Set(
+          files.flatMap((f: any) => f.owners?.map((o: any) => o.emailAddress) || []).filter(Boolean)
+        )) as string[];
+
+        const uncashedEmails = ownerEmails.filter(email => !usernameCacheRef.current.has(email));
+        if (uncashedEmails.length > 0) {
+          try {
+            const { data: userData } = await supabase
+              .from("chameleons")
+              .select("email, username")
+              .in("email", uncashedEmails);
+
+            userData?.forEach((u: any) => {
+              if (u.email && u.username) {
+                usernameCacheRef.current.set(u.email, u.username);
+              }
+            });
+            uncashedEmails.forEach((email) => {
+              if (!usernameCacheRef.current.has(email)) {
+                usernameCacheRef.current.set(email, "Unknown User");
+              }
+            });
+          } catch (e) {
+            console.warn("Failed to batch fetch owner usernames:", e);
+          }
+        }
+
         setFiles(files);
 
         // Cache the result

@@ -43,6 +43,7 @@ import { InlineMath } from "react-katex";
 import { toast } from "sonner";
 import Image from "next/image";
 import Link from "next/link";
+import { recordQuizCompletionAction } from "@/app/quiz/actions";
 
 
 interface QuizQuestion {
@@ -679,86 +680,47 @@ export default function QuizInterface({
         return;
       }
 
-      // Use the quiz code directly instead of trying to parse it as an integer
+      // Use the quiz code directly
       const quizId = quizData.code;
       
-      // ✅ Calculate percentage correctly to avoid rounding issues
-      const scorePercentage = Math.round((finalScore / questions.length) * 100);
-      
-      console.log(`📊 Score Calculation: ${finalScore} correct out of ${questions.length} = ${scorePercentage}%`);
-      
-      const quizResult = {
-        auth_id: session.auth_id,
-        quiz_id: quizId,
-        score: scorePercentage,
-        how_finished: status,
-        answering_mode: selectedMode,
-        duration_selected: selectedDuration === 0 ? "Unlimited" : `${selectedDuration} minutes`,
-        total_questions: questions.length,
-        quiz_level: determineQuizLevel(quizId), // Use the imported function here
-      };
+      let challengeId: string | null = null;
+      if (typeof window !== "undefined") {
+        const urlParams = new URLSearchParams(window.location.search);
+        challengeId = urlParams.get("challengeId");
+      }
 
-      
-      const { data, error } = await supabase
-        .from("quiz_data")
-        .insert([quizResult])
-        .select();
+      const result = await recordQuizCompletionAction({
+        quizId,
+        finalScore,
+        totalQuestions: questions.length,
+        status,
+        answeringMode: selectedMode,
+        durationSelected: selectedDuration,
+        challengeId
+      });
 
-      if (error) {
-        console.error("Error saving quiz data to Supabase:", error.message);
+      if (!result.success) {
+        console.error("Error saving quiz data to server:", result.error);
       } else {
-        // Check if this was a study space challenge/battle, and mark it as completed
-        if (typeof window !== "undefined") {
-          const urlParams = new URLSearchParams(window.location.search)
-          const challengeId = urlParams.get("challengeId")
-          if (challengeId) {
-            console.log("Updating study space challenge status to completed for:", challengeId)
-            const { error: challengeError } = await supabase
-              .from("study_room_challenges")
-              .update({ status: "completed" })
-              .eq("id", challengeId)
-            
-            if (challengeError) {
-              console.error("Error completing quiz battle challenge:", challengeError.message)
-            }
-          }
-        }
-
         // Update attempts count after successful submission
         setAttemptsToday(prev => prev + 1);
         setMaxAttemptsReached(attemptsToday + 1 >= 5);
 
-        // 🪙 Give coins = finalscore * 1.5
-        const earnedCoins = finalScore * 1.5;
-        if (Math.ceil(earnedCoins) > 0) {
-          const { data: userData } = await supabase
-            .from("chameleons")
-            .select("coins")
-            .eq("auth_id", session.auth_id)
-            .single();
-          
-          if (userData) {
-            await supabase
-              .from("chameleons")
-              .update({ coins: (userData.coins || 0) + Math.ceil(earnedCoins) })
-              .eq("auth_id", session.auth_id);
-            
-            
-            toast.success(`Congratulations! You earned ${earnedCoins} coins!`, {
-              icon: "🪙",
-              duration: 5000,
-            });
-            
-            
-            // Refresh session to update UI across the app
-            await getStudentSession(true);
-          }
+        if (result.earnedCoins > 0) {
+          toast.success(`Congratulations! You earned ${result.earnedCoins} coins!`, {
+            icon: "🪙",
+            duration: 5000,
+          });
+
+          // Refresh session to update UI across the app
+          await getStudentSession(true);
         }
       }
     } catch (error) {
       console.error("Unexpected error saving quiz data:", error);
     }
   };
+
 
   // Updated saveScore function for localStorage
   const saveScore = (finalScore: number, status: "completed" | "timed-out", finalMaxCombo: number) => {

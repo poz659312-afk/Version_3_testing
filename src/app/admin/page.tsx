@@ -58,36 +58,23 @@ export default async function AdminPage() {
     )
   }
 
-  // Server-side pre-fetching of initial data
+  // Server-side pre-fetching of active tab initial data (Users)
   const supabase = createAdminClient()
 
-  // 1. Fetch Users (Page 1, Size 10, Sorted by created_at desc)
+  // 1. Fetch Users only (Page 1, Size 10, Sorted by created_at desc)
   const { data: users, count: totalCount } = await supabase
     .from('chameleons')
     .select('auth_id, username, email, specialization, current_level, is_admin, is_super_admin, is_banned, created_at', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(0, 9)
 
-  // 2. Fetch Access Rules
-  const { data: rules } = await supabase
-    .from('drive_access_rules')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  // 3. Fetch Audit Logs
-  const { data: logs } = await supabase
-    .from('admin_audit_logs')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(100)
-
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
       <AdminDashboardClient
         initialUsers={users || []}
         initialTotalCount={totalCount || 0}
-        initialRules={rules || []}
-        initialLogs={logs || []}
+        initialRules={[]}
+        initialLogs={[]}
         adminAuthId={session.auth_id}
       />
     </div>

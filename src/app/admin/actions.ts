@@ -402,7 +402,7 @@ export async function getAuditLogs() {
 export async function syncUserCustomFolderAccess(
   targetAuthId: string,
   customSettings: {
-    type: 'suggested' | 'full' | 'custom'
+    type: 'suggested' | 'full' | 'custom' | 'none'
     years: string[]
     departments: string[]
     customFolders: string[]
@@ -560,7 +560,7 @@ export async function syncUserCustomFolderAccess(
 export async function previewCustomFolderChanges(
   targetAuthId: string,
   customSettings: {
-    type: 'suggested' | 'full' | 'custom'
+    type: 'suggested' | 'full' | 'custom' | 'none'
     years: string[]
     departments: string[]
     customFolders: string[]
