@@ -26,9 +26,7 @@ async function getRelevantAcademicContext(userQuery: string): Promise<string> {
 
   // 1. استيراد وقراءة بيانات التراكات والمقررات من ACADEMIC_TRACKS
   try {
-    const subjectModule = await import("@/data/course-subjects").catch(() => null)
-      || await import("@/data/course_subjects").catch(() => null)
-      || await import("@/lib/course-subjects").catch(() => null);
+    const subjectModule = await import("@/lib/course-subjects").catch(() => null);
 
     if (subjectModule) {
       const rawTracks = subjectModule.ACADEMIC_TRACKS 
