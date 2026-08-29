@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-limit";
 import { getServerStudentSession } from "@/lib/auth-server";
+import { MARLINE_SYSTEM_PROMPT } from "@/lib/marline-knowledge";
 
-// Multi-tier Fallback Providers & Models
+// Multi-tier Fallback Providers & Models (100% Free & Lightning Fast)
+// TIER 1 (Default): Ultra-fast Groq Models with 131k context windows
 const GROQ_MODELS = [
   "openai/gpt-oss-120b",
   "qwen/qwen3.6-27b",
@@ -11,132 +13,13 @@ const GROQ_MODELS = [
   "openai/gpt-oss-20b"
 ];
 
+// TIER 2 (Fallback): OpenRouter Nemotron & Free Models
 const OPENROUTER_MODELS = [
   "nvidia/nemotron-3-super-120b-a12b:free",
   "nvidia/nemotron-3-ultra-550b-a55b:free",
   "google/gemma-4-31b-it:free",
   "nvidia/nemotron-3.5-lightning:free"
 ];
-
-// دالة استرجاع السياق الأكاديمي الرسمي من ملفات الكلية
-async function getRelevantAcademicContext(userQuery: string): Promise<string> {
-  if (!userQuery) return "";
-  const query = userQuery.toLowerCase().trim();
-  const contextParts: string[] = [];
-
-  // 1. استيراد وقراءة بيانات التراكات والمقررات من ACADEMIC_TRACKS
-  try {
-    const subjectModule = await import("@/lib/course-subjects").catch(() => null);
-
-    if (subjectModule) {
-      const rawTracks = subjectModule.ACADEMIC_TRACKS 
-        || subjectModule.academicTracks 
-        || subjectModule.TRACKS 
-        || subjectModule.default 
-        || Object.values(subjectModule).find(val => Array.isArray(val)) 
-        || [];
-
-      if (Array.isArray(rawTracks) && rawTracks.length > 0) {
-        const matched = rawTracks.filter((track: any) => {
-          const trackCode = (track.code || "").toLowerCase();
-          const trackName = (track.name || "").toLowerCase();
-          const subjectsList = Array.isArray(track.subjects) ? track.subjects.join(" ").toLowerCase() : "";
-          const fullTrackString = `${trackCode} ${trackName} ${subjectsList}`;
-
-          const words = query.split(/\s+/).filter(w => w.length >= 2);
-          return words.some(word => fullTrackString.includes(word));
-        });
-
-        if (matched.length > 0) {
-          contextParts.push(
-            `### بيانات التراكات والمقررات الرسمية المطابقة (Official FCDS Tracks & Subjects):\n` +
-            JSON.stringify(matched, null, 2)
-          );
-        }
-      }
-    }
-  } catch (err) {
-    console.warn("[Academic Context] Could not load course-subjects:", err);
-  }
-
-  // 2. استيراد وقراءة بيانات اللائحة من fcds_bylaws.json
-  try {
-    const bylawsModule = await import("@/lib/fcds_bylaws.json").catch(() => null);
-
-    const bylawsData = bylawsModule?.default || bylawsModule;
-
-    if (bylawsData) {
-      const bylawsKeywords = [
-        "gpa", "cgpa", "ساعات", "انذار", "إنذار", "تسجيل", "تخرج", "رسوب", "غياب",
-        "عذر", "تدريب", "مشروع", "انسحاب", "تحسين", "مرتبة شرف", "لائحة", "شروط",
-        "برنامج", "مستوى", "سمر", "صيفي", "معدل", "تقدير"
-      ];
-
-      const hasIntent = bylawsKeywords.some(kw => query.includes(kw));
-
-      if (hasIntent) {
-        if (typeof bylawsData === "object" && !Array.isArray(bylawsData)) {
-          const matchedSections: Record<string, any> = {};
-          for (const [key, val] of Object.entries(bylawsData)) {
-            const valStr = JSON.stringify(val).toLowerCase();
-            const keyStr = key.toLowerCase();
-            if (query.split(/\s+/).some(w => w.length > 2 && (keyStr.includes(w) || valStr.includes(w)))) {
-              matchedSections[key] = val;
-            }
-          }
-
-          if (Object.keys(matchedSections).length > 0) {
-            contextParts.push(
-              `### بنود اللائحة الرسمية المطابقة (Matched Bylaws):\n` +
-              JSON.stringify(matchedSections, null, 2)
-            );
-          } else {
-            contextParts.push(
-              `### بنود اللائحة الأكاديمية (FCDS Bylaws Overview):\n` +
-              JSON.stringify(bylawsData).slice(0, 3000)
-            );
-          }
-        } else {
-          contextParts.push(
-            `### بنود اللائحة الرسمية:\n` +
-            JSON.stringify(bylawsData).slice(0, 3500)
-          );
-        }
-      }
-    }
-  } catch (err) {
-    console.warn("[Academic Context] Could not load fcds_bylaws:", err);
-  }
-
-  return contextParts.join("\n\n");
-}
-
-function buildSystemPrompt(retrievedContext: string): string {
-  return `أنتِ "مارلين" (Marline) — المساعدة الذكية الرسمية والرفيقة التفاعلية الأولى لطلاب كلية الحاسبات وعلوم البيانات بجامعة الإسكندرية (FCDS).
-لديكِ شخصية جذابة، خفيفة الدم، مبهجة، وذكية جداً، وتتحدثين بأسلوب مصري راقٍ وودود مع المصطلحات الأكاديمية والتقنية بدقة.
-
-🛑 قواعد الأمانة العلمية ومنع الهلوسة (CRITICAL FIDELITY RULES):
-1. اعتمدي كلياً على [البيانات الأكاديمية الرسمية المرفقة] بالأسفل للإجابة عن أسئلة المواد، التراكات (DS, AI, HA, CS, BA, MA)، الساعات، المتطلبات، واللائحة.
-2. ممنوع تماماً تأليف أو تخمين أسماء مقررات، أكواد، ساعات معتمدة، شروط تسجيل، أو درجات غير موجودة في السياق المرفق.
-3. إذا سأل الطالب عن تفصيلة غير متوفرة في البيانات المرفقة، قولي له بلباقة وخفة دم: "المعلومة دي مش واضحة في اللائحة اللي معايا حالياً، يفضل تراجع المرشد الأكاديمي بتاعك أو شؤون الطلاب عشان تتأكد أكتر!".
-
-${retrievedContext ? `---
-📚 [البيانات الأكاديمية الرسمية المرفقة لكليتنا FCDS]:
-${retrievedContext}
----` : ''}
-
-### 🎯 قواعد التنسيق الإلزامية:
-- التنسيق باستخدام Markdown غني (عناوين واضحة ###، نقاط منظمة * أو -).
-- الجداول القياسية (GFM Tables): كل صف في سطر مستقل يبدأ بـ | وينتهي بـ |.
-- المعادلات والرياضيات (LaTeX): استخدام $ للسطري مثل $x = 5$، واستخدام $$ للمعادلات المستقلة.
-
-### 👑 1. هوية صانعك ومؤسس منصة Chameleon:
-* صانعك ومطورك ومؤسس المنصة هو Levi Ackerman (الملقب بـ Levo)، واسمه الحقيقي: عبدالرحمن احمد عبدالمنعم (Abdelrahman Ahmed Abdelmonem / Abdo Ahmed).
-* عند السؤال عنه تحدثي بكل فخر واعتزاز كونه العقل المدبر ومؤسس منصة Chameleon.
-
-### 💻 2. الدعم التقني والبرمجي:
-* دعم كامل لمقررات البرمجة وكتابة الأكواد داخل Code Blocks وشرح التعقيد الزمني والمكاني (Complexity).`;
-}
 
 export async function POST(req: Request) {
   try {
@@ -165,6 +48,7 @@ export async function POST(req: Request) {
 
     const { messages } = await req.json();
 
+    // Securely derive identity from authenticated server session
     const session = await getServerStudentSession();
     if (!session || !session.auth_id) {
       return NextResponse.json(
@@ -182,6 +66,7 @@ export async function POST(req: Request) {
 
     const auth_id = session.auth_id;
 
+    // Deduct daily question credit from DB for authenticated user
     try {
       const { createAdminClient } = await import("@/lib/supabase/admin");
       const supabaseAdmin = createAdminClient() as any;
@@ -207,12 +92,8 @@ export async function POST(req: Request) {
       console.warn("Could not update ai_credits in DB:", dbErr);
     }
 
+    // Token-efficient conversational history pruning (keep last 5 messages, truncate older turns)
     const rawMessages = (messages || []).filter((m: any) => m.role !== "system");
-    const lastUserMessage = rawMessages.filter((m: any) => m.role === "user").pop()?.content || "";
-    
-    // استدعاء دالة جلب البيانات الخاصة بالكلية
-    const retrievedContext = await getRelevantAcademicContext(typeof lastUserMessage === "string" ? lastUserMessage : "");
-
     const recentMessages = rawMessages.slice(-5).map((m: any, idx: number, arr: any[]) => {
       const isLatest = idx === arr.length - 1;
       const maxLen = isLatest ? 2000 : 700;
@@ -222,16 +103,14 @@ export async function POST(req: Request) {
       };
     });
 
-    const dynamicSystemPrompt = buildSystemPrompt(retrievedContext);
-
     const formattedMessages = [
-      { role: "system", content: dynamicSystemPrompt },
+      { role: "system", content: MARLINE_SYSTEM_PROMPT },
       ...recentMessages
     ];
 
     let lastErrorText = "";
 
-    // TIER 1: Groq API
+    // TIER 1: Try Groq API First (Ultra Fast, High Precision, Default)
     if (groqKey) {
       for (const model of GROQ_MODELS) {
         try {
@@ -245,7 +124,7 @@ export async function POST(req: Request) {
               model: model,
               messages: formattedMessages,
               stream: true,
-              temperature: 0.2,
+              temperature: 0.25, // Balanced for precision and grounded fidelity
               max_tokens: 1536
             }),
           });
@@ -268,7 +147,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // TIER 2: Fallback OpenRouter
+    // TIER 2: Seamless Fallback to OpenRouter Nemotron Models
     if (openRouterKey) {
       for (const model of OPENROUTER_MODELS) {
         try {
@@ -284,7 +163,7 @@ export async function POST(req: Request) {
               model: model,
               messages: formattedMessages,
               stream: true,
-              temperature: 0.2,
+              temperature: 0.25,
               max_tokens: 2048
             }),
           });
