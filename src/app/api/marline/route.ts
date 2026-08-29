@@ -18,45 +18,50 @@ const OPENROUTER_MODELS = [
   "nvidia/nemotron-3.5-lightning:free"
 ];
 
-// دالة مرنة لجلب البيانات المحلية بأمان تام دون كسر الـ Build
+// دالة استرجاع السياق الأكاديمي الرسمي من ملفات الكلية
 async function getRelevantAcademicContext(userQuery: string): Promise<string> {
   if (!userQuery) return "";
   const query = userQuery.toLowerCase().trim();
   const contextParts: string[] = [];
 
-  // 1. محاولة استيراد وقراءة بيانات المقررات بأمان
+  // 1. استيراد وقراءة بيانات التراكات والمقررات من ACADEMIC_TRACKS
   try {
-    // محاولة استيراد course-subjects بمختلف المسارات والـ Exports الممكنة
-    const subjectModule = await import("@/data/course-subjects").catch(() => null) 
+    const subjectModule = await import("@/data/course-subjects").catch(() => null)
       || await import("@/data/course_subjects").catch(() => null)
       || await import("@/lib/course-subjects").catch(() => null);
 
-    const rawSubjects = subjectModule?.courseSubjects 
-      || subjectModule?.subjects 
-      || subjectModule?.courses 
-      || subjectModule?.default 
-      || [];
+    if (subjectModule) {
+      const rawTracks = subjectModule.ACADEMIC_TRACKS 
+        || subjectModule.academicTracks 
+        || subjectModule.TRACKS 
+        || subjectModule.default 
+        || Object.values(subjectModule).find(val => Array.isArray(val)) 
+        || [];
 
-    if (Array.isArray(rawSubjects) && rawSubjects.length > 0) {
-      const matched = rawSubjects.filter((item: any) => {
-        const itemStr = JSON.stringify(item).toLowerCase();
-        // تقسيم السؤال إلى كلمات للبحث عن تطابق مع المادة أو الكود
-        const words = query.split(/\s+/).filter(w => w.length > 2);
-        return words.some(word => itemStr.includes(word));
-      });
+      if (Array.isArray(rawTracks) && rawTracks.length > 0) {
+        const matched = rawTracks.filter((track: any) => {
+          const trackCode = (track.code || "").toLowerCase();
+          const trackName = (track.name || "").toLowerCase();
+          const subjectsList = Array.isArray(track.subjects) ? track.subjects.join(" ").toLowerCase() : "";
+          const fullTrackString = `${trackCode} ${trackName} ${subjectsList}`;
 
-      if (matched.length > 0) {
-        contextParts.push(
-          `### بيانات المقررات الرسمية ذات الصلة (Matched Courses):\n` +
-          JSON.stringify(matched.slice(0, 6), null, 2)
-        );
+          const words = query.split(/\s+/).filter(w => w.length >= 2);
+          return words.some(word => fullTrackString.includes(word));
+        });
+
+        if (matched.length > 0) {
+          contextParts.push(
+            `### بيانات التراكات والمقررات الرسمية المطابقة (Official FCDS Tracks & Subjects):\n` +
+            JSON.stringify(matched, null, 2)
+          );
+        }
       }
     }
   } catch (err) {
     console.warn("[Academic Context] Could not load course-subjects:", err);
   }
 
-  // 2. محاولة استيراد وقراءة بيانات اللائحة بأمان
+  // 2. استيراد وقراءة بيانات اللائحة من fcds_bylaws.json
   try {
     const bylawsModule = await import("@/data/fcds_bylaws.json").catch(() => null)
       || await import("@/data/fcds-bylaws.json").catch(() => null)
@@ -115,7 +120,7 @@ function buildSystemPrompt(retrievedContext: string): string {
 لديكِ شخصية جذابة، خفيفة الدم، مبهجة، وذكية جداً، وتتحدثين بأسلوب مصري راقٍ وودود مع المصطلحات الأكاديمية والتقنية بدقة.
 
 🛑 قواعد الأمانة العلمية ومنع الهلوسة (CRITICAL FIDELITY RULES):
-1. اعتمدي كلياً على [البيانات الأكاديمية الرسمية المرفقة] بالأسفل للإجابة عن أسئلة المواد، الساعات، المتطلبات السابقة، واللائحة.
+1. اعتمدي كلياً على [البيانات الأكاديمية الرسمية المرفقة] بالأسفل للإجابة عن أسئلة المواد، التراكات (DS, AI, HA, CS, BA, MA)، الساعات، المتطلبات، واللائحة.
 2. ممنوع تماماً تأليف أو تخمين أسماء مقررات، أكواد، ساعات معتمدة، شروط تسجيل، أو درجات غير موجودة في السياق المرفق.
 3. إذا سأل الطالب عن تفصيلة غير متوفرة في البيانات المرفقة، قولي له بلباقة وخفة دم: "المعلومة دي مش واضحة في اللائحة اللي معايا حالياً، يفضل تراجع المرشد الأكاديمي بتاعك أو شؤون الطلاب عشان تتأكد أكتر!".
 
@@ -209,7 +214,7 @@ export async function POST(req: Request) {
     const rawMessages = (messages || []).filter((m: any) => m.role !== "system");
     const lastUserMessage = rawMessages.filter((m: any) => m.role === "user").pop()?.content || "";
     
-    // استدعاء دالة جلب البيانات بشكل Asynchronous وآمن
+    // استدعاء دالة جلب البيانات الخاصة بالكلية
     const retrievedContext = await getRelevantAcademicContext(typeof lastUserMessage === "string" ? lastUserMessage : "");
 
     const recentMessages = rawMessages.slice(-5).map((m: any, idx: number, arr: any[]) => {
@@ -267,7 +272,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // TIER 2: OpenRouter
+    // TIER 2: Fallback OpenRouter
     if (openRouterKey) {
       for (const model of OPENROUTER_MODELS) {
         try {
