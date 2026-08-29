@@ -61,9 +61,7 @@ async function getRelevantAcademicContext(userQuery: string): Promise<string> {
 
   // 2. استيراد وقراءة بيانات اللائحة من fcds_bylaws.json
   try {
-    const bylawsModule = await import("@/data/fcds_bylaws.json").catch(() => null)
-      || await import("@/data/fcds-bylaws.json").catch(() => null)
-      || await import("@/lib/fcds_bylaws.json").catch(() => null);
+    const bylawsModule = await import("@/lib/fcds_bylaws.json").catch(() => null);
 
     const bylawsData = bylawsModule?.default || bylawsModule;
 
