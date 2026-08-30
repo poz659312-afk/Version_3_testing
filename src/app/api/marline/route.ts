@@ -6,19 +6,19 @@ import { MARLINE_SYSTEM_PROMPT } from "@/lib/marline-knowledge";
 // Multi-tier Fallback Providers & Models (100% Free & Lightning Fast)
 // TIER 1 (Default): Ultra-fast Groq Models with 131k context windows
 const GROQ_MODELS = [
-  "openai/gpt-oss-120b",
+  "qwen/qwen3.8-27b",
+  "allam-2-7b",
   "qwen/qwen3.6-27b",
-  "groq/compound",
-  "groq/compound-mini",
+  "openai/gpt-oss-120b",
   "openai/gpt-oss-20b"
 ];
 
 // TIER 2 (Fallback): OpenRouter Nemotron & Free Models
 const OPENROUTER_MODELS = [
   "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "nvidia/nemotron-3.5-lightning:free",
   "google/gemma-4-31b-it:free",
-  "nvidia/nemotron-3.5-lightning:free"
+  "openrouter/free"
 ];
 
 export async function POST(req: Request) {
@@ -125,7 +125,7 @@ export async function POST(req: Request) {
               messages: formattedMessages,
               stream: true,
               temperature: 0.25, // Balanced for precision and grounded fidelity
-              max_tokens: 1536
+              max_tokens: 2048
             }),
           });
 
