@@ -2,14 +2,17 @@ import { calculateGroqBudget, estimateTokens, GROQ_TPM_LIMIT, GROQ_SAFETY_MARGIN
 import { chunkDocumentSemantically, DocumentChunk } from "./semantic-chunker";
 
 export const GROQ_MODELS = [
-  "llama-3.3-70b-versatile",
-  "llama-3.1-8b-instant"
+  "openai/gpt-oss-120b",
+  "qwen/qwen3.8-27b",
+  "openai/gpt-oss-20b",
+  "qwen/qwen3.6-27b",
+  "groq/compound-mini",
+  "groq/compound"
 ];
 
 export const OPENROUTER_MODELS = [
-  "nvidia/nemotron-3.5-lightning:free",
   "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "nvidia/nemotron-3.5-lightning:free",
   "google/gemma-4-31b-it:free"
 ];
 
