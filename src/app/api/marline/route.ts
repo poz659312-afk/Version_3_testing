@@ -124,7 +124,7 @@ export async function POST(req: Request) {
               messages: formattedMessages,
               stream: true,
               temperature: 0.25, // Balanced for precision and grounded fidelity
-              max_tokens: 1024
+              max_tokens: 2800
             }),
           });
 
@@ -163,7 +163,7 @@ export async function POST(req: Request) {
               messages: formattedMessages,
               stream: true,
               temperature: 0.25,
-              max_tokens: 1536
+              max_tokens: 2800
             }),
           });
 
