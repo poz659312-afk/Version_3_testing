@@ -66,6 +66,19 @@ export const THEME_OPTIONS = [
 interface Message {
   role: "user" | "assistant";
   content: string;
+  tier?: string;
+  tierLabel?: string;
+  tokensCost?: number;
+}
+
+export function stripThinkingProcess(text: string): string {
+  if (!text) return "";
+  let cleaned = text;
+  cleaned = cleaned.replace(/<think>[\s\S]*?<\/think>/gi, '');
+  cleaned = cleaned.replace(/<think>[\s\S]*$/gi, '');
+  cleaned = cleaned.replace(/^Here'?s a thinking process:[\s\S]*?(?=(?:#|📌|\*\*Executive|\*\*1\.|\*\*Introduction|---\n))/i, '');
+  cleaned = cleaned.replace(/^Thinking Process:[\s\S]*?(?=(?:#|📌|\*\*Executive|\*\*1\.|\*\*Introduction|---\n))/i, '');
+  return cleaned.trimStart();
 }
 
 function autoWrapCodeBlocks(text: string): string {
@@ -976,8 +989,13 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         throw new Error(errorMsg);
       }
 
-      // Update real-time token credits from response header
+      // Update real-time token credits and Tier information from response headers
       const remCreditsHeader = response.headers.get('X-AI-Credits-Remaining');
+      const costHeader = response.headers.get('X-AI-Credits-Cost');
+      const tierHeader = response.headers.get('X-AI-Tier') || 'Tier 1';
+      const tierLabelHeader = response.headers.get('X-AI-Tier-Label') || (tierHeader.includes('2') ? 'الطبقة الثانية (OpenRouter)' : 'الطبقة الأولى (Groq)');
+      const tokensCost = costHeader ? parseInt(costHeader, 10) : 10;
+
       if (remCreditsHeader !== null) {
         const parsedCredits = parseInt(remCreditsHeader, 10);
         if (!isNaN(parsedCredits)) {
@@ -989,7 +1007,13 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       if (task === 'quiz') {
         const data = await response.json();
         const assistantContent = typeof data.result === 'string' ? data.result : JSON.stringify(data.result);
-        setMessages(prev => [...prev, { role: "assistant", content: assistantContent }]);
+        setMessages(prev => [...prev, {
+          role: "assistant",
+          content: assistantContent,
+          tier: tierHeader,
+          tierLabel: tierLabelHeader,
+          tokensCost: tokensCost
+        }]);
         toast.success("Quiz generated successfully!");
         setLoading(false);
         return;
@@ -1047,16 +1071,26 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                   "";
                 if (contentChunk) {
                   assistantText += contentChunk;
+                  const displayCleanedText = stripThinkingProcess(assistantText);
                   if (!hasAddedAssistant) {
                     hasAddedAssistant = true;
-                    setMessages(prev => [...prev, { role: "assistant", content: assistantText }]);
+                    setMessages(prev => [...prev, {
+                      role: "assistant",
+                      content: displayCleanedText,
+                      tier: tierHeader,
+                      tierLabel: tierLabelHeader,
+                      tokensCost: tokensCost
+                    }]);
                   } else {
                     setMessages(prev => {
                       const next = [...prev];
                       if (next.length > 0) {
                         next[next.length - 1] = {
                           ...next[next.length - 1],
-                          content: assistantText
+                          content: displayCleanedText,
+                          tier: tierHeader,
+                          tierLabel: tierLabelHeader,
+                          tokensCost: tokensCost
                         };
                       }
                       return next;
@@ -1213,9 +1247,18 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
           }
         });
 
+        // Strip any thinking process elements or scratchpad commentary from the PDF export
+        clone.querySelectorAll('p, blockquote, div').forEach(el => {
+          const txt = el.textContent?.trim() || '';
+          if (txt.startsWith("Here's a thinking process") || txt.startsWith("Thinking Process:") || txt.startsWith("Analyze User Input:")) {
+            el.remove();
+          }
+        });
+
         bodyHtml = clone.innerHTML;
       } else {
-        bodyHtml = content.replace(/\n/g, '<br/>');
+        const cleanedContent = stripThinkingProcess(content);
+        bodyHtml = cleanedContent.replace(/\n/g, '<br/>');
       }
 
       // Create a hidden iframe
@@ -2364,6 +2407,25 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                         "flex flex-col gap-1 max-w-[90%] md:max-w-[85%]",
                         msg.role === "user" ? "items-end" : "items-start"
                       )}>
+                        {msg.role === 'assistant' && (
+                          <div className="flex items-center gap-2 mb-1 px-1 animate-in fade-in duration-300">
+                            <span
+                              className={cn(
+                                "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold tracking-tight shadow-xs border transition-all",
+                                msg.tier?.includes('2')
+                                  ? "bg-purple-500/10 text-purple-600 dark:text-purple-300 border-purple-500/30"
+                                  : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border-emerald-500/30"
+                              )}
+                            >
+                              <Sparkles className="w-3 h-3 shrink-0" />
+                              {msg.tierLabel || (msg.tier?.includes('2') ? 'الطبقة الثانية (OpenRouter)' : 'الطبقة الأولى (Groq)')}
+                            </span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-mono font-semibold bg-muted/40 text-muted-foreground border border-border/50">
+                              <Coins className="w-3 h-3 text-amber-500 shrink-0" />
+                              {msg.tokensCost ? `${msg.tokensCost} Tokens` : '10 Tokens'}
+                            </span>
+                          </div>
+                        )}
                         <div
                           className={cn(
                             "p-6 rounded-2xl text-sm shadow-md border group relative overflow-hidden transition-all duration-300 w-full max-w-full break-words [overflow-wrap:anywhere]",

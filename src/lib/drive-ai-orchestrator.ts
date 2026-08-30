@@ -2,6 +2,7 @@ import { calculateGroqBudget, estimateTokens, GROQ_TPM_LIMIT, GROQ_SAFETY_MARGIN
 import { chunkDocumentSemantically, DocumentChunk } from "./semantic-chunker";
 
 export const GROQ_MODELS = [
+  "qwen/qwen3.8-27b",
   "openai/gpt-oss-120b",
   "qwen/qwen3.6-27b",
   "openai/gpt-oss-20b"
@@ -13,6 +14,13 @@ export const OPENROUTER_MODELS = [
   "nvidia/nemotron-3-ultra-550b-a55b:free",
   "google/gemma-4-31b-it:free"
 ];
+
+export interface OrchestratorResult {
+  stream: ReadableStream<Uint8Array>;
+  tier: 'Tier 1' | 'Tier 2';
+  tierLabel: string;
+  model: string;
+}
 
 export interface OrchestratorOptions {
   task: 'summarize' | 'translate' | 'chat';
@@ -447,7 +455,7 @@ async function executeOpenRouterStream(
  * Master Performance-First Drive AI Orchestrator.
  * Dynamically routes to Direct Groq, Semantic Chunking, or OpenRouter fallback.
  */
-export async function orchestrateDriveAI(options: OrchestratorOptions): Promise<ReadableStream<Uint8Array>> {
+export async function orchestrateDriveAI(options: OrchestratorOptions): Promise<OrchestratorResult> {
   const { groqKey, openRouterKey, systemPrompt, sanitizedContext, metadataName, language, task, messages } = options;
 
   const apiMessages: Array<{ role: string; content: string }> = [
@@ -457,7 +465,7 @@ export async function orchestrateDriveAI(options: OrchestratorOptions): Promise<
   if (task === 'summarize') {
     apiMessages.push({
       role: "user",
-      content: `Document Name: ${metadataName || 'Academic File'}\n\nDocument Text Content:\n${sanitizedContext}\n\nPlease generate a comprehensive, in-depth, and beautifully formatted university study guide for this document in ${language}, following the fixed structure and formatting rules exactly. Every section and every table must be fully written out and complete.`
+      content: `Document Name: ${metadataName || 'Academic File'}\n\nDocument Text Content:\n${sanitizedContext}\n\nPlease generate a comprehensive, in-depth, and beautifully formatted university study guide for this document in ${language}, following the fixed structure and formatting rules exactly. Every section and every table must be fully written out and complete. Start immediately with the title and summary without any thinking scratchpads.`
     });
   } else if (task === 'translate') {
     apiMessages.push({
@@ -493,7 +501,13 @@ export async function orchestrateDriveAI(options: OrchestratorOptions): Promise<
   // ROUTE 1: Direct Groq (Small to Medium documents <= 5,400 tokens)
   if (groqKey && budget.canUseGroqDirectly) {
     try {
-      return await executeDirectGroqStream(options, sanitizedApiMessages, budget.actualMaxTokens);
+      const stream = await executeDirectGroqStream(options, sanitizedApiMessages, budget.actualMaxTokens);
+      return {
+        stream,
+        tier: 'Tier 1',
+        tierLabel: 'الطبقة الأولى (Groq Ultra-Fast)',
+        model: GROQ_MODELS[0]
+      };
     } catch (groqErr: any) {
       console.warn("[Marline Drive AI] Direct Groq failed, attempting OpenRouter fallback:", groqErr.message);
     }
@@ -509,7 +523,13 @@ export async function orchestrateDriveAI(options: OrchestratorOptions): Promise<
 
       if (chunks.length > 1) {
         console.log(`[Marline Drive AI] Document size (${totalInputTokens} tokens) requires semantic chunking into ${chunks.length} parts.`);
-        return await executeChunkedSummarization(options, chunks);
+        const stream = await executeChunkedSummarization(options, chunks);
+        return {
+          stream,
+          tier: 'Tier 1',
+          tierLabel: 'الطبقة الأولى (Groq Chunked Synthesis)',
+          model: GROQ_MODELS[0]
+        };
       }
     } catch (chunkErr: any) {
       console.warn("[Marline Drive AI] Chunked Groq failed, falling back to OpenRouter:", chunkErr.message);
@@ -518,7 +538,13 @@ export async function orchestrateDriveAI(options: OrchestratorOptions): Promise<
 
   // ROUTE 3: OpenRouter Tier 2 Fallback (128k context, zero TPM limits)
   if (openRouterKey) {
-    return await executeOpenRouterStream(options);
+    const stream = await executeOpenRouterStream(options);
+    return {
+      stream,
+      tier: 'Tier 2',
+      tierLabel: 'الطبقة الثانية (OpenRouter Extended)',
+      model: OPENROUTER_MODELS[0]
+    };
   }
 
   throw new Error("No AI providers available to fulfill request");

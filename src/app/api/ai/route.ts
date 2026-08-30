@@ -419,7 +419,7 @@ STRICT EXAM RULES:
 
     const { orchestrateDriveAI } = await import('@/lib/drive-ai-orchestrator');
 
-    const stream = await orchestrateDriveAI({
+    const { stream, tier, tierLabel, model } = await orchestrateDriveAI({
       task: (task || 'summarize') as any,
       language,
       systemPrompt,
@@ -440,6 +440,9 @@ STRICT EXAM RULES:
         "Connection": "keep-alive",
         "X-AI-Credits-Remaining": Math.max(0, currentCredits - dynamicTokenCost).toString(),
         "X-AI-Credits-Cost": dynamicTokenCost.toString(),
+        "X-AI-Tier": tier,
+        "X-AI-Tier-Label": tierLabel,
+        "X-AI-Model": model
       },
     });
 
