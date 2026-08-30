@@ -7,18 +7,17 @@ import { MARLINE_SYSTEM_PROMPT } from "@/lib/marline-knowledge";
 // TIER 1 (Default): Ultra-fast Groq Models with 131k context windows
 const GROQ_MODELS = [
   "qwen/qwen3.8-27b",
-  "allam-2-7b",
   "qwen/qwen3.6-27b",
   "openai/gpt-oss-120b",
   "openai/gpt-oss-20b"
 ];
 
-// TIER 2 (Fallback): OpenRouter Nemotron & Free Models
+// TIER 2 (Fallback): OpenRouter Free Models
 const OPENROUTER_MODELS = [
-  "nvidia/nemotron-3-super-120b-a12b:free",
+  "openrouter/free",
   "nvidia/nemotron-3.5-lightning:free",
-  "google/gemma-4-31b-it:free",
-  "openrouter/free"
+  "nvidia/nemotron-3-super-120b-a12b:free",
+  "minimax/minimax-m2.7:free"
 ];
 
 export async function POST(req: Request) {
@@ -125,7 +124,7 @@ export async function POST(req: Request) {
               messages: formattedMessages,
               stream: true,
               temperature: 0.25, // Balanced for precision and grounded fidelity
-              max_tokens: 2048
+              max_tokens: 1024
             }),
           });
 
@@ -164,7 +163,7 @@ export async function POST(req: Request) {
               messages: formattedMessages,
               stream: true,
               temperature: 0.25,
-              max_tokens: 2048
+              max_tokens: 1536
             }),
           });
 
