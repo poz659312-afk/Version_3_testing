@@ -5,6 +5,7 @@ import { checkRateLimit, RateLimitTier } from '@/lib/rate-limit';
 import { google } from 'googleapis';
 import pdf from 'pdf-parse';
 import { getCachedAIResult, setCachedAIResult } from '@/lib/persistent-ai-cache';
+import { normalizeQuizQuestionItem } from '@/lib/quiz-math-normalizer';
 
 const pdfParse = pdf;
 
@@ -224,42 +225,37 @@ export async function POST(req: NextRequest) {
 
     // 2. QUIZ GENERATION TASK (High-Yield Academic Assessment)
     if (task === 'quiz') {
-      const quizSystemPrompt = `You are Marline AI, an elite university professor, exam committee chair, and assessment specialist.
+      const quizSystemPrompt = `You are Marline AI, an elite university professor and exam creator.
 Language: ${language}.
 
-Your mission: Generate exactly ${safeQuestionCount} challenging, high-yield Multiple Choice Questions based strictly on the provided academic document.
+Your mission: Generate a JSON object containing EXACTLY ${safeQuestionCount} Multiple Choice Questions based strictly on the provided document.
 
-EXAM QUALITY & RIGOR STANDARDS:
-1. Cognitive Depth (Bloom's Taxonomy): Focus on conceptual analysis, application, formula usage, and distinguishing subtle differences between similar concepts. Avoid shallow definitions or trivial recall.
-2. Plausible Distractors (No Giveaway Options): Every incorrect option (B, C, D) must represent a realistic, plausible misconception that students frequently make. No silly, obviously wrong, or nonsensical choices.
-3. Mandatory LaTeX Math & Formulas (In Questions, Options, & Explanations):
-   - In the "question": Enclose all mathematical expressions, symbols ($P$, $n$, $\pi$, $\lambda$), states, formulas ($P(X_{n+1}=j \mid X_n=i)$), matrices, and variables in clean LaTeX wrapped in single dollar signs $...$.
-   - In each of the "options": Any mathematical symbol, variable, or equation MUST be formatted strictly inside $...$ (e.g., "$p_{ij} \ge 0$", "$\pi P = \pi$", "$\sum_j p_{ij} = 1$").
-   - In the "explanation": Every mathematical derivation, symbol, or term MUST be formatted in clean LaTeX ($...$).
-   - Always use \mid for conditional probability ($P(A \mid B)$) and \sum for summations ($\sum_{j=1}^{n}$).
-4. Pedagogical Explanations: Provide a thorough explanation for every question explaining WHY the correct option is true and WHY the other options are misconceptions.
-5. Strict Structure & Formatting:
-   - Every option MUST start with its uppercase letter prefix and closing parenthesis: "A) ...", "B) ...", "C) ...", "D) ...".
-   - The "answer" field MUST be an exact character-for-character match of the chosen correct option string (including its "A) " prefix).
-
-JSON Output Schema:
+JSON SCHEMA:
 {
   "questions": [
     {
       "numb": 1,
       "type": "Multiple Choice",
-      "question": "Question text with LaTeX formulas ($...$) here...",
+      "question": "Direct academic question in ${language} with LaTeX math like $p_{ij}$",
       "options": [
-        "A) Option with $...$ math...",
-        "B) Option with $...$ math...",
-        "C) Option with $...$ math...",
-        "D) Option with $...$ math..."
+        "A) Short, crisp option (1-2 lines max, 15-20 words max)",
+        "B) Short, crisp option (1-2 lines max, 15-20 words max)",
+        "C) Short, crisp option (1-2 lines max, 15-20 words max)",
+        "D) Short, crisp option (1-2 lines max, 15-20 words max)"
       ],
-      "answer": "A) Option with $...$ math...",
-      "explanation": "Detailed explanation with $...$ math here..."
+      "answer": "A) Exact string matching one of the 4 options above",
+      "explanation": "Concise 1-2 sentence explanation of why this answer is correct and others are misconceptions"
     }
   ]
-}`;
+}
+
+STRICT EXAM RULES:
+1. EXACT COUNT: You MUST generate EXACTLY ${safeQuestionCount} questions. Never fewer, never more.
+2. STRICTLY 4 OPTIONS: Every question must have EXACTLY 4 options (A, B, C, D). NEVER generate 5 options (no E).
+3. OPTION CONCISENESS (NO ESSAYS): Options MUST be short, crisp choices (maximum 15-20 words, 1-2 lines). NEVER write long multi-sentence paragraphs or essays as options.
+4. EXACT ANSWER MATCH: The "answer" field MUST be an exact character-for-character copy of one of the 4 option strings.
+5. MATHEMATICAL FORMULAS (LaTeX): Enclose all mathematical notations, symbols ($P$, $\\pi$, $p_{ij}$), matrices, and formulas strictly inside single dollar signs $...$.
+6. HIGH-YIELD QUALITY: Test conceptual understanding, definitions, calculations, and distinctions between concepts. Avoid trivial recall.`;
 
       // Sample representative document content if oversized to ensure questions span the entire lecture
       let quizContext = sanitizedContext || metadata.name || 'Academic File';
@@ -272,7 +268,7 @@ JSON Output Schema:
 
       const quizMessages = [
         { role: "system", content: quizSystemPrompt },
-        { role: "user", content: `Document: "${metadata.name || 'Lecture Notes'}"\n\nContent:\n${quizContext}\n\nGenerate exactly ${safeQuestionCount} high-yield MCQs in ${language}. Return valid JSON.` }
+        { role: "user", content: `Document: "${metadata.name || 'Lecture Notes'}"\n\nGenerate EXACTLY ${safeQuestionCount} high-yield MCQs in ${language} (4 short options each). Output valid JSON.` }
       ];
 
       const QUIZ_GROQ_MODELS = [
@@ -298,8 +294,8 @@ JSON Output Schema:
                 model: model,
                 messages: quizMessages,
                 response_format: { type: "json_object" },
-                max_tokens: Math.min(260 * safeQuestionCount, 3200),
-                temperature: 0.2
+                max_tokens: Math.min(320 * safeQuestionCount, 4000),
+                temperature: 0.1
               })
             });
 
@@ -311,13 +307,14 @@ JSON Output Schema:
               const finalQuestions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
 
               if (finalQuestions.length > 0) {
-                // Ensure proper numbering
+                // Ensure proper numbering and LaTeX math normalization
                 finalQuestions.forEach((q: any, idx: number) => { q.numb = idx + 1; });
+                const normalizedQuestions = finalQuestions.map(normalizeQuizQuestionItem);
                 await deductCredits();
                 if (shouldCache) {
-                  await setCachedAIResult(sanitizedContext, cacheTaskKey, language, finalQuestions);
+                  await setCachedAIResult(sanitizedContext, cacheTaskKey, language, normalizedQuestions);
                 }
-                return NextResponse.json({ result: finalQuestions }, {
+                return NextResponse.json({ result: normalizedQuestions }, {
                   headers: {
                     'X-AI-Credits-Remaining': Math.max(0, currentCredits - dynamicTokenCost).toString(),
                     'X-AI-Credits-Cost': dynamicTokenCost.toString()
@@ -349,8 +346,8 @@ JSON Output Schema:
                 model: model,
                 messages: quizMessages,
                 response_format: { type: "json_object" },
-                max_tokens: Math.min(260 * safeQuestionCount, 3200),
-                temperature: 0.2
+                max_tokens: Math.min(320 * safeQuestionCount, 4000),
+                temperature: 0.1
               })
             });
 
@@ -363,11 +360,12 @@ JSON Output Schema:
 
               if (finalQuestions.length > 0) {
                 finalQuestions.forEach((q: any, idx: number) => { q.numb = idx + 1; });
+                const normalizedQuestions = finalQuestions.map(normalizeQuizQuestionItem);
                 await deductCredits();
                 if (shouldCache) {
-                  await setCachedAIResult(sanitizedContext, cacheTaskKey, language, finalQuestions);
+                  await setCachedAIResult(sanitizedContext, cacheTaskKey, language, normalizedQuestions);
                 }
-                return NextResponse.json({ result: finalQuestions }, {
+                return NextResponse.json({ result: normalizedQuestions }, {
                   headers: {
                     'X-AI-Credits-Remaining': Math.max(0, currentCredits - dynamicTokenCost).toString(),
                     'X-AI-Credits-Cost': dynamicTokenCost.toString()
@@ -391,7 +389,9 @@ JSON Output Schema:
     Language: ${language}.
 
     CRITICAL FORMATTING & SYNTAX STANDARDS:
-    1. GFM Tables:
+    1. GFM Tables (Keep Compact & Never Overly Wide):
+       - Maximum 2 to 4 columns. NEVER create wide tables with massive paragraphs in cells.
+       - Table cells must contain short, crisp summaries or keywords. For detailed multi-line explanations, use bullet lists outside the table instead.
        - Every table MUST have a standard header row, delimiter row (| --- | --- |), and data rows.
        - Each table row MUST be on its own independent line starting with | and ending with |.
        - NEVER output multiple rows on a single line or use inline ||.
@@ -408,12 +408,14 @@ JSON Output Schema:
     - 📌 **Executive Overview**: High-level synthesis of learning goals and core concepts.
     - 🧠 **Core Concepts & Definitions**: Key terminology and foundational definitions.
     - 🔍 **Detailed Thematic Analysis**: In-depth explanations of every topic/methodology with bullet points, code, and LaTeX where relevant.
-    - ⚖️ **Comparison & Evaluation Table**: A clean GFM table comparing methods/approaches (or "Key Trade-offs" if not applicable).
+    - ⚖️ **Comparison & Evaluation Table**: A clean, compact 2-4 column GFM table comparing methods/approaches.
     - ⚠️ **Key Pitfalls & Exam Traps**: Common misconceptions and edge cases.
     - 💡 **Real-World Case Examples**: Practical implementation scenarios.
     - 🎯 **High-Yield Exam Review Questions**: 3 to 5 conceptual review questions with model answers.
 
-    Completeness: Ensure the study guide covers all topics comprehensively to the very end without cutting off. Output only the clean, complete study guide without meta-commentary.`;
+    COMPLETENESS GUARANTEE:
+    - You must write out every single section completely and thoroughly without stopping midway or omitting any lecture/chapter.
+    - Do not truncate or abbreviate with "etc.". Output the complete study guide to the very end.`;
 
     const { orchestrateDriveAI } = await import('@/lib/drive-ai-orchestrator');
 

@@ -277,13 +277,31 @@ function CodeBlock({ language, codeText, children, accentColor }: { language: st
   const themeColor = accentColor || "#10b981";
 
   return (
-    <div data-code-block="true" dir="ltr" className="my-4 rounded-xl overflow-hidden border border-slate-200 dark:border-white/15 bg-white dark:bg-[#1e1e2e] shadow-lg font-mono text-xs text-left" style={{ maxWidth: '100%' }}>
+    <div
+      data-code-block="true"
+      dir="ltr"
+      className="my-5 rounded-2xl overflow-hidden bg-white dark:bg-[#12131e] font-mono text-xs text-left transition-all duration-300"
+      style={{
+        maxWidth: '100%',
+        border: `1.5px solid ${themeColor}60`,
+        boxShadow: `0 8px 30px -4px ${themeColor}20`
+      }}
+    >
       {/* IDE Top Window Bar */}
-      <div dir="ltr" className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-[#181825] border-b border-slate-200 dark:border-white/10 select-none text-left">
+      <div
+        dir="ltr"
+        className="flex items-center justify-between px-4 py-2.5 bg-slate-50/90 dark:bg-[#181926]/90 select-none text-left backdrop-blur-md"
+        style={{ borderBottom: `1.5px solid ${themeColor}30` }}
+      >
         <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: themeColor }} />
+            <span className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-white/20" />
+            <span className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-white/20" />
+          </div>
           <div className="flex items-center gap-1.5 ml-2 border-l border-slate-300 dark:border-white/10 pl-3">
             <Terminal className="w-3.5 h-3.5" style={{ color: themeColor }} />
-            <span className="font-bold uppercase tracking-wider text-[10.5px] text-slate-500 dark:text-slate-300">
+            <span className="font-bold uppercase tracking-wider text-[11px]" style={{ color: themeColor }}>
               {displayLang}
             </span>
           </div>
@@ -291,13 +309,13 @@ function CodeBlock({ language, codeText, children, accentColor }: { language: st
         <button
           data-pdf-exclude="true"
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-slate-300 transition-colors text-[11px] font-medium cursor-pointer border border-slate-200 dark:border-white/5"
+          className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-200 transition-all text-[11px] font-semibold cursor-pointer border border-slate-200 dark:border-white/10"
           title="Copy code"
         >
           {copied ? (
             <>
               <Check className="w-3 h-3 text-emerald-500" />
-              <span className="text-emerald-500 font-semibold">Copied!</span>
+              <span className="text-emerald-500 font-bold">Copied!</span>
             </>
           ) : (
             <>
@@ -309,7 +327,7 @@ function CodeBlock({ language, codeText, children, accentColor }: { language: st
       </div>
 
       {/* Code Content — use children (syntax-highlighted JSX from rehype-highlight), fallback to plain text */}
-      <div dir="ltr" className="p-4 overflow-x-auto text-[13px] leading-relaxed select-text text-left font-mono" style={{ maxWidth: '100%' }}>
+      <div dir="ltr" className="p-4.5 overflow-x-auto text-[13px] leading-relaxed select-text text-left font-mono" style={{ maxWidth: '100%' }}>
         <pre dir="ltr" className="font-mono text-left m-0 p-0 bg-transparent border-0" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
           <code dir="ltr" className="font-mono text-left hljs bg-transparent text-slate-800 dark:text-slate-100">{children || cleanCopyText}</code>
         </pre>
@@ -1398,16 +1416,16 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
 
             .content th { 
-              background-color: #f1f5f9 !important;
+              background-color: ${activeThemeColor}18 !important;
               color: #0f172a !important; 
-              padding: 7px 10px !important; 
+              padding: 8px 12px !important; 
               text-align: left !important; 
               font-weight: 800 !important; 
               font-size: 10px !important;
               text-transform: uppercase !important;
               letter-spacing: 0.5px !important;
-              border: 1px solid #cbd5e1 !important; 
-              border-bottom: 2px solid #94a3b8 !important;
+              border: 1px solid ${activeThemeColor}40 !important; 
+              border-bottom: 2px solid ${activeThemeColor} !important;
               vertical-align: middle !important;
               page-break-inside: avoid !important;
               break-inside: avoid !important;
@@ -1419,8 +1437,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             }
 
             .content td { 
-              padding: 7px 10px !important; 
-              border: 1px solid #e2e8f0 !important; 
+              padding: 8px 12px !important; 
+              border: 1px solid ${activeThemeColor}30 !important; 
               color: #374151 !important; 
               vertical-align: top !important;
               font-size: 11px !important; 
@@ -2348,7 +2366,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                       )}>
                         <div
                           className={cn(
-                            "p-6 rounded-2xl text-sm shadow-md border group relative overflow-hidden transition-all duration-300",
+                            "p-6 rounded-2xl text-sm shadow-md border group relative overflow-hidden transition-all duration-300 w-full max-w-full break-words [overflow-wrap:anywhere]",
                             msg.role === "user"
                               ? cn("text-white rounded-tr-none border", activeClasses.gradientBg, activeClasses.userBorder, activeClasses.userShadow)
                               : "bg-muted/30 dark:bg-white/[0.01] backdrop-blur-md rounded-tl-none max-w-none border-border dark:border-white/5 shadow-black/5"
@@ -2436,7 +2454,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                             </div>
                           ) : (
                             <>
-                              <div id={`msg-content-${idx}`} data-msg-content="true" className="ai-markdown-content relative animate-fade-in">
+                              <div id={`msg-content-${idx}`} data-msg-content="true" className="ai-markdown-content relative animate-fade-in w-full max-w-full overflow-hidden break-words [overflow-wrap:anywhere]">
                                 {/* Inject dynamic KaTeX styling overrides based on theme */}
                                 <style>{`
                                 #msg-content-${idx} .katex-display,
@@ -2445,6 +2463,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                   display: block !important;
                                   clear: both !important;
                                   width: 100% !important;
+                                  max-width: 100% !important;
                                   text-align: center !important;
                                   font-size: 1.32em !important;
                                   margin: 2.2rem 0 !important;
@@ -2517,7 +2536,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                       </h4>
                                     ),
                                     p: ({ children }) => (
-                                      <p className={cn("text-[13.5px] leading-relaxed my-2", isDark ? "text-white/80" : "text-slate-800")}>{children}</p>
+                                      <p className={cn("text-[13.5px] leading-relaxed my-2 break-words [overflow-wrap:anywhere]", isDark ? "text-white/80" : "text-slate-800")}>{children}</p>
                                     ),
                                     strong: ({ children }) => {
                                       return (
@@ -2539,16 +2558,16 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                       <em className={cn("italic font-medium", isDark ? "text-white/90" : "text-slate-900")}>{children}</em>
                                     ),
                                     ul: ({ children }) => (
-                                      <ul className="space-y-2 my-3 ml-1 list-none">{children}</ul>
+                                      <ul className="space-y-2 my-3 ml-1 list-none w-full max-w-full">{children}</ul>
                                     ),
                                     ol: ({ children }) => (
-                                      <ol className={cn("space-y-2 my-3 ml-4 list-decimal list-outside", isDark ? "text-white/70" : "text-slate-700")}>{children}</ol>
+                                      <ol className={cn("space-y-2 my-3 ml-4 list-decimal list-outside w-full max-w-full", isDark ? "text-white/70" : "text-slate-700")}>{children}</ol>
                                     ),
                                     li: ({ children }) => {
                                       return (
-                                        <li className={cn("text-[13.5px] flex items-start gap-2.5 my-1.5 leading-relaxed transition-all duration-300 group/li transform hover:translate-x-1", isDark ? "text-white/80 hover:text-white" : "text-slate-800 hover:text-slate-950")}>
+                                        <li className={cn("text-[13.5px] flex items-start gap-2.5 my-1.5 leading-relaxed transition-all duration-300 group/li transform hover:translate-x-1 break-words [overflow-wrap:anywhere]", isDark ? "text-white/80 hover:text-white" : "text-slate-800 hover:text-slate-950")}>
                                           <span className={cn("mt-2 shrink-0 w-1.5 h-1.5 rounded-full shadow-sm shadow-black/20 transition-all duration-300", activeClasses.bullet)} />
-                                          <span className="flex-1 transition-all duration-300">{children}</span>
+                                          <span className="flex-1 transition-all duration-300 break-words [overflow-wrap:anywhere]">{children}</span>
                                         </li>
                                       );
                                     },
@@ -2556,24 +2575,57 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                                       <hr className={cn("my-3.5 border-t opacity-30 transition-colors", activeClasses.border)} />
                                     ),
                                     a: ({ href, children }) => (
-                                      <a href={href} target="_blank" rel="noopener noreferrer" className={cn("hover:opacity-80 underline underline-offset-4 font-semibold transition-all", activeClasses.text)}>{children}</a>
+                                      <a href={href} target="_blank" rel="noopener noreferrer" className={cn("hover:opacity-80 underline underline-offset-4 font-semibold transition-all break-words [overflow-wrap:anywhere]", activeClasses.text)}>{children}</a>
                                     ),
                                     table: ({ children }) => (
-                                      <div className="overflow-x-auto my-4 border rounded-xl shadow-sm">
-                                        <table className="w-full text-[13px] border-collapse">{children}</table>
+                                      <div
+                                        className="overflow-x-auto my-5 rounded-2xl shadow-lg transition-all duration-300 backdrop-blur-md w-full max-w-full"
+                                        style={{
+                                          border: `1.5px solid ${activeClasses.accent}50`,
+                                          boxShadow: `0 8px 30px -4px ${activeClasses.accent}18`
+                                        }}
+                                      >
+                                        <table className="w-full text-[13px] border-collapse table-auto">{children}</table>
                                       </div>
                                     ),
                                     thead: ({ children }) => (
-                                      <thead style={{ backgroundColor: `${activeClasses.accent}14` }}>{children}</thead>
+                                      <thead
+                                        style={{
+                                          backgroundColor: `${activeClasses.accent}18`,
+                                          borderBottom: `2px solid ${activeClasses.accent}`
+                                        }}
+                                      >
+                                        {children}
+                                      </thead>
                                     ),
                                     th: ({ children }) => (
-                                      <th className={cn("px-5 py-3.5 text-left font-black border-b text-[11px] uppercase tracking-widest", activeClasses.text, activeClasses.border)}>{children}</th>
+                                      <th
+                                        className={cn("px-5 py-3.5 text-left font-black text-[11.5px] uppercase tracking-widest border-r last:border-r-0 whitespace-nowrap sm:whitespace-normal", activeClasses.text)}
+                                        style={{
+                                          borderBottom: `2px solid ${activeClasses.accent}`,
+                                          borderRightColor: `${activeClasses.accent}35`
+                                        }}
+                                      >
+                                        {children}
+                                      </th>
                                     ),
                                     td: ({ children }) => (
-                                      <td className={cn("px-5 py-3 border-b text-[12.5px] leading-relaxed font-semibold", isDark ? "border-white/[0.04] text-white/70" : "border-black/[0.04] text-slate-750")}>{children}</td>
+                                      <td
+                                        className={cn("px-5 py-3.5 border-b border-r last:border-r-0 text-[12.5px] leading-relaxed font-semibold transition-colors break-words", isDark ? "text-white/85" : "text-slate-850")}
+                                        style={{
+                                          borderBottomColor: `${activeClasses.accent}25`,
+                                          borderRightColor: `${activeClasses.accent}25`
+                                        }}
+                                      >
+                                        {children}
+                                      </td>
                                     ),
                                     tr: ({ children }) => (
-                                      <tr className={cn("transition-colors duration-200", isDark ? "hover:bg-white/[0.03]" : "hover:bg-black/[0.02]")}>{children}</tr>
+                                      <tr
+                                        className={cn("transition-colors duration-200 even:bg-muted/20 dark:even:bg-white/[0.025] odd:bg-transparent", isDark ? "hover:bg-white/[0.06]" : "hover:bg-black/[0.04]")}
+                                      >
+                                        {children}
+                                      </tr>
                                     ),
                                     blockquote: ({ children }) => (
                                       <blockquote className={cn("relative border-l-4 rounded-r-2xl px-6 py-4.5 my-6 font-semibold text-[13.5px] italic shadow-md shadow-black/10 leading-relaxed backdrop-blur-md overflow-hidden", isDark ? "text-white/90 border-white/5" : "text-slate-900 border-black/5")} style={{ borderLeftColor: activeClasses.accent, backgroundImage: `linear-gradient(to right, ${activeClasses.accent}0c, transparent)` }}>

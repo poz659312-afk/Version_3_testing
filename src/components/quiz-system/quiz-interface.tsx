@@ -44,6 +44,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import Link from "next/link";
 import { recordQuizCompletionAction } from "@/app/quiz/actions";
+import { normalizeLatexMath } from "@/lib/quiz-math-normalizer";
 
 
 interface QuizQuestion {
@@ -154,10 +155,8 @@ function SafeInlineMath({ math }: { math: string }) {
 
 function formatTextWithLatex(text?: string | null) {
   if (!text) return text;
-  // Normalize \( ... \) to $ ... $ and \[ ... \] to $$ ... $$
-  const normalized = text
-    .replace(/\\\[([\s\S]*?)\\\]/g, '$$$1$$')
-    .replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$');
+  // Automatically normalize and wrap raw LaTeX formulas, matrices, and symbols in $...$
+  const normalized = normalizeLatexMath(text);
 
   const parts = normalized.split(/(\${1,2}[^$]+\${1,2})/g);
   return parts.map((part, i) => {
