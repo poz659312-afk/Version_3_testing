@@ -11,19 +11,18 @@ const pdfParse = pdf;
 // Multi-tier Fallback Models (100% Free & Lightning Fast)
 // TIER 1 (Default): Ultra-fast Groq Models with 131k context windows
 const GROQ_MODELS = [
-  "openai/gpt-oss-120b",
+  "qwen/qwen3.8-27b",
   "qwen/qwen3.6-27b",
-  "groq/compound",
-  "groq/compound-mini",
+  "openai/gpt-oss-120b",
   "openai/gpt-oss-20b"
 ];
 
-// TIER 2 (Fallback): OpenRouter Nemotron & Free Models
+// TIER 2 (Fallback): OpenRouter Free Models
 const OPENROUTER_MODELS = [
+  "openrouter/free",
+  "nvidia/nemotron-3.5-lightning:free",
   "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3-ultra-550b-a55b:free",
-  "google/gemma-4-31b-it:free",
-  "nvidia/nemotron-3.5-lightning:free"
+  "minimax/minimax-m2.7:free"
 ];
 
 export async function GET(req: NextRequest) {
@@ -349,10 +348,18 @@ Rules:
     const systemPrompt = `You are Marline AI, an elite university professor and academic study guide author.
     Language: ${language}.
 
-    FORMATTING & SYNTAX STANDARDS:
-    1. GFM Tables: Each row on a single line starting and ending with |. Plain text inside cells.
-    2. Formulas: Wrap inline math in $...$ and block equations in $$...$$.
-    3. Code/SQL: Always enclose code and SQL queries in fenced code blocks (\`\`\`sql, \`\`\`python, etc.).
+    CRITICAL FORMATTING & SYNTAX STANDARDS:
+    1. GFM Tables:
+       - Every table MUST have a standard header row, delimiter row (| --- | --- |), and data rows.
+       - Each table row MUST be on its own independent line starting with | and ending with |.
+       - NEVER output multiple rows on a single line or use inline ||.
+       - Inside table cells, use plain text or simple inline math $...$. Never place unescaped vertical pipes inside cells (use \\mid or \\Vert instead).
+    2. Mathematical Formulas (LaTeX):
+       - Inline math: Wrap strictly in $...$ (e.g., $P(X_{n+1} = j \\mid X_n = i) = p_{ij}$).
+       - NEVER place $ inside brackets or functions (e.g. write $P(A \\mid B)$, NEVER P(\\mid$B$)).
+       - Block / Display equations & Matrices: ALWAYS enclose on separate lines wrapped in $$...$$ (e.g. $$\\begin{bmatrix} Q & R \\\\ 0 & I \\end{bmatrix}$$).
+       - Never place display matrices inline within text sentences.
+    3. Code & SQL: Always enclose in fenced code blocks (\`\`\`sql, \`\`\`python, etc.).
     4. Section Dividers: Use a single \`---\` before major section headings.
 
     FIXED ACADEMIC STUDY GUIDE STRUCTURE:
@@ -364,7 +371,7 @@ Rules:
     - 💡 **Real-World Case Examples**: Practical implementation scenarios.
     - 🎯 **High-Yield Exam Review Questions**: 3 to 5 conceptual review questions with model answers.
 
-    Output only the clean, complete study guide without meta-commentary.`;
+    Completeness: Ensure the study guide covers all topics comprehensively to the very end without cutting off. Output only the clean, complete study guide without meta-commentary.`;
 
     const apiMessages: any[] = [
       { role: "system", content: systemPrompt }
@@ -486,7 +493,7 @@ Rules:
               messages: sanitizedApiMessages,
               stream: true,
               temperature: 0.3,
-              max_tokens: task === 'summarize' ? 2800 : 1536
+              max_tokens: task === 'summarize' ? 3800 : 1536
             })
           });
 
@@ -534,7 +541,7 @@ Rules:
               messages: sanitizedApiMessages,
               stream: true,
               temperature: 0.3,
-              max_tokens: task === 'summarize' ? 2800 : 1536
+              max_tokens: task === 'summarize' ? 3800 : 1536
             })
           });
 

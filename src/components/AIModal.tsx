@@ -169,10 +169,16 @@ function preprocessMathContent(content: string): string {
   // 0. Automatically wrap standalone code & SQL statements into proper code blocks
   text = autoWrapCodeBlocks(text);
 
-  // a. Convert weird unicode dotted lines to standard hr (only if standalone line)
+  // a. Protect LaTeX norm pipes \| as \Vert so they are never confused with markdown table column pipes
+  text = text.replace(/\\\|/g, '\\Vert ');
+
+  // b. Fix compressed/inline table rows (convert '||' into proper newline markdown table row)
+  text = text.replace(/\s*\|\|\s*/g, '\n| ');
+
+  // c. Convert weird unicode dotted lines to standard hr (only if standalone line)
   text = text.replace(/^[┄┈—–]{3,}$/gm, '\n\n---\n\n');
 
-  // b. Collapse excessive vertical blank lines (3+ newlines into 2)
+  // d. Collapse excessive vertical blank lines (3+ newlines into 2)
   text = text.replace(/\n{3,}/g, '\n\n');
 
   // 1. Separate headers (##, ###) with clean newlines before and after
@@ -194,23 +200,21 @@ function preprocessMathContent(content: string): string {
   text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => '\n\n$$' + g1 + '$$\n\n');
   text = text.replace(/\\\(([\s\S]*?)\\\)/g, (_m, g1) => '$' + g1 + '$');
 
-  // 5b. Convert parenthesized LaTeX formulas like (n = \frac{...}) or (\frac{...})
-  text = text.replace(/\(([^()\n]*?(?:\{[^{}]*\}|\([^()]*\)|[^{}()\n])*\\[a-zA-Z]+(?:\{[^{}]*\}|\([^()]*\)|[^{}()\n])*)\)/g, (match, formula) => {
-    if (/\\(?:frac|times|sqrt|sum|int|prod|alpha|beta|gamma|mu|sigma|theta|lambda|chi|Delta|partial|pm|le|ge|neq|approx|infty|cdot|overline|hat|left|right)\b/.test(formula)) {
-      return `$${formula.trim()}$`;
-    }
-    return match;
-  });
+  // 5b. Fix matrices and block environments wrapped in single $ or double $$
+  text = text.replace(
+    /\${1,2}\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*\${1,2}/g,
+    (_m, g1) => '\n\n$$\n' + g1.trim() + '\n$$\n\n'
+  );
 
-  // 5c. Ensure display math $$ has its own lines
-  text = text.replace(/([^\n])\s*(\$\$)/g, '$1\n\n$2');
-  text = text.replace(/(\$\$)\s*([^\n$\s])/g, '$1\n\n$2');
-
-  // 6. Wrap standalone LaTeX environments with $$ if missing
+  // 5c. Wrap standalone LaTeX matrix environments with $$ if missing
   text = text.replace(
     /(?<!\$\$)\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*(?!\$\$)/g,
-    (_m, g1) => '\n\n$$' + g1 + '$$\n\n'
+    (_m, g1) => '\n\n$$\n' + g1.trim() + '\n$$\n\n'
   );
+
+  // 5d. Ensure display math $$ has its own lines
+  text = text.replace(/([^\n])\s*(\$\$)/g, '$1\n\n$2');
+  text = text.replace(/(\$\$)\s*([^\n$\s])/g, '$1\n\n$2');
 
   return text;
 }
