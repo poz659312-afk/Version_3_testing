@@ -2,10 +2,10 @@ import { calculateGroqBudget, estimateTokens, GROQ_TPM_LIMIT, GROQ_SAFETY_MARGIN
 import { chunkDocumentSemantically, DocumentChunk } from "./semantic-chunker";
 
 export const GROQ_MODELS = [
-  "qwen/qwen3.8-27b",
-  "openai/gpt-oss-120b",
-  "qwen/qwen3.6-27b",
-  "openai/gpt-oss-20b"
+  "llama-3.3-70b-versatile",
+  "llama-3.1-8b-instant",
+  "mixtral-8x7b-32768",
+  "gemma2-9b-it"
 ];
 
 export const OPENROUTER_MODELS = [
@@ -148,12 +148,13 @@ async function executeChunkedSummarization(
             {
               role: "system",
               content: `You are an expert academic analyst. Summarize Part ${chunk.id}/${chunks.length} ("${chunk.title}") of "${metadataName}".
-Extract all key concepts, definitions, formulas, and critical insights with high precision in ${language}.
+Extract only the key concepts, definitions, formulas, and critical insights that are explicitly present in this specific part in ${language}.
+Do NOT introduce any external information or ungrounded concepts.
 Output clean structured bullet points and LaTeX formulas.`
             },
             {
               role: "user",
-              content: `Document Part Content:\n${chunk.text}\n\nPlease provide a dense, complete academic summary of this part.`
+              content: `Document Part Content:\n${chunk.text}\n\nPlease provide a dense, strictly grounded academic summary of this part only.`
             }
           ];
 
@@ -177,7 +178,7 @@ Output clean structured bullet points and LaTeX formulas.`
           { role: "system", content: systemPrompt },
           {
             role: "user",
-            content: `Document Name: ${metadataName}\n\nBelow are the structured chapter summaries of the entire document (${chunks.length} parts):\n\n${combinedSummariesText}\n\nPlease synthesize these into the final, complete, unified academic study guide in ${language}, strictly adhering to all formatting standards (Executive Overview, Core Concepts Table, Detailed Thematic Analysis covering all parts, Key Pitfalls, and Exam Review Questions).`
+            content: `Document Name: ${metadataName}\n\nBelow are the structured chapter summaries derived strictly from the source document (${chunks.length} parts):\n\n${combinedSummariesText}\n\nPlease synthesize these into the final, complete, unified academic study guide in ${language}, strictly adhering to all formatting standards (Executive Overview, Core Concepts Table, Detailed Thematic Analysis covering all parts, Key Pitfalls, and Exam Review Questions). Ground every section 100% in these provided summaries without introducing any external topics or outside facts.`
           }
         ];
 
@@ -191,7 +192,7 @@ Output clean structured bullet points and LaTeX formulas.`
             model: activeGroqModel,
             messages: finalMessages,
             stream: true,
-            temperature: 0.25,
+            temperature: 0.1,
             max_tokens: synthesisBudget.actualMaxTokens,
           }),
         }, 15000);
@@ -296,7 +297,7 @@ async function executeDirectGroqStream(
           model,
           messages: apiMessages,
           stream: true,
-          temperature: 0.25,
+          temperature: 0.1,
           max_tokens: budgetedMaxTokens,
         }),
       }, 12000);
@@ -393,7 +394,7 @@ async function executeOpenRouterStream(
           model,
           messages: apiMessages,
           stream: true,
-          temperature: 0.25,
+          temperature: 0.1,
           max_tokens: task === 'summarize' ? 3600 : 1800,
         }),
       }, 15000);

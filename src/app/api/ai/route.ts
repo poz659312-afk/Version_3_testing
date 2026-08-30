@@ -225,10 +225,10 @@ export async function POST(req: NextRequest) {
 
     // 2. QUIZ GENERATION TASK (High-Yield Academic Assessment)
     if (task === 'quiz') {
-      const quizSystemPrompt = `You are Marline AI, an elite university professor and exam creator.
+      const quizSystemPrompt = `You are Marline AI, an elite academic exam creator and assessment specialist.
 Language: ${language}.
 
-Your mission: Generate a JSON object containing EXACTLY ${safeQuestionCount} Multiple Choice Questions based strictly on the provided document.
+Your mission: Generate a JSON object containing EXACTLY ${safeQuestionCount} Multiple Choice Questions grounded STRICTLY and EXCLUSIVELY in the provided document text.
 
 JSON SCHEMA:
 {
@@ -237,6 +237,7 @@ JSON SCHEMA:
       "numb": 1,
       "type": "Multiple Choice",
       "question": "Direct academic question in ${language} with LaTeX math like $p_{ij}$",
+      "table": "Optional GFM table or LaTeX array with reference dataset/matrix needed for this question, or null if not needed",
       "options": [
         "A) Short, crisp option (1-2 lines max, 15-20 words max)",
         "B) Short, crisp option (1-2 lines max, 15-20 words max)",
@@ -244,18 +245,27 @@ JSON SCHEMA:
         "D) Short, crisp option (1-2 lines max, 15-20 words max)"
       ],
       "answer": "A) Exact string matching one of the 4 options above",
-      "explanation": "Concise 1-2 sentence explanation of why this answer is correct and others are misconceptions"
+      "explanation": "Concise 1-2 sentence explanation of why this answer is correct based strictly on the document"
     }
   ]
 }
 
-STRICT EXAM RULES:
-1. EXACT COUNT: You MUST generate EXACTLY ${safeQuestionCount} questions. Never fewer, never more.
-2. STRICTLY 4 OPTIONS: Every question must have EXACTLY 4 options (A, B, C, D). NEVER generate 5 options (no E).
-3. OPTION CONCISENESS (NO ESSAYS): Options MUST be short, crisp choices (maximum 15-20 words, 1-2 lines). NEVER write long multi-sentence paragraphs or essays as options.
-4. EXACT ANSWER MATCH: The "answer" field MUST be an exact character-for-character copy of one of the 4 option strings.
-5. MATHEMATICAL FORMULAS (LaTeX): Enclose all mathematical notations, symbols ($P$, $\\pi$, $p_{ij}$), matrices, and formulas strictly inside single dollar signs $...$.
-6. HIGH-YIELD QUALITY: Test conceptual understanding, definitions, calculations, and distinctions between concepts. Avoid trivial recall.`;
+CRITICAL ANTI-HALLUCINATION & STRICT GROUNDING RULES:
+1. ZERO EXTERNAL INFORMATION: Every single question, option, answer, and explanation MUST be derived 100% directly from the provided text content. Do NOT use outside knowledge, external facts, or unmentioned topics.
+2. NO FABRICATION OR SPECULATION: Do NOT invent formulas, dates, names, terms, or statistics that are not present in the document.
+3. EXACT COUNT: You MUST generate EXACTLY ${safeQuestionCount} questions. Never fewer, never more.
+4. STRICTLY 4 OPTIONS: Every question must have EXACTLY 4 options (A, B, C, D). NEVER generate 5 options (no E).
+5. OPTION CONCISENESS (NO ESSAYS): Options MUST be short, crisp choices (maximum 15-20 words, 1-2 lines). NEVER write long multi-sentence paragraphs as options.
+6. EXACT ANSWER MATCH: The "answer" field MUST be an exact character-for-character copy of one of the 4 option strings.
+7. MATHEMATICAL FORMULAS (LaTeX): Enclose all mathematical notations, symbols ($P$, $\\pi$, $p_{ij}$), matrices, and formulas strictly inside single dollar signs $...$.
+8. HIGH-YIELD RIGOR: Test conceptual understanding, definitions, derivations, and distinctions explicitly discussed in the source document.
+9. NO META-REFERENCES IN QUESTIONS: NEVER use phrases like "According to the document", "As mentioned in the lecture", "Based on the text", "In the provided notes", "وفقاً للمستند", "بحسب المحاضرة", "المذكور في الملف", etc. Formulate every question directly, naturally, and academically (e.g., "What is the formula for MSE?", NEVER "According to the document, what is the formula for MSE?").
+10. AUTHENTIC RAW REFERENCE TABLES FOR CALCULATIONS:
+   - When creating questions that require calculation or data analysis (e.g., Data Mining Support/Confidence/Lift, Markov Chain Transition Matrices, Relational Database schemas, Truth Tables, Confusion Matrices):
+     * You MUST place the COMPLETE RAW DATASET / TABLE in the "table" field (e.g., 4 to 6 transaction rows like "| TID | Items |" with transaction IDs and itemsets, or a mathematical matrix "\\begin{bmatrix} ... \\end{bmatrix}").
+     * STRICT PROHIBITION: NEVER place the final answer, calculated metric (e.g. support percentage), or solution inside the reference table! The reference table is strictly the problem input data so the student calculates the answer themselves.
+     * In the "explanation" field, provide the complete formula and step-by-step calculation (e.g., "Support({b, d}) = count({b, d}) / Total = 3 / 5 = 60%").
+     * If a question does not require reference data or a matrix, set "table" to null.`;
 
       // Sample representative document content if oversized to ensure questions span the entire lecture
       let quizContext = sanitizedContext || metadata.name || 'Academic File';
@@ -268,14 +278,13 @@ STRICT EXAM RULES:
 
       const quizMessages = [
         { role: "system", content: quizSystemPrompt },
-        { role: "user", content: `Document: "${metadata.name || 'Lecture Notes'}"\n\nGenerate EXACTLY ${safeQuestionCount} high-yield MCQs in ${language} (4 short options each). Output valid JSON.` }
+        { role: "user", content: `Source Document: "${metadata.name || 'Lecture Notes'}"\n\nContent:\n${quizContext}\n\nGenerate EXACTLY ${safeQuestionCount} high-yield MCQs in ${language}. Ground all questions, options, and answers 100% in this content only without adding any external topics. Output valid JSON.` }
       ];
 
       const QUIZ_GROQ_MODELS = [
-        "qwen/qwen3.8-27b",
-        "openai/gpt-oss-120b",
-        "qwen/qwen3.6-27b",
-        "openai/gpt-oss-20b"
+        "llama-3.3-70b-versatile",
+        "llama-3.1-8b-instant",
+        "mixtral-8x7b-32768"
       ];
 
       let lastError = "";
@@ -295,7 +304,7 @@ STRICT EXAM RULES:
                 messages: quizMessages,
                 response_format: { type: "json_object" },
                 max_tokens: Math.min(320 * safeQuestionCount, 4000),
-                temperature: 0.1
+                temperature: 0.05
               })
             });
 
@@ -349,7 +358,7 @@ STRICT EXAM RULES:
                 messages: quizMessages,
                 response_format: { type: "json_object" },
                 max_tokens: Math.min(320 * safeQuestionCount, 4000),
-                temperature: 0.1
+                temperature: 0.05
               })
             });
 
@@ -392,6 +401,11 @@ STRICT EXAM RULES:
     const systemPrompt = `You are Marline AI, an elite university professor and academic study guide author.
     Language: ${language}.
 
+    CRITICAL ANTI-HALLUCINATION & STRICT GROUNDING POLICY:
+    - 100% GROUNDED IN SOURCE: Every definition, concept, explanation, formula, code block, and table in this study guide MUST be derived directly and exclusively from the provided document content.
+    - ZERO EXTERNAL INVENTIONS: Do NOT fabricate, assume, or introduce external topics, unmentioned libraries, outside case studies, or extraneous tangents not found in the source material.
+    - FACTUAL FIDELITY: Maintain strict precision to the exact methods, notations, equations, and topics presented in the text.
+
     CRITICAL FORMATTING & SYNTAX STANDARDS:
     1. GFM Tables (Keep Compact & Never Overly Wide):
        - Maximum 2 to 4 columns. NEVER create wide tables with massive paragraphs in cells.
@@ -409,17 +423,18 @@ STRICT EXAM RULES:
     4. Section Dividers: Use a single \`---\` before major section headings.
 
     FIXED ACADEMIC STUDY GUIDE STRUCTURE:
-    - 📌 **Executive Overview**: High-level synthesis of learning goals and core concepts.
-    - 🧠 **Core Concepts & Definitions**: Key terminology and foundational definitions.
-    - 🔍 **Detailed Thematic Analysis**: In-depth explanations of every topic/methodology with bullet points, code, and LaTeX where relevant.
-    - ⚖️ **Comparison & Evaluation Table**: A clean, compact 2-4 column GFM table comparing methods/approaches.
-    - ⚠️ **Key Pitfalls & Exam Traps**: Common misconceptions and edge cases.
-    - 💡 **Real-World Case Examples**: Practical implementation scenarios.
-    - 🎯 **High-Yield Exam Review Questions**: 3 to 5 conceptual review questions with model answers.
+    - 📌 **Executive Overview**: High-level synthesis of learning goals and core concepts found in the text.
+    - 🧠 **Core Concepts & Definitions**: Key terminology and foundational definitions from the text.
+    - 🔍 **Detailed Thematic Analysis**: In-depth explanations of every topic/methodology in the text with bullet points, code, and LaTeX where relevant.
+    - ⚖️ **Comparison & Evaluation Table**: A clean, compact 2-4 column GFM table comparing methods/approaches found in the document.
+    - ⚠️ **Key Pitfalls & Exam Traps**: Common misconceptions and edge cases specifically related to the material.
+    - 💡 **Real-World Case Examples**: Practical implementation scenarios illustrating the document's concepts.
+    - 🎯 **High-Yield Exam Review Questions**: 3 to 5 conceptual review questions with model answers based on the material.
 
     COMPLETENESS GUARANTEE:
-    - You must write out every single section completely and thoroughly without stopping midway or omitting any lecture/chapter.
-    - Do not truncate or abbreviate with "etc.". Output the complete study guide to the very end.`;
+    - You must write out every single section completely and thoroughly without stopping midway or omitting any lecture/chapter from the source document.
+    - Do not truncate or abbreviate with "etc.". Output the complete study guide to the very end.
+    - Output ONLY the clean, final academic study guide without any meta-commentary or thinking scratchpad.`;
 
     const { orchestrateDriveAI } = await import('@/lib/drive-ai-orchestrator');
 

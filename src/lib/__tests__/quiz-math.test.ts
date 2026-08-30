@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { normalizeLatexMath, normalizeQuizQuestionItem } from "../quiz-math-normalizer";
+import { normalizeLatexMath, cleanQuestionMetaPhrases, extractTableFromQuestion, normalizeQuizQuestionItem } from "../quiz-math-normalizer";
 
 export function runQuizMathTests() {
   const sample1 = "What is the result of a CROSS JOIN between two tables with $m$ and $n$ rows?";
@@ -7,14 +7,26 @@ export function runQuizMathTests() {
   assert.strictEqual(normalized1, sample1);
   assert.ok(!normalized1.includes("LATEX_TOKEN"));
 
-  const alreadyFormatted = "Find the value of $\\pi$ such that $\\pi P = \\pi$ and $\\sum_{i} \\pi_i = 1$.";
-  const normalized2 = normalizeLatexMath(alreadyFormatted);
-  assert.strictEqual(normalized2, alreadyFormatted);
+  const metaSample1 = "According to the lecture, what is the formula for MSE?";
+  assert.strictEqual(cleanQuestionMetaPhrases(metaSample1), "What is the formula for MSE?");
+
+  const metaSample2 = "بحسب المحاضرة، ما هي مصفوفة الانتقال الاحتمالية؟";
+  assert.strictEqual(cleanQuestionMetaPhrases(metaSample2), "ما هي مصفوفة الانتقال الاحتمالية؟");
+
+  const metaSample3 = "ما هو شرط الحالة الماصة وفقاً للمستند؟";
+  assert.strictEqual(cleanQuestionMetaPhrases(metaSample3), "ما هو شرط الحالة الماصة؟");
+
+  // Test table extraction
+  const questionWithTable = "Based on the transaction dataset:\n| TID | Items |\n| --- | --- |\n| 1 | {a, b, d} |\n| 2 | {b, c, d} |\nWhat is the support for itemset {b, d}?";
+  const extracted = extractTableFromQuestion(questionWithTable);
+  assert.ok(extracted.table !== null);
+  assert.ok(extracted.table.includes("| TID | Items |"));
+  assert.ok(!extracted.question.includes("| TID | Items |"));
 
   const rawItem = {
     numb: 1,
     type: "Multiple Choice",
-    question: "What is det(A - \\lambda I) = 0?",
+    question: "Based on the provided document, what is det(A - \\lambda I) = 0?",
     options: [
       "A) Characteristic equation for \\lambda",
       "B) Trace of matrix A",
@@ -27,6 +39,7 @@ export function runQuizMathTests() {
 
   const item = normalizeQuizQuestionItem(rawItem);
   assert.strictEqual(item.options.length, 4);
+  assert.strictEqual(item.question, "What is det(A - \\lambda I) = 0?");
   assert.ok(item.options[0].startsWith("A) "));
   assert.ok(item.options[1].startsWith("B) "));
   assert.ok(item.options[2].startsWith("C) "));
