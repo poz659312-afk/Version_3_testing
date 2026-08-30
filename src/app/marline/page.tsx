@@ -381,6 +381,7 @@ export default function MarlineAssistantPage() {
             const jsonStr = line.slice(6).trim()
             if (jsonStr === "[DONE]") continue
             try {
+              const parsed = JSON.parse(jsonStr)
               const delta = parsed.choices?.[0]?.delta
               const deltaContent = delta?.content ?? delta?.reasoning ?? delta?.reasoning_content ?? ""
               if (deltaContent) {
