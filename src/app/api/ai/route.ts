@@ -477,11 +477,16 @@ Rules:
       });
     }
 
-    // TIER 1: Groq Models (Primary & Ultra Fast)
-    if (groqKey) {
+    // Calculate estimated input tokens to intelligently manage Groq's 8000 TPM limit
+    const totalInputChars = sanitizedApiMessages.reduce((acc, m) => acc + (m.content?.length || 0), 0);
+    const estimatedInputTokens = Math.ceil(totalInputChars / 3.5);
+    const groqMaxTokens = Math.min(3200, Math.max(1000, 7400 - estimatedInputTokens));
+
+    // TIER 1: Groq Models (Primary & Ultra Fast - for documents within TPM budget)
+    if (groqKey && (estimatedInputTokens + 1000 <= 7500)) {
       for (const model of GROQ_MODELS) {
         try {
-          console.log(`[Marline Drive AI] Tier 1: Attempting Groq model: ${model}`);
+          console.log(`[Marline Drive AI] Tier 1: Attempting Groq model: ${model} (Budgeted max_tokens: ${groqMaxTokens})`);
           const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -493,7 +498,7 @@ Rules:
               messages: sanitizedApiMessages,
               stream: true,
               temperature: 0.3,
-              max_tokens: task === 'summarize' ? 3800 : 1536
+              max_tokens: groqMaxTokens
             })
           });
 
@@ -523,7 +528,7 @@ Rules:
       }
     }
 
-    // TIER 2: Seamless Auto-Failover to OpenRouter Nemotron Models (Fallback)
+    // TIER 2: Seamless Auto-Failover to OpenRouter Models (Large Context, No 8k TPM Limit)
     if (openRouterKey) {
       for (const model of OPENROUTER_MODELS) {
         try {
@@ -541,7 +546,7 @@ Rules:
               messages: sanitizedApiMessages,
               stream: true,
               temperature: 0.3,
-              max_tokens: task === 'summarize' ? 3800 : 1536
+              max_tokens: task === 'summarize' ? 3800 : 1800
             })
           });
 
