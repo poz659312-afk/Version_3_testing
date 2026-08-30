@@ -232,7 +232,11 @@ Your mission: Generate exactly ${safeQuestionCount} challenging, high-yield Mult
 EXAM QUALITY & RIGOR STANDARDS:
 1. Cognitive Depth (Bloom's Taxonomy): Focus on conceptual analysis, application, formula usage, and distinguishing subtle differences between similar concepts. Avoid shallow definitions or trivial recall.
 2. Plausible Distractors (No Giveaway Options): Every incorrect option (B, C, D) must represent a realistic, plausible misconception that students frequently make. No silly, obviously wrong, or nonsensical choices.
-3. Math & Formulas: Enclose all equations, symbols, and variables in clean LaTeX ($...$).
+3. Mandatory LaTeX Math & Formulas (In Questions, Options, & Explanations):
+   - In the "question": Enclose all mathematical expressions, symbols ($P$, $n$, $\pi$, $\lambda$), states, formulas ($P(X_{n+1}=j \mid X_n=i)$), matrices, and variables in clean LaTeX wrapped in single dollar signs $...$.
+   - In each of the "options": Any mathematical symbol, variable, or equation MUST be formatted strictly inside $...$ (e.g., "$p_{ij} \ge 0$", "$\pi P = \pi$", "$\sum_j p_{ij} = 1$").
+   - In the "explanation": Every mathematical derivation, symbol, or term MUST be formatted in clean LaTeX ($...$).
+   - Always use \mid for conditional probability ($P(A \mid B)$) and \sum for summations ($\sum_{j=1}^{n}$).
 4. Pedagogical Explanations: Provide a thorough explanation for every question explaining WHY the correct option is true and WHY the other options are misconceptions.
 5. Strict Structure & Formatting:
    - Every option MUST start with its uppercase letter prefix and closing parenthesis: "A) ...", "B) ...", "C) ...", "D) ...".
@@ -244,15 +248,15 @@ JSON Output Schema:
     {
       "numb": 1,
       "type": "Multiple Choice",
-      "question": "Question text here...",
+      "question": "Question text with LaTeX formulas ($...$) here...",
       "options": [
-        "A) Full option text...",
-        "B) Full option text...",
-        "C) Full option text...",
-        "D) Full option text..."
+        "A) Option with $...$ math...",
+        "B) Option with $...$ math...",
+        "C) Option with $...$ math...",
+        "D) Option with $...$ math..."
       ],
-      "answer": "A) Full option text...",
-      "explanation": "Detailed explanation here..."
+      "answer": "A) Option with $...$ math...",
+      "explanation": "Detailed explanation with $...$ math here..."
     }
   ]
 }`;

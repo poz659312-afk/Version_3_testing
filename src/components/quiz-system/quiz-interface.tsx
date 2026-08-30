@@ -143,16 +143,37 @@ const shuffleOptions = (questionsList: QuizQuestion[]): QuizQuestion[] => {
   }));
 };
 
-// Helper to format LaTeX mathematically-like strings with inline code styling
+// Helper to format LaTeX mathematically-like strings with inline and block KaTeX rendering
+function SafeInlineMath({ math }: { math: string }) {
+  try {
+    return <InlineMath math={math} errorColor="#ef4444" renderError={(err) => <span className="text-muted-foreground font-mono text-xs">{math}</span>} />;
+  } catch (_) {
+    return <span className="font-mono text-xs">{math}</span>;
+  }
+}
+
 function formatTextWithLatex(text?: string | null) {
   if (!text) return text;
-  const parts = text.split(/(\$[^$]+\$)/g);
+  // Normalize \( ... \) to $ ... $ and \[ ... \] to $$ ... $$
+  const normalized = text
+    .replace(/\\\[([\s\S]*?)\\\]/g, '$$$1$$')
+    .replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$');
+
+  const parts = normalized.split(/(\${1,2}[^$]+\${1,2})/g);
   return parts.map((part, i) => {
-    if (part.startsWith('$') && part.endsWith('$')) {
-      const math = part.slice(1, -1);
+    if (part.startsWith('$$') && part.endsWith('$$') && part.length > 4) {
+      const math = part.slice(2, -2).trim();
       return (
-        <span key={i} className="inline px-1.5 py-0.5 rounded bg-muted border border-border text-indigo-200 shadow-sm align-middle" style={{ wordBreak: 'break-word', whiteSpace: 'normal', display: 'inline' }}>
-          <InlineMath math={math} />
+        <span key={i} className="inline-block my-1 px-2 py-1 rounded-lg bg-muted/40 border border-border/60 text-foreground shadow-xs align-middle" style={{ wordBreak: 'break-word', whiteSpace: 'normal' }}>
+          <SafeInlineMath math={math} />
+        </span>
+      );
+    }
+    if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
+      const math = part.slice(1, -1).trim();
+      return (
+        <span key={i} className="inline px-1.5 py-0.5 rounded-md bg-muted/30 border border-border/40 text-foreground font-medium shadow-xs align-middle mx-0.5" style={{ wordBreak: 'break-word', whiteSpace: 'normal', display: 'inline-flex', alignItems: 'center' }}>
+          <SafeInlineMath math={math} />
         </span>
       );
     }
