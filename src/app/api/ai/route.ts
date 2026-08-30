@@ -11,18 +11,17 @@ const pdfParse = pdf;
 // Multi-tier Fallback Models (100% Free & Lightning Fast)
 // TIER 1 (Default): Ultra-fast Groq Models with 131k context windows
 const GROQ_MODELS = [
-  "qwen/qwen3.8-27b",
-  "qwen/qwen3.6-27b",
   "openai/gpt-oss-120b",
+  "qwen/qwen3.6-27b",
   "openai/gpt-oss-20b"
 ];
 
-// TIER 2 (Fallback): OpenRouter Free Models
+// TIER 2 (Fallback): OpenRouter Nemotron & Free Models
 const OPENROUTER_MODELS = [
-  "openrouter/free",
   "nvidia/nemotron-3.5-lightning:free",
   "nvidia/nemotron-3-super-120b-a12b:free",
-  "minimax/minimax-m2.7:free"
+  "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "google/gemma-4-31b-it:free"
 ];
 
 export async function GET(req: NextRequest) {
@@ -344,7 +343,7 @@ Rules:
       return NextResponse.json({ error: `Failed to generate quiz: ${lastError}` }, { status: 502 });
     }
 
-    // 3. SUMMARIZE, TRANSLATE & CHAT STREAMING TASKS
+    // 3. SUMMARIZE, TRANSLATE & CHAT STREAMING TASKS (Orchestrated Architecture)
     const systemPrompt = `You are Marline AI, an elite university professor and academic study guide author.
     Language: ${language}.
 
@@ -373,214 +372,31 @@ Rules:
 
     Completeness: Ensure the study guide covers all topics comprehensively to the very end without cutting off. Output only the clean, complete study guide without meta-commentary.`;
 
-    const apiMessages: any[] = [
-      { role: "system", content: systemPrompt }
-    ];
+    const { orchestrateDriveAI } = await import('@/lib/drive-ai-orchestrator');
 
-    if (task === 'summarize') {
-      apiMessages.push({
-        role: "user",
-        content: `Document Name: ${metadata.name || 'Academic File'}\n\nDocument Text Content:\n${sanitizedContext}\n\nPlease generate a comprehensive, in-depth, and beautifully formatted university study guide for this document in ${language}, following the fixed structure and formatting rules exactly. Every section and every table must be fully written out and complete — do not leave any table row, section, or placeholder empty.`
-      });
-    } else if (task === 'translate') {
-      apiMessages.push({
-        role: "user",
-        content: `Document Name: ${metadata.name || 'Academic File'}\n\nDocument Text Content:\n${sanitizedContext}\n\nTranslate and structure the main points of this document into ${language} while preserving all technical accuracy, formatting, and depth.`
-      });
-    } else if (messages.length > 0) {
-      if (sanitizedContext) {
-        apiMessages.push({
-          role: "user",
-          content: `Document Context (${metadata.name || 'File'}):\n${sanitizedContext}`
-        });
-        apiMessages.push({
-          role: "assistant",
-          content: `I have analyzed "${metadata.name || 'this document'}". How can I assist you with it?`
-        });
-      }
-      
-      // Trim chat history to the last 6 messages to prevent token limit overflow
-      const recentMessages = messages.slice(-6);
-      apiMessages.push(...recentMessages);
-    }
+    const stream = await orchestrateDriveAI({
+      task: (task || 'summarize') as any,
+      language,
+      systemPrompt,
+      sanitizedContext,
+      metadataName: metadata.name || 'Academic File',
+      messages,
+      groqKey,
+      openRouterKey,
+      onDeductCredits: deductCredits,
+      currentCredits,
+      dynamicTokenCost,
+    });
 
-    // Filter and sanitize all messages to ensure strictly valid non-empty string contents
-    const sanitizedApiMessages = apiMessages
-      .filter(m => m && typeof m.content === 'string' && m.content.trim().length > 0)
-      .map(m => ({ role: m.role || 'user', content: m.content.trim() }));
-
-    let lastErrorText = "";
-
-    // Helper: read initial stream chunks to guarantee the model is actively emitting tokens before handing off
-    async function testAndWrapStream(
-      response: globalThis.Response,
-      timeoutMs: number,
-      tierNotice?: string
-    ): Promise<ReadableStream<Uint8Array>> {
-      const reader = response.body!.getReader();
-      const collectedChunks: Uint8Array[] = [];
-      const decoder = new TextDecoder();
-      let hasTokens = false;
-
-      const startTime = Date.now();
-      while (Date.now() - startTime < timeoutMs) {
-        const { value, done } = await Promise.race([
-          reader.read(),
-          new Promise<{ value: undefined; done: true }>((_, reject) =>
-            setTimeout(() => reject(new Error("Timeout waiting for stream tokens")), timeoutMs)
-          )
-        ]);
-
-        if (done) break;
-        if (value) {
-          collectedChunks.push(value);
-          const chunkStr = decoder.decode(value);
-          if (chunkStr.includes('"choices"') || chunkStr.includes('"delta"') || chunkStr.includes('data:')) {
-            hasTokens = true;
-            break;
-          }
-        }
-      }
-
-      if (!hasTokens && collectedChunks.length === 0) {
-        reader.cancel();
-        throw new Error("Stream closed without emitting content");
-      }
-
-      const encoder = new TextEncoder();
-      return new ReadableStream<Uint8Array>({
-        async start(controller) {
-          if (tierNotice) {
-            controller.enqueue(
-              encoder.encode(`data: ${JSON.stringify({ tier_notice: "redirect_to_tier_2", message: tierNotice })}\n\n`)
-            );
-          }
-          for (const chunk of collectedChunks) {
-            controller.enqueue(chunk);
-          }
-        },
-        async pull(controller) {
-          try {
-            const { value, done } = await reader.read();
-            if (done) {
-              controller.close();
-            } else if (value) {
-              controller.enqueue(value);
-            }
-          } catch (err) {
-            controller.error(err);
-          }
-        },
-        cancel() {
-          reader.cancel();
-        }
-      });
-    }
-
-    // Calculate estimated input tokens to intelligently manage Groq's 8000 TPM limit
-    const totalInputChars = sanitizedApiMessages.reduce((acc, m) => acc + (m.content?.length || 0), 0);
-    const estimatedInputTokens = Math.ceil(totalInputChars / 3.5);
-    const groqMaxTokens = Math.min(3200, Math.max(1000, 7400 - estimatedInputTokens));
-
-    // TIER 1: Groq Models (Primary & Ultra Fast - for documents within TPM budget)
-    if (groqKey && (estimatedInputTokens + 1000 <= 7500)) {
-      for (const model of GROQ_MODELS) {
-        try {
-          console.log(`[Marline Drive AI] Tier 1: Attempting Groq model: ${model} (Budgeted max_tokens: ${groqMaxTokens})`);
-          const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${groqKey}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              model: model,
-              messages: sanitizedApiMessages,
-              stream: true,
-              temperature: 0.3,
-              max_tokens: groqMaxTokens
-            })
-          });
-
-          const contentType = response.headers.get("content-type") || "";
-
-          if (response.ok && response.body && contentType.includes("text/event-stream")) {
-            const validatedStream = await testAndWrapStream(response, 12000);
-            await deductCredits();
-            console.log(`[Marline Drive AI] Streaming successfully with Tier 1: Groq ${model}`);
-            return new Response(validatedStream, {
-              headers: {
-                "Content-Type": "text/event-stream",
-                "Cache-Control": "no-cache, no-transform",
-                "Connection": "keep-alive",
-                "X-AI-Credits-Remaining": Math.max(0, currentCredits - dynamicTokenCost).toString(),
-                "X-AI-Credits-Cost": dynamicTokenCost.toString()
-              }
-            });
-          } else {
-            lastErrorText = await response.text();
-            console.warn(`[Marline Drive AI] Tier 1 Groq ${model} rejected (${response.status}):`, lastErrorText);
-          }
-        } catch (err: any) {
-          console.warn(`[Marline Drive AI] Tier 1 Groq ${model} error/timeout:`, err.message);
-          lastErrorText = err.message;
-        }
-      }
-    }
-
-    // TIER 2: Seamless Auto-Failover to OpenRouter Models (Large Context, No 8k TPM Limit)
-    if (openRouterKey) {
-      for (const model of OPENROUTER_MODELS) {
-        try {
-          console.log(`[Marline Drive AI] Tier 2: Falling back to OpenRouter model: ${model}`);
-          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${openRouterKey}`,
-              "Content-Type": "application/json",
-              "HTTP-Referer": "https://chameleon-nu.vercel.app",
-              "X-Title": "Marline AI"
-            },
-            body: JSON.stringify({
-              model: model,
-              messages: sanitizedApiMessages,
-              stream: true,
-              temperature: 0.3,
-              max_tokens: task === 'summarize' ? 3800 : 1800
-            })
-          });
-
-          const contentType = response.headers.get("content-type") || "";
-
-          if (response.ok && response.body && contentType.includes("text/event-stream")) {
-            const validatedStream = await testAndWrapStream(
-              response,
-              7000,
-              `Tier 1 busy. Redirected automatically to Tier 2 (${model}).`
-            );
-            await deductCredits();
-            console.log(`[Marline Drive AI] Streaming successfully with Tier 2: OpenRouter ${model}`);
-            return new Response(validatedStream, {
-              headers: {
-                "Content-Type": "text/event-stream",
-                "Cache-Control": "no-cache, no-transform",
-                "Connection": "keep-alive",
-                "X-AI-Credits-Remaining": Math.max(0, currentCredits - dynamicTokenCost).toString(),
-                "X-AI-Credits-Cost": dynamicTokenCost.toString()
-              }
-            });
-          } else {
-            lastErrorText = await response.text();
-            console.warn(`[Marline Drive AI] Tier 2 OpenRouter ${model} failed (${response.status}):`, lastErrorText);
-          }
-        } catch (err: any) {
-          console.warn(`[Marline Drive AI] Tier 2 OpenRouter ${model} exception:`, err.message);
-          lastErrorText = err.message;
-        }
-      }
-    }
-
-    return NextResponse.json({ error: lastErrorText || "All AI tiers failed to respond" }, { status: 502 });
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache, no-transform",
+        "Connection": "keep-alive",
+        "X-AI-Credits-Remaining": Math.max(0, currentCredits - dynamicTokenCost).toString(),
+        "X-AI-Credits-Cost": dynamicTokenCost.toString(),
+      },
+    });
 
   } catch (error) {
     console.error('[Marline Drive AI] Global error:', error);
