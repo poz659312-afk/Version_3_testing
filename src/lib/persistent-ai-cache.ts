@@ -13,7 +13,7 @@ if (!fs.existsSync(CACHE_DIR)) {
   }
 }
 
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 
 function getCacheFilePath(fileContent: string, task: string, language: string): string {
   // Generate a SHA-256 hash representing the text content + task details

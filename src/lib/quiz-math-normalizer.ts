@@ -28,33 +28,41 @@ export function normalizeLatexMath(text?: string | null): string {
 
 /**
  * Strips unnatural meta-referencing phrases from question text
- * e.g., "According to the document,", "As mentioned in the lecture,", "بحسب ما ورد في المحاضرة", etc.
+ * e.g., "mentioned in the document?", "According to the document,", "بحسب ما ورد في المحاضرة", etc.
  */
 export function cleanQuestionMetaPhrases(text?: string | null): string {
   if (!text || typeof text !== 'string') return text || '';
   let cleaned = text.trim();
 
-  // English prefix strippers
-  cleaned = cleaned.replace(/^(?:According to (?:the )?(?:provided |given )?(?:document|lecture|text|notes|material|slides|chapter|file),?\s*)/i, '');
-  cleaned = cleaned.replace(/^(?:Based on (?:the )?(?:provided |given )?(?:document|lecture|text|notes|material|slides|chapter|file),?\s*)/i, '');
-  cleaned = cleaned.replace(/^(?:As (?:mentioned|stated|discussed|described|presented) in (?:the )?(?:provided |given )?(?:document|lecture|text|notes|material|slides|file),?\s*)/i, '');
-  cleaned = cleaned.replace(/^(?:In (?:the )?(?:provided |given )?(?:document|lecture|text|notes|material|slides|file),?\s*)/i, '');
-  cleaned = cleaned.replace(/^(?:From (?:the )?(?:provided |given )?(?:document|lecture|text|notes|material|slides|file),?\s*)/i, '');
+  // 1. Strip parenthetical meta phrases:
+  cleaned = cleaned.replace(/\s*\([^)]*(?:mentioned|stated|discussed|described|based on|covered|presented|given|provided|ورد|ذكر)[^)]*(?:document|lecture|text|notes|material|slides|file|مستند|محاضرة|ملف|نص)[^)]*\)/gi, '');
 
-  // English suffix strippers
-  cleaned = cleaned.replace(/(?:,?\s*)?(?:according to|as (?:mentioned|stated|discussed) in|based on|provided in) (?:the )?(?:provided |given )?(?:document|lecture|text|notes|material|slides|file)\s*\??$/i, '?');
-  cleaned = cleaned.replace(/\s*\((?:as )?(?:mentioned|stated|based on) (?:in )?(?:the )?(?:document|lecture|text|notes|file)\)/gi, '');
+  // 2. Strip meta phrases from suffixes/endings:
+  cleaned = cleaned.replace(/\s*(?:(?:as\s+)?(?:mentioned|stated|discussed|described|presented|covered|shown|given|provided)\s+in|(?:according\s+to|based\s+on))\s+(?:the\s+)?(?:provided\s+|given\s+)?(?:document|lecture|text|notes|material|slides|chapter|file|lesson)\s*(\?|\؟)?$/i, '$1');
 
-  // Arabic prefix strippers
+  // Also strip mid-sentence meta clauses:
+  cleaned = cleaned.replace(/[,\s]+(?:as\s+)?(?:mentioned|stated|discussed|described|presented|covered|shown|given|provided)\s+in\s+(?:the\s+)?(?:provided\s+|given\s+)?(?:document|lecture|text|notes|material|slides|chapter|file|lesson)[,\s]*/gi, ' ');
+
+  // 3. Strip meta prefixes from beginning:
+  cleaned = cleaned.replace(/^(?:(?:According to|Based on|From|In)\s+(?:the\s+)?(?:provided\s+|given\s+)?(?:document|lecture|text|notes|material|slides|chapter|file|lesson)|(?:As\s+)?(?:mentioned|stated|discussed|described|presented|covered|shown|given|provided)\s+in\s+(?:the\s+)?(?:provided\s+|given\s+)?(?:document|lecture|text|notes|material|slides|chapter|file|lesson))[،,:\s]*/i, '');
+
+  // 4. Arabic meta phrases:
+  // Prefixes
   cleaned = cleaned.replace(/^(?:وفقاً\s*(?:لـ?|لما ورد في |لما جاء في )?|بحسب\s*(?:ما ورد في |ما جاء في )?|بناءً على\s*(?:ما ورد في )?|طبقاً\s*(?:لـ?|لما ورد في )?|كما ورد في |كما ذُ?كر في |حسب |استناداً إلى )(?:المستند|المحاضرة|الملف|النص|السياق|المذكرة|المادة)(?:\s*(?:المرفق|المعطى|المقدم|المذكور))?[،,\s]*/i, '');
+  
+  // Suffixes
+  cleaned = cleaned.replace(/[،,\s]*(?:وفقاً\s*(?:لـ?|لما ورد في )?|بحسب\s*(?:ما ورد في )?|بناءً على |طبقاً لـ?|كما ورد في |كما ذُ?كر في |حسب |المذكور(?:ة)? في |الوارد(?:ة)? في )(?:المستند|المحاضرة|الملف|النص|السياق|المذكرة)(?:\s*(?:المرفق|المعطى|المقدم))?\s*(\؟|\?)?$/i, '$1');
 
-  // Arabic suffix strippers
-  cleaned = cleaned.replace(/[،,\s]*(?:وفقاً\s*(?:لـ?|لما ورد في )?|بحسب\s*(?:ما ورد في )?|بناءً على |طبقاً لـ?|كما ورد في |كما ذُ?كر في |حسب |المذكور(?:ة)? في )(?:المستند|المحاضرة|الملف|النص|السياق|المذكرة)(?:\s*(?:المرفق|المعطى|المقدم))?\s*(\؟|\?)?$/i, '$1');
+  // Mid-sentence Arabic meta clauses
+  cleaned = cleaned.replace(/[،,\s]*(?:المذكور(?:ة)?|الوارد(?:ة)?|المبين(?:ة)?|الموضح(?:ة)?)\s+في\s+(?:المستند|المحاضرة|الملف|النص|المذكرة)[،,\s]*/gi, ' ');
 
-  // Strip leading punctuation left over
+  // 5. Clean up multiple spaces and leading/trailing punctuation artifacts
+  cleaned = cleaned.replace(/\s+/g, ' ');
   cleaned = cleaned.replace(/^[،,\-:\s]+/, '');
+  cleaned = cleaned.replace(/\s+\?$/, '?');
+  cleaned = cleaned.replace(/\s+\؟$/, '؟');
 
-  // Capitalize first letter if English
+  // Ensure English capitalization
   if (cleaned.length > 0 && /^[a-z]/.test(cleaned)) {
     cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
   }

@@ -9,21 +9,7 @@ import { normalizeQuizQuestionItem } from '@/lib/quiz-math-normalizer';
 
 const pdfParse = pdf;
 
-// Multi-tier Fallback Models (100% Free & Lightning Fast)
-// TIER 1 (Default): Ultra-fast Groq Models with 131k context windows
-const GROQ_MODELS = [
-  "openai/gpt-oss-120b",
-  "qwen/qwen3.6-27b",
-  "openai/gpt-oss-20b"
-];
-
-// TIER 2 (Fallback): OpenRouter Nemotron & Free Models
-const OPENROUTER_MODELS = [
-  "nvidia/nemotron-3.5-lightning:free",
-  "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3-ultra-550b-a55b:free",
-  "google/gemma-4-31b-it:free"
-];
+import { GROQ_MODELS, OPENROUTER_MODELS } from "@/lib/drive-ai-orchestrator";
 
 export async function GET(req: NextRequest) {
   try {
@@ -281,17 +267,11 @@ CRITICAL ANTI-HALLUCINATION & STRICT GROUNDING RULES:
         { role: "user", content: `Source Document: "${metadata.name || 'Lecture Notes'}"\n\nContent:\n${quizContext}\n\nGenerate EXACTLY ${safeQuestionCount} high-yield MCQs in ${language}. Ground all questions, options, and answers 100% in this content only without adding any external topics. Output valid JSON.` }
       ];
 
-      const QUIZ_GROQ_MODELS = [
-        "llama-3.3-70b-versatile",
-        "llama-3.1-8b-instant",
-        "mixtral-8x7b-32768"
-      ];
-
       let lastError = "";
 
       // Tier 1: Ultra-fast Groq Models
       if (groqKey) {
-        for (const model of QUIZ_GROQ_MODELS) {
+        for (const model of GROQ_MODELS) {
           try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
               method: "POST",

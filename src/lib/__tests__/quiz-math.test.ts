@@ -7,6 +7,9 @@ export function runQuizMathTests() {
   assert.strictEqual(normalized1, sample1);
   assert.ok(!normalized1.includes("LATEX_TOKEN"));
 
+  const screenshotSample = "What are the three types of market basket (p-o-s) data mentioned in the document?";
+  assert.strictEqual(cleanQuestionMetaPhrases(screenshotSample), "What are the three types of market basket (p-o-s) data?");
+
   const metaSample1 = "According to the lecture, what is the formula for MSE?";
   assert.strictEqual(cleanQuestionMetaPhrases(metaSample1), "What is the formula for MSE?");
 
@@ -26,20 +29,20 @@ export function runQuizMathTests() {
   const rawItem = {
     numb: 1,
     type: "Multiple Choice",
-    question: "Based on the provided document, what is det(A - \\lambda I) = 0?",
+    question: "What are the three types of market basket (p-o-s) data mentioned in the document?",
     options: [
-      "A) Characteristic equation for \\lambda",
-      "B) Trace of matrix A",
-      "C) (I-Q)^{-1}R matrix",
-      "D) Zero vector \\vec{0}"
+      "A) Prices, Discounts, and Taxes",
+      "B) Items, Quantities, and Dates",
+      "C) Customers, Stores, and Regions",
+      "D) Sales, Profits, and Losses"
     ],
-    answer: "A) Characteristic equation for \\lambda",
-    explanation: "The equation det(A - \\lambda I) = 0 yields the eigenvalues \\lambda_i of matrix A."
+    answer: "A) Prices, Discounts, and Taxes",
+    explanation: "The three primary types are prices, discounts, and taxes."
   };
 
   const item = normalizeQuizQuestionItem(rawItem);
   assert.strictEqual(item.options.length, 4);
-  assert.strictEqual(item.question, "What is det(A - \\lambda I) = 0?");
+  assert.strictEqual(item.question, "What are the three types of market basket (p-o-s) data?");
   assert.ok(item.options[0].startsWith("A) "));
   assert.ok(item.options[1].startsWith("B) "));
   assert.ok(item.options[2].startsWith("C) "));
