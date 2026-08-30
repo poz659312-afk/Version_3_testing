@@ -505,7 +505,7 @@ export async function orchestrateDriveAI(options: OrchestratorOptions): Promise<
       return {
         stream,
         tier: 'Tier 1',
-        tierLabel: 'الطبقة الأولى (Groq Ultra-Fast)',
+        tierLabel: 'Premier Ultra Fast Tier',
         model: GROQ_MODELS[0]
       };
     } catch (groqErr: any) {
@@ -527,7 +527,7 @@ export async function orchestrateDriveAI(options: OrchestratorOptions): Promise<
         return {
           stream,
           tier: 'Tier 1',
-          tierLabel: 'الطبقة الأولى (Groq Chunked Synthesis)',
+          tierLabel: 'Premier Ultra Fast Tier',
           model: GROQ_MODELS[0]
         };
       }
@@ -542,7 +542,7 @@ export async function orchestrateDriveAI(options: OrchestratorOptions): Promise<
     return {
       stream,
       tier: 'Tier 2',
-      tierLabel: 'الطبقة الثانية (OpenRouter Extended)',
+      tierLabel: 'Secondary Extended Tier',
       model: OPENROUTER_MODELS[0]
     };
   }

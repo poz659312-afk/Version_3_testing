@@ -317,7 +317,9 @@ STRICT EXAM RULES:
                 return NextResponse.json({ result: normalizedQuestions }, {
                   headers: {
                     'X-AI-Credits-Remaining': Math.max(0, currentCredits - dynamicTokenCost).toString(),
-                    'X-AI-Credits-Cost': dynamicTokenCost.toString()
+                    'X-AI-Credits-Cost': dynamicTokenCost.toString(),
+                    'X-AI-Tier': 'Tier 1',
+                    'X-AI-Tier-Label': 'Premier Ultra Fast Tier'
                   }
                 });
               }
@@ -368,7 +370,9 @@ STRICT EXAM RULES:
                 return NextResponse.json({ result: normalizedQuestions }, {
                   headers: {
                     'X-AI-Credits-Remaining': Math.max(0, currentCredits - dynamicTokenCost).toString(),
-                    'X-AI-Credits-Cost': dynamicTokenCost.toString()
+                    'X-AI-Credits-Cost': dynamicTokenCost.toString(),
+                    'X-AI-Tier': 'Tier 2',
+                    'X-AI-Tier-Label': 'Secondary Extended Tier'
                   }
                 });
               }

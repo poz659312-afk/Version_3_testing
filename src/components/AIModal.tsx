@@ -993,7 +993,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       const remCreditsHeader = response.headers.get('X-AI-Credits-Remaining');
       const costHeader = response.headers.get('X-AI-Credits-Cost');
       const tierHeader = response.headers.get('X-AI-Tier') || 'Tier 1';
-      const tierLabelHeader = response.headers.get('X-AI-Tier-Label') || (tierHeader.includes('2') ? 'الطبقة الثانية (OpenRouter)' : 'الطبقة الأولى (Groq)');
+      const tierLabelHeader = response.headers.get('X-AI-Tier-Label') || (tierHeader.includes('2') ? 'Secondary Extended Tier' : 'Premier Ultra Fast Tier');
       const tokensCost = costHeader ? parseInt(costHeader, 10) : 10;
 
       if (remCreditsHeader !== null) {
@@ -2411,14 +2411,14 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                           <div className="flex items-center gap-2 mb-1 px-1 animate-in fade-in duration-300">
                             <span
                               className={cn(
-                                "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold tracking-tight shadow-xs border transition-all",
+                                "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold tracking-tight shadow-xs border transition-all",
                                 msg.tier?.includes('2')
                                   ? "bg-purple-500/10 text-purple-600 dark:text-purple-300 border-purple-500/30"
                                   : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border-emerald-500/30"
                               )}
                             >
                               <Sparkles className="w-3 h-3 shrink-0" />
-                              {msg.tierLabel || (msg.tier?.includes('2') ? 'الطبقة الثانية (OpenRouter)' : 'الطبقة الأولى (Groq)')}
+                              {msg.tierLabel || (msg.tier?.includes('2') ? 'Secondary Extended Tier' : 'Premier Ultra Fast Tier')}
                             </span>
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-mono font-semibold bg-muted/40 text-muted-foreground border border-border/50">
                               <Coins className="w-3 h-3 text-amber-500 shrink-0" />
