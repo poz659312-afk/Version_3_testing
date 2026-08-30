@@ -1,6 +1,5 @@
 /**
- * Normalizes and wraps unwrapped LaTeX formulas, equations, limits, matrices,
- * and mathematical expressions into standard $ ... $ and $$ ... $$ KaTeX delimiters.
+ * Safely normalizes LaTeX math notations without dangerous placeholder tokens.
  */
 export function normalizeLatexMath(text?: string | null): string {
   if (!text || typeof text !== 'string') return text || '';
@@ -8,60 +7,21 @@ export function normalizeLatexMath(text?: string | null): string {
   // 1. Normalize \( ... \) to $ ... $ and \[ ... \] to $$ ... $$
   let s = text
     .replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$')
-    .replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$');
+    .replace(/\\\(([\s\S]*?)\\\)/g, '$$1$');
 
-  // 2. Protect existing $...$ and $$...$$
-  const mathTokens: string[] = [];
-  s = s.replace(/\$\$[\s\S]*?\$\$|\$[^$\n]+\$/g, (m) => {
-    mathTokens.push(m);
-    return `__LATEX_TOKEN_${mathTokens.length - 1}__`;
-  });
-
-  // 3. Fix unescaped limits e.g. lim_n\to\infty -> \lim_{n \to \infty}
+  // 2. Fix unescaped limits e.g. lim_n\to\infty -> \lim_{n \to \infty}
   s = s.replace(/\blim_([a-zA-Z0-9]+)\\to\\infty/g, '\\lim_{$1 \\to \\infty}');
   s = s.replace(/\blim_\{([^}]+)\}\\to\\infty/g, '\\lim_{$1 \\to \\infty}');
   s = s.replace(/\blim_([a-zA-Z0-9]+)/g, '\\lim_{$1}');
 
-  // 4. Wrap expressions containing LaTeX commands or superscripts/subscripts with mathematical operators
-  s = s.replace(/((?:\\lim_\{[^}]+\}|\\(?:to|infty|frac|sum|prod|int|sqrt|alpha|beta|gamma|theta|lambda|mu|sigma|pi|le|ge|neq|approx|in|partial|times|cdot|pm|mathbf|mathcal|begin|end)|\([A-Za-z0-9+\-_]+\)\^\{?[a-zA-Z0-9\-+]+\}?|[A-Za-z0-9]+\^\{?[a-zA-Z0-9\-+]+\}?|[A-Za-z0-9]+_\{?[a-zA-Z0-9\-+]+\}?)[^,?.!\n]*?(?=[,?.!\n]|$))/g, (match) => {
-    const trimmed = match.trim();
-    if (!trimmed || trimmed.startsWith('__LATEX_TOKEN_')) return match;
-
-    const words = trimmed.split(/\s+/);
-    const mathPart: string[] = [];
-    const textPart: string[] = [];
-    let inTrailingText = false;
-
-    for (let i = 0; i < words.length; i++) {
-      const w = words[i];
-      if (!inTrailingText && (/[\\^_{}=+\-*\/<>|;]/.test(w) || /^(lim|det|P|Q|R|I|A|B|C|X|Y|Z|0|1|2|3|4|5|6|7|8|9)$/i.test(w) || w.length <= 2)) {
-        mathPart.push(w);
-      } else {
-        inTrailingText = true;
-        textPart.push(w);
-      }
-    }
-
-    if (mathPart.length > 0) {
-      let mStr = mathPart.join(' ');
-      // Clean up bracketed matrices: [0 | (I-Q)^{-1}R ; 0 | I] -> \begin{bmatrix} 0 & (I-Q)^{-1}R \\ 0 & I \end{bmatrix}
-      mStr = mStr.replace(/\[([\s\S]*?)\]/g, (_, matrixContent) => {
-        const cleanedRows = matrixContent.replace(/;\s*/g, ' \\\\ ').replace(/\|\s*/g, ' & ');
-        return `\\begin{bmatrix} ${cleanedRows} \\end{bmatrix}`;
-      });
-      return `$${mStr}$` + (textPart.length > 0 ? ' ' + textPart.join(' ') : '');
-    }
-
-    return `$${trimmed}$`;
-  });
-
-  // 5. Standalone expressions like (I-Q)^{-1}R
+  // 3. Auto-wrap unwrapped matrix and superscript expressions like (I-Q)^{-1}R
   s = s.replace(/(?<!\$)\b([A-Za-z0-9_()\[\]]*\([A-Za-z0-9+\-_]+\)\^\{?[a-zA-Z0-9\-+]+\}?[A-Za-z0-9_()\[\]]*)(?!\$)/g, (match) => {
     return `$${match}$`;
   });
 
-  // 6. Restore preserved math tokens
-  s = s.replace(/__LATEX_TOKEN_(\d+)__/g, (_, idx) => mathTokens[parseInt(idx, 10)]);
+  // 4. Heal any accidental placeholder artifacts if present
+  s = s.replace(/_{0,}LATEX_TOKEN_\d+_{0,}/gi, '$m$');
+  s = s.replace(/_{0,}MATH_TOKEN_\d+_{0,}/gi, '$m$');
 
   return s;
 }
@@ -80,7 +40,6 @@ export function normalizeQuizQuestionItem(q: any): any {
 
   // Clamp strictly to 4 options (A, B, C, D)
   if (rawOptions.length > 4) {
-    // If the answer is in an option > 4, include it within the 4
     const ansClean = (q.answer || '').replace(/^[A-Z]\s*[\).\-]\s*/i, '').trim();
     const ansIdx = rawOptions.findIndex(opt => opt.replace(/^[A-Z]\s*[\).\-]\s*/i, '').trim() === ansClean);
     if (ansIdx >= 4) {

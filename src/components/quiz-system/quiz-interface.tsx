@@ -183,7 +183,8 @@ function formatTextWithLatex(text?: string | null) {
 // Helper to strip choice prefix (e.g. "A) ", "B. ", "C - ", etc.)
 function cleanOptionText(text?: string | null): string {
   if (!text) return "";
-  return text.replace(/^[A-Z]\s*[\).\-]\s*/i, "");
+  const stripped = text.replace(/^[A-Z]\s*[\).\-]\s*/i, "");
+  return normalizeLatexMath(stripped);
 }
 
 // Memoized Option Button Component

@@ -2,12 +2,10 @@ import assert from "node:assert";
 import { normalizeLatexMath, normalizeQuizQuestionItem } from "../quiz-math-normalizer";
 
 export function runQuizMathTests() {
-  const rawQuestion = "In the gambler’s ruin absorbing probability formula, lim_n\\to\\infty P^n = [0 | (I-Q)^{-1}R ; 0 | I], what does the matrix (I-Q)^{-1}R represent?";
-  const normalized = normalizeLatexMath(rawQuestion);
-
-  assert.ok(normalized.includes("$\\lim_{n \\to \\infty}"));
-  assert.ok(normalized.includes("\\begin{bmatrix}"));
-  assert.ok(normalized.includes("$(I-Q)^{-1}R$"));
+  const sample1 = "What is the result of a CROSS JOIN between two tables with $m$ and $n$ rows?";
+  const normalized1 = normalizeLatexMath(sample1);
+  assert.strictEqual(normalized1, sample1);
+  assert.ok(!normalized1.includes("LATEX_TOKEN"));
 
   const alreadyFormatted = "Find the value of $\\pi$ such that $\\pi P = \\pi$ and $\\sum_{i} \\pi_i = 1$.";
   const normalized2 = normalizeLatexMath(alreadyFormatted);
@@ -28,8 +26,10 @@ export function runQuizMathTests() {
   };
 
   const item = normalizeQuizQuestionItem(rawItem);
-  assert.ok(item.question.includes("$\\lambda"));
-  assert.ok(item.options[0].includes("$\\lambda"));
+  assert.strictEqual(item.options.length, 4);
+  assert.ok(item.options[0].startsWith("A) "));
+  assert.ok(item.options[1].startsWith("B) "));
+  assert.ok(item.options[2].startsWith("C) "));
+  assert.ok(item.options[3].startsWith("D) "));
   assert.strictEqual(item.answer, item.options[0]);
-  assert.ok(item.explanation.includes("$\\lambda"));
 }

@@ -13,7 +13,7 @@ if (!fs.existsSync(CACHE_DIR)) {
   }
 }
 
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v4';
 
 function getCacheFilePath(fileContent: string, task: string, language: string): string {
   // Generate a SHA-256 hash representing the text content + task details
@@ -27,6 +27,11 @@ export async function getCachedAIResult(fileContent: string, task: string, langu
     const filePath = getCacheFilePath(fileContent, task, language);
     if (fs.existsSync(filePath)) {
       const raw = fs.readFileSync(filePath, 'utf-8');
+      if (raw.includes('LATEX_TOKEN')) {
+        console.warn(`[AI Cache Stale] Removing corrupted cache file: ${filePath}`);
+        try { fs.unlinkSync(filePath); } catch (_) {}
+        return null;
+      }
       const parsed = JSON.parse(raw);
       console.log(`[AI Cache Hit] Loaded persistent result for task: ${task}, lang: ${language}`);
       return parsed.data;
