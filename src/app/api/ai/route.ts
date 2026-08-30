@@ -222,33 +222,67 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 2. QUIZ GENERATION TASK (Static JSON output)
+    // 2. QUIZ GENERATION TASK (High-Yield Academic Assessment)
     if (task === 'quiz') {
-      const quizPrompt = [
-        {
-          role: "system",
-          content: `You are Marline AI, an expert quiz author. Output a JSON array of exactly ${safeQuestionCount} high-yield Multiple Choice Questions in ${language}, based strictly on the provided document content.
+      const quizSystemPrompt = `You are Marline AI, an elite university professor, exam committee chair, and assessment specialist.
+Language: ${language}.
 
-Schema: [{"numb":1,"type":"Multiple Choice","question":"...","options":["A) <full option text>","B) <full option text>","C) <full option text>","D) <full option text>"],"answer":"A) <full option text>","explanation":"..."}]
+Your mission: Generate exactly ${safeQuestionCount} challenging, high-yield Multiple Choice Questions based strictly on the provided academic document.
 
-Rules:
-- Each option string MUST include its letter prefix ("A) ", "B) ", "C) ", "D) ") followed by the FULL, complete answer text (not just the letter).
-- "answer" MUST be an exact, character-for-character match of one full string from "options" (letter prefix included).
-- Questions must test real understanding of the document (concepts, definitions, application, calculations, distinctions between similar ideas) — avoid trivial or out-of-context questions.
-- Vary difficulty and question style where the material allows it.
-- Return raw JSON array only. No markdown wrapping, no commentary, no trailing text.`
-        },
-        {
-          role: "user",
-          content: `Document Content:\n${sanitizedContext || metadata.name}\n\nGenerate ${safeQuestionCount} MCQs.`
-        }
+EXAM QUALITY & RIGOR STANDARDS:
+1. Cognitive Depth (Bloom's Taxonomy): Focus on conceptual analysis, application, formula usage, and distinguishing subtle differences between similar concepts. Avoid shallow definitions or trivial recall.
+2. Plausible Distractors (No Giveaway Options): Every incorrect option (B, C, D) must represent a realistic, plausible misconception that students frequently make. No silly, obviously wrong, or nonsensical choices.
+3. Math & Formulas: Enclose all equations, symbols, and variables in clean LaTeX ($...$).
+4. Pedagogical Explanations: Provide a thorough explanation for every question explaining WHY the correct option is true and WHY the other options are misconceptions.
+5. Strict Structure & Formatting:
+   - Every option MUST start with its uppercase letter prefix and closing parenthesis: "A) ...", "B) ...", "C) ...", "D) ...".
+   - The "answer" field MUST be an exact character-for-character match of the chosen correct option string (including its "A) " prefix).
+
+JSON Output Schema:
+{
+  "questions": [
+    {
+      "numb": 1,
+      "type": "Multiple Choice",
+      "question": "Question text here...",
+      "options": [
+        "A) Full option text...",
+        "B) Full option text...",
+        "C) Full option text...",
+        "D) Full option text..."
+      ],
+      "answer": "A) Full option text...",
+      "explanation": "Detailed explanation here..."
+    }
+  ]
+}`;
+
+      // Sample representative document content if oversized to ensure questions span the entire lecture
+      let quizContext = sanitizedContext || metadata.name || 'Academic File';
+      if (quizContext.length > 8000) {
+        const head = quizContext.slice(0, 3500);
+        const mid = quizContext.slice(Math.floor(quizContext.length / 2) - 1500, Math.floor(quizContext.length / 2) + 1500);
+        const tail = quizContext.slice(-2000);
+        quizContext = `${head}\n\n[... Section Break ...]\n\n${mid}\n\n[... Section Break ...]\n\n${tail}`;
+      }
+
+      const quizMessages = [
+        { role: "system", content: quizSystemPrompt },
+        { role: "user", content: `Document: "${metadata.name || 'Lecture Notes'}"\n\nContent:\n${quizContext}\n\nGenerate exactly ${safeQuestionCount} high-yield MCQs in ${language}. Return valid JSON.` }
+      ];
+
+      const QUIZ_GROQ_MODELS = [
+        "qwen/qwen3.8-27b",
+        "openai/gpt-oss-120b",
+        "qwen/qwen3.6-27b",
+        "openai/gpt-oss-20b"
       ];
 
       let lastError = "";
 
-      // Tier 1: Groq (Primary & Fast)
+      // Tier 1: Ultra-fast Groq Models
       if (groqKey) {
-        for (const model of GROQ_MODELS) {
+        for (const model of QUIZ_GROQ_MODELS) {
           try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
               method: "POST",
@@ -258,9 +292,10 @@ Rules:
               },
               body: JSON.stringify({
                 model: model,
-                messages: quizPrompt,
-                max_tokens: Math.min(400 * safeQuestionCount, 6000),
-                temperature: 0.1
+                messages: quizMessages,
+                response_format: { type: "json_object" },
+                max_tokens: Math.min(260 * safeQuestionCount, 3200),
+                temperature: 0.2
               })
             });
 
@@ -272,6 +307,8 @@ Rules:
               const finalQuestions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
 
               if (finalQuestions.length > 0) {
+                // Ensure proper numbering
+                finalQuestions.forEach((q: any, idx: number) => { q.numb = idx + 1; });
                 await deductCredits();
                 if (shouldCache) {
                   await setCachedAIResult(sanitizedContext, cacheTaskKey, language, finalQuestions);
@@ -292,7 +329,7 @@ Rules:
         }
       }
 
-      // Tier 2: OpenRouter Nemotron (Fallback)
+      // Tier 2: OpenRouter Fallback
       if (openRouterKey) {
         for (const model of OPENROUTER_MODELS) {
           try {
@@ -306,9 +343,10 @@ Rules:
               },
               body: JSON.stringify({
                 model: model,
-                messages: quizPrompt,
-                max_tokens: Math.min(400 * safeQuestionCount, 6000),
-                temperature: 0.1
+                messages: quizMessages,
+                response_format: { type: "json_object" },
+                max_tokens: Math.min(260 * safeQuestionCount, 3200),
+                temperature: 0.2
               })
             });
 
@@ -320,6 +358,7 @@ Rules:
               const finalQuestions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
 
               if (finalQuestions.length > 0) {
+                finalQuestions.forEach((q: any, idx: number) => { q.numb = idx + 1; });
                 await deductCredits();
                 if (shouldCache) {
                   await setCachedAIResult(sanitizedContext, cacheTaskKey, language, finalQuestions);
