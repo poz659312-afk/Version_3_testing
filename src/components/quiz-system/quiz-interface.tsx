@@ -599,9 +599,6 @@ export default function QuizInterface({
       setShowTableDialog(true);
     }
   };
-  const [attemptsToday, setAttemptsToday] = useState(0);
-  const [maxAttemptsReached, setMaxAttemptsReached] = useState(false);
-  const [showAttemptsDialog, setShowAttemptsDialog] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [confirmExitCheckbox, setConfirmExitCheckbox] = useState(false);
   const [enableNavigation, setEnableNavigation] = useState(false);
@@ -609,6 +606,10 @@ export default function QuizInterface({
   const [isIslandExpanded, setIsIslandExpanded] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [shakeCard, setShakeCard] = useState(false);
+  
+  // Quantum Warp Transition State
+  const [isWarpingToQuiz, setIsWarpingToQuiz] = useState(false);
+  const [warpPhase, setWarpPhase] = useState<"idle" | "charging" | "hyperjump" | "bloom">("idle");
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const submissionInProgress = useRef(false);
@@ -627,35 +628,6 @@ export default function QuizInterface({
   const [isBanned, setIsBanned] = useState(false);
   const [showBannedDialog, setShowBannedDialog] = useState(false);
   
-  const checkQuizAttempts = useCallback(async (): Promise<void> => {
-    try {
-      const session = await getStudentSession();
-      if (!session) return;
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayISO = today.toISOString();
-
-      const { error, count } = await supabase
-        .from("quiz_data")
-        .select("*", { count: "exact", head: true })
-        .eq("auth_id", session.auth_id)
-        .eq("quiz_id", quizData.code)
-        .gte("solved_at", todayISO);
-
-      if (error) {
-        console.error("Error checking quiz attempts:", error);
-        return;
-      }
-
-      const attemptsCount = count || 0;
-      setAttemptsToday(attemptsCount);
-      setMaxAttemptsReached(attemptsCount >= 5);
-    } catch (error) {
-      console.error("Unexpected error checking attempts:", error);
-    }
-  }, [supabase, quizData.code]);
-  
   useEffect(() => {
     const checkAuth = async () => {
       const session = await getStudentSession();
@@ -667,13 +639,12 @@ export default function QuizInterface({
           setShowBannedDialog(true);
           return;
         }
-        await checkQuizAttempts();
       }
     };
     
     sessionStorage.removeItem(`quiz_${quizData.code}_answers`);
     checkAuth();
-  }, [checkQuizAttempts, quizData.code]);
+  }, [quizData.code]);
   
   const handleBannedLogout = async () => {
     try {
@@ -752,36 +723,72 @@ export default function QuizInterface({
       setShowBannedDialog(true);
       return;
     }
-    
-    await checkQuizAttempts();
-    
-    if (maxAttemptsReached) {
-      setShowAttemptsDialog(true);
+
+    if (prefersReducedMotion) {
+      sessionStorage.removeItem(`quiz_${quizData.code}_answers`);
+      localStorage.removeItem(`quiz_${quizData.id}_result`);
+      localStorage.removeItem(`quiz_${quizData.code}_result`);
+      
+      submissionInProgress.current = false;
+      setQuizSubmitted(false);
+      setScore(0);
+      setCurrentCombo(0);
+      setMaxCombo(0);
+      
+      setUserAnswers({});
+      setAnswerRevealed({});
+      setShowAnswer(false);
+      setCurrentQuestion(0);
+      
+      setCurrentStep("quiz");
+
+      if (selectedDuration > 0) {
+        setTimeLeft(selectedDuration * 60);
+      } else {
+        setTimeLeft(Number.MAX_SAFE_INTEGER);
+      }
       return;
     }
-    
-    sessionStorage.removeItem(`quiz_${quizData.code}_answers`);
-    localStorage.removeItem(`quiz_${quizData.id}_result`);
-    localStorage.removeItem(`quiz_${quizData.code}_result`);
-    
-    submissionInProgress.current = false;
-    setQuizSubmitted(false);
-    setScore(0);
-    setCurrentCombo(0);
-    setMaxCombo(0);
-    
-    setUserAnswers({});
-    setAnswerRevealed({});
-    setShowAnswer(false);
-    setCurrentQuestion(0);
-    
-    setCurrentStep("quiz");
 
-    if (selectedDuration > 0) {
-      setTimeLeft(selectedDuration * 60);
-    } else {
-      setTimeLeft(Number.MAX_SAFE_INTEGER);
-    }
+    // Trigger Hyper-Quantum Warp Transition Sequence
+    setIsWarpingToQuiz(true);
+    setWarpPhase("charging");
+
+    setTimeout(() => {
+      setWarpPhase("hyperjump");
+    }, 450);
+
+    setTimeout(() => {
+      sessionStorage.removeItem(`quiz_${quizData.code}_answers`);
+      localStorage.removeItem(`quiz_${quizData.id}_result`);
+      localStorage.removeItem(`quiz_${quizData.code}_result`);
+      
+      submissionInProgress.current = false;
+      setQuizSubmitted(false);
+      setScore(0);
+      setCurrentCombo(0);
+      setMaxCombo(0);
+      
+      setUserAnswers({});
+      setAnswerRevealed({});
+      setShowAnswer(false);
+      setCurrentQuestion(0);
+      
+      setCurrentStep("quiz");
+
+      if (selectedDuration > 0) {
+        setTimeLeft(selectedDuration * 60);
+      } else {
+        setTimeLeft(Number.MAX_SAFE_INTEGER);
+      }
+
+      setWarpPhase("bloom");
+    }, 950);
+
+    setTimeout(() => {
+      setIsWarpingToQuiz(false);
+      setWarpPhase("idle");
+    }, 1550);
   };
 
   const selectAnswer = useCallback((answer: string) => {
@@ -882,9 +889,6 @@ export default function QuizInterface({
       if (!result.success) {
         console.error("Error saving quiz data to server:", result.error);
       } else {
-        setAttemptsToday(prev => prev + 1);
-        setMaxAttemptsReached(attemptsToday + 1 >= 5);
-
         if (result.earnedCoins > 0) {
           toast.success(`Congratulations! You earned ${result.earnedCoins} coins!`, {
             icon: "🪙",
@@ -1065,19 +1069,19 @@ export default function QuizInterface({
     }
   }, [currentQuestion, currentStep, userAnswers, answerRevealed, selectedMode]);
 
-  // GradientWaves Background Component Wrapper (Full-page, non-interactive, theme-adapted)
+  // GradientWaves Background Component Wrapper (Full-page, non-interactive, theme-adapted, consistent rich saturation)
   const BackgroundWaves = (
     <div className="fixed inset-0 w-full h-full pointer-events-none z-0 overflow-hidden select-none">
       <GradientWaves
         horizonColor={waveColors.horizon}
         waveColor={waveColors.wave}
         crestColor={waveColors.crest}
-        speed={0.3}
-        amplitude={2.2}
+        speed={isWarpingToQuiz ? 0.75 : 0.3}
+        amplitude={isWarpingToQuiz ? 2.5 : 2.2}
         waveScale={0.6}
         waveRatio={0.9}
-        swell={28}
-        turbulence={16}
+        swell={isWarpingToQuiz ? 34 : 28}
+        turbulence={isWarpingToQuiz ? 20 : 16}
         tilt={1.11}
         zoom={1.0}
         height={5.5}
@@ -1090,9 +1094,94 @@ export default function QuizInterface({
         grain
         grainIntensity={0.02}
       />
-      {/* Light ambient glass tint */}
+      {/* Light ambient glass tint - constant uniform saturation and tone */}
       <div className="absolute inset-0 bg-background/25 dark:bg-background/40 pointer-events-none" />
     </div>
+  );
+
+  // Creative 3D Quantum Cyber-Warp Transition Portal Overlay (GPU-Accelerated & Mobile-Optimized)
+  const QuantumWarpPortal = (
+    <AnimatePresence>
+      {isWarpingToQuiz && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          className="fixed inset-0 z-[120] pointer-events-none flex items-center justify-center overflow-hidden"
+          style={{ willChange: "opacity" }}
+        >
+          {/* Subtle Ambient Radial Flare (Hardware-accelerated gradient without heavy gaussian blur passes) */}
+          <motion.div
+            animate={
+              warpPhase === "hyperjump"
+                ? { scale: [1, 1.8, 2.4], opacity: [0.25, 0.6, 0] }
+                : { scale: [0.9, 1.1], opacity: [0.1, 0.3] }
+            }
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="absolute w-[90vw] max-w-[500px] h-[90vw] max-h-[500px] rounded-full bg-[radial-gradient(circle,rgba(var(--primary),0.35)_0%,rgba(var(--primary),0.08)_50%,transparent_70%)]"
+            style={{ transform: "translateZ(0)", willChange: "transform, opacity" }}
+          />
+
+          {/* Dynamic Concentric Shockwave Rings */}
+          <div className="relative flex items-center justify-center">
+            <motion.div
+              animate={{ rotate: 360, scale: warpPhase === "hyperjump" ? [1, 1.3, 1.6] : [0.95, 1.05, 0.95] }}
+              transition={{ rotate: { repeat: Infinity, duration: 3, ease: "linear" }, scale: { duration: 0.6 } }}
+              className="w-56 h-56 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full border border-dashed border-primary/50 flex items-center justify-center"
+              style={{ transform: "translateZ(0)", willChange: "transform" }}
+            >
+              <motion.div
+                animate={{ rotate: -360 }}
+                transition={{ repeat: Infinity, duration: 2.2, ease: "linear" }}
+                className="w-44 h-44 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-full border border-primary/40"
+                style={{ transform: "translateZ(0)", willChange: "transform" }}
+              />
+            </motion.div>
+
+            {/* Central Holographic Capsule & Mascot */}
+            <div className="absolute flex flex-col items-center justify-center">
+              <motion.div
+                initial={{ scale: 0.7, y: 10 }}
+                animate={
+                  warpPhase === "hyperjump"
+                    ? { scale: [1, 1.25, 0.8], y: [0, -20, 0] }
+                    : { scale: 1, y: 0 }
+                }
+                transition={{ duration: 0.4 }}
+                className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-3xl bg-background/90 backdrop-blur-md border border-primary/60 shadow-[0_0_40px_rgba(var(--primary),0.35)] flex items-center justify-center p-3 relative overflow-hidden"
+                style={{ transform: "translateZ(0)", willChange: "transform" }}
+              >
+                <img
+                  src="/images/chameleon/06_chameleon_excited.webp"
+                  alt="Warp Mascot"
+                  loading="eager"
+                  className="w-full h-full object-contain drop-shadow-md"
+                />
+                {/* Laser scanning line */}
+                <motion.div
+                  animate={{ y: [-35, 65, -35] }}
+                  transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                  className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent"
+                  style={{ transform: "translateZ(0)" }}
+                />
+              </motion.div>
+
+              {/* Cyber HUD Text */}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-3 text-center"
+              >
+                <span className="inline-block px-3.5 py-1 rounded-full bg-primary/20 border border-primary/40 text-primary font-mono text-[11px] sm:text-xs font-black tracking-widest uppercase shadow-md shadow-primary/15 backdrop-blur-sm">
+                  {warpPhase === "hyperjump" ? "⚡ ENGAGING SESSION ⚡" : "SYNCHRONIZING EXAM MATRIX..."}
+                </span>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 
   /* ────────────────────────── STEP 1: SETUP SCREEN ────────────────────────── */
@@ -1100,6 +1189,7 @@ export default function QuizInterface({
     return (
       <>
         {BackgroundWaves}
+        {QuantumWarpPortal}
 
         {/* Auth Dialog */}
         <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
@@ -1131,28 +1221,7 @@ export default function QuizInterface({
           </DialogContent>
         </Dialog>
 
-        {/* Attempts Dialog */}
-        <Dialog open={showAttemptsDialog} onOpenChange={setShowAttemptsDialog}>
-          <DialogContent className="bg-background/80 backdrop-blur-2xl border border-white/15 dark:border-white/10 rounded-3xl p-6 shadow-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold flex items-center gap-2 text-amber-500">
-                <AlertCircle className="w-6 h-6 text-amber-400" />
-                Maximum Daily Attempts Reached
-              </DialogTitle>
-              <DialogDescription className="text-muted-foreground text-sm pt-2">
-                You have reached the limit of 5 attempts for this quiz today. Please try again tomorrow.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="mt-6">
-              <Button 
-                onClick={() => setShowAttemptsDialog(false)}
-                className="w-full py-3 text-base rounded-2xl bg-primary text-primary-foreground"
-              >
-                Understood
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+
 
         {/* Banned Dialog */}
         <Dialog open={showBannedDialog} onOpenChange={() => {}}>
@@ -1177,7 +1246,16 @@ export default function QuizInterface({
           </DialogContent>
         </Dialog>
 
-        <div className="relative min-h-screen w-full flex flex-col items-center justify-center py-10 px-4 md:px-8">
+        <motion.div
+          animate={
+            isWarpingToQuiz
+              ? { scale: 0.88, rotateX: 20, y: -25, filter: "blur(8px)", opacity: 0.15 }
+              : { scale: 1, rotateX: 0, y: 0, filter: "blur(0px)", opacity: 1 }
+          }
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          className="relative min-h-screen w-full flex flex-col items-center justify-center py-10 px-4 md:px-8"
+          style={{ perspective: 1200 }}
+        >
           
           {/* Header Brand */}
           <motion.div 
@@ -1398,40 +1476,28 @@ export default function QuizInterface({
                       <div className="text-xs uppercase tracking-wider font-semibold text-muted-foreground">Feedback</div>
                     </div>
                   </div>
-
-                  {isAuthenticated && (
-                    <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-center gap-2 text-xs md:text-sm text-muted-foreground font-medium">
-                      <Clock className="w-4 h-4 text-primary" />
-                      <span>Today's Attempts: <strong className="text-foreground">{attemptsToday}</strong> / 5</span>
-                      {maxAttemptsReached && (
-                        <Badge variant="destructive" className="ml-2 rounded-full px-2 py-0.5 text-xs">
-                          Daily Limit Reached
-                        </Badge>
-                      )}
-                    </div>
-                  )}
                 </div>
 
                 {/* Start Action Button */}
                 <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                   <button
                     onClick={startQuiz}
-                    disabled={maxAttemptsReached}
+                    disabled={isWarpingToQuiz}
                     className={cn(
                       "w-full py-5 text-lg md:text-xl font-bold rounded-2xl transition-all duration-200 flex items-center justify-center select-none shadow-xl",
-                      maxAttemptsReached
+                      isWarpingToQuiz
                         ? "bg-muted text-muted-foreground cursor-not-allowed"
                         : "bg-primary text-primary-foreground hover:brightness-110 shadow-primary/25"
                     )}
                   >
                     <Play className="w-6 h-6 mr-3 fill-current" />
-                    {maxAttemptsReached ? "Daily Attempts Limit Reached" : "Begin Quiz Adventure"}
+                    {isWarpingToQuiz ? "Initializing Session..." : "Begin Quiz Adventure"}
                   </button>
                 </motion.div>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </>
     );
   }
@@ -1454,33 +1520,43 @@ export default function QuizInterface({
             if (!open) setConfirmExitCheckbox(false);
           }}
         >
-          <DialogContent className="bg-background/90 backdrop-blur-2xl border border-white/15 dark:border-white/10 max-w-md rounded-3xl p-6 shadow-2xl">
+          <DialogContent className="bg-background/95 backdrop-blur-2xl border border-white/15 dark:border-white/10 max-w-md w-[92vw] sm:w-full rounded-3xl p-6 sm:p-7 shadow-2xl overflow-hidden">
             <DialogHeader className="space-y-3">
-              <DialogTitle className="text-2xl font-black flex items-center gap-3 text-rose-500">
-                <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-rose-500/10 text-rose-500">
+              <DialogTitle className="text-xl sm:text-2xl font-black flex items-center gap-3 text-rose-500">
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-rose-500/10 text-rose-500 shrink-0">
                   <AlertCircle className="w-6 h-6 animate-pulse" />
                 </div>
-                Exit Current Session?
+                <span>Exit Current Session?</span>
               </DialogTitle>
-              <DialogDescription className="text-muted-foreground text-sm leading-relaxed">
+              <DialogDescription className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
                 Leaving now will discard all your scored answers and ongoing combo streak in this session.
               </DialogDescription>
             </DialogHeader>
             
-            <div className="my-5 flex items-start gap-3 p-4 bg-rose-500/5 border border-rose-500/15 rounded-2xl">
+            <div className="my-4 flex items-start gap-3 p-4 bg-rose-500/5 border border-rose-500/15 rounded-2xl">
               <input
                 id="confirm-exit-checkbox"
                 type="checkbox"
                 checked={confirmExitCheckbox}
                 onChange={(e) => setConfirmExitCheckbox(e.target.checked)}
-                className="mt-1 h-4 w-4 rounded border-border text-rose-600 focus:ring-rose-500 cursor-pointer accent-rose-500"
+                className="mt-1 h-4 w-4 rounded border-border text-rose-600 focus:ring-rose-500 cursor-pointer accent-rose-500 shrink-0"
               />
-              <label htmlFor="confirm-exit-checkbox" className="text-xs md:text-sm text-foreground/80 leading-relaxed font-medium cursor-pointer select-none">
+              <label htmlFor="confirm-exit-checkbox" className="text-xs sm:text-sm text-foreground/80 leading-relaxed font-medium cursor-pointer select-none">
                 I understand that active quiz progress and session answers will be lost.
               </label>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 w-full">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowExitConfirm(false);
+                  setConfirmExitCheckbox(false);
+                }}
+                className="w-full h-11 rounded-2xl text-sm font-semibold border-white/15 dark:border-white/10 hover:bg-muted/40 order-2 sm:order-1"
+              >
+                Continue Quiz
+              </Button>
               <Button
                 onClick={() => {
                   setShowExitConfirm(false);
@@ -1489,21 +1565,13 @@ export default function QuizInterface({
                 }}
                 disabled={!confirmExitCheckbox}
                 className={cn(
-                  "w-full py-3 rounded-2xl text-sm font-bold transition-all",
-                  confirmExitCheckbox ? "bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20" : "bg-muted text-muted-foreground cursor-not-allowed"
+                  "w-full h-11 rounded-2xl text-sm font-bold transition-all order-1 sm:order-2",
+                  confirmExitCheckbox
+                    ? "bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/25"
+                    : "bg-muted text-muted-foreground cursor-not-allowed opacity-60"
                 )}
               >
                 Exit Session
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowExitConfirm(false);
-                  setConfirmExitCheckbox(false);
-                }}
-                className="w-full py-3 rounded-2xl text-sm font-semibold border-white/15 dark:border-white/10 hover:bg-background/80"
-              >
-                Continue Quiz
               </Button>
             </div>
           </DialogContent>
@@ -1652,16 +1720,13 @@ export default function QuizInterface({
                   {/* Question Header & Type Pills */}
                   <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 bg-primary/15 text-primary rounded-full border border-primary/25">
-                        Question {currentQuestion + 1} of {questions.length}
-                      </span>
                       {currentQ?.type && (
                         <span className="text-xs font-semibold uppercase tracking-wider px-3 py-1 bg-background/50 text-muted-foreground rounded-full border border-white/10">
                           {currentQ.type}
                         </span>
                       )}
                       {selectedMode === "instant" && currentCombo >= 2 && (
-                        <span className="text-xs font-black uppercase tracking-wider px-3 py-1 bg-amber-500/20 text-amber-500 border border-amber-500/35 rounded-full flex items-center gap-1 animate-pulse">
+                        <span className="text-xs font-black uppercase tracking-wider px-3 py-1 bg-amber-500/20 text-amber-500 border border-amber-500/35 rounded-full flex items-center gap-1">
                           🔥 {currentCombo}x Streak
                         </span>
                       )}
@@ -1725,63 +1790,69 @@ export default function QuizInterface({
                     })}
                   </div>
 
-                  {/* Instant Feedback Mascot Card */}
+                  {/* Instant Feedback Mascot Card (Responsive Stack: Top Mascot Row + 100% Width Explanation + Bottom Button) */}
                   {selectedMode === "instant" && showAnswer && (
                     <motion.div
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      animate={{ opacity: 1, scale: 1 }}
                       className={cn(
-                        "mt-6 p-4 sm:p-5 md:p-6 rounded-3xl backdrop-blur-2xl flex flex-row gap-4 sm:gap-6 items-start md:items-center relative overflow-hidden border shadow-xl",
+                        "mt-6 p-4 sm:p-6 rounded-3xl backdrop-blur-2xl relative overflow-hidden border shadow-xl flex flex-col gap-4",
                         isCorrect
                           ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-950 dark:text-emerald-200"
                           : "bg-rose-500/15 border-rose-500/40 text-rose-950 dark:text-rose-200"
                       )}
                     >
-                      {/* Mascot Image (Scaled to match text block height) */}
-                      <div className="shrink-0 flex items-center justify-center self-start sm:self-center">
-                        <img
-                          src={isCorrect ? "/images/chameleon/10_chameleon_success.png" : "/images/chameleon/08_chameleon_angry.webp"}
-                          alt={isCorrect ? "Success Chameleon" : "Angry Chameleon"}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 object-contain drop-shadow-xl select-none transition-transform hover:scale-105"
-                        />
-                      </div>
-
-                      <div className="flex-1 space-y-1.5 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h4 className="text-lg md:text-2xl font-black tracking-tight">
-                            {isCorrect ? "Brilliant! You got it right!" : "Incorrect Choice"}
-                          </h4>
-                          {isCorrect && currentCombo >= 2 && (
-                            <span className="px-2.5 py-0.5 bg-amber-500 text-white text-xs font-black rounded-full shadow-sm">
-                              🔥 {currentCombo}x
-                            </span>
-                          )}
+                      {/* Top Header Row: Mascot + Status Title + Streak */}
+                      <div className="flex items-center gap-3.5 sm:gap-4 w-full">
+                        <div className="shrink-0 flex items-center justify-center">
+                          <img
+                            src={isCorrect ? "/images/chameleon/10_chameleon_success.png" : "/images/chameleon/08_chameleon_angry.webp"}
+                            alt={isCorrect ? "Success Chameleon" : "Angry Chameleon"}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain drop-shadow-xl select-none"
+                          />
                         </div>
 
-                        {!isCorrect && (
-                          <p className="text-sm md:text-base font-bold">
-                            Correct Answer: <span className="underline">{formatTextWithLatex(cleanOptionText(currentQ?.answer))}</span>
-                          </p>
-                        )}
-
-                        {currentQ?.explanation && (
-                          <div className="text-xs md:text-sm font-medium leading-relaxed mt-2 bg-background/40 p-3.5 rounded-2xl border border-white/10 text-foreground">
-                            <span className="font-bold block mb-1 text-xs uppercase tracking-wider text-muted-foreground">Explanation:</span>
-                            {formatTextWithLatex(currentQ.explanation)}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h4 className="text-base sm:text-xl md:text-2xl font-black tracking-tight leading-tight">
+                              {isCorrect ? "Brilliant! You got it right!" : "Incorrect Choice"}
+                            </h4>
+                            {isCorrect && currentCombo >= 2 && (
+                              <span className="px-2.5 py-0.5 bg-amber-500 text-white text-xs font-black rounded-full shadow-sm">
+                                🔥 {currentCombo}x
+                              </span>
+                            )}
                           </div>
-                        )}
+
+                          {!isCorrect && (
+                            <p className="text-xs sm:text-sm md:text-base font-bold mt-1 text-foreground/90 leading-snug">
+                              Correct Answer: <span className="underline decoration-rose-500 font-extrabold">{formatTextWithLatex(cleanOptionText(currentQ?.answer))}</span>
+                            </p>
+                          )}
+                        </div>
                       </div>
 
+                      {/* Explanation Block (Spans 100% full width with zero squeezing) */}
+                      {currentQ?.explanation && (
+                        <div className="w-full text-xs sm:text-sm md:text-base font-medium leading-relaxed bg-background/50 dark:bg-background/40 p-3.5 sm:p-4 rounded-2xl border border-white/10 text-foreground break-words">
+                          <span className="font-bold block mb-1 text-[11px] sm:text-xs uppercase tracking-wider text-muted-foreground">
+                            Explanation:
+                          </span>
+                          {formatTextWithLatex(currentQ.explanation)}
+                        </div>
+                      )}
+
+                      {/* Bottom Footer Row: Continue Button */}
                       {!enableNavigation && (
-                        <div className="ml-auto mt-2 md:mt-0 shrink-0 relative z-10 w-full md:w-auto">
+                        <div className="w-full pt-1 flex justify-end">
                           <Button
                             onClick={nextQuestion}
-                            className="w-full md:w-auto px-6 py-2.5 rounded-2xl font-bold bg-primary text-primary-foreground hover:brightness-110 shadow-md transition-all"
+                            className="w-full sm:w-auto px-7 py-2.5 h-11 rounded-2xl font-bold bg-primary text-primary-foreground hover:brightness-110 shadow-md transition-all flex items-center justify-center gap-2"
                           >
-                            {currentQuestion === questions.length - 1 ? "Finish Quiz" : "Continue"}
-                            <ArrowRight className="w-4 h-4 ml-2" />
+                            <span>{currentQuestion === questions.length - 1 ? "Finish Quiz" : "Continue"}</span>
+                            <ArrowRight className="w-4 h-4" />
                           </Button>
                         </div>
                       )}

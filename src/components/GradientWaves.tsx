@@ -35,9 +35,11 @@ const hexToRgb = (hex: string): [number, number, number] => {
 };
 
 const detailToSteps = (detail: GradientWavesDetail): number => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  if (isMobile) return 12.0;
   if (detail === 'low') return 16.0;
-  if (detail === 'high') return 32.0;
-  return 24.0;
+  if (detail === 'high') return 28.0;
+  return 20.0;
 };
 
 const vertex = `#version 300 es
@@ -187,13 +189,14 @@ const GradientWaves: React.FC<GradientWavesProps> = ({
     const container = containerRef.current;
     if (!container) return;
 
-    // Use dpr: 1 for silky smooth background shader rendering (60+ FPS)
+    // Use mobile-optimized dpr for silky smooth background shader rendering (60+ FPS)
+    const isMobile = window.innerWidth < 768;
     const renderer = new Renderer({
       webgl: 2,
       alpha: true,
       premultipliedAlpha: false,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 1),
+      dpr: Math.min(window.devicePixelRatio || 1, isMobile ? 0.85 : 1.0),
       powerPreference: 'high-performance'
     });
 
