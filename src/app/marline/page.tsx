@@ -55,6 +55,28 @@ interface ChatSession {
 
 const DAILY_QUESTION_LIMIT = 20
 
+function stripThinkingProcess(text?: string | null): string {
+  if (!text || typeof text !== "string") return text || ""
+  let clean = text
+
+  // 1. Remove XML-like thinking/thought tags
+  clean = clean.replace(/<think>[\s\S]*?<\/think>/gi, "")
+  clean = clean.replace(/<thought>[\s\S]*?<\/thought>/gi, "")
+  clean = clean.replace(/<think>[\s\S]*$/gi, "")
+  clean = clean.replace(/<thought>[\s\S]*$/gi, "")
+
+  // 2. Remove English meta-thinking / scratchpad text at the beginning
+  clean = clean.replace(/^(?:Thinking Process:?|Thought Process:?|Internal Reasoning:?|We need to respond as|Let's craft)[\s\S]*?(?:\n\n+|(?=##|\bأهلاً\b|\bمرحباً\b|#))/i, "")
+
+  // 3. Remove leading paragraphs of English meta-planning if Arabic content follows
+  clean = clean.replace(/^[A-Za-z0-9\s,.:;'"!?()\-_/\\]+\n+(?=[#\u0600-\u06FF])/g, (match) => {
+    if (match.length > 20) return ""
+    return match
+  })
+
+  return clean.trim()
+}
+
 function getMarlineEmotion(content: string, isThinking?: boolean, isError?: boolean): string {
   if (isThinking) return "/images/chameleon/03_chameleon_thinking.png"
   if (isError) return "/images/chameleon/08_chameleon_angry.png"
@@ -383,17 +405,18 @@ export default function MarlineAssistantPage() {
             try {
               const parsed = JSON.parse(jsonStr)
               const delta = parsed.choices?.[0]?.delta
-              const deltaContent = delta?.content ?? delta?.reasoning ?? delta?.reasoning_content ?? ""
+              const deltaContent = delta?.content || ""
               if (deltaContent) {
                 accumulatedText += deltaContent
-                const currentEmotion = getMarlineEmotion(accumulatedText)
+                const cleanAccumulated = stripThinkingProcess(accumulatedText)
+                const currentEmotion = getMarlineEmotion(cleanAccumulated)
 
                 // Update assistant message content token-by-token live
                 setSessions((prev) =>
                   prev.map((s) => {
                     if (s.id !== activeSessionId) return s
                     const newMsgs = s.messages.map((m) =>
-                      m.id === assistantMsgId ? { ...m, content: accumulatedText, emotion: currentEmotion } : m
+                      m.id === assistantMsgId ? { ...m, content: cleanAccumulated, emotion: currentEmotion } : m
                     )
                     return { ...s, messages: newMsgs }
                   })

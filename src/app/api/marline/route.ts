@@ -3,22 +3,7 @@ import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-
 import { getServerStudentSession } from "@/lib/auth-server";
 import { MARLINE_SYSTEM_PROMPT } from "@/lib/marline-knowledge";
 
-// Multi-tier Fallback Providers & Models (100% Free & Lightning Fast)
-// TIER 1 (Default): Ultra-fast Groq Models with 131k context windows
-const GROQ_MODELS = [
-  "qwen/qwen3.8-27b",
-  "qwen/qwen3.6-27b",
-  "openai/gpt-oss-120b",
-  "openai/gpt-oss-20b"
-];
-
-// TIER 2 (Fallback): OpenRouter Free Models
-const OPENROUTER_MODELS = [
-  "openrouter/free",
-  "nvidia/nemotron-3.5-lightning:free",
-  "nvidia/nemotron-3-super-120b-a12b:free",
-  "minimax/minimax-m2.7:free"
-];
+import { GROQ_MODELS, OPENROUTER_MODELS } from "@/lib/drive-ai-orchestrator";
 
 export async function POST(req: Request) {
   try {

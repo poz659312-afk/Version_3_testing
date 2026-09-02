@@ -84,11 +84,16 @@ function preprocessMarlineContent(content: string): string {
   if (!content) return ""
   let text = content
 
-  // 1. Filter out thinking / reasoning tags (<think>...</think>)
+  // 1. Filter out thinking / reasoning tags (<think>...</think>) and meta-planning scratchpads
   text = text.replace(/<think>[\s\S]*?<\/think>/gi, "")
   text = text.replace(/<thought>[\s\S]*?<\/thought>/gi, "")
   text = text.replace(/<think>[\s\S]*$/gi, "")
   text = text.replace(/<thought>[\s\S]*$/gi, "")
+  text = text.replace(/^(?:Thinking Process:?|Thought Process:?|Internal Reasoning:?|We need to respond as|Let's craft)[\s\S]*?(?:\n\n+|(?=##|\bأهلاً\b|\bمرحباً\b|#))/i, "")
+  text = text.replace(/^[A-Za-z0-9\s,.:;'"!?()\-_/\\]+\n+(?=[#\u0600-\u06FF])/g, (match) => {
+    if (match.length > 20) return ""
+    return match
+  })
 
   // 2. Convert explicit LaTeX syntax patterns into standard $ math delimiters:
   text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => '\n\n$$' + g1 + '$$\n\n')
@@ -97,14 +102,20 @@ function preprocessMarlineContent(content: string): string {
   // 3. Protect LaTeX norm pipes \| as \Vert so they are never confused with markdown table column pipes
   text = text.replace(/\\\|/g, '\\Vert ')
 
-  // 4. Fix rogue dividers crammed with headers
+  // 4. Isolate equations inside bullet items onto their own display math blocks
+  text = text.replace(/^[ \t]*(?:[•*\-–—]|\d+\.)\s*(.+?)\s*[:=]\s*(\$\$[\s\S]*?\$\$|\$?\\frac[\s\S]*?\$?)$/gm, (_m, label, eq) => {
+    let cleanEq = eq.replace(/^\$+|\$+$/g, '').trim();
+    return `\n* **${label.trim()}**:\n\n$$ ${cleanEq} $$\n`;
+  })
+
+  // 5. Fix rogue dividers crammed with headers
   text = text.replace(/---\s*(#{1,6}\s+)/g, '\n\n---\n\n$1')
   text = text.replace(/([^\n])\s+---\s+([^\n])/g, '$1\n\n---\n\n$2')
 
-  // 5. Separate headers (#{1,6}) if they appear inline
+  // 6. Separate headers (#{1,6}) if they appear inline
   text = text.replace(/([^\n])\s+(#{1,6}\s+[^\n]+)/g, '$1\n\n$2\n\n')
 
-  // 6. Ensure Dividers come BEFORE Headings, not glued underneath them
+  // 7. Ensure Dividers come BEFORE Headings, not glued underneath them
   text = text.replace(/(#{1,6}\s+[^\n]+)\n+\s*---\s*\n+/g, '\n\n---\n\n$1\n\n')
 
   // 7. Robust Token-based Table Reconstruction

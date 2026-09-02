@@ -56,7 +56,7 @@
     "semester_duration_weeks": 15,
     "language": "اللغة الإنجليزية هي لغة الدراسة الرسمية بالكلية",
     "total_credit_hours_required": 140,
-    "graduation_min_cgpa": 2.00,
+    "graduation_min_cgpa": 2,
     "min_semesters_for_graduation": 7
   },
   "credit_hours_distribution": {
@@ -93,18 +93,78 @@
     "written_exam_range": "من 50 إلى 70 درجة",
     "oral_exam_max": "10 درجات (إن وجد)",
     "grades_scale": [
-      { "grade": "A", "percentage": "90% فأكثر", "points": 4.000, "status": "ممتاز" },
-      { "grade": "A-", "percentage": "من 85% إلى أقل من 90%", "points": 3.666, "status": "ممتاز منخفض" },
-      { "grade": "B+", "percentage": "من 80% إلى أقل من 85%", "points": 3.333, "status": "جيد جداً مرتفع" },
-      { "grade": "B", "percentage": "من 75% إلى أقل من 80%", "points": 3.000, "status": "جيد جداً" },
-      { "grade": "B-", "percentage": "من 70% إلى أقل من 75%", "points": 2.666, "status": "جيد مرتفع" },
-      { "grade": "C+", "percentage": "من 65% إلى أقل من 70%", "points": 2.333, "status": "جيد" },
-      { "grade": "C", "percentage": "من 60% إلى أقل من 65%", "points": 2.000, "status": "مقبول مرتفع" },
-      { "grade": "C-", "percentage": "من 56% إلى أقل من 60%", "points": 1.666, "status": "مقبول" },
-      { "grade": "D+", "percentage": "من 53% إلى أقل من 56%", "points": 1.333, "status": "ضعيف مرتفع" },
-      { "grade": "D", "percentage": "من 50% إلى أقل من 53%", "points": 1.000, "status": "ضعيف (الحد الأدنى للنجاح)" },
-      { "grade": "F", "percentage": "أقل من 50% إجمالي أو أقل من 30% بالتحريري", "points": 0.000, "status": "راسب لائحي" },
-      { "grade": "Abs", "percentage": "غائب عن التحريري بغير عذر مقبول", "points": 0.000, "status": "غائب ورسوب" }
+      {
+        "grade": "A",
+        "percentage": "90% فأكثر",
+        "points": 4,
+        "status": "ممتاز"
+      },
+      {
+        "grade": "A-",
+        "percentage": "من 85% إلى أقل من 90%",
+        "points": 3.666,
+        "status": "ممتاز منخفض"
+      },
+      {
+        "grade": "B+",
+        "percentage": "من 80% إلى أقل من 85%",
+        "points": 3.333,
+        "status": "جيد جداً مرتفع"
+      },
+      {
+        "grade": "B",
+        "percentage": "من 75% إلى أقل من 80%",
+        "points": 3,
+        "status": "جيد جداً"
+      },
+      {
+        "grade": "B-",
+        "percentage": "من 70% إلى أقل من 75%",
+        "points": 2.666,
+        "status": "جيد مرتفع"
+      },
+      {
+        "grade": "C+",
+        "percentage": "من 65% إلى أقل من 70%",
+        "points": 2.333,
+        "status": "جيد"
+      },
+      {
+        "grade": "C",
+        "percentage": "من 60% إلى أقل من 65%",
+        "points": 2,
+        "status": "مقبول مرتفع"
+      },
+      {
+        "grade": "C-",
+        "percentage": "من 56% إلى أقل من 60%",
+        "points": 1.666,
+        "status": "مقبول"
+      },
+      {
+        "grade": "D+",
+        "percentage": "من 53% إلى أقل من 56%",
+        "points": 1.333,
+        "status": "ضعيف مرتفع"
+      },
+      {
+        "grade": "D",
+        "percentage": "من 50% إلى أقل من 53%",
+        "points": 1,
+        "status": "ضعيف (الحد الأدنى للنجاح)"
+      },
+      {
+        "grade": "F",
+        "percentage": "أقل من 50% إجمالي أو أقل من 30% بالتحريري",
+        "points": 0,
+        "status": "راسب لائحي"
+      },
+      {
+        "grade": "Abs",
+        "percentage": "غائب عن التحريري بغير عذر مقبول",
+        "points": 0,
+        "status": "غائب ورسوب"
+      }
     ],
     "special_symbols": {
       "W": "Withdrawal - منسحب بموافقة المرشد قبل الموعد النهائي (لا تؤثر على المعدل)",
@@ -145,114 +205,834 @@
     "program_elective": "اختياري برنامج/قسم (مقرر تخصصي اختياري يختاره الطالب من قائمة مقررات برنامجه)"
   },
   "faculty_compulsory_courses": [
-    { "code": "02-24-00101", "name_en": "Linear Algebra", "name_ar": "الجبر الخطي", "credits": 3, "level": 1, "semester": 1, "type": "إجباري كلية", "prereq": "لا يوجد" },
-    { "code": "02-24-00102", "name_en": "Calculus", "name_ar": "التفاضل والتكامل", "credits": 3, "level": 1, "semester": 1, "type": "إجباري كلية", "prereq": "لا يوجد" },
-    { "code": "02-24-00103", "name_en": "Introduction to Computer Systems", "name_ar": "مقدمة إلى نظم الحاسب", "credits": 3, "level": 1, "semester": 1, "type": "إجباري كلية", "prereq": "لا يوجد" },
-    { "code": "02-24-00104", "name_en": "Introduction to Data Sciences", "name_ar": "مقدمة إلى علوم البيانات", "credits": 3, "level": 1, "semester": 1, "type": "إجباري كلية", "prereq": "لا يوجد" },
-    { "code": "02-24-00105", "name_en": "Programming I", "name_ar": "البرمجة 1", "credits": 3, "level": 1, "semester": 1, "type": "إجباري كلية", "prereq": "لا يوجد" },
-    { "code": "02-24-00106", "name_en": "Probability and Statistics I", "name_ar": "الاحتمالات والإحصاء 1", "credits": 3, "level": 1, "semester": 2, "type": "إجباري كلية", "prereq": "لا يوجد" },
-    { "code": "02-24-00107", "name_en": "Discrete Structures", "name_ar": "التراكيب المتقطعة", "credits": 3, "level": 1, "semester": 2, "type": "إجباري كلية", "prereq": "لا يوجد" },
-    { "code": "02-24-00108", "name_en": "Data Structures and Algorithms", "name_ar": "هياكل البيانات والخوارزميات", "credits": 3, "level": 1, "semester": 2, "type": "إجباري كلية", "prereq": "Programming I (02-24-00105)" },
-    { "code": "02-24-00109", "name_en": "Introduction to Artificial Intelligence", "name_ar": "مقدمة في الذكاء الاصطناعي", "credits": 3, "level": 1, "semester": 2, "type": "إجباري كلية", "prereq": "Introduction to Computer Systems (02-24-00103)" },
-    { "code": "02-24-00110", "name_en": "Programming II", "name_ar": "البرمجة 2", "credits": 3, "level": 1, "semester": 2, "type": "إجباري كلية", "prereq": "Programming I (02-24-00105)" },
-    { "code": "02-24-00201", "name_en": "Probability and Statistics II", "name_ar": "الاحتمالات والإحصاء 2", "credits": 3, "level": 2, "semester": 3, "type": "إجباري كلية", "prereq": "Probability and Statistics I (02-24-00106)" },
-    { "code": "02-24-00202", "name_en": "Introduction to Databases", "name_ar": "مقدمة في قواعد البيانات", "credits": 3, "level": 2, "semester": 3, "type": "إجباري كلية", "prereq": "Data Structures and Algorithms (02-24-00108)" },
-    { "code": "02-24-00203", "name_en": "Numerical Computations", "name_ar": "الحسابات العددية", "credits": 3, "level": 2, "semester": 3, "type": "إجباري كلية", "prereq": "Linear Algebra (02-24-00101)" },
-    { "code": "02-24-00204", "name_en": "Cloud Computing", "name_ar": "الحوسبة السحابية", "credits": 3, "level": 2, "semester": 4, "type": "إجباري كلية", "prereq": "Data Structures and Algorithms (02-24-00108)" },
-    { "code": "02-24-00205", "name_en": "Machine Learning", "name_ar": "تعلم الآلة", "credits": 3, "level": 2, "semester": 4, "type": "إجباري كلية", "prereq": "Introduction to Artificial Intelligence (02-24-00109)" },
-    { "code": "02-24-00206", "name_en": "Data Mining and Analytics", "name_ar": "تنقيب وتحليل البيانات", "credits": 3, "level": 2, "semester": 4, "type": "إجباري كلية", "prereq": "Probability and Statistics II (02-24-00201)" }
+    {
+      "code": "02-24-00101",
+      "name_en": "Linear Algebra",
+      "name_ar": "الجبر الخطي",
+      "credits": 3,
+      "level": 1,
+      "semester": 1,
+      "type": "إجباري كلية",
+      "prereq": "لا يوجد"
+    },
+    {
+      "code": "02-24-00102",
+      "name_en": "Calculus",
+      "name_ar": "التفاضل والتكامل",
+      "credits": 3,
+      "level": 1,
+      "semester": 1,
+      "type": "إجباري كلية",
+      "prereq": "لا يوجد"
+    },
+    {
+      "code": "02-24-00103",
+      "name_en": "Introduction to Computer Systems",
+      "name_ar": "مقدمة إلى نظم الحاسب",
+      "credits": 3,
+      "level": 1,
+      "semester": 1,
+      "type": "إجباري كلية",
+      "prereq": "لا يوجد"
+    },
+    {
+      "code": "02-24-00104",
+      "name_en": "Introduction to Data Sciences",
+      "name_ar": "مقدمة إلى علوم البيانات",
+      "credits": 3,
+      "level": 1,
+      "semester": 1,
+      "type": "إجباري كلية",
+      "prereq": "لا يوجد"
+    },
+    {
+      "code": "02-24-00105",
+      "name_en": "Programming I",
+      "name_ar": "البرمجة 1",
+      "credits": 3,
+      "level": 1,
+      "semester": 1,
+      "type": "إجباري كلية",
+      "prereq": "لا يوجد"
+    },
+    {
+      "code": "02-24-00106",
+      "name_en": "Probability and Statistics I",
+      "name_ar": "الاحتمالات والإحصاء 1",
+      "credits": 3,
+      "level": 1,
+      "semester": 2,
+      "type": "إجباري كلية",
+      "prereq": "لا يوجد"
+    },
+    {
+      "code": "02-24-00107",
+      "name_en": "Discrete Structures",
+      "name_ar": "التراكيب المتقطعة",
+      "credits": 3,
+      "level": 1,
+      "semester": 2,
+      "type": "إجباري كلية",
+      "prereq": "لا يوجد"
+    },
+    {
+      "code": "02-24-00108",
+      "name_en": "Data Structures and Algorithms",
+      "name_ar": "هياكل البيانات والخوارزميات",
+      "credits": 3,
+      "level": 1,
+      "semester": 2,
+      "type": "إجباري كلية",
+      "prereq": "Programming I (02-24-00105)"
+    },
+    {
+      "code": "02-24-00109",
+      "name_en": "Introduction to Artificial Intelligence",
+      "name_ar": "مقدمة في الذكاء الاصطناعي",
+      "credits": 3,
+      "level": 1,
+      "semester": 2,
+      "type": "إجباري كلية",
+      "prereq": "Introduction to Computer Systems (02-24-00103)"
+    },
+    {
+      "code": "02-24-00110",
+      "name_en": "Programming II",
+      "name_ar": "البرمجة 2",
+      "credits": 3,
+      "level": 1,
+      "semester": 2,
+      "type": "إجباري كلية",
+      "prereq": "Programming I (02-24-00105)"
+    },
+    {
+      "code": "02-24-00201",
+      "name_en": "Probability and Statistics II",
+      "name_ar": "الاحتمالات والإحصاء 2",
+      "credits": 3,
+      "level": 2,
+      "semester": 3,
+      "type": "إجباري كلية",
+      "prereq": "Probability and Statistics I (02-24-00106)"
+    },
+    {
+      "code": "02-24-00202",
+      "name_en": "Introduction to Databases",
+      "name_ar": "مقدمة في قواعد البيانات",
+      "credits": 3,
+      "level": 2,
+      "semester": 3,
+      "type": "إجباري كلية",
+      "prereq": "Data Structures and Algorithms (02-24-00108)"
+    },
+    {
+      "code": "02-24-00203",
+      "name_en": "Numerical Computations",
+      "name_ar": "الحسابات العددية",
+      "credits": 3,
+      "level": 2,
+      "semester": 3,
+      "type": "إجباري كلية",
+      "prereq": "Linear Algebra (02-24-00101)"
+    },
+    {
+      "code": "02-24-00204",
+      "name_en": "Cloud Computing",
+      "name_ar": "الحوسبة السحابية",
+      "credits": 3,
+      "level": 2,
+      "semester": 4,
+      "type": "إجباري كلية",
+      "prereq": "Data Structures and Algorithms (02-24-00108)"
+    },
+    {
+      "code": "02-24-00205",
+      "name_en": "Machine Learning",
+      "name_ar": "تعلم الآلة",
+      "credits": 3,
+      "level": 2,
+      "semester": 4,
+      "type": "إجباري كلية",
+      "prereq": "Introduction to Artificial Intelligence (02-24-00109)"
+    },
+    {
+      "code": "02-24-00206",
+      "name_en": "Data Mining and Analytics",
+      "name_ar": "تنقيب وتحليل البيانات",
+      "credits": 3,
+      "level": 2,
+      "semester": 4,
+      "type": "إجباري كلية",
+      "prereq": "Probability and Statistics II (02-24-00201)"
+    }
   ],
   "faculty_elective_courses": [
-    { "code": "02-24-00301", "name_en": "Software Engineering", "name_ar": "هندسة البرمجيات", "credits": 3, "type": "اختياري كلية", "prereq": "Programming II" },
-    { "code": "02-24-00302", "name_en": "Systems Analysis and Design", "name_ar": "تحليل وتصميم النظم", "credits": 3, "type": "اختياري كلية", "prereq": "لا يوجد" },
-    { "code": "02-24-00303", "name_en": "Algorithm Design", "name_ar": "تصميم الخوارزميات", "credits": 3, "type": "اختياري كلية", "prereq": "Data Structures and Algorithms" },
-    { "code": "02-24-00304", "name_en": "Distributed Processing", "name_ar": "المعالجة الموزعة", "credits": 3, "type": "اختياري كلية", "prereq": "Intro to CS, Data Structures" },
-    { "code": "02-24-00305", "name_en": "Mobile Programming", "name_ar": "برمجة الهواتف الذكية", "credits": 3, "type": "اختياري كلية", "prereq": "Programming I" },
-    { "code": "02-24-00306", "name_en": "Web Programming", "name_ar": "برمجة الويب", "credits": 3, "type": "اختياري كلية", "prereq": "Programming I" },
-    { "code": "02-24-00307", "name_en": "Operating Systems", "name_ar": "نظم التشغيل", "credits": 3, "type": "اختياري كلية", "prereq": "Intro to CS, Programming I" },
-    { "code": "02-24-00308", "name_en": "Computer Networks", "name_ar": "شبكات الحاسب", "credits": 3, "type": "اختياري كلية", "prereq": "Intro to CS, Programming I" }
+    {
+      "code": "02-24-00301",
+      "name_en": "Software Engineering",
+      "name_ar": "هندسة البرمجيات",
+      "credits": 3,
+      "type": "اختياري كلية",
+      "prereq": "Programming II"
+    },
+    {
+      "code": "02-24-00302",
+      "name_en": "Systems Analysis and Design",
+      "name_ar": "تحليل وتصميم النظم",
+      "credits": 3,
+      "type": "اختياري كلية",
+      "prereq": "لا يوجد"
+    },
+    {
+      "code": "02-24-00303",
+      "name_en": "Algorithm Design",
+      "name_ar": "تصميم الخوارزميات",
+      "credits": 3,
+      "type": "اختياري كلية",
+      "prereq": "Data Structures and Algorithms"
+    },
+    {
+      "code": "02-24-00304",
+      "name_en": "Distributed Processing",
+      "name_ar": "المعالجة الموزعة",
+      "credits": 3,
+      "type": "اختياري كلية",
+      "prereq": "Intro to CS, Data Structures"
+    },
+    {
+      "code": "02-24-00305",
+      "name_en": "Mobile Programming",
+      "name_ar": "برمجة الهواتف الذكية",
+      "credits": 3,
+      "type": "اختياري كلية",
+      "prereq": "Programming I"
+    },
+    {
+      "code": "02-24-00306",
+      "name_en": "Web Programming",
+      "name_ar": "برمجة الويب",
+      "credits": 3,
+      "type": "اختياري كلية",
+      "prereq": "Programming I"
+    },
+    {
+      "code": "02-24-00307",
+      "name_en": "Operating Systems",
+      "name_ar": "نظم التشغيل",
+      "credits": 3,
+      "type": "اختياري كلية",
+      "prereq": "Intro to CS, Programming I"
+    },
+    {
+      "code": "02-24-00308",
+      "name_en": "Computer Networks",
+      "name_ar": "شبكات الحاسب",
+      "credits": 3,
+      "type": "اختياري كلية",
+      "prereq": "Intro to CS, Programming I"
+    }
   ],
   "programs_courses_by_level": {
     "01_Computing_and_Data_Sciences": {
-      "program_name_ar": "برنامج الحوسبة وعلوم البيانات (البرنامج العام)",
+      "program_name_ar": "برنامج الحوسبة وعلوم البيانات (البرنامج العام - General)",
+      "program_name_en": "Computing and Data Sciences",
       "level_1": {
-        "semester_1": ["Linear Algebra (إجباري كلية)", "Calculus (إجباري كلية)", "Intro to Computer Systems (إجباري كلية)", "Intro to Data Sciences (إجباري كلية)", "Programming I (إجباري كلية)", "Critical Thinking (إجباري جامعة)"],
-        "semester_2": ["Probability & Statistics I (إجباري كلية)", "Discrete Structures (إجباري كلية)", "Data Structures & Algorithms (إجباري كلية)", "Intro to AI (إجباري كلية)", "Programming II (إجباري كلية)", "Innovation & Entrepreneurship (إجباري جامعة)"]
+        "year_name_ar": "السنة الأولى (مستوى 1)",
+        "semester_1": [
+          "Linear Algebra (02-24-00101)",
+          "Calculus (02-24-00102)",
+          "Introduction to Computer Systems (02-24-00103)",
+          "Introduction to Data Sciences (02-24-00104)",
+          "Programming I (02-24-00105)",
+          "Critical Thinking",
+          "Math 0"
+        ],
+        "semester_2": [
+          "Probability and Statistics I (02-24-00106)",
+          "Discrete Structures (02-24-00107)",
+          "Data Structures and Algorithms (02-24-00108)",
+          "Introduction to Artificial Intelligence (02-24-00109)",
+          "Programming II (02-24-00110)",
+          "Innovation & Entrepreneurship"
+        ]
       },
       "level_2": {
-        "semester_3": ["Probability & Statistics II (إجباري كلية)", "Intro to Databases (إجباري كلية)", "Numerical Computations (إجباري كلية)", "Advanced Calculus (إجباري برنامج)", "Data Science Methodology (إجباري برنامج)", "University Elective (اختياري جامعة)"],
-        "semester_4": ["Cloud Computing (إجباري كلية)", "Machine Learning (إجباري كلية)", "Data Mining & Analytics (إجباري كلية)", "Data Science Tools & Software (إجباري برنامج)", "Regression Analysis (إجباري برنامج)", "University Elective (اختياري جامعة)"],
-        "summer": ["Field Training I (إجباري برنامج - تدريب ميداني 1)"]
+        "year_name_ar": "السنة الثانية (مستوى 2)",
+        "semester_3": [
+          "Probability and Statistics II (02-24-00201)",
+          "Introduction to Databases (02-24-00202)",
+          "Numerical Computations (02-24-00203)",
+          "Advanced Calculus (02-24-01201)",
+          "Data Science Methodology (02-24-01202)",
+          "Economy Science (HE_005)",
+          "Modern Tourism (ME_009)"
+        ],
+        "semester_4": [
+          "Cloud Computing (02-24-00204)",
+          "Machine Learning (02-24-00205)",
+          "Data Mining and Analytics (02-24-00206)",
+          "Data Science Tools and Software (02-24-01203)",
+          "Regression Analysis (02-24-01204)",
+          "First Aids",
+          "Pet Handeling (PH_001)"
+        ],
+        "summer": [
+          "Field Training I (تدريب ميداني 1 - 2 ساعة معتمدة)"
+        ]
       },
       "level_3": {
-        "semester_5": ["Stochastic Processes (إجباري برنامج)", "Design & Analysis of Experiments (إجباري برنامج)", "Data Visualization Tools (إجباري برنامج)", "Faculty Elective 1 (اختياري كلية)", "Faculty Elective 2 (اختياري كلية)", "University Elective (اختياري جامعة)"],
-        "semester_6": ["Data Computation & Analysis (إجباري برنامج)", "Survey Methodology (إجباري برنامج)", "Computing Intensive Statistical Methods (إجباري برنامج)", "Faculty Elective 3 (اختياري كلية)", "Faculty Elective 4 (اختياري كلية)"],
-        "summer": ["Field Training II (إجباري برنامج - تدريب ميداني 2)"]
+        "year_name_ar": "السنة الثالثة (مستوى 3)",
+        "semester_5": [
+          "Stochastic Processes (02-24-01301)",
+          "Design and Analysis of Experiments (02-24-01302)",
+          "Data Visualization Tools (02-24-01303)",
+          "Web Programming (02-24-00306)",
+          "Computer Networks (02-24-00308)",
+          "Dist Processing (02-24-00302)",
+          "Fitness and Health (02-24-HS001)"
+        ],
+        "semester_6": [
+          "Data Computation and Analysis (02-24-01304)",
+          "Survey Methodology (02-24-01305)",
+          "Computing Intensive Statistical Methods (02-24-01306)",
+          "Advanced Database Systems",
+          "Operating Systems",
+          "Software Engineering",
+          "System Analysis and Design (02-24-00304)"
+        ],
+        "summer": [
+          "Field Training II (تدريب ميداني 2 - 2 ساعة معتمدة)"
+        ]
       },
       "level_4": {
-        "semester_7": ["Big Data Analytics (إجباري برنامج)", "Intro to Social Networks (إجباري برنامج)", "Simulations (إجباري برنامج)", "Project I (مشروع تخرج 1 - إجباري برنامج)", "Program Elective 1 (اختياري قسم/برنامج)", "Program Elective 2 (اختياري قسم/برنامج)", "University Elective (اختياري جامعة)"],
-        "semester_8": ["Social Data Analytics (إجباري برنامج)", "Distributed Data Analysis (إجباري برنامج)", "Stream Processing (إجباري برنامج)", "Project II (مشروع تخرج 2 - إجباري برنامج)", "Program Elective 3 (اختياري قسم/برنامج)", "Program Elective 4 (اختياري قسم/برنامج)", "University Elective (اختياري جامعة)"]
+        "year_name_ar": "السنة الرابعة (مستوى 4)",
+        "semester_7": [
+          "Big Data Analytics (02-24-01401)",
+          "Introduction to Social Networks (02-24-01402)",
+          "Simulations (02-24-01403)",
+          "Program Elective (02-24-014XX)",
+          "Program Elective (02-24-014XX)",
+          "University Elective"
+        ],
+        "semester_8": [
+          "Social Data Analytics (02-24-01405)",
+          "Distributed Data Analysis (02-24-01406)",
+          "Stream Processing (02-24-01407)",
+          "Program Elective (02-24-014XX)",
+          "Program Elective (02-24-014XX)",
+          "University Elective"
+        ],
+        "graduation_project": [
+          "Graduation Project I (مشروع تخرج 1)",
+          "Graduation Project II (مشروع تخرج 2)"
+        ]
       },
-      "program_electives_list": ["Convex Optimization", "Non-Linear and Combinatorial Optimization", "Multivariate Statistical Analysis", "Bayesian Statistics", "Data Compression Techniques", "Concurrent Algorithms and Data Structures", "Distributed Database Systems", "Advanced Database Systems"]
+      "program_electives_list": [
+        "Convex Optimization",
+        "Non-Linear and Combinatorial Optimization",
+        "Multivariate Statistical Analysis",
+        "Bayesian Statistics",
+        "Data Compression Techniques",
+        "Concurrent Algorithms and Data Structures",
+        "Distributed Database Systems",
+        "Advanced Database Systems"
+      ]
     },
     "02_Business_Analytics": {
       "program_name_ar": "برنامج تحليلات الأعمال",
-      "level_1": "نفس مقررات المستوى الأول المشتركة لجميع طلاب الكلية (إجباري كلية + إجباري جامعة)",
+      "program_name_en": "Business Analytics",
+      "level_1": {
+        "year_name_ar": "السنة الأولى (مستوى 1)",
+        "semester_1": [
+          "Linear Algebra (02-24-00101)",
+          "Calculus (02-24-00102)",
+          "Introduction to Computer Systems (02-24-00103)",
+          "Introduction to Data Sciences (02-24-00104)",
+          "Programming I (02-24-00105)",
+          "Critical Thinking"
+        ],
+        "semester_2": [
+          "Probability and Statistics I (02-24-00106)",
+          "Discrete Structures (02-24-00107)",
+          "Data Structures and Algorithms (02-24-00108)",
+          "Introduction to Artificial Intelligence (02-24-00109)",
+          "Programming II (02-24-00110)",
+          "Innovation & Entrepreneurship"
+        ]
+      },
       "level_2": {
-        "semester_3": ["Probability & Stat II (إجباري كلية)", "Intro to Databases (إجباري كلية)", "Numerical Computations (إجباري كلية)", "Introduction to Business (إجباري برنامج)", "Accounting as an Information Systems (إجباري برنامج)", "University Elective (اختياري جامعة)"],
-        "semester_4": ["Cloud Computing (إجباري كلية)", "Machine Learning (إجباري كلية)", "Data Mining & Analytics (إجباري كلية)", "System Analysis & Design (إجباري برنامج)", "Financial Planning & Analysis (إجباري برنامج)", "University Elective (اختياري جامعة)"],
-        "summer": ["Field Training I (تدريب ميداني 1)"]
+        "year_name_ar": "السنة الثانية (مستوى 2)",
+        "semester_3": [
+          "Probability and Statistics II (02-24-00201)",
+          "Introduction to Databases (02-24-00202)",
+          "Numerical Computations (02-24-00203)",
+          "Advanced Calculus (02-24-01201)",
+          "Data Science Methodology (02-24-01202)",
+          "Economy Science (HE_005)",
+          "Introduction to Business (02-24-02201)",
+          "Accounting as an Information Systems (02-24-02202)"
+        ],
+        "semester_4": [
+          "Cloud Computing (02-24-00204)",
+          "Machine Learning (02-24-00205)",
+          "Data Mining and Analytics (02-24-00206)",
+          "System Analysis & Design (02-24-02203)",
+          "Financial Planning and Analysis (02-24-02204)",
+          "University Elective"
+        ],
+        "summer": [
+          "Field Training I (تدريب ميداني 1 - 2 ساعة معتمدة)"
+        ]
       },
       "level_3": {
-        "semester_5": ["Business Process Modeling & Integration (إجباري برنامج)", "Quantitative Analysis (إجباري برنامج)", "Data Warehousing & Business Intelligence (إجباري برنامج)", "Faculty Electives (اختياري كلية x2)", "University Elective (اختياري جامعة)"],
-        "semester_6": ["Data Visualization (إجباري برنامج)", "Enterprise Information Systems (إجباري برنامج)", "Data Driven Marketing (إجباري برنامج)", "Faculty Electives (اختياري كلية x2)"],
-        "summer": ["Field Training II (تدريب ميداني 2)"]
+        "year_name_ar": "السنة الثالثة (مستوى 3)",
+        "semester_5": [
+          "Business Process Modeling and Integration (02-24-02301)",
+          "Quantitative Analysis (02-24-02302)",
+          "Data Warehousing & Business Intelligence (02-24-02303)",
+          "Faculty Elective",
+          "Faculty Elective",
+          "University Elective"
+        ],
+        "semester_6": [
+          "Data Visualization (02-24-02304)",
+          "Enterprise Information Systems (02-24-02305)",
+          "Data Driven Marketing (02-24-02306)",
+          "Faculty Elective",
+          "Faculty Elective"
+        ],
+        "summer": [
+          "Field Training II (تدريب ميداني 2 - 2 ساعة معتمدة)"
+        ]
       },
       "level_4": {
-        "semester_7": ["Leadership & People Analytics (إجباري برنامج)", "Data & IT Governance (إجباري برنامج)", "Information Retrieval (إجباري برنامج)", "Project I (مشروع تخرج 1)", "Program Electives (اختياري قسم/برنامج x2)"],
-        "semester_8": ["Text & Social Media Mining (إجباري برنامج)", "Logistics & Supply Chain Analytics (إجباري برنامج)", "IT Laws & Ethics (إجباري برنامج)", "Project II (مشروع تخرج 2)", "Program Electives (اختياري قسم/برنامج x2)"]
+        "year_name_ar": "السنة الرابعة (مستوى 4)",
+        "semester_7": [
+          "Leadership and People Analytics (02-24-02401)",
+          "Data and IT Governance (02-24-02402)",
+          "Information Retrieval (02-24-02403)",
+          "Program Elective (02-24-024XX)",
+          "Program Elective (02-24-024XX)",
+          "University Elective"
+        ],
+        "semester_8": [
+          "Text and Social Media Mining (02-24-02405)",
+          "Logistics and Supply Chain Analytics (02-24-02406)",
+          "Information Technology Laws and Ethics (02-24-02407)",
+          "Program Elective (02-24-024XX)",
+          "Program Elective (02-24-024XX)",
+          "University Elective"
+        ],
+        "graduation_project": [
+          "Graduation Project I (مشروع تخرج 1)",
+          "Graduation Project II (مشروع تخرج 2)"
+        ]
       },
-      "program_electives_list": ["Human Computer Interaction (HCI)", "Gamification & Games Development", "Technology Trends and Innovation", "GIS and Spatial Data Mining", "Managing Technology Projects", "Smart Cities and E-Government", "Digital Transformation and Digital Economics", "Manufacturing Analytics", "Predictive Analytics", "NLP and Semantic Analysis"]
+      "program_electives_list": [
+        "Human Computer Interaction (HCI)",
+        "Gamification & Games Development",
+        "Technology Trends and Innovation",
+        "GIS and Spatial Data Mining",
+        "Managing Technology Projects",
+        "Smart Cities and E-Government",
+        "Digital Transformation and Digital Economics",
+        "Manufacturing Analytics",
+        "Predictive Analytics",
+        "NLP and Semantic Analysis"
+      ]
     },
     "03_Intelligent_Systems": {
-      "program_name_ar": "برنامج النظم الذكية",
-      "level_1": "نفس مقررات المستوى الأول المشتركة لجميع طلاب الكلية",
+      "program_name_ar": "برنامج النظم الذكية والذكاء الاصطناعي",
+      "program_name_en": "Intelligent Systems",
+      "level_1": {
+        "year_name_ar": "السنة الأولى (مستوى 1)",
+        "semester_1": [
+          "Linear Algebra (02-24-00101)",
+          "Calculus (02-24-00102)",
+          "Introduction to Computer Systems (02-24-00103)",
+          "Introduction to Data Sciences (02-24-00104)",
+          "Programming I (02-24-00105)",
+          "Critical Thinking"
+        ],
+        "semester_2": [
+          "Probability and Statistics I (02-24-00106)",
+          "Discrete Structures (02-24-00107)",
+          "Data Structures and Algorithms (02-24-00108)",
+          "Introduction to Artificial Intelligence (02-24-00109)",
+          "Programming II (02-24-00110)",
+          "Innovation & Entrepreneurship"
+        ]
+      },
       "level_2": {
-        "semester_3": ["Probability & Stat II (إجباري كلية)", "Intro to Databases (إجباري كلية)", "Numerical Computations (إجباري كلية)", "Smart Systems & Computational Intelligence (إجباري برنامج)", "Operations Research (إجباري برنامج)", "University Elective (اختياري جامعة)"],
-        "semester_4": ["Cloud Computing (إجباري كلية)", "Machine Learning (إجباري كلية)", "Data Mining & Analytics (إجباري كلية)", "Pattern Recognition (إجباري برنامج)", "Neural Networks (إجباري برنامج)", "University Elective (اختياري جامعة)"],
-        "summer": ["Field Training I (تدريب ميداني 1)"]
+        "year_name_ar": "السنة الثانية (مستوى 2)",
+        "semester_3": [
+          "Probability and Statistics II (02-24-00201)",
+          "Introduction to Databases (02-24-00202)",
+          "Numerical Computations (02-24-00203)",
+          "Smart Systems and Computational Intelligence (02-24-03201)",
+          "Operations Research (02-24-03202)",
+          "Economy Science (HE_005)"
+        ],
+        "semester_4": [
+          "Cloud Computing (02-24-00204)",
+          "Machine Learning (02-24-00205)",
+          "Data Mining and Analytics (02-24-00206)",
+          "Pattern Recognition (02-24-03203)",
+          "Neural Networks (02-24-03204)"
+        ],
+        "summer": [
+          "Field Training I (تدريب ميداني 1 - 2 ساعة معتمدة)"
+        ]
       },
       "level_3": {
-        "semester_5": ["Intelligent Programming (إجباري برنامج)", "Deep Learning (إجباري برنامج)", "Modern Control Systems (إجباري برنامج)", "Faculty Electives (اختياري كلية x2)", "University Elective (اختياري جامعة)"],
-        "semester_6": ["Embedded Systems (إجباري برنامج)", "Computer Vision (إجباري برنامج)", "AI Security Issues (إجباري برنامج)", "Faculty Electives (اختياري كلية x2)"],
-        "summer": ["Field Training II (تدريب ميداني 2)"]
+        "year_name_ar": "السنة الثالثة (مستوى 3)",
+        "semester_5": [
+          "Intelligent Programming (02-24-03301)",
+          "Deep Learning (02-24-03302)",
+          "Modern Control Systems (02-24-03303)",
+          "Faculty Elective",
+          "Faculty Elective",
+          "University Elective"
+        ],
+        "semester_6": [
+          "Embedded Systems (02-24-03304)",
+          "Computer Vision (02-24-03305)",
+          "AI Security Issues (02-24-03306)",
+          "Faculty Elective",
+          "Faculty Elective"
+        ],
+        "summer": [
+          "Field Training II (تدريب ميداني 2 - 2 ساعة معتمدة)"
+        ]
       },
       "level_4": {
-        "semester_7": ["AI Platforms (إجباري برنامج)", "Internet of Things I (إجباري برنامج)", "Natural Language Processing (إجباري برنامج)", "Project I (مشروع تخرج 1)", "Program Electives (اختياري قسم/برنامج x2)"],
-        "semester_8": ["Reinforcement Learning (إجباري برنامج)", "AI for Robotics (إجباري برنامج)", "Visual Recognition (إجباري برنامج)", "Project II (مشروع تخرج 2)", "Program Electives (اختياري قسم/برنامج x2)"]
+        "year_name_ar": "السنة الرابعة (مستوى 4)",
+        "semester_7": [
+          "AI Platforms (02-24-03401)",
+          "Internet of Things I (02-24-03402)",
+          "Natural Language Processing (02-24-03403)",
+          "Program Elective (02-24-034XX)",
+          "Program Elective (02-24-034XX)",
+          "University Elective"
+        ],
+        "semester_8": [
+          "Reinforcement Learning (02-24-03405)",
+          "AI for Robotics (02-24-03406)",
+          "Visual Recognition (02-24-03407)",
+          "Program Elective (02-24-034XX)",
+          "Program Elective (02-24-034XX)",
+          "University Elective"
+        ],
+        "graduation_project": [
+          "Graduation Project I (مشروع تخرج 1)",
+          "Graduation Project II (مشروع تخرج 2)"
+        ]
       },
-      "program_electives_list": ["Speech Recognition", "Natural Language Understanding", "Embedded Machine Learning", "Intelligence Technology Trends", "Internet of Things II", "Knowledge-Base AI", "Virtual Reality", "Game Theory"]
+      "program_electives_list": [
+        "Speech Recognition",
+        "Natural Language Understanding",
+        "Embedded Machine Learning",
+        "Intelligence Technology Trends",
+        "Internet of Things II",
+        "Knowledge-Base AI",
+        "Virtual Reality",
+        "Game Theory"
+      ]
     },
     "04_Media_Analytics": {
       "program_name_ar": "برنامج تحليلات الوسائط الإعلامية",
-      "level_1": "نفس مقررات المستوى الأول المشتركة لجميع طلاب الكلية",
-      "level_2_to_4_compulsory_summary": ["Data Driven Journalism", "Digital Mass Communication", "Digital Video Production", "News Editing & Blogging", "Image Processing", "Web Design & SEO", "Computer Audio", "Infographics & Data Visualization", "Natural Language Processing", "Media Processing", "Computer Graphics", "Digital Broadcasting", "Audience Research", "Social Media Analytics", "Multimedia Analytics", "Public Opinion & E-Surveys", "Project I & II"],
-      "program_electives_list": ["Interactive Media", "Online Journalism", "Computational Photography", "Computer Animations", "Video Game Design & Programming", "Virtual Reality", "Digital Media Forensics"]
+      "program_name_en": "Media Analytics",
+      "level_1": {
+        "year_name_ar": "السنة الأولى (مستوى 1)",
+        "semester_1": [
+          "Linear Algebra (02-24-00101)",
+          "Calculus (02-24-00102)",
+          "Introduction to Computer Systems (02-24-00103)",
+          "Introduction to Data Sciences (02-24-00104)",
+          "Programming I (02-24-00105)",
+          "Critical Thinking"
+        ],
+        "semester_2": [
+          "Probability and Statistics I (02-24-00106)",
+          "Discrete Structures (02-24-00107)",
+          "Data Structures and Algorithms (02-24-00108)",
+          "Introduction to Artificial Intelligence (02-24-00109)",
+          "Programming II (02-24-00110)",
+          "Innovation & Entrepreneurship"
+        ]
+      },
+      "level_2": {
+        "year_name_ar": "السنة الثانية (مستوى 2)",
+        "semester_3": [
+          "Probability and Statistics II (02-24-00201)",
+          "Introduction to Databases (02-24-00202)",
+          "Numerical Computations (02-24-00203)",
+          "Data Driven Journalism (02-24-04201)",
+          "Digital Mass Communication (02-24-04202)",
+          "Economy Science (HE_005)"
+        ],
+        "semester_4": [
+          "Cloud Computing (02-24-00204)",
+          "Machine Learning (02-24-00205)",
+          "Data Mining and Analytics (02-24-00206)",
+          "Digital Video Production (02-24-04203)",
+          "News Editing and Blogging (02-24-04204)",
+          "University Elective"
+        ],
+        "summer": [
+          "Field Training I (تدريب ميداني 1 - 2 ساعة معتمدة)"
+        ]
+      },
+      "level_3": {
+        "year_name_ar": "السنة الثالثة (مستوى 3)",
+        "semester_5": [
+          "Image Processing (02-24-04301)",
+          "Web Design and Search-Engine Optimization (02-24-04302)",
+          "Computer Audio (02-24-04303)",
+          "Faculty Elective",
+          "Faculty Elective",
+          "University Elective"
+        ],
+        "semester_6": [
+          "Infographics and Data Visualization (02-24-04304)",
+          "Natural Language Processing (02-24-04305)",
+          "Media Processing (02-24-04306)",
+          "Faculty Elective",
+          "Faculty Elective"
+        ],
+        "summer": [
+          "Field Training II (تدريب ميداني 2 - 2 ساعة معتمدة)"
+        ]
+      },
+      "level_4": {
+        "year_name_ar": "السنة الرابعة (مستوى 4)",
+        "semester_7": [
+          "Computer Graphics (02-24-04401)",
+          "Digital Broadcasting (02-24-04402)",
+          "Audience Research and Analysis (02-24-04403)",
+          "Program Elective (02-24-044XX)",
+          "Program Elective (02-24-044XX)",
+          "University Elective"
+        ],
+        "semester_8": [
+          "Social Media Analytics (02-24-04405)",
+          "Multimedia Analytics (02-24-04406)",
+          "Public Opinion and E Surveys (02-24-04407)",
+          "Program Elective (02-24-044XX)",
+          "Program Elective (02-24-044XX)",
+          "University Elective"
+        ],
+        "graduation_project": [
+          "Graduation Project I (مشروع تخرج 1)",
+          "Graduation Project II (مشروع تخرج 2)"
+        ]
+      },
+      "program_electives_list": [
+        "Interactive Media",
+        "Online Journalism",
+        "Computational Photography",
+        "Computer Animations",
+        "Video Game Design & Programming",
+        "Virtual Reality",
+        "Digital Media Forensics"
+      ]
     },
     "05_Healthcare_Informatics": {
       "program_name_ar": "برنامج تحليلات ومعلوماتية الرعاية الصحية",
-      "level_1": "نفس مقررات المستوى الأول المشتركة لجميع طلاب الكلية",
-      "level_2_to_4_compulsory_summary": ["Intro to Epidemiology", "Anatomy & Physiology", "Pharmacology & Chemistry of Drugs", "Ethics & Regulations in Healthcare", "Neuroscience & Robotics", "Health Information Systems", "Computer-Assisted Drug Design", "National & Int Healthcare Systems", "Health Policy & Economics", "Healthcare Market Analytics", "E-health & Telemedicine", "Mathematical Modelling for Health", "Clinical Delivery", "Disease Registries", "Clinical Decision Support Systems", "Health Psychology", "Project I & II"],
-      "program_electives_list": ["Radiation Physics", "Cellular & Molecular Biology", "Radiation Biology", "Pathophysiology & Lab Data", "Principles of Biochemistry"]
+      "program_name_en": "Healthcare Informatics",
+      "level_1": {
+        "year_name_ar": "السنة الأولى (مستوى 1)",
+        "semester_1": [
+          "Linear Algebra (02-24-00101)",
+          "Calculus (02-24-00102)",
+          "Introduction to Computer Systems (02-24-00103)",
+          "Introduction to Data Sciences (02-24-00104)",
+          "Programming I (02-24-00105)",
+          "Critical Thinking"
+        ],
+        "semester_2": [
+          "Probability and Statistics I (02-24-00106)",
+          "Discrete Structures (02-24-00107)",
+          "Data Structures and Algorithms (02-24-00108)",
+          "Introduction to Artificial Intelligence (02-24-00109)",
+          "Programming II (02-24-00110)",
+          "Innovation & Entrepreneurship"
+        ]
+      },
+      "level_2": {
+        "year_name_ar": "السنة الثانية (مستوى 2)",
+        "semester_3": [
+          "Probability and Statistics II (02-24-00201)",
+          "Introduction to Databases (02-24-00202)",
+          "Numerical Computations (02-24-00203)",
+          "Introduction to Epidemiology (02-24-05201)",
+          "Anatomy and Physiology (02-24-05202)",
+          "University Elective"
+        ],
+        "semester_4": [
+          "Cloud Computing (02-24-00204)",
+          "Machine Learning (02-24-00205)",
+          "Data Mining and Analytics (02-24-00206)",
+          "Pharmacology and Chemistry of Drugs (02-24-05203)",
+          "Ethics & Regulations in Healthcare (02-24-05204)",
+          "University Elective"
+        ],
+        "summer": [
+          "Field Training I (تدريب ميداني 1 - 2 ساعة معتمدة)"
+        ]
+      },
+      "level_3": {
+        "year_name_ar": "السنة الثالثة (مستوى 3)",
+        "semester_5": [
+          "Neuroscience and Robotics (02-24-05301)",
+          "Health Information Systems (02-24-05302)",
+          "Computer-Assisted Drug Design (02-24-05303)",
+          "Faculty Elective",
+          "Faculty Elective",
+          "University Elective"
+        ],
+        "semester_6": [
+          "National and International Healthcare Systems (02-24-05304)",
+          "Health Policy & Economics (02-24-05305)",
+          "Healthcare Market Analytics (02-24-05306)",
+          "Faculty Elective",
+          "Faculty Elective"
+        ],
+        "summer": [
+          "Field Training II (تدريب ميداني 2 - 2 ساعة معتمدة)"
+        ]
+      },
+      "level_4": {
+        "year_name_ar": "السنة الرابعة (مستوى 4)",
+        "semester_7": [
+          "E-health, Telehealth and Telemedicine (02-24-05401)",
+          "Mathematical Modelling for Health (02-24-05402)",
+          "Clinical & Medical Care Delivery (02-24-05403)",
+          "Program Elective (02-24-054XX)",
+          "Program Elective (02-24-054XX)",
+          "University Elective"
+        ],
+        "semester_8": [
+          "Computerized Disease Registries (02-24-05405)",
+          "Clinical Decision Support Systems (02-24-05406)",
+          "Health Psychology (02-24-05407)",
+          "Program Elective (02-24-054XX)",
+          "Program Elective (02-24-054XX)",
+          "University Elective"
+        ],
+        "graduation_project": [
+          "Graduation Project I (مشروع تخرج 1)",
+          "Graduation Project II (مشروع تخرج 2)"
+        ]
+      },
+      "program_electives_list": [
+        "Radiation Physics",
+        "Cellular & Molecular Biology",
+        "Radiation Biology",
+        "Pathophysiology & Lab Data",
+        "Principles of Biochemistry"
+      ]
     },
     "06_Cybersecurity": {
       "program_name_ar": "برنامج الأمن السيبراني",
-      "level_1": "نفس مقررات المستوى الأول المشتركة لجميع طلاب الكلية",
-      "level_2_to_4_compulsory_summary": ["Intro to Cybersecurity", "Number Theory", "Cryptography", "Operating Systems Security", "Secure Software Development", "Computer & Network Security", "Data Integrity & Authentication", "Info Security Management", "Social Networks Computing", "Security of Distributed Systems", "Human Security", "Cybersecurity Risk Management", "Digital Forensics", "Law & Cybersecurity", "Project I & II"],
-      "program_electives_list": ["AI Security Issues", "Proactive Computer Security", "Software Security Engineering", "Blockchain & Security of Blockchain", "Cloud Computing Security", "Social Networks Analytics", "Internet of Things", "Mobile Computing"]
-    }  
+      "program_name_en": "Cybersecurity",
+      "level_1": {
+        "year_name_ar": "السنة الأولى (مستوى 1)",
+        "semester_1": [
+          "Linear Algebra (02-24-00101)",
+          "Calculus (02-24-00102)",
+          "Introduction to Computer Systems (02-24-00103)",
+          "Introduction to Data Sciences (02-24-00104)",
+          "Programming I (02-24-00105)",
+          "Critical Thinking"
+        ],
+        "semester_2": [
+          "Probability and Statistics I (02-24-00106)",
+          "Discrete Structures (02-24-00107)",
+          "Data Structures and Algorithms (02-24-00108)",
+          "Introduction to Artificial Intelligence (02-24-00109)",
+          "Programming II (02-24-00110)",
+          "Innovation & Entrepreneurship"
+        ]
+      },
+      "level_2": {
+        "year_name_ar": "السنة الثانية (مستوى 2)",
+        "semester_3": [
+          "Probability and Statistics II (02-24-00201)",
+          "Introduction to Databases (02-24-00202)",
+          "Numerical Computations (02-24-00203)",
+          "Introduction to Cybersecurity (02-24-06201)",
+          "Number Theory (02-24-06202)",
+          "Economy Science (HE_005)"
+        ],
+        "semester_4": [
+          "Cloud Computing (02-24-00204)",
+          "Machine Learning (02-24-00205)",
+          "Data Mining and Analytics (02-24-00206)",
+          "Cryptography (02-24-06203)",
+          "Operating Systems"
+        ],
+        "summer": [
+          "Field Training I (تدريب ميداني 1 - 2 ساعة معتمدة)"
+        ]
+      },
+      "level_3": {
+        "year_name_ar": "السنة الثالثة (مستوى 3)",
+        "semester_5": [
+          "Computer Networks (02-24-00308)",
+          "Operating Systems Security (02-24-06302)",
+          "Secure Software Development (02-24-06303)",
+          "Faculty Elective",
+          "Faculty Elective",
+          "University Elective"
+        ],
+        "semester_6": [
+          "Computer and Network Security (02-24-06304)",
+          "Data Integrity and Authentication (02-24-06305)",
+          "Information Security Management (02-24-06306)",
+          "Faculty Elective",
+          "Faculty Elective"
+        ],
+        "summer": [
+          "Field Training II (تدريب ميداني 2 - 2 ساعة معتمدة)"
+        ]
+      },
+      "level_4": {
+        "year_name_ar": "السنة الرابعة (مستوى 4)",
+        "semester_7": [
+          "Social Network Computing (02-24-06401)",
+          "Security of Distributed Systems (02-24-06402)",
+          "Human Security (02-24-06403)",
+          "Program Elective (02-24-064XX)",
+          "Program Elective (02-24-064XX)",
+          "University Elective"
+        ],
+        "semester_8": [
+          "Cybersecurity Risk Management (02-24-06405)",
+          "Digital Forensics (02-24-06406)",
+          "Law and Cybersecurity (02-24-06407)",
+          "Program Elective (02-24-064XX)",
+          "Program Elective (02-24-064XX)",
+          "University Elective"
+        ],
+        "graduation_project": [
+          "Graduation Project I (مشروع تخرج 1)",
+          "Graduation Project II (مشروع تخرج 2)"
+        ]
+      },
+      "program_electives_list": [
+        "AI Security Issues",
+        "Proactive Computer Security",
+        "Software Security Engineering",
+        "Blockchain & Security of Blockchain",
+        "Cloud Computing Security",
+        "Social Networks Analytics",
+        "Internet of Things",
+        "Mobile Computing"
+      ]
+    }
   },
-  "graduation_honors": { 
+  "graduation_honors": {
     "title_ar": "مرتبة الشرف",
     "conditions": [
       "أن يستكمل متطلبات التخرج في مدة لا تزيد عن 9 فصول دراسية أساسية.",
