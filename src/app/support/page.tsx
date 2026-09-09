@@ -279,7 +279,7 @@ export default function SupportChameleonPage() {
             شكرًا لكل طالب ساهم أو نشر Chameleon وشارك في كبر المجتمع ❤️
           </p>
           <p className="text-xs text-slate-400">
-            فريق طلاب كلية الحاسبات والذكاء الاصطناعي - FCDS
+            فريق طلاب كلية الحاسبات و علوم البيانات - جامعة الاسكندرية - FCDS
           </p>
         </div>
       </div>
