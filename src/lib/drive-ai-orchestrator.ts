@@ -1,26 +1,34 @@
-import { calculateGroqBudget, estimateTokens, GROQ_TPM_LIMIT, GROQ_SAFETY_MARGIN } from "./token-budget-manager";
+import { estimateTokens, calculateGroqBudget } from "./token-budget-manager";
 import { chunkDocumentSemantically, DocumentChunk } from "./semantic-chunker";
+import {
+  CEREBRAS_MODELS,
+  GROQ_MODELS,
+  GOOGLE_MODELS,
+  SAMBANOVA_MODELS,
+  OPENROUTER_MODELS,
+  CLOUDFLARE_MODELS,
+  getProviderLayerInfo,
+} from "./marline/providers/config";
+import { marlineRouter } from "./marline/router";
+import { ProviderId } from "./marline/providers/types";
 
-export const GROQ_MODELS = [
-  "openai/gpt-oss-120b",
-  "qwen/qwen3.8-27b",
-  "openai/gpt-oss-20b",
-  "qwen/qwen3.6-27b",
-  "groq/compound-mini",
-  "groq/compound"
-];
+// Re-export model lists for existing callers and backward compatibility
+export {
+  CEREBRAS_MODELS,
+  GROQ_MODELS,
+  GOOGLE_MODELS,
+  SAMBANOVA_MODELS,
+  OPENROUTER_MODELS,
+  CLOUDFLARE_MODELS,
+};
 
-export const OPENROUTER_MODELS = [
-  "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3.5-lightning:free",
-  "google/gemma-4-31b-it:free"
-];
 
 export interface OrchestratorResult {
   stream: ReadableStream<Uint8Array>;
-  tier: 'Tier 1' | 'Tier 2';
+  tier: string;
   tierLabel: string;
   model: string;
+  provider?: ProviderId;
 }
 
 export interface OrchestratorOptions {
@@ -39,428 +47,181 @@ export interface OrchestratorOptions {
 
 interface PerformanceMetric {
   task: string;
+  provider: string;
   model: string;
   input_tokens: number;
   actual_output_budget: number;
-  routing_decision: 'direct_groq' | 'chunked_groq' | 'fallback_openrouter';
+  routing_decision: string;
   chunk_count: number;
   duration_ms: number;
   status: 'success' | 'fallback' | 'failed';
 }
 
-/**
- * Logs privacy-safe, structured observability metrics without exposing user content.
- */
 function logMetric(metric: PerformanceMetric) {
   console.log(`[Marline AI Observability] ${JSON.stringify(metric)}`);
 }
 
 /**
- * Creates an SSE formatted data chunk.
+ * Concurrency limiter to process document chunks with controlled parallelism.
  */
-function sseChunk(content: string): Uint8Array {
-  const encoder = new TextEncoder();
-  return encoder.encode(`data: ${JSON.stringify({ choices: [{ delta: { content } }] })}\n\n`);
-}
+const MAX_CONCURRENT_CHUNKS = 2;
 
-function sseDone(): Uint8Array {
-  const encoder = new TextEncoder();
-  return encoder.encode(`data: [DONE]\n\n`);
-}
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>
+): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let currentIndex = 0;
 
-/**
- * Executes an AI completion with timeout and error classification.
- */
-async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number = 15000): Promise<Response> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const response = await fetch(url, { ...options, signal: controller.signal });
-    clearTimeout(timeoutId);
-    return response;
-  } catch (error: any) {
-    clearTimeout(timeoutId);
-    throw error;
-  }
-}
-
-/**
- * Non-streaming LLM call helper for intermediate chunk summarization.
- */
-async function callGroqNonStreaming(
-  model: string,
-  groqKey: string,
-  messages: Array<{ role: string; content: string }>,
-  maxTokens: number
-): Promise<string> {
-  const response = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${groqKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      stream: false,
-      temperature: 0.2,
-      max_tokens: maxTokens,
-    }),
-  }, 12000);
-
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Groq ${model} non-streaming call failed (${response.status}): ${errText}`);
+  async function worker() {
+    while (currentIndex < items.length) {
+      const idx = currentIndex++;
+      results[idx] = await fn(items[idx], idx);
+    }
   }
 
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || "";
+  const workers = Array.from({ length: Math.min(limit, items.length) }, () => worker());
+  await Promise.all(workers);
+  return results;
 }
 
 /**
- * Performs chunked summarization on large documents using Groq for chunk analysis
- * followed by a live-streamed Final Synthesis via Groq.
+ * Performs chunked summarization on large documents using the multi-layer router
+ * followed by a live-streamed Final Synthesis.
  */
 async function executeChunkedSummarization(
   options: OrchestratorOptions,
   chunks: DocumentChunk[]
-): Promise<ReadableStream<Uint8Array>> {
+): Promise<OrchestratorResult> {
   const startTime = Date.now();
-  const { groqKey, openRouterKey, language, systemPrompt, metadataName, onDeductCredits } = options;
+  const { language, systemPrompt, metadataName, onDeductCredits } = options;
 
-  if (!groqKey) {
-    throw new Error("Groq API key required for chunked summarization");
-  }
+  console.log(`[Marline Drive AI] Processing ${chunks.length} chunks with concurrency limit ${MAX_CONCURRENT_CHUNKS}...`);
 
-  const activeGroqModel = GROQ_MODELS[0];
-
-  return new ReadableStream<Uint8Array>({
-    async start(controller) {
-      try {
-        // Step 1: Process chunks with concurrency limiter
-        const chunkSummaries: Array<{ id: number; title: string; summary: string }> = [];
-
-        for (let i = 0; i < chunks.length; i++) {
-          const chunk = chunks[i];
-          const chunkInputTokens = estimateTokens(chunk.text) + 200;
-          const chunkMaxTokens = Math.min(1200, Math.max(600, GROQ_TPM_LIMIT - chunkInputTokens - GROQ_SAFETY_MARGIN));
-
-          const chunkMessages = [
-            {
-              role: "system",
-              content: `You are an expert academic analyst. Summarize Part ${chunk.id}/${chunks.length} ("${chunk.title}") of "${metadataName}".
+  // Step 1: Process chunks with concurrency limiter
+  const chunkSummaries = await mapWithConcurrency(chunks, MAX_CONCURRENT_CHUNKS, async (chunk) => {
+    const chunkInputTokens = estimateTokens(chunk.text) + 200;
+    const chunkMessages: Array<{ role: 'system' | 'user'; content: string }> = [
+      {
+        role: "system",
+        content: `You are an expert academic analyst. Summarize Part ${chunk.id}/${chunks.length} ("${chunk.title}") of "${metadataName}".
 Extract only the key concepts, definitions, formulas, and critical insights that are explicitly present in this specific part in ${language}.
 Do NOT introduce any external information or ungrounded concepts.
 Output clean structured bullet points and LaTeX formulas.`
-            },
-            {
-              role: "user",
-              content: `Document Part Content:\n${chunk.text}\n\nPlease provide a dense, strictly grounded academic summary of this part only.`
-            }
-          ];
-
-          const summary = await callGroqNonStreaming(activeGroqModel, groqKey, chunkMessages, chunkMaxTokens);
-          chunkSummaries.push({ id: chunk.id, title: chunk.title, summary });
-        }
-
-        // Step 2: Final Synthesis via Groq (Live Streaming)
-        const combinedSummariesText = chunkSummaries
-          .map((cs) => `### Section ${cs.id}: ${cs.title}\n${cs.summary}`)
-          .join("\n\n---\n\n");
-
-        const synthesisInputTokens = estimateTokens(combinedSummariesText) + estimateTokens(systemPrompt) + 300;
-        const synthesisBudget = calculateGroqBudget({
-          inputTokens: synthesisInputTokens,
-          desiredOutputTokens: 3400,
-          task: 'summarize',
-        });
-
-        const finalMessages = [
-          { role: "system", content: systemPrompt },
-          {
-            role: "user",
-            content: `Document Name: ${metadataName}\n\nBelow are the structured chapter summaries derived strictly from the source document (${chunks.length} parts):\n\n${combinedSummariesText}\n\nPlease synthesize these into the final, complete, unified academic study guide in ${language}, strictly adhering to all formatting standards (Executive Overview, Core Concepts Table, Detailed Thematic Analysis covering all parts, Key Pitfalls, and Exam Review Questions). Ground every section 100% in these provided summaries without introducing any external topics or outside facts.`
-          }
-        ];
-
-        const synthesisResponse = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${groqKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: activeGroqModel,
-            messages: finalMessages,
-            stream: true,
-            temperature: 0.1,
-            max_tokens: synthesisBudget.actualMaxTokens,
-          }),
-        }, 15000);
-
-        if (!synthesisResponse.ok || !synthesisResponse.body) {
-          const errText = await synthesisResponse.text();
-          throw new Error(`Synthesis failed (${synthesisResponse.status}): ${errText}`);
-        }
-
-        // Stream final synthesis tokens live to the user
-        const reader = synthesisResponse.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          if (value) {
-            const chunkStr = decoder.decode(value, { stream: true });
-            buffer += chunkStr;
-            const lines = buffer.split("\n");
-            buffer = lines.pop() || "";
-
-            for (const line of lines) {
-              const trimmed = line.trim();
-              if (trimmed.startsWith("data: ") && !trimmed.includes("[DONE]")) {
-                try {
-                  const parsed = JSON.parse(trimmed.slice(6));
-                  const delta = parsed.choices?.[0]?.delta;
-                  const deltaContent = delta?.content ?? delta?.reasoning ?? "";
-                  if (deltaContent) {
-                    controller.enqueue(sseChunk(deltaContent));
-                  }
-                } catch (_) {}
-              }
-            }
-          }
-        }
-
-        controller.enqueue(sseDone());
-        controller.close();
-        await onDeductCredits();
-
-        logMetric({
-          task: options.task,
-          model: activeGroqModel,
-          input_tokens: estimateTokens(options.sanitizedContext),
-          actual_output_budget: synthesisBudget.actualMaxTokens,
-          routing_decision: 'chunked_groq',
-          chunk_count: chunks.length,
-          duration_ms: Date.now() - startTime,
-          status: 'success',
-        });
-      } catch (err: any) {
-        console.warn("[Marline Drive AI] Chunked Groq failed, falling back to OpenRouter:", err.message);
-        // Fallback to Tier 2 OpenRouter for complete doc
-        if (openRouterKey) {
-          try {
-            const fallbackStream = await executeOpenRouterStream(options);
-            const reader = fallbackStream.getReader();
-            while (true) {
-              const { value, done } = await reader.read();
-              if (done) break;
-              if (value) controller.enqueue(value);
-            }
-            controller.close();
-            await onDeductCredits();
-          } catch (fbErr: any) {
-            controller.error(fbErr);
-          }
-        } else {
-          controller.error(err);
-        }
+      },
+      {
+        role: "user",
+        content: `Document Part Content:\n${chunk.text}\n\nPlease provide a dense, strictly grounded academic summary of this part only.`
       }
-    }
+    ];
+
+    const response = await marlineRouter.executeGenerateWithFallback(
+      {
+        messages: chunkMessages,
+        maxTokens: 1200,
+        temperature: 0.2,
+      },
+      {
+        task: 'summarize',
+        inputTokens: chunkInputTokens,
+        desiredOutputTokens: 1200,
+      }
+    );
+
+    return { id: chunk.id, title: chunk.title, summary: response.content };
   });
-}
 
-/**
- * Direct Live Stream from Tier 1 (Groq) with precise token budgeting.
- */
-async function executeDirectGroqStream(
-  options: OrchestratorOptions,
-  apiMessages: Array<{ role: string; content: string }>,
-  budgetedMaxTokens: number
-): Promise<ReadableStream<Uint8Array>> {
-  const startTime = Date.now();
-  const { groqKey, onDeductCredits } = options;
+  // Step 2: Final Synthesis via Router (Live Streaming)
+  const combinedSummariesText = chunkSummaries
+    .map((cs) => `### Section ${cs.id}: ${cs.title}\n${cs.summary}`)
+    .join("\n\n---\n\n");
 
-  let lastErrorText = "";
-
-  for (const model of GROQ_MODELS) {
-    try {
-      console.log(`[Marline Drive AI] Tier 1: Streaming with Groq ${model} (Budget: ${budgetedMaxTokens} tokens)`);
-      const response = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${groqKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model,
-          messages: apiMessages,
-          stream: true,
-          temperature: 0.1,
-          max_tokens: budgetedMaxTokens,
-        }),
-      }, 12000);
-
-      if (response.ok && response.body) {
-        const reader = response.body.getReader();
-        const encoder = new TextEncoder();
-        let hasDeducted = false;
-
-        logMetric({
-          task: options.task,
-          model,
-          input_tokens: estimateTokens(JSON.stringify(apiMessages)),
-          actual_output_budget: budgetedMaxTokens,
-          routing_decision: 'direct_groq',
-          chunk_count: 1,
-          duration_ms: Date.now() - startTime,
-          status: 'success',
-        });
-
-        return new ReadableStream<Uint8Array>({
-          async pull(controller) {
-            try {
-              const { value, done } = await reader.read();
-              if (done) {
-                controller.close();
-                if (!hasDeducted) {
-                  hasDeducted = true;
-                  await onDeductCredits();
-                }
-              } else if (value) {
-                if (!hasDeducted) {
-                  hasDeducted = true;
-                  onDeductCredits().catch((e) => console.warn("Credit deduction error:", e));
-                }
-                controller.enqueue(value);
-              }
-            } catch (err) {
-              controller.error(err);
-            }
-          },
-          cancel() {
-            reader.cancel();
-          },
-        });
-      } else {
-        lastErrorText = await response.text();
-        console.warn(`[Marline Drive AI] Groq ${model} rejected (${response.status}):`, lastErrorText);
-      }
-    } catch (err: any) {
-      console.warn(`[Marline Drive AI] Groq ${model} exception:`, err.message);
-      lastErrorText = err.message;
-    }
-  }
-
-  throw new Error(`All Groq Tier 1 models failed: ${lastErrorText}`);
-}
-
-/**
- * Fallback Stream from Tier 2 (OpenRouter) with massive context and zero 8k TPM limit.
- */
-async function executeOpenRouterStream(
-  options: OrchestratorOptions
-): Promise<ReadableStream<Uint8Array>> {
-  const startTime = Date.now();
-  const { openRouterKey, systemPrompt, sanitizedContext, metadataName, language, task, onDeductCredits } = options;
-
-  if (!openRouterKey) {
-    throw new Error("No OpenRouter API key configured for Tier 2 fallback");
-  }
-
-  const apiMessages = [
+  const synthesisInputTokens = estimateTokens(combinedSummariesText) + estimateTokens(systemPrompt) + 300;
+  const finalMessages: Array<{ role: 'system' | 'user'; content: string }> = [
     { role: "system", content: systemPrompt },
     {
       role: "user",
-      content: `Document Name: ${metadataName}\n\nDocument Text Content:\n${sanitizedContext}\n\nPlease generate the comprehensive university study guide in ${language}, fully written out without omitting any sections.`
+      content: `Document Name: ${metadataName}\n\nBelow are the structured chapter summaries derived strictly from the source document (${chunks.length} parts):\n\n${combinedSummariesText}\n\nPlease synthesize these into the final, complete, unified academic study guide in ${language}, strictly adhering to all formatting standards (Executive Overview, Core Concepts Table, Detailed Thematic Analysis covering all parts, Key Pitfalls, and Exam Review Questions). Ground every section 100% in these provided summaries without introducing any external topics or outside facts.`
     }
   ];
 
-  let lastErrorText = "";
-
-  for (const model of OPENROUTER_MODELS) {
-    try {
-      console.log(`[Marline Drive AI] Tier 2: Falling back to OpenRouter ${model}`);
-      const response = await fetchWithTimeout("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${openRouterKey}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "https://chameleon-nu.vercel.app",
-          "X-Title": "Marline AI",
-        },
-        body: JSON.stringify({
-          model,
-          messages: apiMessages,
-          stream: true,
-          temperature: 0.1,
-          max_tokens: task === 'summarize' ? 3600 : 1800,
-        }),
-      }, 15000);
-
-      if (response.ok && response.body) {
-        const reader = response.body.getReader();
-        let hasDeducted = false;
-
-        logMetric({
-          task: options.task,
-          model,
-          input_tokens: estimateTokens(JSON.stringify(apiMessages)),
-          actual_output_budget: 3600,
-          routing_decision: 'fallback_openrouter',
-          chunk_count: 1,
-          duration_ms: Date.now() - startTime,
-          status: 'fallback',
-        });
-
-        return new ReadableStream<Uint8Array>({
-          async pull(controller) {
-            try {
-              const { value, done } = await reader.read();
-              if (done) {
-                controller.close();
-                if (!hasDeducted) {
-                  hasDeducted = true;
-                  await onDeductCredits();
-                }
-              } else if (value) {
-                if (!hasDeducted) {
-                  hasDeducted = true;
-                  onDeductCredits().catch((e) => console.warn("Credit deduction error:", e));
-                }
-                controller.enqueue(value);
-              }
-            } catch (err) {
-              controller.error(err);
-            }
-          },
-          cancel() {
-            reader.cancel();
-          },
-        });
-      } else {
-        lastErrorText = await response.text();
-        console.warn(`[Marline Drive AI] OpenRouter ${model} failed (${response.status}):`, lastErrorText);
-      }
-    } catch (err: any) {
-      console.warn(`[Marline Drive AI] OpenRouter ${model} error:`, err.message);
-      lastErrorText = err.message;
+  const synthesisStreamResponse = await marlineRouter.executeStreamWithFallback(
+    {
+      messages: finalMessages,
+      maxTokens: 3400,
+      temperature: 0.1,
+    },
+    {
+      task: 'summarize',
+      inputTokens: synthesisInputTokens,
+      desiredOutputTokens: 3400,
+      requiresStreaming: true,
     }
-  }
+  );
 
-  throw new Error(`All OpenRouter Tier 2 models failed: ${lastErrorText}`);
+  // Wrap stream with credit deduction hook
+  const rawReader = synthesisStreamResponse.stream.getReader();
+  let hasDeducted = false;
+
+  const stream = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      try {
+        const { value, done } = await rawReader.read();
+        if (done) {
+          controller.close();
+          if (!hasDeducted) {
+            hasDeducted = true;
+            await onDeductCredits().catch((e) => console.warn("Credit deduction error:", e));
+          }
+        } else if (value) {
+          if (!hasDeducted) {
+            hasDeducted = true;
+            onDeductCredits().catch((e) => console.warn("Credit deduction error:", e));
+          }
+          controller.enqueue(value);
+        }
+      } catch (err) {
+        controller.error(err);
+      }
+    },
+    cancel() {
+      rawReader.cancel();
+    },
+  });
+
+  const { tier, tierLabel } = getProviderLayerInfo(synthesisStreamResponse.provider);
+
+  logMetric({
+    task: options.task,
+    provider: synthesisStreamResponse.provider,
+    model: synthesisStreamResponse.model,
+    input_tokens: estimateTokens(options.sanitizedContext),
+    actual_output_budget: 3400,
+    routing_decision: 'chunked_synthesis',
+    chunk_count: chunks.length,
+    duration_ms: Date.now() - startTime,
+    status: 'success',
+  });
+
+  return {
+    stream,
+    tier,
+    tierLabel,
+    model: synthesisStreamResponse.model,
+    provider: synthesisStreamResponse.provider,
+  };
 }
 
 /**
- * Master Performance-First Drive AI Orchestrator.
- * Dynamically routes to Direct Groq, Semantic Chunking, or OpenRouter fallback.
+ * Master Performance-First Drive AI Orchestrator with 5-Provider Multi-Layer Router.
+ * Automatically routes across Cerebras, Groq, SambaNova, OpenRouter, and Cloudflare Workers AI.
  */
 export async function orchestrateDriveAI(options: OrchestratorOptions): Promise<OrchestratorResult> {
-  const { groqKey, openRouterKey, systemPrompt, sanitizedContext, metadataName, language, task, messages } = options;
+  const startTime = Date.now();
+  const { systemPrompt, sanitizedContext, metadataName, language, task, messages, onDeductCredits } = options;
 
-  const apiMessages: Array<{ role: string; content: string }> = [
+  const apiMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
     { role: "system", content: systemPrompt }
   ];
 
@@ -486,7 +247,10 @@ export async function orchestrateDriveAI(options: OrchestratorOptions): Promise<
       });
     }
     const recentMessages = messages.slice(-6);
-    apiMessages.push(...recentMessages);
+    for (const msg of recentMessages) {
+      const role = (msg.role === 'assistant' ? 'assistant' : 'user') as 'system' | 'user' | 'assistant';
+      apiMessages.push({ role, content: msg.content });
+    }
   }
 
   const sanitizedApiMessages = apiMessages
@@ -494,60 +258,90 @@ export async function orchestrateDriveAI(options: OrchestratorOptions): Promise<
     .map((m) => ({ role: m.role || 'user', content: m.content.trim() }));
 
   const totalInputTokens = estimateTokens(JSON.stringify(sanitizedApiMessages));
-  const budget = calculateGroqBudget({
+  const desiredOutputTokens = task === 'summarize' ? 3200 : (task === 'translate' ? 2200 : 1800);
+
+  // ROUTE 1: Check if large document requires semantic chunking (> 5,400 tokens on summarize)
+  const groqBudget = calculateGroqBudget({
     inputTokens: totalInputTokens,
-    desiredOutputTokens: 3200,
+    desiredOutputTokens,
     task,
   });
 
-  // ROUTE 1: Direct Groq (Small to Medium documents <= 5,400 tokens)
-  if (groqKey && budget.canUseGroqDirectly) {
-    try {
-      const stream = await executeDirectGroqStream(options, sanitizedApiMessages, budget.actualMaxTokens);
-      return {
-        stream,
-        tier: 'Tier 1',
-        tierLabel: 'Premier Ultra Fast Tier',
-        model: GROQ_MODELS[0]
-      };
-    } catch (groqErr: any) {
-      console.warn("[Marline Drive AI] Direct Groq failed, attempting OpenRouter fallback:", groqErr.message);
+  if (task === 'summarize' && groqBudget.requiresChunking && sanitizedContext.length > 8000) {
+    const chunks = chunkDocumentSemantically(sanitizedContext, {
+      targetChunkTokens: 2800,
+      maxChunkTokens: 3600,
+    });
+
+    if (chunks.length > 1) {
+      console.log(`[Marline Drive AI] Document size (${totalInputTokens} tokens) requires semantic chunking into ${chunks.length} parts.`);
+      return executeChunkedSummarization(options, chunks);
     }
   }
 
-  // ROUTE 2: Large Document Semantic Chunking via Groq (Documents > 5,400 tokens)
-  if (groqKey && task === 'summarize' && budget.requiresChunking) {
-    try {
-      const chunks = chunkDocumentSemantically(sanitizedContext, {
-        targetChunkTokens: 2800,
-        maxChunkTokens: 3600,
-      });
+  // ROUTE 2: Direct Multi-Layer Streaming through Marline Router
+  const streamResponse = await marlineRouter.executeStreamWithFallback(
+    {
+      messages: sanitizedApiMessages,
+      maxTokens: desiredOutputTokens,
+      temperature: 0.15,
+    },
+    {
+      task,
+      inputTokens: totalInputTokens,
+      desiredOutputTokens,
+      requiresStreaming: true,
+    }
+  );
 
-      if (chunks.length > 1) {
-        console.log(`[Marline Drive AI] Document size (${totalInputTokens} tokens) requires semantic chunking into ${chunks.length} parts.`);
-        const stream = await executeChunkedSummarization(options, chunks);
-        return {
-          stream,
-          tier: 'Tier 1',
-          tierLabel: 'Premier Ultra Fast Tier',
-          model: GROQ_MODELS[0]
-        };
+  const rawReader = streamResponse.stream.getReader();
+  let hasDeducted = false;
+
+  const stream = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      try {
+        const { value, done } = await rawReader.read();
+        if (done) {
+          controller.close();
+          if (!hasDeducted) {
+            hasDeducted = true;
+            await onDeductCredits().catch((e) => console.warn("Credit deduction error:", e));
+          }
+        } else if (value) {
+          if (!hasDeducted) {
+            hasDeducted = true;
+            onDeductCredits().catch((e) => console.warn("Credit deduction error:", e));
+          }
+          controller.enqueue(value);
+        }
+      } catch (err) {
+        controller.error(err);
       }
-    } catch (chunkErr: any) {
-      console.warn("[Marline Drive AI] Chunked Groq failed, falling back to OpenRouter:", chunkErr.message);
-    }
-  }
+    },
+    cancel() {
+      rawReader.cancel();
+    },
+  });
 
-  // ROUTE 3: OpenRouter Tier 2 Fallback (128k context, zero TPM limits)
-  if (openRouterKey) {
-    const stream = await executeOpenRouterStream(options);
-    return {
-      stream,
-      tier: 'Tier 2',
-      tierLabel: 'Secondary Extended Tier',
-      model: OPENROUTER_MODELS[0]
-    };
-  }
+  const { tier, tierLabel } = getProviderLayerInfo(streamResponse.provider);
 
-  throw new Error("No AI providers available to fulfill request");
+  logMetric({
+    task,
+    provider: streamResponse.provider,
+    model: streamResponse.model,
+    input_tokens: totalInputTokens,
+    actual_output_budget: desiredOutputTokens,
+    routing_decision: `direct_${streamResponse.provider}`,
+    chunk_count: 1,
+    duration_ms: Date.now() - startTime,
+    status: 'success',
+  });
+
+  return {
+    stream,
+    tier,
+    tierLabel,
+    model: streamResponse.model,
+    provider: streamResponse.provider,
+  };
 }

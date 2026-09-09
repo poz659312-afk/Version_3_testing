@@ -2,18 +2,12 @@ import { NextResponse } from "next/server";
 import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-limit";
 import { getServerStudentSession } from "@/lib/auth-server";
 import { MARLINE_SYSTEM_PROMPT } from "@/lib/marline-knowledge";
-
-import { GROQ_MODELS, OPENROUTER_MODELS } from "@/lib/drive-ai-orchestrator";
+import { marlineRouter } from "@/lib/marline/router";
+import { estimateTokens } from "@/lib/token-budget-manager";
+import { getProviderLayerInfo } from "@/lib/marline/providers/config";
 
 export async function POST(req: Request) {
   try {
-    const openRouterKey = process.env.OPENROUTER_API_KEY;
-    const groqKey = process.env.GROQ_API_KEY;
-
-    if (!openRouterKey && !groqKey) {
-      return NextResponse.json({ error: "No AI provider keys configured on server" }, { status: 500 });
-    }
-
     const identifier = getRequestIdentifier(req);
     const rateLimit = checkRateLimit(identifier, RateLimitTier.AI);
     if (!rateLimit.success) {
@@ -53,14 +47,14 @@ export async function POST(req: Request) {
     // Deduct daily question credit from DB for authenticated user
     try {
       const { createAdminClient } = await import("@/lib/supabase/admin");
-      const supabaseAdmin = createAdminClient() as any;
-      const { data: userRecord } = await supabaseAdmin
+      const supabaseAdmin = createAdminClient();
+      const { data: userRecord } = await (supabaseAdmin as any)
         .from('chameleons')
         .select('ai_credits')
         .eq('auth_id', auth_id)
         .single();
 
-      const currentCredits = userRecord?.ai_credits ?? 20;
+      const currentCredits = (userRecord as { ai_credits?: number } | null)?.ai_credits ?? 20;
       if (currentCredits <= 0) {
         return NextResponse.json(
           { error: "لقد استنفدت رصيد الأسئلة اليومي (0/20 سؤالاً). يرجى العودة غداً عند تجديد الرصيد!" },
@@ -68,7 +62,7 @@ export async function POST(req: Request) {
         );
       }
 
-      await supabaseAdmin
+      await (supabaseAdmin as any)
         .from('chameleons')
         .update({ ai_credits: Math.max(0, currentCredits - 1) })
         .eq('auth_id', auth_id);
@@ -76,104 +70,60 @@ export async function POST(req: Request) {
       console.warn("Could not update ai_credits in DB:", dbErr);
     }
 
+
     // Token-efficient conversational history pruning (keep last 5 messages, truncate older turns)
-    const rawMessages = (messages || []).filter((m: any) => m.role !== "system");
-    const recentMessages = rawMessages.slice(-5).map((m: any, idx: number, arr: any[]) => {
+    const rawMessages = (Array.isArray(messages) ? messages : []).filter(
+      (m: { role?: string; content?: unknown }) => m && m.role !== "system"
+    );
+    const recentMessages = rawMessages.slice(-5).map((m: { role?: string; content?: unknown }, idx: number, arr: unknown[]) => {
       const isLatest = idx === arr.length - 1;
       const maxLen = isLatest ? 2000 : 700;
       return {
-        role: m.role,
-        content: typeof m.content === "string" ? m.content.slice(0, maxLen) : m.content
+        role: (m.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant',
+        content: typeof m.content === "string" ? m.content.slice(0, maxLen) : String(m.content ?? '')
       };
     });
 
-    const formattedMessages = [
+    const formattedMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
       { role: "system", content: MARLINE_SYSTEM_PROMPT },
       ...recentMessages
     ];
 
-    let lastErrorText = "";
+    const inputTokens = estimateTokens(JSON.stringify(formattedMessages));
 
-    // TIER 1: Try Groq API First (Ultra Fast, High Precision, Default)
-    if (groqKey) {
-      for (const model of GROQ_MODELS) {
-        try {
-          const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${groqKey}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: model,
-              messages: formattedMessages,
-              stream: true,
-              temperature: 0.25, // Balanced for precision and grounded fidelity
-              max_tokens: 2800
-            }),
-          });
-
-          if (response.ok && response.body) {
-            return new Response(response.body, {
-              headers: {
-                "Content-Type": "text/event-stream",
-                "Cache-Control": "no-cache, no-transform",
-                "Connection": "keep-alive",
-              },
-            });
-          } else {
-            lastErrorText = await response.text();
-            console.warn(`[Marline AI] Groq model ${model} failed (${response.status}):`, lastErrorText);
-          }
-        } catch (err) {
-          console.warn(`[Marline AI] Groq fetch error for ${model}:`, err);
-        }
+    // Route across 5-layer system with transparent fallback
+    const streamResponse = await marlineRouter.executeStreamWithFallback(
+      {
+        messages: formattedMessages,
+        maxTokens: 2800,
+        temperature: 0.25,
+      },
+      {
+        task: 'chat',
+        inputTokens,
+        desiredOutputTokens: 2800,
+        requiresStreaming: true,
       }
-    }
+    );
 
-    // TIER 2: Seamless Fallback to OpenRouter Nemotron Models
-    if (openRouterKey) {
-      for (const model of OPENROUTER_MODELS) {
-        try {
-          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${openRouterKey}`,
-              "HTTP-Referer": "https://chameleon-nu.vercel.app",
-              "X-Title": "Marline AI",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: model,
-              messages: formattedMessages,
-              stream: true,
-              temperature: 0.25,
-              max_tokens: 2800
-            }),
-          });
+    const { tier, tierLabel } = getProviderLayerInfo(streamResponse.provider);
 
-          if (response.ok && response.body) {
-            return new Response(response.body, {
-              headers: {
-                "Content-Type": "text/event-stream",
-                "Cache-Control": "no-cache, no-transform",
-                "Connection": "keep-alive",
-              },
-            });
-          } else {
-            lastErrorText = await response.text();
-            console.warn(`[Marline AI] OpenRouter model ${model} failed (${response.status}):`, lastErrorText);
-          }
-        } catch (err) {
-          console.warn(`[Marline AI] OpenRouter fetch error for ${model}:`, err);
-        }
-      }
-    }
+    return new Response(streamResponse.stream, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache, no-transform",
+        "Connection": "keep-alive",
+        "X-AI-Tier": tier,
+        "X-AI-Tier-Label": tierLabel,
+        "X-AI-Provider": streamResponse.provider,
+        "X-AI-Model": streamResponse.model,
+      },
+    });
 
-    return NextResponse.json({ error: lastErrorText || "All AI providers and models failed" }, { status: 500 });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Marline API Internal Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    const msg = error instanceof Error ? error.message : "Internal Server Error";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 

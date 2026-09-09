@@ -79,7 +79,7 @@ function CodeBlock({ language, codeText, children }: { language: string; codeTex
   )
 }
 
-// Preprocess math & LaTeX delimiters, clean thinking tags, fix inline headers and tables
+// Preprocess math & LaTeX delimiters, clean thinking tags, preserve Markdown tables intact
 function preprocessMarlineContent(content: string): string {
   if (!content) return ""
   let text = content
@@ -89,106 +89,131 @@ function preprocessMarlineContent(content: string): string {
   text = text.replace(/<thought>[\s\S]*?<\/thought>/gi, "")
   text = text.replace(/<think>[\s\S]*$/gi, "")
   text = text.replace(/<thought>[\s\S]*$/gi, "")
-  text = text.replace(/^(?:Thinking Process:?|Thought Process:?|Internal Reasoning:?|We need to respond as|Let's craft)[\s\S]*?(?:\n\n+|(?=##|\bأهلاً\b|\bمرحباً\b|#))/i, "")
-  text = text.replace(/^[A-Za-z0-9\s,.:;'"!?()\-_/\\]+\n+(?=[#\u0600-\u06FF])/g, (match) => {
-    if (match.length > 20) return ""
-    return match
-  })
+  text = text.replace(
+    /^(?:Thinking Process:?|Thought Process:?|Internal Reasoning:?|We need to respond as|Let's craft|The user says|The user asks|The user wants)[\s\S]*?(?=[#\u0600-\u06FF]|\n\n)/i,
+    ""
+  )
+  text = text.replace(
+    /^[A-Za-z0-9\s,.:;'"!?()\-_/\\]+(?=[#\u0600-\u06FF])/g,
+    (match) => {
+      if (match.length > 25 && /(?:marline|respond|thinking|thought|user|prompt|rule|assist)/i.test(match)) {
+        return ""
+      }
+      return match
+    }
+  )
 
-  // 2. Convert explicit LaTeX syntax patterns into standard $ math delimiters:
-  text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => '\n\n$$' + g1 + '$$\n\n')
-  text = text.replace(/\\\(([\s\S]*?)\\\)/g, (_m, g1) => '$' + g1 + '$')
+  // 2. Standardize LaTeX delimiters \[ ... \] and \( ... \)
+  // Remove blank lines inside display math so Remark-Math does not break the block!
+  text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => {
+    const cleanMath = g1.replace(/\n\s*\n+/g, '\n').trim()
+    return `\n\n$$\n${cleanMath}\n$$\n\n`
+  })
+  text = text.replace(/\\\(([\s\S]*?)\\\)/g, (_m, g1) => `$${g1.trim()}$`)
 
   // 3. Protect LaTeX norm pipes \| as \Vert so they are never confused with markdown table column pipes
   text = text.replace(/\\\|/g, '\\Vert ')
 
-  // 4. Isolate equations inside bullet items onto their own display math blocks
-  text = text.replace(/^[ \t]*(?:[•*\-–—]|\d+\.)\s*(.+?)\s*[:=]\s*(\$\$[\s\S]*?\$\$|\$?\\frac[\s\S]*?\$?)$/gm, (_m, label, eq) => {
-    let cleanEq = eq.replace(/^\$+|\$+$/g, '').trim();
-    return `\n* **${label.trim()}**:\n\n$$ ${cleanEq} $$\n`;
-  })
-
-  // 5. Fix rogue dividers crammed with headers
-  text = text.replace(/---\s*(#{1,6}\s+)/g, '\n\n---\n\n$1')
-  text = text.replace(/([^\n])\s+---\s+([^\n])/g, '$1\n\n---\n\n$2')
-
-  // 6. Separate headers (#{1,6}) if they appear inline
-  text = text.replace(/([^\n])\s+(#{1,6}\s+[^\n]+)/g, '$1\n\n$2\n\n')
-
-  // 7. Ensure Dividers come BEFORE Headings, not glued underneath them
-  text = text.replace(/(#{1,6}\s+[^\n]+)\n+\s*---\s*\n+/g, '\n\n---\n\n$1\n\n')
-
-  // 7. Robust Token-based Table Reconstruction
-  const blocks = text.split('\n\n')
-  const processedBlocks = blocks.map(block => {
-    const trimmed = block.trim()
-    if (!trimmed.includes('|') || trimmed.startsWith('```') || trimmed.startsWith('$$')) {
-      return block
-    }
-
-    const rawTokens = trimmed
-      .split(/\|+/)
-      .map(t => t.trim())
-      .filter(t => t.length > 0)
-
-    if (rawTokens.length < 2) return block
-
-    const isSep = (t: string) => /^:?-{2,}:?$/.test(t)
-    const sepIndices: number[] = []
-    rawTokens.forEach((t, idx) => {
-      if (isSep(t)) sepIndices.push(idx)
-    })
-
-    let colCount = 0
-    let headers: string[] = []
-    let dataTokens: string[] = []
-
-    if (sepIndices.length > 0) {
-      const firstSep = sepIndices[0]
-      headers = rawTokens.slice(0, firstSep)
-      colCount = headers.length
-      let lastSep = firstSep
-      while (lastSep + 1 < rawTokens.length && isSep(rawTokens[lastSep + 1])) {
-        lastSep++
-      }
-      dataTokens = rawTokens.slice(lastSep + 1)
-    } else {
-      const lines = trimmed.split('\n')
-      const firstLineTokens = lines[0].split(/\|+/).map(t => t.trim()).filter(Boolean)
-      colCount = firstLineTokens.length
-      headers = firstLineTokens
-      dataTokens = rawTokens.slice(colCount)
-    }
-
-    if (colCount < 2) return block
-
-    const tableLines: string[] = []
-    tableLines.push('| ' + headers.join(' | ') + ' |')
-    tableLines.push('| ' + Array(colCount).fill(':---').join(' | ') + ' |')
-
-    for (let i = 0; i < dataTokens.length; i += colCount) {
-      const row = dataTokens.slice(i, i + colCount)
-      while (row.length < colCount) {
-        row.push('-')
-      }
-      tableLines.push('| ' + row.join(' | ') + ' |')
-    }
-
-    return tableLines.join('\n')
-  })
-  text = processedBlocks.join('\n\n')
-
-  // 8. Wrap standalone LaTeX environments with $$ if missing
+  // 4. Protect table rows: wrap any \begin{...} inside a table row in inline $...$ with NO newlines
   text = text.replace(
-    /(?<!\$\$)\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*(?!\$\$)/g,
-    (_m, g1) => '\n\n$$' + g1 + '$$\n\n'
+    /^(\|.*?)(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})(.*?\|)$/gm,
+    (_m, before, env, after) => {
+      const cleanEnv = env.trim()
+      const wrapped = cleanEnv.startsWith('$') ? cleanEnv : `$${cleanEnv}$`
+      return `${before}${wrapped}${after}`
+    }
   )
 
-  // 9. Ensure display math $$ has its own lines
-  text = text.replace(/([^\n])\s*(\$\$)/g, '$1\n\n$2')
-  text = text.replace(/(\$\$)\s*([^\n$\s])/g, '$1\n\n$2')
+  // 5. Convert any $$...$$ inside table rows into $...$ (inline math) so table rows never break!
+  text = text.replace(/^(\|.*\|)$/gm, (line) => {
+    return line.replace(/\$\$(.*?)\$\$/g, (_m, inner) => '$' + inner.trim() + '$')
+  })
 
-  // 10. Collapse excessive vertical blank lines
+  // 6. Ensure tables have blank line before and single spacing between rows
+  text = text.replace(/([^\n|])\n(\|[^\n]+\|)/g, '$1\n\n$2')
+  text = text.replace(/(\|[^\n]*\|)\n\s*\n(\|[^\n]*\|)/g, '$1\n$2')
+
+  // =========================================================================
+  // MASK EXISTING VALID MATH BLOCKS TO PREVENT DOUBLE-WRAPPING / NESTING
+  // =========================================================================
+  const mathBlocks: string[] = []
+  text = text.replace(/\$\$([\s\S]*?)\$\$/g, (_match, body) => {
+    // Blank lines (\n\n) inside $$...$$ destroy Remark-Math parsing!
+    const cleanedBody = body.replace(/\n\s*\n+/g, '\n').trim()
+    if (!cleanedBody) return '' // completely discard empty $$ blocks!
+    const idx = mathBlocks.length
+    mathBlocks.push(cleanedBody)
+    return `___MATH_BLOCK_${idx}___`
+  })
+
+  // 7. Standalone bracketed math lines like [f(x) = \begin{cases} ... \end{cases}] or [ ... ]
+  text = text.replace(
+    /(?:^|\n)\s*\[\s*([a-zA-Z_]\w*(?:\([^\)]*\))?\s*=?\s*\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*\]\s*(?=\n|$)/g,
+    (_m, g1) => {
+      const idx = mathBlocks.length
+      mathBlocks.push(g1.trim())
+      return `\n\n___MATH_BLOCK_${idx}___\n\n`
+    }
+  )
+
+  text = text.replace(
+    /(?:^|\n)\s*\[\s*([a-zA-Z0-9_().,\s=+\-*\/^_{}\\]*\\(?:frac|int|sum|prod|sqrt|mathbf|text|sigma|mu|alpha|beta|lambda|le|ge|ne|pm|times|div|infty|exp)[\s\S]*?)\s*\]\s*(?=\n|$)/g,
+    (_m, g1) => {
+      const idx = mathBlocks.length
+      mathBlocks.push(g1.trim())
+      return `\n\n___MATH_BLOCK_${idx}___\n\n`
+    }
+  )
+
+  // 8. Wrap standalone LaTeX environments outside tables (cases, matrix, bmatrix, etc.)
+  // Handles optional trailing \\ from markdown line breaks
+  text = text.replace(
+    /(?:^|\n)\s*(?:\[\s*)?([a-zA-Z_]\w*(?:\([^\)]*\))?\s*=\s*)?\\begin\{(cases|matrix|bmatrix|pmatrix|aligned|align)\}([\s\S]*?)\\end\{\2\}(?:\s*\])?(?:\s*\\\\+)?\s*(?=\n|$)/g,
+    (_match, lhs, env, inner) => {
+      const prefix = lhs || ''
+      const idx = mathBlocks.length
+      mathBlocks.push(`${prefix}\\begin{${env}}${inner}\\end{${env}}`)
+      return `\n\n___MATH_BLOCK_${idx}___\n\n`
+    }
+  )
+
+  // 9. Auto-wrap standalone raw LaTeX formulas on their own lines (e.g. F = \frac... or \approx...)
+  text = text.replace(
+    /(?:^|\n)\s*([a-zA-Z_]\w*(?:\([^\)]*\))?\s*=\s*\\(?:frac|sum|int|sqrt)[\s\S]*?)(?:\s*\\\\+)?(?=\n|$)/g,
+    (match, formula) => {
+      if (formula.trim().startsWith('$') || formula.includes('___MATH_BLOCK_')) return match
+      const idx = mathBlocks.length
+      mathBlocks.push(formula.trim())
+      return `\n\n___MATH_BLOCK_${idx}___\n\n`
+    }
+  )
+
+  text = text.replace(
+    /(?:^|\n)\s*(\\approx[\s\S]*?)(?:\s*\\\\+)?(?=\n|$)/g,
+    (match, formula) => {
+      if (formula.trim().startsWith('$') || formula.includes('___MATH_BLOCK_')) return match
+      const idx = mathBlocks.length
+      mathBlocks.push(formula.trim())
+      return `\n\n___MATH_BLOCK_${idx}___\n\n`
+    }
+  )
+
+  // 10. Fix headings and dividers
+  text = text.replace(/---\s*(#{1,6}\s+)/g, '\n\n---\n\n$1')
+  text = text.replace(/([^\n])\s+---\s+([^\n])/g, '$1\n\n---\n\n$2')
+  text = text.replace(/([^\n])\s+(#{1,6}\s+[^\n]+)/g, '$1\n\n$2\n\n')
+  text = text.replace(/(#{1,6}\s+[^\n]+)\n+\s*---\s*\n+/g, '\n\n---\n\n$1\n\n')
+
+  // =========================================================================
+  // UNMASK MATH BLOCKS (Guaranteeing strictly single-wrapped clean $$ blocks)
+  // =========================================================================
+  text = text.replace(/___MATH_BLOCK_(\d+)___/g, (_m, id) => {
+    const body = mathBlocks[parseInt(id, 10)] || ''
+    if (!body.trim()) return '' // NEVER emit an empty math block!
+    return `\n\n$$\n${body.trim()}\n$$\n\n`
+  })
+
+  // 11. Collapse excessive vertical blank lines
   text = text.replace(/\n{3,}/g, '\n\n')
 
   return text.trim()
@@ -199,6 +224,68 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
 
   return (
     <div className={`prose dark:prose-invert max-w-none text-foreground leading-relaxed text-sm md:text-base space-y-3 ${className}`}>
+      {/* Scoped KaTeX styles guaranteeing 100% horizontal centering inside RTL layout */}
+      <style>{`
+        .katex-display:empty,
+        .katex-display:not(:has(.base)),
+        .katex-display:not(:has(.katex)) {
+          display: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          border: none !important;
+          background: transparent !important;
+        }
+        .katex-display {
+          display: flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+          text-align: center !important;
+          direction: ltr !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          margin: 1.25rem 0 !important;
+          padding: 0.85rem 1rem !important;
+          overflow-x: auto !important;
+          overflow-y: hidden !important;
+          unicode-bidi: isolate !important;
+          background: rgba(255, 255, 255, 0.02) !important;
+          border: 1px solid rgba(255, 255, 255, 0.06) !important;
+          border-radius: 0.875rem !important;
+        }
+        .katex-display > .katex {
+          text-align: center !important;
+          display: inline-flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+          margin: 0 auto !important;
+          direction: ltr !important;
+          unicode-bidi: isolate !important;
+        }
+        .katex-display > .katex > .katex-html {
+          display: inline-flex !important;
+          justify-content: center !important;
+          align-items: center !important;
+          text-align: center !important;
+          margin: 0 auto !important;
+          direction: ltr !important;
+        }
+        .prose p:has(> .katex-display),
+        .prose p:has(.katex-display),
+        .prose li > .katex-display,
+        .prose li:has(.katex-display) {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 100% !important;
+          text-align: center !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
+        }
+        .prose li {
+          width: 100% !important;
+        }
+      `}</style>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[[rehypeKatex, { strict: false, throwOnError: false, errorColor: "inherit" }], rehypeRaw, rehypeHighlight]}
@@ -269,9 +356,30 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
             return <h3 className="text-base font-bold text-foreground mt-6 mb-2.5">{children}</h3>
           },
 
-          // Custom Paragraph
-          p({ children }: any) {
-            return <p className="mb-3 leading-relaxed text-foreground/90 font-rubik">{children}</p>
+          // Custom Paragraph: if paragraph contains display math, render a div to prevent RTL right-alignment
+          p({ children, ...props }: any) {
+            const hasDisplayMath = React.Children.toArray(children).some((child: any) => {
+              if (!child || typeof child !== "object") return false
+              const className = child.props?.className || ""
+              return (
+                className.includes("katex-display") ||
+                className.includes("math-display") ||
+                (typeof child.props?.children === "object" &&
+                  React.Children.toArray(child.props.children).some(
+                    (c: any) => c?.props?.className?.includes("katex-display")
+                  ))
+              )
+            })
+
+            if (hasDisplayMath) {
+              return (
+                <div className="my-3 flex flex-col items-center justify-center w-full text-center" dir="ltr">
+                  {children}
+                </div>
+              )
+            }
+
+            return <p className="mb-3 leading-relaxed text-foreground/90 font-rubik" {...props}>{children}</p>
           },
 
           // Custom Lists
@@ -282,7 +390,7 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
             return <ol className="my-3 space-y-1.5 list-decimal list-inside text-foreground/90 pr-2">{children}</ol>
           },
           li({ children }: any) {
-            return <li className="leading-relaxed">{children}</li>
+            return <li className="leading-relaxed my-1 w-full">{children}</li>
           },
 
           // Custom Blockquotes / Callouts

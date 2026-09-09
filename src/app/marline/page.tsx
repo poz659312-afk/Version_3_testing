@@ -65,14 +65,28 @@ function stripThinkingProcess(text?: string | null): string {
   clean = clean.replace(/<think>[\s\S]*$/gi, "")
   clean = clean.replace(/<thought>[\s\S]*$/gi, "")
 
-  // 2. Remove English meta-thinking / scratchpad text at the beginning
-  clean = clean.replace(/^(?:Thinking Process:?|Thought Process:?|Internal Reasoning:?|We need to respond as|Let's craft)[\s\S]*?(?:\n\n+|(?=##|\bأهلاً\b|\bمرحباً\b|#))/i, "")
+  // 2. Remove English meta-thinking / scratchpad text at the beginning even if joined without newline
+  clean = clean.replace(
+    /^(?:Thinking Process:?|Thought Process:?|Internal Reasoning:?|We need to respond as|Let's craft|The user says|The user asks|The user wants)[\s\S]*?(?=[#\u0600-\u06FF]|\n\n)/i,
+    ""
+  )
 
-  // 3. Remove leading paragraphs of English meta-planning if Arabic content follows
-  clean = clean.replace(/^[A-Za-z0-9\s,.:;'"!?()\-_/\\]+\n+(?=[#\u0600-\u06FF])/g, (match) => {
-    if (match.length > 20) return ""
-    return match
-  })
+  // 3. Remove leading English meta-planning block if Arabic content follows (even without newline)
+  clean = clean.replace(
+    /^[A-Za-z0-9\s,.:;'"!?()\-_/\\]+(?=[#\u0600-\u06FF])/g,
+    (match) => {
+      if (match.length > 25 && /(?:marline|respond|thinking|thought|user|prompt|rule|assist)/i.test(match)) {
+        return ""
+      }
+      return match
+    }
+  )
+
+  // 4. Remove markdown thinking block headers
+  clean = clean.replace(
+    /^\s*\*{1,2}(?:Thinking Process|Thought Process|Internal Reasoning)\*{1,2}:?[\s\S]*?(?:\n\n+|(?=[#\u0600-\u06FF]))/i,
+    ""
+  )
 
   return clean.trim()
 }

@@ -10,6 +10,9 @@ import { normalizeQuizQuestionItem } from '@/lib/quiz-math-normalizer';
 const pdfParse = pdf;
 
 import { GROQ_MODELS, OPENROUTER_MODELS } from "@/lib/drive-ai-orchestrator";
+import { getProviderSecrets, getProviderLayerInfo } from "@/lib/marline/providers/config";
+import { marlineRouter } from "@/lib/marline/router";
+import { estimateTokens } from "@/lib/token-budget-manager";
 
 export async function GET(req: NextRequest) {
   try {
@@ -35,11 +38,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const openRouterKey = process.env.OPENROUTER_API_KEY;
-    const groqKey = process.env.GROQ_API_KEY;
+    const secrets = getProviderSecrets();
+    const hasConfiguredProvider = Object.values(secrets).some((s: any) => s.isConfigured);
 
-    if (!openRouterKey && !groqKey) {
-      console.error("[Marline Drive AI] Missing API keys");
+    if (!hasConfiguredProvider) {
+      console.error("[Marline Drive AI] Missing AI provider keys");
       return NextResponse.json({ error: 'Server configuration error: Missing AI API keys' }, { status: 500 });
     }
 
@@ -269,109 +272,50 @@ CRITICAL ANTI-HALLUCINATION & STRICT GROUNDING RULES:
 
       let lastError = "";
 
-      // Tier 1: Ultra-fast Groq Models
-      if (groqKey) {
-        for (const model of GROQ_MODELS) {
-          try {
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-              method: "POST",
-              headers: {
-                "Authorization": `Bearer ${groqKey}`,
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                model: model,
-                messages: quizMessages,
-                response_format: { type: "json_object" },
-                max_tokens: Math.min(320 * safeQuestionCount, 4000),
-                temperature: 0.05
-              })
-            });
-
-            if (res.ok) {
-              const data = await res.json();
-              const rawContent = data.choices?.[0]?.message?.content || "";
-              const cleaned = rawContent.replace(/```json|```/g, '').trim();
-              const parsed = JSON.parse(cleaned);
-              const finalQuestions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
-
-              if (finalQuestions.length > 0) {
-                // Ensure proper numbering and LaTeX math normalization
-                finalQuestions.forEach((q: any, idx: number) => { q.numb = idx + 1; });
-                const normalizedQuestions = finalQuestions.map(normalizeQuizQuestionItem);
-                await deductCredits();
-                if (shouldCache) {
-                  await setCachedAIResult(sanitizedContext, cacheTaskKey, language, normalizedQuestions);
-                }
-                return NextResponse.json({ result: normalizedQuestions }, {
-                  headers: {
-                    'X-AI-Credits-Remaining': Math.max(0, currentCredits - dynamicTokenCost).toString(),
-                    'X-AI-Credits-Cost': dynamicTokenCost.toString(),
-                    'X-AI-Tier': 'Tier 1',
-                    'X-AI-Tier-Label': 'Premier Ultra Fast Tier'
-                  }
-                });
-              }
-            } else {
-              lastError = await res.text();
-            }
-          } catch (err: any) {
-            lastError = err.message;
+      try {
+        const quizGenResponse = await marlineRouter.executeGenerateWithFallback(
+          {
+            messages: quizMessages as any,
+            responseFormat: { type: 'json_object' },
+            maxTokens: Math.min(320 * safeQuestionCount, 4000),
+            temperature: 0.05,
+          },
+          {
+            task: 'quiz',
+            inputTokens: estimateTokens(JSON.stringify(quizMessages)),
+            desiredOutputTokens: Math.min(320 * safeQuestionCount, 4000),
+            requiresJsonMode: true,
           }
-        }
-      }
+        );
 
-      // Tier 2: OpenRouter Fallback
-      if (openRouterKey) {
-        for (const model of OPENROUTER_MODELS) {
-          try {
-            const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-              method: "POST",
-              headers: {
-                "Authorization": `Bearer ${openRouterKey}`,
-                "Content-Type": "application/json",
-                "HTTP-Referer": "https://chameleon-nu.vercel.app",
-                "X-Title": "Marline AI"
-              },
-              body: JSON.stringify({
-                model: model,
-                messages: quizMessages,
-                response_format: { type: "json_object" },
-                max_tokens: Math.min(320 * safeQuestionCount, 4000),
-                temperature: 0.05
-              })
-            });
+        const rawContent = quizGenResponse.content || "";
+        const cleaned = rawContent.replace(/```json|```/g, '').trim();
+        const parsed = JSON.parse(cleaned);
+        const finalQuestions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
 
-            if (res.ok) {
-              const data = await res.json();
-              const rawContent = data.choices?.[0]?.message?.content || "";
-              const cleaned = rawContent.replace(/```json|```/g, '').trim();
-              const parsed = JSON.parse(cleaned);
-              const finalQuestions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
-
-              if (finalQuestions.length > 0) {
-                finalQuestions.forEach((q: any, idx: number) => { q.numb = idx + 1; });
-                const normalizedQuestions = finalQuestions.map(normalizeQuizQuestionItem);
-                await deductCredits();
-                if (shouldCache) {
-                  await setCachedAIResult(sanitizedContext, cacheTaskKey, language, normalizedQuestions);
-                }
-                return NextResponse.json({ result: normalizedQuestions }, {
-                  headers: {
-                    'X-AI-Credits-Remaining': Math.max(0, currentCredits - dynamicTokenCost).toString(),
-                    'X-AI-Credits-Cost': dynamicTokenCost.toString(),
-                    'X-AI-Tier': 'Tier 2',
-                    'X-AI-Tier-Label': 'Secondary Extended Tier'
-                  }
-                });
-              }
-            } else {
-              lastError = await res.text();
-            }
-          } catch (err: any) {
-            lastError = err.message;
+        if (finalQuestions.length > 0) {
+          // Ensure proper numbering and LaTeX math normalization
+          finalQuestions.forEach((q: any, idx: number) => { q.numb = idx + 1; });
+          const normalizedQuestions = finalQuestions.map(normalizeQuizQuestionItem);
+          await deductCredits();
+          if (shouldCache) {
+            await setCachedAIResult(sanitizedContext, cacheTaskKey, language, normalizedQuestions);
           }
+          const { tier, tierLabel } = getProviderLayerInfo(quizGenResponse.provider);
+
+          return NextResponse.json({ result: normalizedQuestions }, {
+            headers: {
+              'X-AI-Credits-Remaining': Math.max(0, currentCredits - dynamicTokenCost).toString(),
+              'X-AI-Credits-Cost': dynamicTokenCost.toString(),
+              'X-AI-Tier': tier,
+              'X-AI-Tier-Label': tierLabel,
+              'X-AI-Provider': quizGenResponse.provider,
+              'X-AI-Model': quizGenResponse.model
+            }
+          });
         }
+      } catch (err: any) {
+        lastError = err.message || String(err);
       }
 
       return NextResponse.json({ error: `Failed to generate quiz: ${lastError}` }, { status: 502 });
@@ -418,15 +362,15 @@ CRITICAL ANTI-HALLUCINATION & STRICT GROUNDING RULES:
 
     const { orchestrateDriveAI } = await import('@/lib/drive-ai-orchestrator');
 
-    const { stream, tier, tierLabel, model } = await orchestrateDriveAI({
+    const { stream, tier, tierLabel, model, provider } = await orchestrateDriveAI({
       task: (task || 'summarize') as any,
       language,
       systemPrompt,
       sanitizedContext,
       metadataName: metadata.name || 'Academic File',
       messages,
-      groqKey,
-      openRouterKey,
+      groqKey: secrets.groq.apiKey,
+      openRouterKey: secrets.openrouter.apiKey,
       onDeductCredits: deductCredits,
       currentCredits,
       dynamicTokenCost,
@@ -441,7 +385,8 @@ CRITICAL ANTI-HALLUCINATION & STRICT GROUNDING RULES:
         "X-AI-Credits-Cost": dynamicTokenCost.toString(),
         "X-AI-Tier": tier,
         "X-AI-Tier-Label": tierLabel,
-        "X-AI-Model": model
+        "X-AI-Model": model,
+        ...(provider ? { "X-AI-Provider": provider } : {})
       },
     });
 

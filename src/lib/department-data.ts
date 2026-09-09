@@ -860,7 +860,7 @@ export const departmentData: { [key: string]: Department } = {
               materials: {
                 lectures: "https://drive.google.com/drive/folders/1Cat1L5ibgjDAx3qcU8XpKuM2Sp0jIWdA?usp=drive_link",
                 sections: "https://drive.google.com/drive/folders/17m-plzdlLyhkjM_TFmcYw5AZyC61yNrx?usp=drive_link",
-                videos: "https://youtube.com/playlist?list=PL7snZ0LSsq3g6KzD6pdqwU3_Do8WPY4M8&si=1ZMtkTPNNIX7q31M",
+                videos: ["https://youtube.com/playlist?list=PL7snZ0LSsq3g6KzD6pdqwU3_Do8WPY4M8&si=1ZMtkTPNNIX7q31M","https://youtube.com/playlist?list=PLtK59GunEou_TMg812_orrEE3H8UbUSta&si=zISZN1TFNbmCSoXn"],
                 summaries: "https://drive.google.com/drive/folders/1z2c94GAfxG4TdX63ZY_rZSicvEZlrRHS?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1QRMaP_UgieJRGo5ebwvD_bIu9EMF0SYs?usp=drive_link"
               },
@@ -3251,7 +3251,7 @@ export const departmentData: { [key: string]: Department } = {
               materials: {
                 lectures: "https://drive.google.com/drive/folders/1Cat1L5ibgjDAx3qcU8XpKuM2Sp0jIWdA?usp=drive_link",
                 sections: "https://drive.google.com/drive/folders/17m-plzdlLyhkjM_TFmcYw5AZyC61yNrx?usp=drive_link",
-                videos: "https://youtube.com/playlist?list=PL7snZ0LSsq3g6KzD6pdqwU3_Do8WPY4M8&si=1ZMtkTPNNIX7q31M",
+                videos: ["https://youtube.com/playlist?list=PL7snZ0LSsq3g6KzD6pdqwU3_Do8WPY4M8&si=1ZMtkTPNNIX7q31M","https://youtube.com/playlist?list=PLtK59GunEou_TMg812_orrEE3H8UbUSta&si=zISZN1TFNbmCSoXn"],
                 summaries: "https://drive.google.com/drive/folders/1z2c94GAfxG4TdX63ZY_rZSicvEZlrRHS?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1QRMaP_UgieJRGo5ebwvD_bIu9EMF0SYs?usp=drive_link"
               },
@@ -4779,7 +4779,7 @@ export const departmentData: { [key: string]: Department } = {
               materials: {
                 lectures: "https://drive.google.com/drive/folders/1Cat1L5ibgjDAx3qcU8XpKuM2Sp0jIWdA?usp=drive_link",
                 sections: "https://drive.google.com/drive/folders/17m-plzdlLyhkjM_TFmcYw5AZyC61yNrx?usp=drive_link",
-                videos: "https://youtube.com/playlist?list=PL7snZ0LSsq3g6KzD6pdqwU3_Do8WPY4M8&si=1ZMtkTPNNIX7q31M",
+                videos: ["https://youtube.com/playlist?list=PL7snZ0LSsq3g6KzD6pdqwU3_Do8WPY4M8&si=1ZMtkTPNNIX7q31M","https://youtube.com/playlist?list=PLtK59GunEou_TMg812_orrEE3H8UbUSta&si=zISZN1TFNbmCSoXn"],
                 summaries: "https://drive.google.com/drive/folders/1z2c94GAfxG4TdX63ZY_rZSicvEZlrRHS?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1QRMaP_UgieJRGo5ebwvD_bIu9EMF0SYs?usp=drive_link"
               },
@@ -6172,7 +6172,7 @@ export const departmentData: { [key: string]: Department } = {
               materials: {
                 lectures: "https://drive.google.com/drive/folders/1Cat1L5ibgjDAx3qcU8XpKuM2Sp0jIWdA?usp=drive_link",
                 sections: "https://drive.google.com/drive/folders/17m-plzdlLyhkjM_TFmcYw5AZyC61yNrx?usp=drive_link",
-                videos: "https://youtube.com/playlist?list=PL7snZ0LSsq3g6KzD6pdqwU3_Do8WPY4M8&si=1ZMtkTPNNIX7q31M",
+                videos: ["https://youtube.com/playlist?list=PL7snZ0LSsq3g6KzD6pdqwU3_Do8WPY4M8&si=1ZMtkTPNNIX7q31M","https://youtube.com/playlist?list=PLtK59GunEou_TMg812_orrEE3H8UbUSta&si=zISZN1TFNbmCSoXn"],
                 summaries: "https://drive.google.com/drive/folders/1z2c94GAfxG4TdX63ZY_rZSicvEZlrRHS?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1QRMaP_UgieJRGo5ebwvD_bIu9EMF0SYs?usp=drive_link"
               },
@@ -7511,7 +7511,7 @@ export const departmentData: { [key: string]: Department } = {
               materials: {
                 lectures: "https://drive.google.com/drive/folders/probability-statistics-2-hi-lectures",
                 sections: "https://drive.google.com/drive/folders/probability-statistics-2-hi-sections",
-                videos: "https://youtube.com/playlist?list=probability-statistics-2-hi-videos",
+                videos: ["https://youtube.com/playlist?list=PL7snZ0LSsq3g6KzD6pdqwU3_Do8WPY4M8&si=1ZMtkTPNNIX7q31M","https://youtube.com/playlist?list=PLtK59GunEou_TMg812_orrEE3H8UbUSta&si=zISZN1TFNbmCSoXn"],
               },
             },
             {
@@ -8859,7 +8859,7 @@ export const departmentData: { [key: string]: Department } = {
               materials: {
                 lectures: "https://drive.google.com/drive/folders/1Cat1L5ibgjDAx3qcU8XpKuM2Sp0jIWdA?usp=drive_link",
                 sections: "https://drive.google.com/drive/folders/17m-plzdlLyhkjM_TFmcYw5AZyC61yNrx?usp=drive_link",
-                videos: "https://youtube.com/playlist?list=PL7snZ0LSsq3g6KzD6pdqwU3_Do8WPY4M8&si=1ZMtkTPNNIX7q31M",
+                videos: ["https://youtube.com/playlist?list=PL7snZ0LSsq3g6KzD6pdqwU3_Do8WPY4M8&si=1ZMtkTPNNIX7q31M","https://youtube.com/playlist?list=PLtK59GunEou_TMg812_orrEE3H8UbUSta&si=zISZN1TFNbmCSoXn"],
                 summaries: "https://drive.google.com/drive/folders/1z2c94GAfxG4TdX63ZY_rZSicvEZlrRHS?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1QRMaP_UgieJRGo5ebwvD_bIu9EMF0SYs?usp=drive_link"
               },

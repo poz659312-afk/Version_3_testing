@@ -88,3 +88,58 @@ export function calculateGroqBudget(params: {
     targetOutputTokens: desiredOutputTokens,
   };
 }
+
+export const TOKEN_SAFETY_MARGIN = 200;
+
+export interface ProviderTokenBudgetResult {
+  canFitDirectly: boolean;
+  requiresChunking: boolean;
+  actualMaxTokens: number;
+  inputTokens: number;
+  availableBudget: number;
+  targetOutputTokens: number;
+}
+
+/**
+ * Generalized token budget calculation across any provider given its TPM limit.
+ */
+export function calculateProviderBudget(params: {
+  inputTokens: number;
+  tpmLimit: number;
+  safetyMargin?: number;
+  desiredOutputTokens?: number;
+  minViableOutput?: number;
+}): ProviderTokenBudgetResult {
+  const {
+    inputTokens,
+    tpmLimit,
+    safetyMargin = TOKEN_SAFETY_MARGIN,
+    desiredOutputTokens = TARGET_SUMMARY_OUTPUT_TOKENS,
+    minViableOutput = MIN_VIABLE_OUTPUT_TOKENS,
+  } = params;
+
+  const availableBudget = tpmLimit - inputTokens - safetyMargin;
+
+  if (availableBudget < minViableOutput) {
+    return {
+      canFitDirectly: false,
+      requiresChunking: true,
+      actualMaxTokens: Math.max(minViableOutput, Math.min(desiredOutputTokens, Math.max(0, availableBudget))),
+      inputTokens,
+      availableBudget,
+      targetOutputTokens: desiredOutputTokens,
+    };
+  }
+
+  const actualMaxTokens = Math.min(desiredOutputTokens, availableBudget);
+
+  return {
+    canFitDirectly: true,
+    requiresChunking: false,
+    actualMaxTokens,
+    inputTokens,
+    availableBudget,
+    targetOutputTokens: desiredOutputTokens,
+  };
+}
+

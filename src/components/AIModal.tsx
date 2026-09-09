@@ -71,6 +71,37 @@ interface Message {
   tokensCost?: number;
 }
 
+export function getTierBadgeStyle(tier?: string, tierLabel?: string): string {
+  const combined = `${tier || ''} ${tierLabel || ''}`.toLowerCase();
+  if (combined.includes('layer 1') || combined.includes('premier') || combined.includes('cerebras')) {
+    return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border-emerald-500/30";
+  }
+  if (combined.includes('layer 2') || combined.includes('groq') || combined.includes('accelerated')) {
+    return "bg-cyan-500/10 text-cyan-600 dark:text-cyan-300 border-cyan-500/30";
+  }
+  if (combined.includes('layer 3') || combined.includes('google') || combined.includes('reasoning') || combined.includes('extended')) {
+    return "bg-purple-500/10 text-purple-600 dark:text-purple-300 border-purple-500/30";
+  }
+  if (combined.includes('layer 4') || combined.includes('openrouter') || combined.includes('resilient') || combined.includes('adaptive')) {
+    return "bg-amber-500/10 text-amber-600 dark:text-amber-300 border-amber-500/30";
+  }
+  if (combined.includes('layer 5') || combined.includes('cloudflare') || combined.includes('edge') || combined.includes('serverless')) {
+    return "bg-blue-500/10 text-blue-600 dark:text-blue-300 border-blue-500/30";
+  }
+  return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border-emerald-500/30";
+}
+
+export function getFallbackTierLabel(tier?: string): string {
+  if (!tier) return "Premier Ultra Fast Tier (LAYER 1)";
+  const t = tier.toLowerCase();
+  if (t.includes('1')) return "Premier Ultra Fast Tier (LAYER 1)";
+  if (t.includes('2')) return "Accelerated Ultra Fast Tier (LAYER 2)";
+  if (t.includes('3')) return "Extended Deep Reasoning Tier (LAYER 3)";
+  if (t.includes('4')) return "Resilient Adaptive Tier (LAYER 4)";
+  if (t.includes('5')) return "Global Edge Serverless Tier (LAYER 5)";
+  return "Premier Ultra Fast Tier (LAYER 1)";
+}
+
 export function stripThinkingProcess(text: string): string {
   if (!text) return "";
   let cleaned = text;
@@ -182,54 +213,132 @@ function preprocessMathContent(content: string): string {
   // 0. Automatically wrap standalone code & SQL statements into proper code blocks
   text = autoWrapCodeBlocks(text);
 
-  // a. Protect LaTeX norm pipes \| as \Vert so they are never confused with markdown table column pipes
+  // 1. Standardize LaTeX delimiters \[ ... \] and \( ... \)
+  // Remove blank lines inside display math so Remark-Math does not break the block!
+  text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => {
+    const cleanMath = g1.replace(/\n\s*\n+/g, '\n').trim();
+    return `\n\n$$\n${cleanMath}\n$$\n\n`;
+  });
+  text = text.replace(/\\\(([\s\S]*?)\\\)/g, (_m, g1) => `$${g1.trim()}$`);
+
+  // 2. Protect LaTeX norm pipes \| as \Vert so they are never confused with markdown table column pipes
   text = text.replace(/\\\|/g, '\\Vert ');
 
-  // b. Fix compressed/inline table rows (convert '||' into proper newline markdown table row)
+  // 3. Fix compressed/inline table rows (convert '||' into proper newline markdown table row)
   text = text.replace(/\s*\|\|\s*/g, '\n| ');
 
-  // c. Convert weird unicode dotted lines to standard hr (only if standalone line)
+  // 4. Convert weird unicode dotted lines to standard hr (only if standalone line)
   text = text.replace(/^[┄┈—–]{3,}$/gm, '\n\n---\n\n');
 
-  // d. Collapse excessive vertical blank lines (3+ newlines into 2)
-  text = text.replace(/\n{3,}/g, '\n\n');
+  // 5. Protect table rows: wrap any \begin{...} inside a table row in inline $...$ with NO newlines
+  text = text.replace(
+    /^(\|.*?)(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})(.*?\|)$/gm,
+    (_m, before, env, after) => {
+      const cleanEnv = env.trim();
+      const wrapped = cleanEnv.startsWith('$') ? cleanEnv : `$${cleanEnv}$`;
+      return `${before}${wrapped}${after}`;
+    }
+  );
 
-  // 1. Separate headers (##, ###) with clean newlines before and after
+  // 6. Convert any $$...$$ inside table rows into $...$ (inline math) so table rows never break!
+  text = text.replace(/^(\|.*\|)$/gm, (line) => {
+    return line.replace(/\$\$(.*?)\$\$/g, (_m, inner) => '$' + inner.trim() + '$');
+  });
+
+  // 7. Ensure GFM tables have clean newlines before and after them, and single spacing between rows
+  text = text.replace(/([^\n|])\n(\|[^\n]+\|)/g, '$1\n\n$2');
+  text = text.replace(/(\|[^\n]*\|)\n\s*\n(\|[^\n]*\|)/g, '$1\n$2');
+
+  // =========================================================================
+  // MASK EXISTING VALID MATH BLOCKS TO PREVENT DOUBLE-WRAPPING / NESTING
+  // =========================================================================
+  const mathBlocks: string[] = [];
+  text = text.replace(/\$\$([\s\S]*?)\$\$/g, (_match, body) => {
+    // Blank lines (\n\n) inside $$...$$ destroy Remark-Math parsing!
+    const cleanedBody = body.replace(/\n\s*\n+/g, '\n').trim();
+    if (!cleanedBody) return ''; // completely discard empty $$ blocks!
+    const idx = mathBlocks.length;
+    mathBlocks.push(cleanedBody);
+    return `___MATH_BLOCK_${idx}___`;
+  });
+
+  // 8. Standalone bracketed math lines like [f(x) = \begin{cases} ... \end{cases}] or [ ... ]
+  text = text.replace(
+    /(?:^|\n)\s*\[\s*([a-zA-Z_]\w*(?:\([^\)]*\))?\s*=?\s*\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*\]\s*(?=\n|$)/g,
+    (_m, g1) => {
+      const idx = mathBlocks.length;
+      mathBlocks.push(g1.trim());
+      return `\n\n___MATH_BLOCK_${idx}___\n\n`;
+    }
+  );
+
+  text = text.replace(
+    /(?:^|\n)\s*\[\s*([a-zA-Z0-9_().,\s=+\-*\/^_{}\\]*\\(?:frac|int|sum|prod|sqrt|mathbf|text|sigma|mu|alpha|beta|lambda|le|ge|ne|pm|times|div|infty|exp)[\s\S]*?)\s*\]\s*(?=\n|$)/g,
+    (_m, g1) => {
+      const idx = mathBlocks.length;
+      mathBlocks.push(g1.trim());
+      return `\n\n___MATH_BLOCK_${idx}___\n\n`;
+    }
+  );
+
+  // 9. Wrap standalone LaTeX environments outside tables (cases, matrix, bmatrix, etc.)
+  // Handles optional trailing \\ from markdown line breaks
+  text = text.replace(
+    /(?:^|\n)\s*(?:\[\s*)?([a-zA-Z_]\w*(?:\([^\)]*\))?\s*=\s*)?\\begin\{(cases|matrix|bmatrix|pmatrix|aligned|align)\}([\s\S]*?)\\end\{\2\}(?:\s*\])?(?:\s*\\\\+)?\s*(?=\n|$)/g,
+    (_match, lhs, env, inner) => {
+      const prefix = lhs || '';
+      const idx = mathBlocks.length;
+      mathBlocks.push(`${prefix}\\begin{${env}}${inner}\\end{${env}}`);
+      return `\n\n___MATH_BLOCK_${idx}___\n\n`;
+    }
+  );
+
+  // 10. Auto-wrap standalone raw LaTeX formulas on their own lines (e.g. F = \frac... or \approx...)
+  text = text.replace(
+    /(?:^|\n)\s*([a-zA-Z_]\w*(?:\([^\)]*\))?\s*=\s*\\(?:frac|sum|int|sqrt)[\s\S]*?)(?:\s*\\\\+)?(?=\n|$)/g,
+    (match, formula) => {
+      if (formula.trim().startsWith('$') || formula.includes('___MATH_BLOCK_')) return match;
+      const idx = mathBlocks.length;
+      mathBlocks.push(formula.trim());
+      return `\n\n___MATH_BLOCK_${idx}___\n\n`;
+    }
+  );
+
+  text = text.replace(
+    /(?:^|\n)\s*(\\approx[\s\S]*?)(?:\s*\\\\+)?(?=\n|$)/g,
+    (match, formula) => {
+      if (formula.trim().startsWith('$') || formula.includes('___MATH_BLOCK_')) return match;
+      const idx = mathBlocks.length;
+      mathBlocks.push(formula.trim());
+      return `\n\n___MATH_BLOCK_${idx}___\n\n`;
+    }
+  );
+
+  // 11. Separate headers (##, ###) with clean newlines before and after
   text = text.replace(/([^\n])\n*(#{1,6}\s+[^\n]+)/g, '$1\n\n$2');
   text = text.replace(/(#{1,6}\s+[^\n]+)\n+(?!\n)/g, '$1\n\n');
 
-  // 2. Separate horizontal lines (---) WITHOUT breaking table separator rows (|---|)
+  // 12. Fix horizontal dividers
+  text = text.replace(/---\s*(#{1,6}\s+)/g, '\n\n---\n\n$1');
   text = text.replace(/(^|[^\n|])\s*\n\s*---\s*\n\s*([^|\n]|$)/g, '$1\n\n---\n\n$2');
 
-  // 3. Ensure GFM tables have clean newlines before and after them
-  text = text.replace(/([^\n])\n*(\|.+?\|\n\|[-:\s|]+\|)/g, '$1\n\n$2');
-
-  // 4. Separate code blocks with newlines
+  // 13. Separate code blocks with newlines
   text = text.replace(/([^\n])\s*(```[a-zA-Z0-9_-]*)/g, '$1\n\n$2');
   text = text.replace(/(```)\s*([^\n`\s])/g, '$1\n\n$2');
 
-  // 5. Convert LaTeX syntax patterns into standard $ math delimiters:
-  // 5a. Convert \[ ... \] to $$ ... $$ and \( ... \) to $ ... $
-  text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => '\n\n$$' + g1 + '$$\n\n');
-  text = text.replace(/\\\(([\s\S]*?)\\\)/g, (_m, g1) => '$' + g1 + '$');
+  // =========================================================================
+  // UNMASK MATH BLOCKS (Guaranteeing strictly single-wrapped clean $$ blocks)
+  // =========================================================================
+  text = text.replace(/___MATH_BLOCK_(\d+)___/g, (_m, id) => {
+    const body = mathBlocks[parseInt(id, 10)] || '';
+    if (!body.trim()) return ''; // NEVER emit an empty math block!
+    return `\n\n$$\n${body.trim()}\n$$\n\n`;
+  });
 
-  // 5b. Fix matrices and block environments wrapped in single $ or double $$
-  text = text.replace(
-    /\${1,2}\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*\${1,2}/g,
-    (_m, g1) => '\n\n$$\n' + g1.trim() + '\n$$\n\n'
-  );
+  // 14. Collapse excessive vertical blank lines
+  text = text.replace(/\n{3,}/g, '\n\n');
 
-  // 5c. Wrap standalone LaTeX matrix environments with $$ if missing
-  text = text.replace(
-    /(?<!\$\$)\s*(\\begin\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\}[\s\S]*?\\end\{(?:cases|matrix|bmatrix|pmatrix|aligned|align)\})\s*(?!\$\$)/g,
-    (_m, g1) => '\n\n$$\n' + g1.trim() + '\n$$\n\n'
-  );
-
-  // 5d. Ensure display math $$ has its own lines
-  text = text.replace(/([^\n])\s*(\$\$)/g, '$1\n\n$2');
-  text = text.replace(/(\$\$)\s*([^\n$\s])/g, '$1\n\n$2');
-
-  return text;
+  return text.trim();
 }
 
 function adjustColorBrightness(hex: string, percent: number): string {
@@ -826,6 +935,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
 
   const loadingMessages = [
     "Our AI is deeply analyzing your academic file...",
+    "Routing through 5-Layer Multi-Provider Infrastructure...",
     "Extracting critical core formulas and equations...",
     "Synthesizing high-density glassmorphic structures...",
     "Injecting interactive university-level exam distractors...",
@@ -992,8 +1102,8 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       // Update real-time token credits and Tier information from response headers
       const remCreditsHeader = response.headers.get('X-AI-Credits-Remaining');
       const costHeader = response.headers.get('X-AI-Credits-Cost');
-      const tierHeader = response.headers.get('X-AI-Tier') || 'Tier 1';
-      const tierLabelHeader = response.headers.get('X-AI-Tier-Label') || (tierHeader.includes('2') ? 'Secondary Extended Tier' : 'Premier Ultra Fast Tier');
+      const tierHeader = response.headers.get('X-AI-Tier') || 'Layer 1';
+      const tierLabelHeader = response.headers.get('X-AI-Tier-Label') || getFallbackTierLabel(tierHeader);
       const tokensCost = costHeader ? parseInt(costHeader, 10) : 10;
 
       if (remCreditsHeader !== null) {
@@ -1053,7 +1163,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               try {
                 const parsed = JSON.parse(dataStr);
                 if (parsed.tier_notice) {
-                  toast.info(parsed.message || "Redirected to Tier 2 backup models.", {
+                  toast.info(parsed.message || `Redirected to ${tierLabelHeader} backup models.`, {
                     duration: 4500,
                     icon: "⚡"
                   });
@@ -1163,20 +1273,34 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         // Ensure all text in dark mode is cleanly converted to rich black/dark slate for the PDF, while preserving highlights
         clone.querySelectorAll('*').forEach(el => {
           const htmlEl = el as HTMLElement;
-          const isCode = htmlEl.closest('pre') || htmlEl.closest('code') || htmlEl.classList.contains('hljs') || (typeof htmlEl.className === 'string' && htmlEl.className.includes('hljs'));
+          const isKatex = !!(htmlEl.closest('.katex') || htmlEl.closest('.katex-display') || htmlEl.classList.contains('katex') || htmlEl.classList.contains('katex-display'));
+          if (isKatex) {
+            // NEVER alter KaTeX math elements with badges, borders, or backgrounds!
+            return;
+          }
+
+          const isCode = (htmlEl.tagName === 'CODE' || htmlEl.classList.contains('hljs')) && !htmlEl.closest('pre');
           const isCodeBlock = htmlEl.closest('[data-code-block="true"]') || htmlEl.getAttribute('data-code-block') === 'true';
           const isSvg = htmlEl.closest('svg');
-          const isKatex = htmlEl.closest('.katex') || htmlEl.classList.contains('katex');
-          const isStrong = htmlEl.tagName === 'STRONG' || htmlEl.closest('strong');
+          const isStrong = htmlEl.tagName === 'STRONG';
 
           if (isStrong) {
-            htmlEl.style.backgroundColor = `${activeThemeColor}18`;
-            htmlEl.style.color = '#1e293b';
-            htmlEl.style.borderRadius = '5px';
-            htmlEl.style.padding = '2px 7px';
-            htmlEl.style.fontWeight = '700';
-            htmlEl.style.display = 'inline-block';
-            htmlEl.style.border = `1.5px solid ${activeThemeColor}`;
+            if (htmlEl.querySelector('.katex')) {
+              htmlEl.style.fontWeight = '700';
+              htmlEl.style.color = '#1e293b';
+              htmlEl.style.display = 'inline';
+              htmlEl.style.border = 'none';
+              htmlEl.style.padding = '0';
+              htmlEl.style.backgroundColor = 'transparent';
+            } else {
+              htmlEl.style.backgroundColor = `${activeThemeColor}18`;
+              htmlEl.style.color = '#1e293b';
+              htmlEl.style.borderRadius = '5px';
+              htmlEl.style.padding = '2px 7px';
+              htmlEl.style.fontWeight = '700';
+              htmlEl.style.display = 'inline-block';
+              htmlEl.style.border = `1.5px solid ${activeThemeColor}`;
+            }
           } else if (isCode && !htmlEl.closest('pre')) {
             htmlEl.style.backgroundColor = `${activeThemeColor}18`;
             htmlEl.style.color = '#1e293b';
@@ -1184,7 +1308,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             htmlEl.style.padding = '2px 6px';
             htmlEl.style.fontWeight = '700';
             htmlEl.style.border = `1.5px solid ${activeThemeColor}`;
-          } else if (!isCode && !isCodeBlock && !isSvg && !isKatex) {
+          } else if (!isCode && !isCodeBlock && !isSvg) {
             htmlEl.style.color = '#1f2937';
             htmlEl.style.backgroundColor = '';
             if (htmlEl.className && typeof htmlEl.className === 'string') {
@@ -1594,8 +1718,20 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               display: inline-block !important;
               border: 1.5px solid ${activeThemeColor} !important;
             }
+            .content strong:has(.katex) {
+              background-color: transparent !important;
+              border: none !important;
+              padding: 0 !important;
+              display: inline !important;
+            }
             .content strong * {
               color: #1e293b !important;
+            }
+            .content .katex,
+            .content .katex * {
+              border: none !important;
+              background: transparent !important;
+              box-shadow: none !important;
             }
 
             .content code:not(pre code) { 
@@ -1603,7 +1739,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               color: #1e293b !important; 
               padding: 2px 6px !important; 
               border-radius: 4px !important; 
-              border: 1.5px solid ${activeThemeColor} !important;
+              border: 1.5px solid ${activeThemeColor} !important; 
               font-size: 12px !important; 
               font-weight: 700 !important;
               font-family: 'Roboto Mono', monospace !important; 
@@ -1694,6 +1830,16 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
               font-size: 1.15em !important; 
               line-height: 1.5 !important;
             }
+
+            .content .katex-display:empty,
+            .content .katex-display:not(:has(.base)),
+            .content .katex-display:not(:has(.katex)) {
+              display: none !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              border: none !important;
+              background: transparent !important;
+            }
             
             .content .katex-display {
               font-size: 0.95em !important;
@@ -1723,6 +1869,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
             .content h2, .content h3, .content h4, .content blockquote, .content pre, .katex-display {
               break-inside: avoid !important;
               page-break-inside: avoid !important;
+            }
             .footer { 
               margin-top: 55px !important; 
               padding-top: 18px !important; 
@@ -2412,13 +2559,11 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
                             <span
                               className={cn(
                                 "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold tracking-tight shadow-xs border transition-all",
-                                msg.tier?.includes('2')
-                                  ? "bg-purple-500/10 text-purple-600 dark:text-purple-300 border-purple-500/30"
-                                  : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border-emerald-500/30"
+                                getTierBadgeStyle(msg.tier, msg.tierLabel)
                               )}
                             >
                               <Sparkles className="w-3 h-3 shrink-0" />
-                              {msg.tierLabel || (msg.tier?.includes('2') ? 'Secondary Extended Tier' : 'Premier Ultra Fast Tier')}
+                              {msg.tierLabel || getFallbackTierLabel(msg.tier)}
                             </span>
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-mono font-semibold bg-muted/40 text-muted-foreground border border-border/50">
                               <Coins className="w-3 h-3 text-amber-500 shrink-0" />

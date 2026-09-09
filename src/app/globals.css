@@ -33,6 +33,73 @@
   transition: opacity 1s ease-out;
 }
 
+/* KaTeX Math Formatting: Strictly LTR and centered inside RTL Arabic UI */
+.katex-display,
+.prose .katex-display,
+.marline-page .katex-display {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  direction: ltr !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 1.25rem 0 !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  padding: 0.85rem 1rem !important;
+  unicode-bidi: isolate !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 0.875rem !important;
+}
+
+.katex-display > .katex {
+  text-align: center !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 auto !important;
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+}
+
+.katex-display > .katex > .katex-html {
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  margin: 0 auto !important;
+  direction: ltr !important;
+}
+
+.prose p:has(> .katex-display),
+.prose p:has(.katex-display),
+.prose li > .katex-display,
+.prose li:has(.katex-display),
+.marline-page p:has(.katex-display) {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.katex {
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
+  font-size: 1.05em !important;
+}
+
+.prose table td .katex-display {
+  margin: 0.25rem 0 !important;
+  display: inline-flex !important;
+  padding: 0.25rem 0.5rem !important;
+}
+
 /* â”€â”€ Survey Intro â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @keyframes wave {
   0%, 100% { transform: rotate(0deg); }
@@ -1815,13 +1882,7 @@ html.lenis-stopped body {
   font-family: KaTeX_Typewriter, monospace !important;
 }
 
-.katex-display {
-  margin: 1.25em 0 !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  padding: 0.5em 0 !important;
-  text-align: center !important;
-}
+/* (Display math styles unified at top of globals.css) */
 
 /* Never show red text for parse errors in KaTeX */
 .katex-error {
