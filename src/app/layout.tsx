@@ -133,7 +133,6 @@ export default function RootLayout({
           <ColorThemeProvider defaultTheme="default">
             <LazyNotificationProvider>
               <ToastProvider>
-                {/* <DevToolsProtection /> */}
                 <SmoothScrollProvider>
                   <MaintenanceGuard>
                     <Navigation />

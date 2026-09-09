@@ -709,14 +709,15 @@ export default function StudySpaceClient({
   useEffect(() => {
     const supabase = createClient()
 
-    // 0. Typing indicator channel
-    const typingChannel = supabase.channel(`room-typing-${roomId}`, {
+    // Unified Single Channel for Room Live Interactions (reduces 9 channels to 1)
+    const roomChannel = supabase.channel(`room-live-${roomId}`, {
       config: {
         broadcast: { self: false }
       }
     })
 
-    typingChannel
+    roomChannel
+      // 0. Typing indicator
       .on('broadcast', { event: 'typing' }, (payload: any) => {
         const { userId, username, isTyping } = payload.payload
         setTypingUsers((prev) => {
@@ -728,13 +729,7 @@ export default function StudySpaceClient({
           }
         })
       })
-      .subscribe()
-
-    typingChannelRef.current = typingChannel
-
-    // 1. Messages and Message Reactions Channel
-    const messageChannel = supabase
-      .channel(`room-messages-${roomId}`)
+      // 1. Messages and Message Reactions
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_messages', filter: `room_id=eq.${roomId}` },
@@ -755,12 +750,10 @@ export default function StudySpaceClient({
 
           setMessages((prev: any[]) => {
             if (prev.some((m: any) => m.id === newMsg.id)) return prev
-            // Remove optimistic messages that match the content
             const filtered = prev.filter((m: any) => {
               if (String(m.id).startsWith('optimistic-') && m.content === newMsg.content && m.user_id === newMsg.user_id) {
                 return false
               }
-              // Check for temp-quiz message matching the new content
               const tempQuizMatch = String(m.id).startsWith('optimistic-') && m.content.match(/^\[QUIZ:optimistic-quiz-[\w-]+\] (.*)/)
               const newQuizMatch = newMsg.content.match(/^\[QUIZ:([\w-]+)\] (.*)/)
               if (tempQuizMatch && newQuizMatch && tempQuizMatch[1] === newQuizMatch[1]) {
@@ -768,7 +761,6 @@ export default function StudySpaceClient({
               }
               return true
             })
-            // Play sound if not focusing
             if (!isFocusingRef.current && senderId !== currentUserId) {
               playSystemSound('message')
             }
@@ -794,11 +786,7 @@ export default function StudySpaceClient({
           }
         }
       )
-      .subscribe()
-
-    // 2. Scratchpad update channel
-    const scratchpadChannel = supabase
-      .channel(`room-scratchpad-${roomId}`)
+      // 2. Scratchpad update
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'study_rooms', filter: `id=eq.${roomId}` },
@@ -811,11 +799,7 @@ export default function StudySpaceClient({
           }
         }
       )
-      .subscribe()
-
-    // 3. Member changes (focus, streaks, time tracking)
-    const membersChannel = supabase
-      .channel(`room-members-${roomId}`)
+      // 3. Member changes (focus, streaks, time tracking)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'study_room_members', filter: `room_id=eq.${roomId}` },
@@ -843,16 +827,11 @@ export default function StudySpaceClient({
               })
             })
           } else {
-            // For inserts or deletes, perform a lightweight members reload
             getRoomMembers(roomId).then(members => setMembers(members))
           }
         }
       )
-      .subscribe()
-
-    // 4. Polls & Votes
-    const pollsChannel = supabase
-      .channel(`room-polls-${roomId}`)
+      // 4. Polls & Votes
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_polls', filter: `room_id=eq.${roomId}` },
@@ -864,7 +843,6 @@ export default function StudySpaceClient({
             votes: []
           }
           setPolls((prev: any[]) => {
-            // Filter out optimistic equivalents
             const filtered = prev.filter(p => !(String(p.id).startsWith('optimistic-') && p.question === newPoll.question))
             if (filtered.some(p => p.id === newPoll.id)) return filtered
             return [newPoll, ...filtered]
@@ -950,11 +928,7 @@ export default function StudySpaceClient({
           }
         }
       )
-      .subscribe()
-
-    // 5. Daily Challenges
-    const dcChannel = supabase
-      .channel(`room-dc-${roomId}`)
+      // 5. Daily Challenges
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_daily_challenges', filter: `room_id=eq.${roomId}` },
@@ -1014,11 +988,7 @@ export default function StudySpaceClient({
           }
         }
       )
-      .subscribe()
-
-    // 6. Quizzes
-    const quizzesChannel = supabase
-      .channel(`room-quizzes-${roomId}`)
+      // 6. Quizzes
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_quizzes', filter: `room_id=eq.${roomId}` },
@@ -1057,11 +1027,7 @@ export default function StudySpaceClient({
           })
         }
       )
-      .subscribe()
-
-    // 7. Resources
-    const resourcesChannel = supabase
-      .channel(`room-resources-${roomId}`)
+      // 7. Resources
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_resources', filter: `room_id=eq.${roomId}` },
@@ -1081,11 +1047,7 @@ export default function StudySpaceClient({
           setResources((prev: any[]) => prev.filter(r => r.id !== deletedResource.id))
         }
       )
-      .subscribe()
-
-    // 8. Quiz Challenges / Battles
-    const challengesChannel = supabase
-      .channel(`room-challenges-${roomId}`)
+      // 8. Quiz Challenges / Battles
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'study_room_challenges', filter: `room_id=eq.${roomId}` },
@@ -1110,16 +1072,11 @@ export default function StudySpaceClient({
       )
       .subscribe()
 
+    typingChannelRef.current = roomChannel
+
     return () => {
-      supabase.removeChannel(messageChannel)
-      supabase.removeChannel(scratchpadChannel)
-      supabase.removeChannel(membersChannel)
-      supabase.removeChannel(pollsChannel)
-      supabase.removeChannel(dcChannel)
-      supabase.removeChannel(quizzesChannel)
-      supabase.removeChannel(resourcesChannel)
-      supabase.removeChannel(challengesChannel)
-      if (typingChannel) supabase.removeChannel(typingChannel)
+      supabase.removeChannel(roomChannel)
+      typingChannelRef.current = null
     }
   }, [roomId])
 

@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
       success: true,
       uploadMethod: 'direct',
       uploadUrl: uploadUrl,
+      accessToken: accessToken,
       fileMetadata: {
         name: fileName,
         size: fileSize,
