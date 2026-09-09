@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-limit";
 import { getServerStudentSession } from "@/lib/auth-server";
 import { MARLINE_SYSTEM_PROMPT } from "@/lib/marline-knowledge";
+import { getBylawContextForQuery } from "@/lib/marline/bylaw-retriever";
 import { marlineRouter } from "@/lib/marline/router";
 import { estimateTokens } from "@/lib/token-budget-manager";
 import { getProviderLayerInfo } from "@/lib/marline/providers/config";
@@ -84,8 +85,16 @@ export async function POST(req: Request) {
       };
     });
 
+    // Dynamic bylaw grounding if user asks about courses, codes, or prerequisites
+    const latestUserQuery = recentMessages.filter(m => m.role === 'user').slice(-1)[0]?.content || "";
+    const bylawContext = getBylawContextForQuery(latestUserQuery);
+
+    const effectiveSystemPrompt = bylawContext
+      ? `${MARLINE_SYSTEM_PROMPT}\n\n${bylawContext}`
+      : MARLINE_SYSTEM_PROMPT;
+
     const formattedMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
-      { role: "system", content: MARLINE_SYSTEM_PROMPT },
+      { role: "system", content: effectiveSystemPrompt },
       ...recentMessages
     ];
 

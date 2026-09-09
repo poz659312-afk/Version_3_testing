@@ -1,37 +1,65 @@
-import bylawsData from "./fcds_bylaws.json";
-import { departmentData } from "./department-data";
+import bylawData from "../data/faculty_courses_bylaw.json";
 
 /**
  * Builds the official, token-dense Marline Knowledge Base System Prompt.
  * Highly compressed to fit comfortably under Groq's 8,000 TPM limit (~2,800 tokens total),
- * containing 100% of the curriculum for ALL 6 programs across ALL 4 years and 8 semesters,
- * with strict directives for Markdown tables and LaTeX block equations.
+ * containing 100% of the verified bylaw curriculum for ALL 6 programs across ALL 4 years,
+ * plus core faculty prerequisites and strict directives for tables and LaTeX equations.
  */
 function buildMarlineSystemPrompt(): string {
-  const programsCompact: string[] = [];
+  const lines: string[] = [];
 
-  const progAliases: Record<string, string> = {
-    'computing-data-sciences': 'البرنامج العام / حوسبة وعلوم البيانات (CDS / General)',
-    'business-analytics': 'تحليلات الأعمال (Business Analytics - BA)',
-    'artificial-intelligence': 'النظم والذكاء الاصطناعي (AI / Intelligent Systems)',
-    'media-analytics': 'تحليلات الوسائط (Media Analytics - MA)',
-    'healthcare-informatics': 'معلوماتية الرعاية الصحية (Healthcare - HI)',
-    'cybersecurity': 'الأمن السيبراني (Cybersecurity - CS)'
-  };
+  // Common Year 1 (Identical across all 6 programs)
+  lines.push(`🏛️ **سنة أولى (مستوى 1 - مشترك لجميع البرامج الستة)**:`);
+  lines.push(`  - [ترم 1]: Linear Algebra (00101) • Calculus (00102) • Intro to Computer Systems (00103) • Intro to Data Sciences (00104) • Programming I (00105) • Critical Thinking (متطلب جامعة)`);
+  lines.push(`  - [ترم 2]: Probability & Statistics I (00106) • Discrete Structures (00107) • Data Structures & Algorithms (00108) • Intro to AI (00109) • Programming II (00110) • Innovation & Entrepreneurship (متطلب جامعة)`);
 
-  for (const [key, dept] of Object.entries(departmentData)) {
-    const alias = progAliases[key] || dept.name;
-    const lines = [`🎓 **${alias}**:`];
-    for (const [lvl, levelObj] of Object.entries(dept.levels)) {
-      const yName = lvl === '1' ? 'سنة أولى (مستوى 1)' : lvl === '2' ? 'سنة تانية (مستوى 2)' : lvl === '3' ? 'سنة تالتة (مستوى 3)' : 'سنة رابعة (مستوى 4)';
-      const t1 = levelObj.subjects.term1.map(s => `${s.name}${s.code && !s.code.includes('0X0XX') && !s.code.includes('000XX') ? ` (${s.code})` : ''}`).join(' • ');
-      const t2 = levelObj.subjects.term2.map(s => `${s.name}${s.code && !s.code.includes('0X0XX') && !s.code.includes('000XX') ? ` (${s.code})` : ''}`).join(' • ');
+  // Core Faculty Prerequisites (Common across the college)
+  lines.push(`\n🔗 **المتطلبات السابقة الإلزامية للمواد المشتركة بالكلية**:`);
+  lines.push(`  • هياكل البيانات والخوارزميات (00108) ← برمجة 1 (00105)`);
+  lines.push(`  • مقدمة إلى الذكاء الاصطناعي (00109) ← نظم الحاسب (00103)`);
+  lines.push(`  • برمجة 2 (00110) ← برمجة 1 (00105)`);
+  lines.push(`  • الاحتمالات والإحصاء 2 (00201) ← الاحتمالات والإحصاء 1 (00106)`);
+  lines.push(`  • مقدمة إلى قواعد البيانات (00202) ← برمجة 1 (00105)`);
+  lines.push(`  • الحسابات العددية (00203) ← الجبر الخطي (00101)`);
+  lines.push(`  • الحوسبة السحابية (00204) ← هياكل البيانات والخوارزميات (00108)`);
+  lines.push(`  • تعلم الآلة (00205) ← مقدمة إلى الذكاء الاصطناعي (00109)`);
+  lines.push(`  • تنقيب وتحليلات البيانات (00206) ← الاحتمالات والإحصاء 2 (00201)`);
+
+  // Faculty Electives
+  lines.push(`\n📋 **متطلبات الكلية الاختيارية (4 مقررات - 12 ساعة معتمدة - مادة 31)**:`);
+  lines.push(`  • هندسة البرمجيات (00301) [متطلب: برمجة 2 (00110)]`);
+  lines.push(`  • تحليل وتصميم النظم (00302) [بدون متطلب]`);
+  lines.push(`  • تصميم الخوارزميات (00303) [متطلب: هياكل البيانات (00108)]`);
+  lines.push(`  • المعالجة الموزعة (00304) [متطلب: نظم حاسب (00103) وهياكل بيانات (00108)]`);
+  lines.push(`  • برمجة الأجهزة المحمولة (00305) [متطلب: برمجة 1 (00105)]`);
+  lines.push(`  • برمجة الويب (00306) [متطلب: برمجة 1 (00105)]`);
+  lines.push(`  • نظم التشغيل (00307) [متطلب: نظم حاسب (00103) وبرمجة 1 (00105)]`);
+  lines.push(`  • شبكات الحاسب (00308) [متطلب: نظم حاسب (00103) وبرمجة 1 (00105)]`);
+
+  // All 6 Programs Levels 2 to 4
+  const programs = (bylawData as any).programs || [];
+  for (const prog of programs) {
+    lines.push(`\n🎓 **${prog.program_name_ar} (${prog.program_name_en})**:`);
+    for (const [lvlKey, lvlObj] of Object.entries(prog.study_plan as Record<string, any>)) {
+      if (lvlKey === 'level_1') continue;
+      const yName = lvlKey === 'level_2' ? 'سنة تانية (مستوى 2)' : lvlKey === 'level_3' ? 'سنة تالتة (مستوى 3)' : 'سنة رابعة (مستوى 4)';
+      const s1Courses: any[] = lvlObj.semester_3 ? lvlObj.semester_3.courses : lvlObj.semester_5 ? lvlObj.semester_5.courses : lvlObj.semester_7.courses;
+      const s2Courses: any[] = lvlObj.semester_4 ? lvlObj.semester_4.courses : lvlObj.semester_6 ? lvlObj.semester_6.courses : lvlObj.semester_8.courses;
+
+      const formatCourse = (s: any) => {
+        const short = s.code && !s.code.includes('XX') ? ` (${s.code.slice(-5)})` : '';
+        const pr = (s.prerequisites && s.prerequisites.length > 0) ? ` [متطلب: ${s.prerequisites.map((p: string) => p.slice(-5)).join(',')}]` : '';
+        return `${s.name_en}${short}${pr}`;
+      };
+
+      const t1 = (s1Courses || []).map(formatCourse).join(' • ');
+      const t2 = (s2Courses || []).map(formatCourse).join(' • ');
       lines.push(`  - **${yName}**: [ترم 1]: ${t1} | [ترم 2]: ${t2}`);
     }
-    programsCompact.push(lines.join('\n'));
   }
 
-  const curriculumText = programsCompact.join('\n\n');
+  const curriculumText = lines.join('\n');
 
   return `أنتِ "مارلين" (Marline) — المساعدة الذكية الرسمية والمرشدة الأكاديمية الأولى لطلاب كلية الحاسبات وعلوم البيانات بجامعة الإسكندرية (FCDS).
 لديكِ معرفة كاملة وشاملة 100% بلائحة الكلية الرسمية (140 ساعة معتمدة) ومقررات جميع الأقسام والبرامج الستة عبر السنوات الأربع كاملة (سنة أولى، تانية، تالتة، رابعة) لكل ترم.
