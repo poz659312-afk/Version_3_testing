@@ -7,8 +7,8 @@ import { getValidAccessToken } from '@/lib/google-oauth'
 async function checkAdminAccess(userId: string) {
   const supabase = createAdminClient()
   
-  const { data: user, error } = await supabase
-    .from('chameleons')
+  const { data: user, error } = await (supabase
+    .from('chameleons') as any)
     .select('is_admin')
     .eq('auth_id', userId)
     .single()

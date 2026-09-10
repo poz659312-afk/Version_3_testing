@@ -129,7 +129,17 @@ function preprocessMarlineContent(content: string): string {
     return line.replace(/\$\$(.*?)\$\$/g, (_m, inner) => '$' + inner.trim() + '$')
   })
 
-  // 6. Ensure tables have blank line before and single spacing between rows
+  // 6. Unwrap pseudo-tables where an LLM mistakenly wrapped a question or title in table pipes (| ... | ... |)
+  text = text.replace(/(?:^|\n)\s*\|([^\n]+)\|(?:\n\s*\|[-:\s|]+\|)?(?=\n|$)/g, (match, row) => {
+    const cells = row.split('|').map((c: string) => c.trim()).filter(Boolean)
+    const fullText = cells.join(' ')
+    if (fullText.includes('؟') || /^(?:ليه|لماذا|هل|كيف|ما هي|ما هو|ماذا|علل|بماذا)/i.test(fullText)) {
+      return `\n\n### ${fullText}\n\n`
+    }
+    return match
+  })
+
+  // 7. Ensure tables have blank line before and single spacing between rows
   text = text.replace(/([^\n|])\n(\|[^\n]+\|)/g, '$1\n\n$2')
   text = text.replace(/(\|[^\n]*\|)\n\s*\n(\|[^\n]*\|)/g, '$1\n$2')
 

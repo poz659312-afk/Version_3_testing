@@ -64,14 +64,22 @@ export function getBylawContextForQuery(query: string): string | null {
   // Detect if query is asking about courses, prerequisites, departments, or graduation rules
   const triggerKeywords = [
     'متطلب', 'متطلبات', 'بريريكويست', 'prereq', 'prerequisite', 'مادة', 'مواد', 'مقرر', 'مقررات',
-    'كود', 'تفتح', 'بيفتح', 'مسار', 'خطة', 'ترم', 'سنة', 'مستوى', 'قسم', 'تخصص', 'لائحة', 'ساعات',
-    'اختياري', 'إجباري', 'اجباري', 'مشروع'
+    'كود', 'تفتح', 'بيفتح', 'مسار', 'خطة', 'ترم', 'تيرم', 'تيرمات', 'فصل', 'فصول', 'سنة', 'سنتين', 'سنوات',
+    'مستوى', 'قسم', 'تخصص', 'لائحة', 'ساعات', 'اختياري', 'إجباري', 'اجباري', 'مشروع', 'تخرج'
   ];
 
   const hasTrigger = triggerKeywords.some(kw => normalized.includes(kw));
 
   // If user isn't asking about curriculum or courses, save tokens and return null
   if (!hasTrigger && normalized.length < 5) return null;
+
+  const contextParts: string[] = [];
+
+  // Check graduation duration & rules request
+  const gradContext = checkGraduationDurationRequest(normalized);
+  if (gradContext) {
+    contextParts.push(gradContext);
+  }
 
   const matchedCourseCodes = new Set<string>();
 
@@ -139,16 +147,26 @@ export function getBylawContextForQuery(query: string): string | null {
       }
     }
 
-    return lines.join('\n');
+    contextParts.push(lines.join('\n'));
   }
 
   // 4. Check if the user is asking about a specific department's electives
   const deptElectiveMatch = checkDepartmentElectiveRequest(normalized);
   if (deptElectiveMatch) {
-    return deptElectiveMatch;
+    contextParts.push(deptElectiveMatch);
   }
 
-  return null;
+  return contextParts.length > 0 ? contextParts.join('\n\n') : null;
+}
+
+function checkGraduationDurationRequest(normalized: string): string | null {
+  if (!/(?:تخرج|تيرم|ترم|فصول|فصل|سنة|سنتين|سنوات)/.test(normalized)) return null;
+
+  return `📌 [قواعد التخرج والمدد اللائحية الرسمية الصارمة - كلية الحاسبات وعلوم البيانات جامعة الإسكندرية]:
+• الحد الأدنى الإلزامي للتخرج (140 ساعة معتمدة): هو **7 فصول دراسية أساسية** (3.5 سنوات) كأسرع مدة استثنائية ممكنة نظامياً للطلاب الفائقين مع الصيفي. يُمنع منعاً باتاً لائحياً وقانونياً التخرج في أقل من 7 فصول دراسية (التخرج في 4 أو 5 أو 6 فصول مستحيل ومخالف لنص اللائحة).
+• الحد الأقصى للساعات المعتمدة في الترم: 19 ساعة (أو 21 ساعة فقط استثنائياً لمن معدله التراكمي CGPA >= 3.333 أو الطالب الخريج في فصل تخرجه). الصيفي حده 6 ساعات (أو 9 للخريج).
+• مرتبة الشرف: إنهاء متطلبات التخرج في مدة لا تتجاوز 9 فصول دراسية أساسية، دون أي رسوب بأي مقرر، وبمعدل تراكمي CGPA >= 3.666 ومعدل فصلي >= 3.333 في كل فصل.
+• ⚠️ توجيه للذكاء الاصطناعي ضد الأسئلة المضللة: إذا سألك الطالب كيف يتخرج في 5 فصول دراسية أو أي مدة أقل من 7 فصول، ارفض الفرضية بحزم فوراً، واشرح الاستحالة اللائحية والرياضية (140 ساعة ÷ 5 تيرمات = 28 ساعة لكل ترم وهذا ممنوع لائحياً) وسلسلة المتطلبات السابقة التي تتطلب 7 مستويات تتابعية على الأقل، وقدم له خطة الـ 7 فصول كأسرع مسار مسموح به.`;
 }
 
 function checkDepartmentElectiveRequest(normalized: string): string | null {

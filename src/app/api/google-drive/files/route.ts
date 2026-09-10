@@ -75,8 +75,8 @@ export async function GET(request: NextRequest) {
 
     // Check if requesting user is admin
     const adminSupabase = createAdminClient()
-    const { data: chameleon } = await adminSupabase
-      .from('chameleons')
+    const { data: chameleon } = await (adminSupabase
+      .from('chameleons') as any)
       .select('is_admin')
       .eq('auth_id', authId)
       .single()
