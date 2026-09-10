@@ -371,22 +371,19 @@
   font-family: 'Rubik', var(--font-rubik), system-ui, sans-serif !important;
 }
 
-/* Marline page — force Rubik font for UI text (Arabic and English), preserving authentic LaTeX math & code fonts */
-.marline-page,
-.marline-page textarea,
-.marline-page input,
-.marline-page button,
-.marline-page p:not(.katex *):not(code):not(pre),
-.marline-page span:not(.katex *):not(code):not(pre),
-.marline-page div:not(.katex *):not(code):not(pre),
-.marline-page h1:not(.katex *),
-.marline-page h2:not(.katex *),
-.marline-page h3:not(.katex *),
-.marline-page td:not(.katex *),
-.marline-page th:not(.katex *),
-.marline-page li:not(.katex *),
-[data-marline-page]:not(.katex):not(.katex *):not(code):not(pre) {
+/* Marline page — clean, blazing fast font inheritance without recursive :not() checks */
+.marline-page {
   font-family: 'Rubik', var(--font-rubik), 'Cairo', system-ui, -apple-system, sans-serif !important;
+}
+.marline-page .katex,
+.marline-page .katex * {
+  font-family: KaTeX_Main, 'Times New Roman', serif !important;
+}
+.marline-page code,
+.marline-page pre,
+.marline-page code *,
+.marline-page pre * {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
 }
 
 /* About page specific font */
@@ -398,7 +395,7 @@
   font-family: 'Rubik', sans-serif !important;
 }
 
-/* Drive and Specialization pages â€” force Rubik for Arabic support */
+/* Drive and Specialization pages — force Rubik for Arabic support */
 .drive-page,
 .drive-page *,
 .specialization-page,
@@ -406,7 +403,7 @@
   font-family: 'Rubik', sans-serif !important;
 }
 
-/* Arabic survey â€” force Rubik everywhere */
+/* Arabic survey — force Rubik everywhere */
 [lang="ar"],
 [lang="ar"] * {
   font-family: 'Rubik', sans-serif !important;
@@ -449,29 +446,86 @@
   background: rgba(255, 255, 255, 0.5);
 }
 
-/* Custom Scrollbars for Chat & Modals */
-.custom-scrollbar, .marline-scroll {
+/* Hide scrollbars completely on Marline (Clean Google Gemini look) without global * selector */
+.marline-scroll,
+.marline-no-scrollbar,
+.marline-page textarea,
+.marline-page input,
+.marline-page pre {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.marline-scroll::-webkit-scrollbar,
+.marline-no-scrollbar::-webkit-scrollbar,
+.marline-page textarea::-webkit-scrollbar,
+.marline-page input::-webkit-scrollbar,
+.marline-page pre::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+}
+
+/* Custom Scrollbars for standard modals */
+.custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: hsl(var(--primary) / 0.5) hsl(var(--muted) / 0.3);
 }
 
-.custom-scrollbar::-webkit-scrollbar, .marline-scroll::-webkit-scrollbar {
+.custom-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track, .marline-scroll::-webkit-scrollbar-track {
+.custom-scrollbar::-webkit-scrollbar-track {
   background: hsl(var(--muted) / 0.3);
   border-radius: 9999px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb, .marline-scroll::-webkit-scrollbar-thumb {
+.custom-scrollbar::-webkit-scrollbar-thumb {
   background: hsl(var(--primary) / 0.5);
   border-radius: 9999px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover, .marline-scroll::-webkit-scrollbar-thumb:hover {
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary) / 0.8);
+}
+
+/* Gemini Aesthetic Aura Pulse Animation */
+@keyframes gemini-aura-shift {
+  0%, 100% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 0.22;
+  }
+  50% {
+    transform: translate(-50%, -15px) scale(1.08);
+    opacity: 0.32;
+  }
+}
+
+.gemini-aura-glow {
+  animation: gemini-aura-shift 9s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Natural Waving Hand Animation (Smooth wrist rotation without hopping/bouncing) */
+@keyframes waving-hand {
+  0% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+  60% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-wave {
+  display: inline-block;
+  transform-origin: 70% 70%;
+  animation: waving-hand 2.2s ease-in-out infinite;
+  will-change: transform;
 }
 
 

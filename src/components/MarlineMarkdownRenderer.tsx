@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useMemo, memo } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import remarkMath from "remark-math"
@@ -219,8 +219,8 @@ function preprocessMarlineContent(content: string): string {
   return text.trim()
 }
 
-export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMarkdownRendererProps) {
-  const displayContent = preprocessMarlineContent(content) || content
+export const MarlineMarkdownRenderer = memo(function MarlineMarkdownRenderer({ content, className = "" }: MarlineMarkdownRendererProps) {
+  const displayContent = useMemo(() => preprocessMarlineContent(content) || content, [content])
 
   return (
     <div className={`prose dark:prose-invert max-w-none text-foreground leading-relaxed text-sm md:text-base space-y-3 ${className}`}>
@@ -313,7 +313,7 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
           // Custom Table Renderer
           table({ children }: any) {
             return (
-              <div className="my-5 overflow-x-auto rounded-xl border border-border/80 bg-card/90 shadow-sm">
+              <div className="my-5 overflow-x-auto rounded-xl border border-border/80 bg-muted/40 dark:bg-card/90 shadow-xs">
                 <table className="w-full text-sm text-right dir-rtl divide-y divide-border">
                   {children}
                 </table>
@@ -321,7 +321,7 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
             )
           },
           thead({ children }: any) {
-            return <thead className="bg-muted/60 font-bold text-foreground">{children}</thead>
+            return <thead className="bg-muted/80 dark:bg-muted/60 font-bold text-foreground">{children}</thead>
           },
           th({ children }: any) {
             return <th className="px-4 py-3 text-right font-bold text-xs uppercase tracking-wider">{children}</th>
@@ -422,4 +422,4 @@ export function MarlineMarkdownRenderer({ content, className = "" }: MarlineMark
       </ReactMarkdown>
     </div>
   )
-}
+}, (prev, next) => prev.content === next.content && prev.className === next.className)
