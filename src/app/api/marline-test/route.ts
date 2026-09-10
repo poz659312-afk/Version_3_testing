@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MARLINE_PROVIDERS } from '@/lib/marline/providers/config';
+import {
+  MARLINE_PROVIDERS,
+  MARLINE_LAYER_TOGGLES,
+  isLayerEnabled,
+  setLayerEnabled,
+} from '@/lib/marline/providers/config';
 import { ProviderId, ProviderMetrics } from '@/lib/marline/providers/types';
 import { marlineRouter } from '@/lib/marline/router';
 import { providerHealthCache } from '@/lib/marline/providers/health-cache';
@@ -23,6 +28,7 @@ export async function GET() {
         models: meta.models,
         defaultModel: meta.defaultModel,
         isConfigured: adapter.isConfigured(),
+        isEnabled: isLayerEnabled(id),
         health: {
           healthy: health.healthy,
           cooldownRemainingSec: health.cooldownUntil
@@ -34,7 +40,10 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json({ providers });
+    return NextResponse.json({
+      providers,
+      layerToggles: MARLINE_LAYER_TOGGLES,
+    });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: message }, { status: 500 });
@@ -49,6 +58,25 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
+
+    // 0. Toggle Layer Action Handler
+    if (body.action === 'toggle-layer') {
+      const { providerId, enabled } = body;
+      if (providerId && ALLOWED_PROVIDERS.includes(providerId as ProviderId)) {
+        setLayerEnabled(providerId as ProviderId, !!enabled);
+        return NextResponse.json({
+          success: true,
+          providerId,
+          isEnabled: isLayerEnabled(providerId as ProviderId),
+          layerToggles: MARLINE_LAYER_TOGGLES,
+        });
+      }
+      return NextResponse.json(
+        { error: `Invalid provider ID. Must be one of: ${ALLOWED_PROVIDERS.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
     const { providerId, model, prompt, outputSize = 'normal', stream = false } = body;
 
     // 1. Validation & Security Guards
@@ -61,6 +89,27 @@ export async function POST(req: NextRequest) {
 
     const meta = MARLINE_PROVIDERS[providerId as ProviderId];
     const selectedModel = model || meta.defaultModel;
+
+    // Check if layer is toggled OFF for testing
+    if (!isLayerEnabled(providerId as ProviderId)) {
+      const metric: ProviderMetrics = {
+        provider: providerId as ProviderId,
+        model: selectedModel,
+        ttftMs: 0,
+        totalMs: Date.now() - startTime,
+        inputTokens: estimateTokens(prompt || ''),
+        outputTokens: 0,
+        tokensPerSec: 0,
+        status: 'FAILED',
+        error: {
+          provider: providerId as ProviderId,
+          category: 'MODEL_UNAVAILABLE',
+          retryable: false,
+          message: `Layer ${meta.priority} (${meta.name}) is currently toggled OFF in MARLINE_LAYER_TOGGLES.`,
+        },
+      };
+      return NextResponse.json(metric);
+    }
 
     // Validate model against allowlist to prevent injection
     if (!meta.models.includes(selectedModel)) {

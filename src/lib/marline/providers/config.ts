@@ -14,7 +14,33 @@ export interface ProviderMeta {
   safetyMargin: number;
   supportsStreaming: boolean;
   supportsJsonMode: boolean;
+  enabled?: boolean;
 }
+
+export const MARLINE_LAYER_TOGGLES: Record<ProviderId, boolean> = {
+  cerebras: true,
+  groq: true,
+  google: true,
+  openrouter: true,
+  cloudflare: true,
+};
+
+export function isLayerEnabled(id: ProviderId): boolean {
+  const envKey = `MARLINE_ENABLE_${id.toUpperCase()}`;
+  if (typeof process !== 'undefined' && process?.env && process.env[envKey] !== undefined) {
+    const val = process.env[envKey]?.toLowerCase();
+    return val !== 'false' && val !== '0' && val !== 'off';
+  }
+  return MARLINE_LAYER_TOGGLES[id] ?? true;
+}
+
+/**
+ * Programmatically enable or disable a layer at runtime.
+ */
+export function setLayerEnabled(id: ProviderId, enabled: boolean): void {
+  MARLINE_LAYER_TOGGLES[id] = enabled;
+}
+
 
 export const CEREBRAS_MODELS = [
   'gpt-oss-120b',
@@ -72,6 +98,9 @@ export const MARLINE_PROVIDERS: Record<ProviderId, ProviderMeta> = {
     safetyMargin: 200,
     supportsStreaming: true,
     supportsJsonMode: true,
+    get enabled() {
+      return isLayerEnabled('cerebras');
+    },
   },
   groq: {
     id: 'groq',
@@ -87,6 +116,9 @@ export const MARLINE_PROVIDERS: Record<ProviderId, ProviderMeta> = {
     safetyMargin: 250,
     supportsStreaming: true,
     supportsJsonMode: true,
+    get enabled() {
+      return isLayerEnabled('groq');
+    },
   },
   google: {
     id: 'google',
@@ -102,6 +134,9 @@ export const MARLINE_PROVIDERS: Record<ProviderId, ProviderMeta> = {
     safetyMargin: 200,
     supportsStreaming: true,
     supportsJsonMode: true,
+    get enabled() {
+      return isLayerEnabled('google');
+    },
   },
   openrouter: {
     id: 'openrouter',
@@ -117,6 +152,9 @@ export const MARLINE_PROVIDERS: Record<ProviderId, ProviderMeta> = {
     safetyMargin: 200,
     supportsStreaming: true,
     supportsJsonMode: true,
+    get enabled() {
+      return isLayerEnabled('openrouter');
+    },
   },
   cloudflare: {
     id: 'cloudflare',
@@ -126,12 +164,15 @@ export const MARLINE_PROVIDERS: Record<ProviderId, ProviderMeta> = {
     tier: 'Layer 5',
     tierLabel: 'Global Edge Serverless Tier (LAYER 5)',
     models: [...CLOUDFLARE_MODELS],
-    defaultModel: '@cf/qwen/qwen3.8-27b',
+    defaultModel: '@cf/openai/gpt-oss-20b',
     defaultMaxTokens: 2048,
     tpmLimit: 30000,
     safetyMargin: 200,
     supportsStreaming: true,
     supportsJsonMode: false,
+    get enabled() {
+      return isLayerEnabled('cloudflare');
+    },
   },
 };
 

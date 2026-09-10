@@ -6,7 +6,7 @@ import {
   ProviderError,
   ProviderId,
 } from './providers/types';
-import { MARLINE_PROVIDERS } from './providers/config';
+import { MARLINE_PROVIDERS, isLayerEnabled } from './providers/config';
 import { providerHealthCache } from './providers/health-cache';
 import { createAllAdapters } from './providers/adapters';
 
@@ -17,6 +17,10 @@ export interface RouteSelectionParams {
   requiresStreaming?: boolean;
   requiresJsonMode?: boolean;
   preferredProvider?: ProviderId;
+  /** Explicit list of provider layers to disable for testing (e.g. ['cerebras', 'groq']) */
+  disabledLayers?: ProviderId[];
+  /** Optional per-request boolean overrides for layer toggles */
+  layerToggles?: Partial<Record<ProviderId, boolean>>;
 }
 
 export interface ScoredProvider {
@@ -50,6 +54,26 @@ export class MarlineRouter {
     const health = providerHealthCache.getHealth(id);
     const reasons: string[] = [];
     let eligible = true;
+    
+
+    // 0. Manual Testing Toggle check (Code boolean / Env variable / Per-request toggle)
+    const isGloballyActive = isLayerEnabled(id);
+    const isExplicitlyDisabled =
+      params.disabledLayers?.includes(id) ||
+      (params.layerToggles && params.layerToggles[id] === false);
+
+    if (!isGloballyActive || isExplicitlyDisabled) {
+
+      let score = -9999;
+      eligible = false;
+      reasons.push('Disabled manually via Layer Toggle (testing mode)');
+      return {
+        adapter,
+        score,
+        reasons,
+        eligible: false,
+      };
+    }
 
     // 1. Base score derived from default priority (Layer 1=100, Layer 2=85, Layer 3=70, Layer 4=55, Layer 5=40)
     let score = Math.max(10, 115 - meta.priority * 15);
@@ -140,9 +164,16 @@ export class MarlineRouter {
     }
 
     // If no provider is strictly eligible (e.g., all under cooldown or non-configured),
-    // return all configured providers in score order as a last-ditch fallback
+    // return all configured & non-disabled providers in score order as a last-ditch fallback
     return scored
-      .filter((s) => s.adapter.isConfigured())
+      .filter((s) => {
+        const id = s.adapter.id as ProviderId;
+        const isGloballyActive = isLayerEnabled(id);
+        const isExplicitlyDisabled =
+          params.disabledLayers?.includes(id) ||
+          (params.layerToggles && params.layerToggles[id] === false);
+        return s.adapter.isConfigured() && isGloballyActive && !isExplicitlyDisabled;
+      })
       .map((s) => s.adapter);
   }
 

@@ -14,6 +14,8 @@ import {
   AlertTriangle,
   Sparkles,
   BarChart3,
+  ToggleLeft,
+  ToggleRight,
 } from "lucide-react";
 
 interface ProviderMetaInfo {
@@ -23,6 +25,7 @@ interface ProviderMetaInfo {
   models: string[];
   defaultModel: string;
   isConfigured: boolean;
+  isEnabled?: boolean;
   health: {
     healthy: boolean;
     cooldownRemainingSec: number;
@@ -99,6 +102,32 @@ export default function MarlineTestPage() {
 
   const handleModelChange = (providerId: string, model: string) => {
     setSelectedModels((prev) => ({ ...prev, [providerId]: model }));
+  };
+
+  const toggleLayer = async (providerId: string, currentEnabled: boolean) => {
+    const newEnabled = !currentEnabled;
+    // Optimistically update UI
+    setProviders((prev) =>
+      prev.map((p) => (p.id === providerId ? { ...p, isEnabled: newEnabled } : p))
+    );
+
+    try {
+      await fetch("/api/marline-test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "toggle-layer",
+          providerId,
+          enabled: newEnabled,
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to toggle layer:", err);
+      // Revert on failure
+      setProviders((prev) =>
+        prev.map((p) => (p.id === providerId ? { ...p, isEnabled: currentEnabled } : p))
+      );
+    }
   };
 
   const testProvider = async (providerId: string) => {
@@ -360,10 +389,32 @@ export default function MarlineTestPage() {
                   {/* Card Header */}
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 border border-zinc-700/60">
                           Layer {p.priority}
                         </span>
+                        {/* Layer Testing Toggle Button */}
+                        <button
+                          type="button"
+                          onClick={() => toggleLayer(p.id, p.isEnabled ?? true)}
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-md transition-all flex items-center gap-1 border ${
+                            (p.isEnabled ?? true)
+                              ? "bg-emerald-950/60 text-emerald-400 border-emerald-800/80 hover:bg-emerald-900/60"
+                              : "bg-rose-950/40 text-rose-300 border-rose-800/60 hover:bg-rose-900/40"
+                          }`}
+                          title={
+                            (p.isEnabled ?? true)
+                              ? "Layer is Active. Click to turn OFF for fallback testing."
+                              : "Layer is Disabled. Click to turn ON."
+                          }
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              (p.isEnabled ?? true) ? "bg-emerald-400 animate-pulse" : "bg-rose-400"
+                            }`}
+                          />
+                          {(p.isEnabled ?? true) ? "ACTIVE" : "DISABLED"}
+                        </button>
                         {!p.isConfigured && (
                           <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-rose-950/80 text-rose-400 border border-rose-800/60">
                             Unconfigured
@@ -376,6 +427,14 @@ export default function MarlineTestPage() {
                     </div>
                     {getStatusBadge(res)}
                   </div>
+
+                  {/* Warning banner if layer is disabled */}
+                  {!(p.isEnabled ?? true) && (
+                    <div className="text-[11px] px-2.5 py-1.5 rounded-lg bg-rose-950/30 border border-rose-800/50 text-rose-300 flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
+                      <span>Disabled for testing (Router will fallback)</span>
+                    </div>
+                  )}
 
                   {/* Model Selector */}
                   <div className="space-y-1">

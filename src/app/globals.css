@@ -1799,6 +1799,19 @@ html.lenis-stopped body {
 /* Highlight.js Syntax Colors — Light Mode       */
 /* (White code block background, colorful code)  */
 /* ============================================= */
+.hljs,
+code.hljs,
+pre code.hljs {
+  background: transparent !important;
+  color: #0f172a;
+}
+.dark .hljs,
+.dark code.hljs,
+.dark pre code.hljs {
+  background: transparent !important;
+  color: #f8fafc;
+}
+
 .hljs-keyword, .hljs-selector-tag, .hljs-subst, .hljs-section {
   color: #d32f2f; /* Crimson Red */
   font-weight: 700;

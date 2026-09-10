@@ -9,7 +9,6 @@ import rehypeRaw from "rehype-raw"
 import rehypeHighlight from "rehype-highlight"
 import { Check, Copy, Terminal, ExternalLink } from "lucide-react"
 
-import "highlight.js/styles/github-dark.css"
 import "katex/dist/katex.min.css"
 
 interface MarlineMarkdownRendererProps {
@@ -41,24 +40,30 @@ function CodeBlock({ language, codeText, children }: { language: string; codeTex
   }
 
   return (
-    <div dir="ltr" className="my-4 rounded-2xl overflow-hidden border border-border/80 bg-slate-950 text-slate-100 shadow-xl font-mono text-xs text-left">
+    <div
+      dir="ltr"
+      className="my-4 rounded-2xl overflow-hidden border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 shadow-sm dark:shadow-xl font-mono text-xs text-left transition-colors"
+    >
       {/* Code Header */}
-      <div dir="ltr" className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-slate-800 text-slate-400 select-none text-left">
+      <div
+        dir="ltr"
+        className="flex items-center justify-between px-4 py-2.5 bg-slate-50/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 select-none text-left"
+      >
         <div className="flex items-center gap-2">
           <Terminal className="w-3.5 h-3.5 text-primary" />
-          <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-300">
+          <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-700 dark:text-slate-300">
             {language || "code"}
           </span>
         </div>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors text-[11px] font-medium cursor-pointer"
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700/60 shadow-xs transition-colors text-[11px] font-medium cursor-pointer"
           title="Copy code"
         >
           {copied ? (
             <>
-              <Check className="w-3 h-3 text-emerald-400" />
-              <span className="text-emerald-400">Copied!</span>
+              <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Copied!</span>
             </>
           ) : (
             <>
@@ -70,9 +75,9 @@ function CodeBlock({ language, codeText, children }: { language: string; codeTex
       </div>
 
       {/* Code Content */}
-      <div dir="ltr" className="p-4 overflow-x-auto text-[13px] leading-relaxed select-text text-left dir-ltr">
-        <pre dir="ltr" className="font-mono text-left">
-          <code dir="ltr" className="font-mono text-left">{children || codeText}</code>
+      <div dir="ltr" className="p-4 overflow-x-auto text-[13px] leading-relaxed select-text text-left dir-ltr bg-white dark:bg-slate-950">
+        <pre dir="ltr" className="font-mono text-left m-0 p-0 bg-transparent border-0">
+          <code dir="ltr" className="font-mono text-left bg-transparent text-slate-900 dark:text-slate-100">{children || codeText}</code>
         </pre>
       </div>
     </div>
@@ -295,11 +300,125 @@ export const MarlineMarkdownRenderer = memo(function MarlineMarkdownRenderer({ c
         .prose li {
           width: 100% !important;
         }
+
+        /* Highlight.js Syntax Colors — Light Mode (Pure White Background) */
+        :not(.dark) code.hljs,
+        :not(.dark) pre code.hljs,
+        :not(.dark) .hljs {
+          background-color: transparent !important;
+          color: #0f172a !important;
+        }
+        :not(.dark) .hljs-keyword,
+        :not(.dark) .hljs-selector-tag,
+        :not(.dark) .hljs-subst,
+        :not(.dark) .hljs-section {
+          color: #d32f2f !important;
+          font-weight: 700;
+        }
+        :not(.dark) .hljs-title,
+        :not(.dark) .hljs-title.function_,
+        :not(.dark) .hljs-title.class_,
+        :not(.dark) .hljs-function {
+          color: #1565c0 !important;
+          font-weight: 700;
+        }
+        :not(.dark) .hljs-string,
+        :not(.dark) .hljs-doctag,
+        :not(.dark) .hljs-regexp {
+          color: #2e7d32 !important;
+        }
+        :not(.dark) .hljs-number,
+        :not(.dark) .hljs-literal {
+          color: #ea580c !important;
+          font-weight: 600;
+        }
+        :not(.dark) .hljs-comment,
+        :not(.dark) .hljs-quote {
+          color: #64748b !important;
+          font-style: italic;
+        }
+        :not(.dark) .hljs-variable,
+        :not(.dark) .hljs-template-variable {
+          color: #d97706 !important;
+        }
+        :not(.dark) .hljs-built_in,
+        :not(.dark) .hljs-type,
+        :not(.dark) .hljs-class {
+          color: #7b1fa2 !important;
+          font-weight: 600;
+        }
+        :not(.dark) .hljs-attr,
+        :not(.dark) .hljs-property,
+        :not(.dark) .hljs-attribute {
+          color: #0284c7 !important;
+        }
+        :not(.dark) .hljs-params {
+          color: #334155 !important;
+        }
+
+        /* Highlight.js Syntax Colors — Dark Mode */
+        .dark code.hljs,
+        .dark pre code.hljs,
+        .dark .hljs {
+          background-color: transparent !important;
+          color: #f8fafc !important;
+        }
+        .dark .hljs-keyword,
+        .dark .hljs-selector-tag,
+        .dark .hljs-subst,
+        .dark .hljs-section {
+          color: #f38ba8 !important;
+          font-weight: 700;
+        }
+        .dark .hljs-title,
+        .dark .hljs-title.function_,
+        .dark .hljs-title.class_,
+        .dark .hljs-function {
+          color: #89b4fa !important;
+          font-weight: 700;
+        }
+        .dark .hljs-string,
+        .dark .hljs-doctag,
+        .dark .hljs-regexp {
+          color: #a6e3a1 !important;
+        }
+        .dark .hljs-number,
+        .dark .hljs-literal {
+          color: #fab387 !important;
+          font-weight: 600;
+        }
+        .dark .hljs-comment,
+        .dark .hljs-quote {
+          color: #94a3b8 !important;
+          font-style: italic;
+        }
+        .dark .hljs-variable,
+        .dark .hljs-template-variable {
+          color: #fab387 !important;
+        }
+        .dark .hljs-built_in,
+        .dark .hljs-type,
+        .dark .hljs-class {
+          color: #cba6f7 !important;
+          font-weight: 600;
+        }
+        .dark .hljs-attr,
+        .dark .hljs-property,
+        .dark .hljs-attribute {
+          color: #89dceb !important;
+        }
+        .dark .hljs-params {
+          color: #cdd6f4 !important;
+        }
       `}</style>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[[rehypeKatex, { strict: false, throwOnError: false, errorColor: "inherit" }], rehypeRaw, rehypeHighlight]}
         components={{
+          // Prevent wrapping custom CodeBlock inside a native <pre>
+          pre({ children }: any) {
+            return <>{children}</>
+          },
           // Custom Code Block Renderer fixing [object Object] bug
           code({ node, inline, className, children, ...props }: any) {
             const match = /language-(\w+)/.exec(className || "")

@@ -11,6 +11,11 @@ export * from './groq-adapter';
 export * from './google-adapter';
 export * from './openrouter-adapter';
 export * from './cloudflare-adapter';
+export {
+  MARLINE_LAYER_TOGGLES,
+  isLayerEnabled,
+  setLayerEnabled,
+} from '../config';
 
 export function createAllAdapters(): Record<ProviderId, AIProviderAdapter> {
   return {
@@ -21,3 +26,4 @@ export function createAllAdapters(): Record<ProviderId, AIProviderAdapter> {
     cloudflare: new CloudflareAdapter(),
   };
 }
+
