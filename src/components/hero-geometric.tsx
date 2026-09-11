@@ -93,7 +93,7 @@ export default function HeroGeometric({
           />
         </div>
       )}
-      
+
       {/* Fallback/Overlay to ensure text readability if Grainient is too intense */}
       <div className="absolute inset-0 bg-background/20 dark:bg-background/40 pointer-events-none transition-colors duration-300 z-0" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_90%)] pointer-events-none z-0" />
@@ -101,15 +101,14 @@ export default function HeroGeometric({
       <div className="relative z-10 container mx-auto px-4 md:px-6">
         <div className="max-w-3xl mx-auto text-center">
           <div
-            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8 md:mb-12 transition-all duration-700 ease-out ${
-              mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
+            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8 md:mb-12 transition-all duration-700 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
           >
             <div className="rounded-full bg-primary flex items-center justify-center">
-              <Image 
-                src="/images/chameleon.png" 
-                alt="Chameleon Logo" 
-                width={20} 
+              <Image
+                src="/images/chameleon.png"
+                alt="Chameleon Logo"
+                width={20}
                 height={20}
                 priority
                 loading="eager"
@@ -120,16 +119,15 @@ export default function HeroGeometric({
           </div>
 
           <div
-            className={`transition-all duration-700 ease-out delay-100 ${
-              mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
+            className={`transition-all duration-700 ease-out delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
           >
             <h1 className="text-[65px] md:text-[120px] font-bold mb-6 md:mb-8 tracking-tight leading-tight" >
               <span style={{ WebkitTextStroke: '1.2px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 dark:border-white/10 border-black/10">{title1}</span>
               <br />
               <span className="relative inline-block mt-2 md:mt-4 px-6 md:px-10 py-2 md:py-4">
                 {/* Glitchy Highlight Background */}
-                <span 
+                <span
                   className="absolute inset-0 bg-background shadow-2xl -rotate-2"
                   style={{
                     borderRadius: "20px",
@@ -146,9 +144,8 @@ export default function HeroGeometric({
           </div>
 
           <div
-            className={`transition-all duration-700 ease-out delay-200 ${
-              mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
+            className={`transition-all duration-700 ease-out delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+              }`}
           >
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-4 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
               Transforming ideas into vibrant digital experiences, adapting seamlessly like a chameleon to every challenge and vision.
@@ -158,9 +155,8 @@ export default function HeroGeometric({
 
         {children && (
           <div
-            className={`transition-all duration-1000 ease-out delay-300 w-full mt-4 md:mt-6 flex justify-center ${
-              mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
-            }`}
+            className={`transition-all duration-1000 ease-out delay-300 w-full mt-4 md:mt-6 flex justify-center ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+              }`}
           >
             {children}
           </div>

@@ -41,6 +41,7 @@ import HeroGeometric from "@/components/hero-geometric"
 import { DonationBanner } from "@/components/donation"
 import { Pacifico } from "next/font/google";
 import { GraduatesExperience } from "@/components/graduates/GraduatesExperience"
+import ChameleonIntroWrapper from "@/components/ChameleonIntroWrapper"
 
 const pacifico = Pacifico({
   subsets: ["latin"],
@@ -71,7 +72,7 @@ export default function HomePage() {
     return (
       <div className="min-h-screen bg-background text-foreground selection:bg-primary/20">
         <GraduatesExperience user={user} />
-        
+
         {/* Chameleon Community Arabic Donation / Support Banner */}
         <section className="w-full py-6 relative z-20">
           <div className="container mx-auto px-4 md:px-6 max-w-5xl">
@@ -136,10 +137,10 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="md:col-span-3 flex justify-center md:justify-end items-center">
-                <Image 
-                  src="/images/chameleon/10_chameleon_success.png" 
-                  alt="Chameleon Mascot" 
-                  width={180} 
+                <Image
+                  src="/images/chameleon/10_chameleon_success.png"
+                  alt="Chameleon Mascot"
+                  width={180}
                   height={180}
                   className="object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.25)] select-none"
                   priority
@@ -220,14 +221,15 @@ export default function HomePage() {
 
 
   return (
-    <div className="flex min-h-[100dvh] flex-col overflow-hidden w-full relative">
+    <ChameleonIntroWrapper>
+      <div className="flex min-h-[100dvh] flex-col overflow-hidden w-full relative">
       <main className="flex-1">
 
         {/* Hero Section */}
         <section className="w-full relative overflow-hidden">
           <HeroGeometric badge="Chameleon FCDS" title1="Master Your" title2="Future Skills">
             <div className="flex flex-col items-center w-full max-w-5xl">
-              
+
               {/* Creative Facebook Follow Bar - Scaled Up Font & Icons */}
               <a
                 href="https://www.facebook.com/share/19Rsuuedsn/"
@@ -237,11 +239,11 @@ export default function HomePage() {
               >
                 {/* Ambient glowing shine on hover */}
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
-                
+
                 {/* Facebook Icon Badge */}
                 <span className="relative flex items-center justify-center w-5 h-5 rounded-full bg-[#1877F2] text-white shrink-0 group-hover:scale-110 transition-transform shadow-md">
                   <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
                 </span>
 
@@ -257,18 +259,18 @@ export default function HomePage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 justify-center mb-16 z-20 relative w-full max-w-md px-4 sm:px-0">
                 <Link href={user ? "#specializations" : "/auth/signin"} className="w-full">
-                    <Button size="lg" className="w-full rounded-full h-12 px-8 text-base shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-shadow">
+                  <Button size="lg" className="w-full rounded-full h-12 px-8 text-base shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-shadow">
                     Start Learning Today
                     <ArrowRight className="ml-2 size-4" />
-                    </Button>
+                  </Button>
                 </Link>
                 <Link href="#specializations" className="w-full">
-                    <Button size="lg" variant="outline" className="w-full rounded-full h-12 px-8 text-base border-primary/30 text-foreground bg-background/30 backdrop-blur-sm hover:bg-primary/10 transition-colors">
+                  <Button size="lg" variant="outline" className="w-full rounded-full h-12 px-8 text-base border-primary/30 text-foreground bg-background/30 backdrop-blur-sm hover:bg-primary/10 transition-colors">
                     View All Courses
-                    </Button>
+                  </Button>
                 </Link>
               </div>
-              
+
               <div className="rounded-2xl shadow-2xl border border-white/10 dark:border-white/5 backdrop-blur-xl md:backdrop-blur-3xl flex items-center justify-center relative p-2 md:p-4 bg-white/5 dark:bg-black/5 w-full transform hover:scale-[1.01] transition-transform duration-500">
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-secondary/30 to-primary/30 rounded-3xl blur-xl opacity-50 -z-10 animate-pulse"></div>
                 <div className="inline-block rounded-xl overflow-hidden bg-gradient-to-r from-primary to-secondary w-full relative">
@@ -282,96 +284,96 @@ export default function HomePage() {
 
         {/* New Creative: Future Vision Section */}
         <section className="w-full py-24 md:py-40 bg-background dark:bg-black relative overflow-hidden transition-colors duration-500">
-           {/* Cinematic Background Mesh */}
-           <div className="absolute inset-0 -z-10 overflow-hidden">
-             <div className="absolute top-[10%] right-[10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full animate-pulse"></div>
-             <div className="absolute bottom-[10%] left-[10%] w-[40%] h-[40%] bg-secondary/15 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
-             <div className="absolute inset-0 bg-[radial-gradient(#00000015_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] opacity-60"></div>
-           </div>
+          {/* Cinematic Background Mesh */}
+          <div className="absolute inset-0 -z-10 overflow-hidden">
+            <div className="absolute top-[10%] right-[10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full animate-pulse"></div>
+            <div className="absolute bottom-[10%] left-[10%] w-[40%] h-[40%] bg-secondary/15 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute inset-0 bg-[radial-gradient(#00000015_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] opacity-60"></div>
+          </div>
 
-           <div className="container mx-auto px-4 md:px-6 relative">
-             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-                <div className="lg:col-span-6 space-y-10 order-2 lg:order-1 text-left relative z-10">
-                   <div className="space-y-6">
-                      <div className="flex items-center justify-start gap-4 mb-4">
-                         <Badge variant="outline" className="rounded-full px-6 py-2 border-primary/30 bg-primary/5 text-primary text-sm font-black uppercase tracking-[0.3em] backdrop-blur-md">
-                            Futuristic Vision
-                         </Badge>
-                      </div>
-                      <h2 className="text-5xl md:text-6xl lg:text-7xl font-black italic tracking-tighter leading-[0.9] uppercase text-black dark:text-white">
-                        Shaping The <br/>
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-secondary drop-shadow-[0_0_30px_rgba(var(--primary),0.5)]">Future</span> <br/>
-                        <span style={{ WebkitTextStroke: '1.2px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 dark:border-white/10 border-black/10">Of Learning</span>
-                      </h2>
-                      <p className="text-xl md:text-2xl text-muted-foreground/80 max-w-xl leading-relaxed font-light italic">
-                        An immersive educational ecosystem designed to bridge the gap between academic theory and global industry mastery served by <a href="/marline" className="text-primary hover:underline">Marline</a>.
-                      </p>
-                   </div>
-                   
-                   <div className="flex flex-wrap gap-6 pt-6">
-                      <Button size="lg" className="rounded-full h-14 px-10 text-lg shadow-xl shadow-primary/20 group">
-                         Explore Our Vision
-                         <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                      </Button>
-                      
-                      <div className="flex items-center gap-4 px-6 border-l border-border">
-                         <div className="flex -space-x-3">
-                            {[1,2,3].map(i => (
-                               <div key={i} className="size-10 rounded-full border-2 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-md">
-                                  <Image src={`https://i.pravatar.cc/100?u=${i}`} width={40} height={40} alt="user" />
-                               </div>
-                            ))}
-                         </div>
-                         <div className="text-sm font-medium text-muted-foreground">
-                            Joined by <span className="text-foreground font-bold">+4k</span> students
-                         </div>
-                      </div>
-                   </div>
+          <div className="container mx-auto px-4 md:px-6 relative">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              <div className="lg:col-span-6 space-y-10 order-2 lg:order-1 text-left relative z-10">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-start gap-4 mb-4">
+                    <Badge variant="outline" className="rounded-full px-6 py-2 border-primary/30 bg-primary/5 text-primary text-sm font-black uppercase tracking-[0.3em] backdrop-blur-md">
+                      Futuristic Vision
+                    </Badge>
+                  </div>
+                  <h2 className="text-5xl md:text-6xl lg:text-7xl font-black italic tracking-tighter leading-[0.9] uppercase text-black dark:text-white">
+                    Shaping The <br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-secondary drop-shadow-[0_0_30px_rgba(var(--primary),0.5)]">Future</span> <br />
+                    <span style={{ WebkitTextStroke: '1.2px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 dark:border-white/10 border-black/10">Of Learning</span>
+                  </h2>
+                  <p className="text-xl md:text-2xl text-muted-foreground/80 max-w-xl leading-relaxed font-light italic">
+                    An immersive educational ecosystem designed to bridge the gap between academic theory and global industry mastery served by <a href="/marline" className="text-primary hover:underline">Marline</a>.
+                  </p>
                 </div>
 
-                <div className="lg:col-span-6 relative order-1 lg:order-2 flex justify-center lg:justify-end mt-10 lg:mt-0">
-                   <div className="relative w-full max-w-[550px] aspect-square flex items-center justify-center group">
-                      <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full -z-10 animate-pulse group-hover:bg-primary/30 transition-all duration-700"></div>
-                                            
-                      {/* Floating Decorative Elements */}
-                      <motion.div 
-                        animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }} 
-                        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute top-10 right-0 z-20 bg-background/80 backdrop-blur-xl border border-border p-4 rounded-2xl shadow-xl flex items-center gap-4"
-                      >
-                         <div className="bg-green-500/20 p-3 rounded-full text-green-500"><Check className="w-5 h-5"/></div>
-                         <div>
-                            <p className="font-bold text-sm">Course Completed</p>
-                            <p className="text-xs text-muted-foreground">Machine Learning 101</p>
-                         </div>
-                      </motion.div>
+                <div className="flex flex-wrap gap-6 pt-6">
+                  <Button size="lg" className="rounded-full h-14 px-10 text-lg shadow-xl shadow-primary/20 group">
+                    Explore Our Vision
+                    <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
 
-                      <motion.div 
-                        animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }} 
-                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                        className="absolute bottom-10 left-0 z-20 bg-background/80 backdrop-blur-xl border border-border p-4 rounded-2xl shadow-xl flex items-center gap-4"
-                      >
-                         <div className="bg-primary/20 p-3 rounded-full text-primary"><Star className="w-5 h-5"/></div>
-                         <div>
-                            <p className="font-bold text-sm">Achievement Unlocked</p>
-                            <p className="text-xs text-muted-foreground">Top 5% Performer</p>
-                         </div>
-                      </motion.div>
-
-                      <div className="w-full h-full flex items-center justify-center overflow-visible relative z-10">
-                         <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-secondary/10 rounded-full blur-3xl -z-10"></div>
-                         <Image
-                           src="/images/chameleon/05_chameleon_laptop.png"
-                           alt="E-Learning"
-                           width={450}
-                           height={450}
-                           className="object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
-                         />
-                      </div>
-                   </div>
+                  <div className="flex items-center gap-4 px-6 border-l border-border">
+                    <div className="flex -space-x-3">
+                      {[1, 2, 3].map(i => (
+                        <div key={i} className="size-10 rounded-full border-2 border-background bg-muted-foreground/20 overflow-hidden backdrop-blur-md">
+                          <Image src={`https://i.pravatar.cc/100?u=${i}`} width={40} height={40} alt="user" />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-sm font-medium text-muted-foreground">
+                      Joined by <span className="text-foreground font-bold">+4k</span> students
+                    </div>
+                  </div>
                 </div>
-             </div>
-           </div>
+              </div>
+
+              <div className="lg:col-span-6 relative order-1 lg:order-2 flex justify-center lg:justify-end mt-10 lg:mt-0">
+                <div className="relative w-full max-w-[550px] aspect-square flex items-center justify-center group">
+                  <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full -z-10 animate-pulse group-hover:bg-primary/30 transition-all duration-700"></div>
+
+                  {/* Floating Decorative Elements */}
+                  <motion.div
+                    animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-10 right-0 z-20 bg-background/80 backdrop-blur-xl border border-border p-4 rounded-2xl shadow-xl flex items-center gap-4"
+                  >
+                    <div className="bg-green-500/20 p-3 rounded-full text-green-500"><Check className="w-5 h-5" /></div>
+                    <div>
+                      <p className="font-bold text-sm">Course Completed</p>
+                      <p className="text-xs text-muted-foreground">Machine Learning 101</p>
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                    className="absolute bottom-10 left-0 z-20 bg-background/80 backdrop-blur-xl border border-border p-4 rounded-2xl shadow-xl flex items-center gap-4"
+                  >
+                    <div className="bg-primary/20 p-3 rounded-full text-primary"><Star className="w-5 h-5" /></div>
+                    <div>
+                      <p className="font-bold text-sm">Achievement Unlocked</p>
+                      <p className="text-xs text-muted-foreground">Top 5% Performer</p>
+                    </div>
+                  </motion.div>
+
+                  <div className="w-full h-full flex items-center justify-center overflow-visible relative z-10">
+                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-secondary/10 rounded-full blur-3xl -z-10"></div>
+                    <Image
+                      src="/images/chameleon/05_chameleon_laptop.png"
+                      alt="E-Learning"
+                      width={450}
+                      height={450}
+                      className="object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Chameleon Community Arabic Donation / Support Banner */}
@@ -393,18 +395,18 @@ export default function HomePage() {
               <h2 className="text-4xl md:text-5xl font-black italic tracking-tighter leading-[0.8] uppercase">
                 {username ? (
                   <>
-                    <span className="text-primary">{formatTAName(username, userLevel).split(' ')[0]}</span><br/>
+                    <span className="text-primary">{formatTAName(username, userLevel).split(' ')[0]}</span><br />
                     <span style={{ WebkitTextStroke: '1px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000">Learning Path</span>
                   </>
                 ) : (
                   <>
-                    Choose Your <br/>
+                    Choose Your <br />
                     <span style={{ WebkitTextStroke: '1px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000">Adventure</span>
                   </>
                 )}
               </h2>
               <p className="max-w-[800px] text-muted-foreground md:text-lg">
-                 Transform your skills systematically across massive knowledge domains. Look into our active routes.
+                Transform your skills systematically across massive knowledge domains. Look into our active routes.
               </p>
             </div>
 
@@ -418,7 +420,7 @@ export default function HomePage() {
                   transition={{ duration: 0.6, delay: i * 0.1, type: "spring", stiffness: 100 }}
                 >
                   <Link href={`/specialization/${spec.id}`}>
-                    <div 
+                    <div
                       className="group relative h-full transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-3"
                       onMouseMove={(e) => {
                         const target = e.currentTarget;
@@ -430,7 +432,7 @@ export default function HomePage() {
                       }}
                     >
                       {/* High-performance masked border spotlight */}
-                      <div 
+                      <div
                         className="absolute -inset-[2px] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none will-change-[mask-image,opacity]"
                         style={{
                           background: `radial-gradient(400px circle at var(--x) var(--y), ${spec.glowColor}, transparent 80%)`,
@@ -441,28 +443,28 @@ export default function HomePage() {
                           padding: '2px',
                         }}
                       />
-                      
+
                       <Card className="relative h-full overflow-hidden border border-border/50 bg-background/50 dark:bg-black/40 backdrop-blur-xl transition-all duration-500 group-hover:bg-background/80 dark:group-hover:bg-black/80 rounded-2xl group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:group-hover:shadow-[0_8px_30px_rgba(255,255,255,0.05)]">
-                          <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-transparent to-${spec.color.split('-')[1]}-500/10 rounded-bl-full -z-10 transition-all duration-500 group-hover:scale-150`}></div>
-                          <CardHeader className="relative z-10 pb-4">
-                              <div className={`inline-flex items-center justify-center size-14 rounded-xl border ${spec.color} bg-background mb-5 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 shadow-sm`}>
-                                  <spec.icon className="w-7 h-7" />
-                              </div>
-                              <CardTitle className="text-2xl mb-2 font-bold group-hover:text-primary transition-colors">{spec.title}</CardTitle>
-                              <CardDescription className="text-muted-foreground text-sm leading-relaxed">{spec.description}</CardDescription>
-                          </CardHeader>
-                          <CardContent className="relative z-10">
-                              <div className="flex flex-col gap-3 text-sm font-medium mt-2">
-                                  <div className="flex items-center gap-3 bg-muted/50 p-2.5 rounded-lg border border-border/50 group-hover:border-border transition-colors">
-                                      <div className="bg-primary/10 p-1.5 rounded-md"><BookOpen className="size-4 text-primary"/></div>
-                                      <span className="text-foreground/80">{spec.courses} Comprehensive Courses</span>
-                                  </div>
-                                  <div className="flex items-center gap-3 bg-muted/50 p-2.5 rounded-lg border border-border/50 group-hover:border-border transition-colors">
-                                      <div className="bg-secondary/10 p-1.5 rounded-md"><Users className="size-4 text-secondary"/></div>
-                                      <span className="text-foreground/80">{spec.students}</span>
-                                  </div>
-                              </div>
-                          </CardContent>
+                        <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-transparent to-${spec.color.split('-')[1]}-500/10 rounded-bl-full -z-10 transition-all duration-500 group-hover:scale-150`}></div>
+                        <CardHeader className="relative z-10 pb-4">
+                          <div className={`inline-flex items-center justify-center size-14 rounded-xl border ${spec.color} bg-background mb-5 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-6 shadow-sm`}>
+                            <spec.icon className="w-7 h-7" />
+                          </div>
+                          <CardTitle className="text-2xl mb-2 font-bold group-hover:text-primary transition-colors">{spec.title}</CardTitle>
+                          <CardDescription className="text-muted-foreground text-sm leading-relaxed">{spec.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="relative z-10">
+                          <div className="flex flex-col gap-3 text-sm font-medium mt-2">
+                            <div className="flex items-center gap-3 bg-muted/50 p-2.5 rounded-lg border border-border/50 group-hover:border-border transition-colors">
+                              <div className="bg-primary/10 p-1.5 rounded-md"><BookOpen className="size-4 text-primary" /></div>
+                              <span className="text-foreground/80">{spec.courses} Comprehensive Courses</span>
+                            </div>
+                            <div className="flex items-center gap-3 bg-muted/50 p-2.5 rounded-lg border border-border/50 group-hover:border-border transition-colors">
+                              <div className="bg-secondary/10 p-1.5 rounded-md"><Users className="size-4 text-secondary" /></div>
+                              <span className="text-foreground/80">{spec.students}</span>
+                            </div>
+                          </div>
+                        </CardContent>
                       </Card>
                     </div>
                   </Link>
@@ -532,7 +534,7 @@ export default function HomePage() {
                   <div className="group relative flex flex-col md:flex-row md:items-center justify-between p-6 md:p-8 border-b border-border/40 hover:bg-muted/30 transition-colors duration-500 cursor-pointer overflow-hidden">
                     {/* Animated minimalist hover line */}
                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-center"></div>
-                    
+
                     <div className="flex items-center gap-6 md:gap-12 relative z-10">
                       <div className={`p-4 rounded-full bg-background border border-border/50 group-hover:border-primary/20 transition-colors duration-500 shadow-sm group-hover:shadow-md ${feature.color}`}>
                         <feature.icon className="w-6 h-6 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500" />
@@ -563,43 +565,43 @@ export default function HomePage() {
         <section className="w-full py-24 md:py-32 relative overflow-hidden bg-background">
           {/* Subtle background decoration */}
           <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[150px] -translate-y-1/2 pointer-events-none"></div>
-          
+
           <div className="container mx-auto px-4 md:px-6 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
-              
+
               {/* Left Column: Sticky Header */}
               <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-6">
                 <Badge className="rounded-full px-5 py-2 text-sm font-black tracking-widest uppercase bg-primary/10 text-primary border-primary/20 backdrop-blur-md" variant="outline">
                   Got Questions?
                 </Badge>
                 <h2 className="text-4xl md:text-5xl lg:text-6xl font-black italic tracking-tighter leading-[0.9] uppercase">
-                  Frequently <br/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Asked</span> <br/>
+                  Frequently <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Asked</span> <br />
                   <span style={{ WebkitTextStroke: '1px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 dark:border-white/10 border-black/10">Questions</span>
                 </h2>
                 <p className="text-muted-foreground md:text-lg max-w-md leading-relaxed font-light">
                   Everything you need to know about Chameleon, our courses, and how we can help you master your future skills.
                 </p>
                 <div className="pt-4 flex items-center gap-4">
-                   <div className="flex -space-x-4">
-                      {[
-                        "https://lh3.googleusercontent.com/a/ACg8ocLhwaGT2q706GW79FoYeUOLTnea_J16frk-iF_sdwVWXPFbRZHCuw=s96-c",
-                        "https://lh3.googleusercontent.com/a/ACg8ocI87mLGlaw-BeaMHVCw0E31dK079PSDmVZGr6euDHZVdUMjvL4=s96-c",
-                        "https://lh3.googleusercontent.com/a/ACg8ocLqdUuvQpZyTB9B0Hejxr-_xNtuhSiRuNBoIQEiEYRjCOuPMA=s96-c",
-                        "https://lh3.googleusercontent.com/a/ACg8ocIqvMK1NFBDwahyZwA-7R0pMRE1pIVHWTIXHRtfyyjn32aKnb0=s96-c",
-                        "https://lh3.googleusercontent.com/a/ACg8ocIgZlQ4l-OfX-oXubSHKWfmWiWFaHLtayMGdOC9lt58DvPDCw=s96-c",
-                        "https://lh3.googleusercontent.com/a/ACg8ocK7QODDPWNlDeHbf-rKnOrxD3JMlcM1L6iZflELzDUFIqS_MQ=s96-c",
-                        "https://lh3.googleusercontent.com/a/ACg8ocKaiA0mVK8hNzaIkraNQa9_9okFyVcDVfV0vwn6ubtUBVxCfW86=s96-c",
-                      ].map((imgSrc, i) => (
-                         <div key={i} className="size-12 rounded-full border-2 border-background overflow-hidden relative z-10 hover:z-20 transition-transform hover:scale-110 bg-muted/20">
-                            <img src={imgSrc} width={48} height={48} alt={`support-${i}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                         </div>
-                      ))}
-                   </div>
-                   <div className="text-sm font-medium">
-                      <p className="text-foreground">Still have questions?</p>
-                      <a href="mailto:tokyo9900777@gmail.com" className="text-primary hover:underline">Contact our support</a>
-                   </div>
+                  <div className="flex -space-x-4">
+                    {[
+                      "https://lh3.googleusercontent.com/a/ACg8ocLhwaGT2q706GW79FoYeUOLTnea_J16frk-iF_sdwVWXPFbRZHCuw=s96-c",
+                      "https://lh3.googleusercontent.com/a/ACg8ocI87mLGlaw-BeaMHVCw0E31dK079PSDmVZGr6euDHZVdUMjvL4=s96-c",
+                      "https://lh3.googleusercontent.com/a/ACg8ocLqdUuvQpZyTB9B0Hejxr-_xNtuhSiRuNBoIQEiEYRjCOuPMA=s96-c",
+                      "https://lh3.googleusercontent.com/a/ACg8ocIqvMK1NFBDwahyZwA-7R0pMRE1pIVHWTIXHRtfyyjn32aKnb0=s96-c",
+                      "https://lh3.googleusercontent.com/a/ACg8ocIgZlQ4l-OfX-oXubSHKWfmWiWFaHLtayMGdOC9lt58DvPDCw=s96-c",
+                      "https://lh3.googleusercontent.com/a/ACg8ocK7QODDPWNlDeHbf-rKnOrxD3JMlcM1L6iZflELzDUFIqS_MQ=s96-c",
+                      "https://lh3.googleusercontent.com/a/ACg8ocKaiA0mVK8hNzaIkraNQa9_9okFyVcDVfV0vwn6ubtUBVxCfW86=s96-c",
+                    ].map((imgSrc, i) => (
+                      <div key={i} className="size-12 rounded-full border-2 border-background overflow-hidden relative z-10 hover:z-20 transition-transform hover:scale-110 bg-muted/20">
+                        <img src={imgSrc} width={48} height={48} alt={`support-${i}`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="text-sm font-medium">
+                    <p className="text-foreground">Still have questions?</p>
+                    <a href="mailto:tokyo9900777@gmail.com" className="text-primary hover:underline">Contact our support</a>
+                  </div>
                 </div>
               </div>
 
@@ -635,8 +637,8 @@ export default function HomePage() {
                       viewport={{ once: true, margin: "-50px" }}
                       transition={{ duration: 0.5, delay: i * 0.1 }}
                     >
-                      <AccordionItem 
-                        value={`item-${i}`} 
+                      <AccordionItem
+                        value={`item-${i}`}
                         className="group border border-border/40 rounded-2xl bg-background/40 backdrop-blur-sm overflow-hidden data-[state=open]:bg-muted/30 data-[state=open]:border-primary/30 transition-all duration-300 shadow-sm hover:shadow-md"
                       >
                         <AccordionTrigger className="text-left px-6 py-5 hover:no-underline [&[data-state=open]>div>svg]:rotate-180 [&[data-state=open]>div]:bg-primary [&[data-state=open]>div]:text-primary-foreground [&[data-state=open]]:text-primary">
@@ -653,7 +655,7 @@ export default function HomePage() {
                   ))}
                 </Accordion>
               </div>
-              
+
             </div>
           </div>
         </section>
@@ -662,13 +664,13 @@ export default function HomePage() {
         <section className="w-full py-24 md:py-40 bg-background text-foreground relative overflow-hidden border-t border-border/40">
           {/* Animated Background Gradients for CTA */}
           <div className="absolute inset-0 overflow-hidden">
-             <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/40 rounded-full blur-[120px] animate-pulse"></div>
-             <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-secondary/15 dark:bg-secondary/30 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
-             <div className="absolute inset-0 bg-[radial-gradient(#00000015_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] opacity-60"></div>
+            <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/40 rounded-full blur-[120px] animate-pulse"></div>
+            <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-secondary/15 dark:bg-secondary/30 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute inset-0 bg-[radial-gradient(#00000015_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] opacity-60"></div>
           </div>
 
           <div className="container mx-auto px-4 md:px-6 relative z-10">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -676,10 +678,10 @@ export default function HomePage() {
               className="flex flex-col items-center justify-center space-y-8 text-center max-w-4xl mx-auto border border-border/50 bg-background/50 dark:bg-white/5 backdrop-blur-2xl p-10 md:p-16 rounded-[3rem] shadow-xl dark:shadow-2xl"
             >
               <Badge variant="outline" className="rounded-full px-6 py-2 border-primary/50 bg-primary/10 text-primary text-sm font-black uppercase tracking-[0.2em]">
-                 Get Started
+                Get Started
               </Badge>
               <h2 className="text-4xl md:text-6xl lg:text-7xl font-black italic tracking-tighter uppercase leading-[0.9]">
-                <span className="transition-all duration-1000 dark:border-white/10 border-black/10">Ready to Join</span> <br/>
+                <span className="transition-all duration-1000 dark:border-white/10 border-black/10">Ready to Join</span> <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Chameleon?</span>
               </h2>
               <p className="max-w-[700px] text-muted-foreground md:text-xl font-light leading-relaxed">
@@ -687,15 +689,15 @@ export default function HomePage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mt-8 w-full sm:w-auto">
                 <Link href="/specialization" className="w-full sm:w-auto">
-                    <Button size="lg" className="w-full rounded-full h-14 px-10 text-lg shadow-[0_0_30px_rgba(var(--primary),0.3)] hover:shadow-[0_0_50px_rgba(var(--primary),0.5)] transition-all bg-primary text-primary-foreground hover:scale-105">
-                      Start Exploring
-                      <ArrowRight className="ml-2 w-5 h-5" />
-                    </Button>
+                  <Button size="lg" className="w-full rounded-full h-14 px-10 text-lg shadow-[0_0_30px_rgba(var(--primary),0.3)] hover:shadow-[0_0_50px_rgba(var(--primary),0.5)] transition-all bg-primary text-primary-foreground hover:scale-105">
+                    Start Exploring
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
                 </Link>
                 <Link href="/about" className="w-full sm:w-auto">
-                    <Button size="lg" variant="outline" className="w-full rounded-full h-14 px-10 text-lg border-border text-foreground hover:bg-muted/50 transition-all bg-background/50">
-                      Learn More
-                    </Button>
+                  <Button size="lg" variant="outline" className="w-full rounded-full h-14 px-10 text-lg border-border text-foreground hover:bg-muted/50 transition-all bg-background/50">
+                    Learn More
+                  </Button>
                 </Link>
               </div>
             </motion.div>
@@ -707,67 +709,68 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="w-full py-12 border-t border-border bg-background/50 backdrop-blur-md">
         <div className="container mx-auto px-4 space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start text-center md:text-left">
-              {/* Brand info */}
-              <div className="md:col-span-4 space-y-3">
-                <div className="text-2xl font-black italic tracking-tighter text-foreground/80 rock-salt mb-2">Chameleon<span className="text-primary text-xl">.</span></div>
-                <p className="text-muted-foreground text-sm max-w-xs mx-auto md:mx-0">
-                    Empowering learners worldwide with cutting-edge education.
-                </p>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start text-center md:text-left">
+            {/* Brand info */}
+            <div className="md:col-span-4 space-y-3">
+              <div className="text-2xl font-black italic tracking-tighter text-foreground/80 rock-salt mb-2">Chameleon<span className="text-primary text-xl">.</span></div>
+              <p className="text-muted-foreground text-sm max-w-xs mx-auto md:mx-0">
+                Empowering learners worldwide with cutting-edge education.
+              </p>
+            </div>
 
-              {/* Links columns - closer to each other */}
-              <div className="md:col-span-5 grid grid-cols-3 gap-4 text-center md:text-left">
-                <div>
-                  <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Platform</h4>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li><Link href="/specialization" className="hover:text-foreground transition-colors">Specializations</Link></li>
-                    <li><Link href="/youtube" className="hover:text-foreground transition-colors">YouTube</Link></li>
-                    <li><Link href="/store" className="hover:text-foreground transition-colors">Store</Link></li>
-                    {user?.is_super_admin && (
-                      <li>
-                        <Link href="/admin" className="text-red-500 font-bold hover:text-red-400 transition-colors inline-flex items-center gap-1.5">
-                          <Shield className="w-3.5 h-3.5 animate-pulse" />
-                          Admin Console
-                        </Link>
-                      </li>
-                    )}
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Company</h4>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li><Link href="/about" className="hover:text-foreground transition-colors">About Us</Link></li>
-                    <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
-                    <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Connect</h4>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li><a href="mailto:tokyo9900777@gmail.com" className="hover:text-foreground transition-colors">Contact Us</a></li>
-                    <li><a href="https://youtube.com/@ChameleonFCDS" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">YouTube Channel</a></li>
-                  </ul>
-                </div>
+            {/* Links columns - closer to each other */}
+            <div className="md:col-span-5 grid grid-cols-3 gap-4 text-center md:text-left">
+              <div>
+                <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Platform</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li><Link href="/specialization" className="hover:text-foreground transition-colors">Specializations</Link></li>
+                  <li><Link href="/youtube" className="hover:text-foreground transition-colors">YouTube</Link></li>
+                  <li><Link href="/store" className="hover:text-foreground transition-colors">Store</Link></li>
+                  {user?.is_super_admin && (
+                    <li>
+                      <Link href="/admin" className="text-red-500 font-bold hover:text-red-400 transition-colors inline-flex items-center gap-1.5">
+                        <Shield className="w-3.5 h-3.5 animate-pulse" />
+                        Admin Console
+                      </Link>
+                    </li>
+                  )}
+                </ul>
               </div>
-
-              {/* Chameleon Avatar Mascot */}
-              <div className="md:col-span-3 flex justify-center md:justify-end items-center">
-                <Image 
-                  src="/images/chameleon/10_chameleon_success.png" 
-                  alt="Chameleon Mascot" 
-                  width={200} 
-                  height={200}
-                  className="object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.25)] select-none mb-0 md:mb-[-120px]"
-                  priority
-                />
+              <div>
+                <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Company</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li><Link href="/about" className="hover:text-foreground transition-colors">About Us</Link></li>
+                  <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
+                  <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Connect</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li><a href="mailto:tokyo9900777@gmail.com" className="hover:text-foreground transition-colors">Contact Us</a></li>
+                  <li><a href="https://youtube.com/@ChameleonFCDS" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">YouTube Channel</a></li>
+                </ul>
               </div>
             </div>
-            <div className="border-t border-border/40 pt-8 text-xs text-muted-foreground text-center">
-                &copy; {new Date().getFullYear()} Chameleon FCDS. All rights reserved.
+
+            {/* Chameleon Avatar Mascot */}
+            <div className="md:col-span-3 flex justify-center md:justify-end items-center">
+              <Image
+                src="/images/chameleon/10_chameleon_success.png"
+                alt="Chameleon Mascot"
+                width={200}
+                height={200}
+                className="object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.25)] select-none mb-0 md:mb-[-120px]"
+                priority
+              />
             </div>
+          </div>
+          <div className="border-t border-border/40 pt-8 text-xs text-muted-foreground text-center">
+            &copy; {new Date().getFullYear()} Chameleon FCDS. All rights reserved.
+          </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </ChameleonIntroWrapper>
   )
 }
