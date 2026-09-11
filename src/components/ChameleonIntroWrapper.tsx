@@ -34,16 +34,20 @@ interface ChameleonIntroWrapperProps {
  */
 export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrapperProps) {
   const [isReady, setIsReady] = useState(false)
+  const [isContentReady, setIsContentReady] = useState(false)
   const [isLifting, setIsLifting] = useState(false)
   const [isDismissed, setIsDismissed] = useState(false)
   
   const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const contentTimerRef = useRef<NodeJS.Timeout | null>(null)
   const finishTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   // Fast skip helper
   const handleFastSkip = useCallback(() => {
     if (isDismissed) return
+    setIsContentReady(true)
     setIsLifting(true)
+    if (contentTimerRef.current) clearTimeout(contentTimerRef.current)
     if (timerRef.current) clearTimeout(timerRef.current)
     if (finishTimerRef.current) clearTimeout(finishTimerRef.current)
 
@@ -74,12 +78,17 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
 
       // Timeline sequence:
       // 0.0s - 0.4s: "Welcome to" badge entrance
-      // 0.2s - 2.6s: Slower, rhythmic cursive handwriting draw (~2.4s)
-      // 1.4s - 2.6s: Flourish underline swooshes underneath (~1.2s)
+      // 0.15s - 2.45s: Cursive handwriting draw (~2.3s)
+      // 1.25s - 2.35s: Flourish underline swooshes underneath (~1.1s)
       // 2.2s - 2.8s: Luminous gradient ink floods into letters (~0.6s)
+      // 2.5s: Handwriting stroke complete -> unhide homepage content in background to warm up WebGL
       // 2.8s - 3.1s: Elegant hold to appreciate the glowing signature (~0.3s)
       // 3.1s - 3.8s: Smooth luxury curtain lift revealing Hero section (~0.7s)
       // 3.85s: Intro complete, scroll unlocked
+      contentTimerRef.current = setTimeout(() => {
+        setIsContentReady(true)
+      }, 2500)
+
       timerRef.current = setTimeout(() => {
         setIsLifting(true)
       }, 3100)
@@ -93,6 +102,7 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
     return () => {
       document.body.style.overflow = ""
       window.removeEventListener("keydown", handleKeyDown)
+      if (contentTimerRef.current) clearTimeout(contentTimerRef.current)
       if (timerRef.current) clearTimeout(timerRef.current)
       if (finishTimerRef.current) clearTimeout(finishTimerRef.current)
     }
@@ -157,7 +167,7 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
       {!isDismissed && (
         <div
           onClick={handleFastSkip}
-          className="fixed inset-0 w-full h-[100dvh] z-[150] overflow-hidden select-none bg-background dark:bg-[#06070b] text-foreground flex flex-col items-center justify-center cursor-pointer rounded-b-[2rem] sm:rounded-b-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.35)] border-b border-border/40"
+          className="fixed inset-0 w-full h-[100dvh] z-[150] overflow-hidden select-none bg-background dark:bg-[#06070b] text-foreground flex flex-col items-center justify-center cursor-pointer rounded-b-[2rem] sm:rounded-b-[3rem] shadow-2xl border-b border-border/40"
           style={{
             height: "100dvh",
             transform: isLifting ? "translateY(-100%)" : "translateY(0%)",
@@ -169,10 +179,9 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: "radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--primary) 20%, transparent) 0%, color-mix(in srgb, var(--secondary, var(--primary)) 10%, transparent) 40%, transparent 70%)",
+              background: "radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--primary) 18%, transparent) 0%, color-mix(in srgb, var(--secondary, var(--primary)) 8%, transparent) 40%, transparent 70%)",
             }}
           />
-          <div className="absolute inset-0 bg-[radial-gradient(rgba(0,0,0,0.05)_1px,transparent_1px)] dark:bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:32px_32px] opacity-40 pointer-events-none" />
 
           {/* Central Typography Showcase */}
           <div
@@ -198,6 +207,15 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
 
             {/* Large Scale SVG Canvas for Calligraphy Handwriting "Chameleon" */}
             <div className="w-full max-w-5xl px-2 sm:px-6 relative flex items-center justify-center">
+              {/* Static Hardware-Accelerated Luminous Glow Behind Signature */}
+              <div
+                className="absolute w-[500px] h-[160px] rounded-full pointer-events-none opacity-20 dark:opacity-30"
+                style={{
+                  background: "radial-gradient(ellipse at center, var(--primary) 0%, transparent 70%)",
+                  transform: "translateZ(0)",
+                }}
+              />
+
               <svg
                 viewBox="0 0 1200 360"
                 className="w-full h-auto overflow-visible select-none"
@@ -211,35 +229,7 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
                   </linearGradient>
                 </defs>
 
-                {/* Layer 1: Hardware-Accelerated Outer Luminous Stroke Aura */}
-                <text
-                  x="600"
-                  y="175"
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  style={{
-                    fontFamily: "var(--font-pacifico), 'Brush Script MT', cursive",
-                    fontSize: "205px",
-                    fontWeight: "400",
-                    fill: "none",
-                    stroke: "var(--primary)",
-                    strokeWidth: 8,
-                    strokeLinecap: "round",
-                    strokeLinejoin: "round",
-                    opacity: 0.2,
-                    strokeDasharray: 3200,
-                    strokeDashoffset: 3200,
-                    willChange: "stroke-dashoffset",
-                    transform: "translateZ(0)",
-                    animation: isReady
-                      ? "strokeDrawChameleonSlow 2.3s cubic-bezier(0.35, 0.1, 0.25, 1) 0.15s forwards"
-                      : "none",
-                  }}
-                >
-                  Chameleon
-                </text>
-
-                {/* Layer 2: Main Cursive Handwriting Stroke & Smooth Ink Flood */}
+                {/* Main Cursive Handwriting Stroke & Smooth Ink Flood (Zero duplicate overhead) */}
                 <text
                   x="600"
                   y="175"
@@ -267,7 +257,7 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
                   Chameleon
                 </text>
 
-                {/* Layer 3: Signature Cursive Flourish Underline */}
+                {/* Signature Cursive Flourish Underline */}
                 <path
                   d="M 180 270 C 350 310, 820 235, 1000 275 S 1100 290, 1060 255"
                   fill="none"
@@ -304,9 +294,14 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
 
       {/* =====================================================================
           HOMEPAGE CONTENT:
-          Completely unstyled container for zero GPU/CPU overhead & locked 60fps.
+          Deferred via contentVisibility during intro to free 100% CPU/GPU for weak devices.
           ===================================================================== */}
-      <div className="chameleon-page-content relative w-full">
+      <div
+        className="chameleon-page-content relative w-full"
+        style={{
+          contentVisibility: isContentReady || isDismissed ? "visible" : "hidden",
+        }}
+      >
         {children}
       </div>
     </div>
