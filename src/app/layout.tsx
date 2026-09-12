@@ -73,10 +73,10 @@ const notoSansArabic = Noto_Sans_Arabic({
   display: "swap",
 });
 
-const rockSalt = Rock_Salt({ 
+const rockSalt = Rock_Salt({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-rock-salt" 
+  variable: "--font-rock-salt"
 });
 
 export const metadata: Metadata = {
@@ -125,9 +125,8 @@ export default function RootLayout({
       </head>
 
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} ${outfit.variable} ${cairo.variable} ${notoSansArabic.variable} ${rockSalt.variable} antialiased font-sans ${
-          !ENABLE_ADS ? "hide-all-ads" : ""
-        }`}
+        className={`${geistSans.variable} ${geistMono.variable} ${rubik.variable} ${outfit.variable} ${cairo.variable} ${notoSansArabic.variable} ${rockSalt.variable} antialiased font-sans ${!ENABLE_ADS ? "hide-all-ads" : ""
+          }`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <ColorThemeProvider defaultTheme="default">

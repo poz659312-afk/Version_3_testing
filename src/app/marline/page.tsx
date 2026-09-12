@@ -627,7 +627,15 @@ export default function MarlineAssistantPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           auth_id: user.auth_id,
-          messages: updatedMessages.map((m) => ({ role: m.role, content: m.content }))
+          messages: updatedMessages.map((m) => ({ role: m.role, content: m.content })),
+          userSession: {
+            auth_id: user.auth_id,
+            username: user.username,
+            current_level: user.current_level,
+            specialization: user.specialization,
+            status: user.status,
+            Registrations: user.Registrations,
+          }
         })
       })
 
@@ -1219,13 +1227,21 @@ export default function MarlineAssistantPage() {
               <div className="space-y-1.5 px-2">
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight leading-tight flex items-center justify-center gap-1.5 flex-wrap">
                   <span className="bg-gradient-to-l from-foreground via-foreground/95 to-primary bg-clip-text text-transparent">
-                    أهلاً بك! أنا مارلين (Marline)
+                    {user?.username ? `أهلاً يا ${user.username.trim().split(" ")[0]}! أنا مارلين (Marline)` : "أهلاً بك! أنا مارلين (Marline)"}
                   </span>
                   <span className="animate-wave mr-2 inline-block text-2xl sm:text-3xl select-none" role="img" aria-label="Waving hand">👋</span>
                 </h2>
                 <p className="text-[11px] sm:text-xs md:text-sm text-muted-foreground/80 max-w-lg mx-auto leading-relaxed font-medium">
                   رفيقتك الأكاديمية والبرمجية الذكية لشرح وتوليد الأكواد، الإرشاد حول لائحة ومقررات الكلية، وتنظيم جداول المذاكرة!
                 </p>
+                {user && (user.current_level || user.specialization) && (
+                  <div className="flex items-center justify-center gap-2 pt-0.5 flex-wrap">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-primary/10 text-primary border border-primary/20 shadow-xs">
+                      <GraduationCap className="w-3.5 h-3.5" />
+                      {user.current_level ? `المستوى ${user.current_level}` : (user.status === 'graduated' ? 'خريج' : 'طالب')} • {user.specialization || 'القسم العام'}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* 4 Google Gemini Prompt Starter Cards with Left Background Watermark Icon */}
@@ -1246,9 +1262,9 @@ export default function MarlineAssistantPage() {
                     color: "text-emerald-400",
                   },
                   {
-                    title: "أقسام الكلية ومقررات التخصص",
-                    desc: "مقارنة شاملة بين مجالات AI, Data Science, Cyber Security, و Business",
-                    prompt: "ما هي الأقسام والتخصصات المتاحة في الكلية ومقررات كل قسم (AI, DS, Cyber, BA) وما الفرق بينها؟",
+                    title: user?.current_level ? `مواد المستوى ${user.current_level}` : "أقسام الكلية ومقررات التخصص",
+                    desc: user?.current_level ? `استعراض المقررات المعتمدة وساعاتها لـ ${user.specialization || 'تخصصك'}` : "مقارنة شاملة بين مجالات AI, Data Science, Cyber Security, و Business",
+                    prompt: user?.current_level ? "إيه المقررات والمواد اللي عليا في مستواي الدراسي الحالي وتخصصي؟ واشرحي لي متطلبات كل مادة بالتفصيل" : "ما هي الأقسام والتخصصات المتاحة في الكلية ومقررات كل قسم (AI, DS, Cyber, BA) وما الفرق بينها؟",
                     icon: BookOpen,
                     color: "text-amber-400",
                   },

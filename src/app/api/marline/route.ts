@@ -3,6 +3,7 @@ import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-
 import { getServerStudentSession } from "@/lib/auth-server";
 import { MARLINE_SYSTEM_PROMPT } from "@/lib/marline-knowledge";
 import { getBylawContextForQuery } from "@/lib/marline/bylaw-retriever";
+import { buildUserSessionPrompt, MarlineUserSession } from "@/lib/marline/user-session-context";
 import { marlineRouter } from "@/lib/marline/router";
 import { estimateTokens } from "@/lib/token-budget-manager";
 import { getProviderLayerInfo } from "@/lib/marline/providers/config";
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { messages } = await req.json();
+    const { messages, userSession: clientUserSession } = await req.json();
 
     // Securely derive identity from authenticated server session
     const session = await getServerStudentSession();
@@ -71,6 +72,15 @@ export async function POST(req: Request) {
       console.warn("Could not update ai_credits in DB:", dbErr);
     }
 
+    // Ground student identity from authenticated session + fallback to client session
+    const studentUser: MarlineUserSession = {
+      auth_id: session.auth_id,
+      username: session.username || clientUserSession?.username || "طالب FCDS",
+      current_level: session.current_level ?? clientUserSession?.current_level ?? null,
+      specialization: session.specialization || clientUserSession?.specialization || "عام",
+      status: session.status || clientUserSession?.status || (session.current_level === null ? 'graduated' : 'student'),
+      Registrations: session.Registrations || clientUserSession?.Registrations || null,
+    };
 
     // Token-efficient conversational history pruning (keep last 5 messages, truncate older turns)
     const rawMessages = (Array.isArray(messages) ? messages : []).filter(
@@ -87,11 +97,16 @@ export async function POST(req: Request) {
 
     // Dynamic bylaw grounding if user asks about courses, codes, or prerequisites
     const latestUserQuery = recentMessages.filter(m => m.role === 'user').slice(-1)[0]?.content || "";
-    const bylawContext = getBylawContextForQuery(latestUserQuery);
+    const bylawContext = getBylawContextForQuery(latestUserQuery, studentUser);
 
-    const effectiveSystemPrompt = bylawContext
-      ? `${MARLINE_SYSTEM_PROMPT}\n\n${bylawContext}`
-      : MARLINE_SYSTEM_PROMPT;
+    // Build user session profile context (name, current level, department, tailored advice)
+    const userSessionContext = buildUserSessionPrompt(studentUser);
+
+    const effectiveSystemPrompt = [
+      MARLINE_SYSTEM_PROMPT,
+      userSessionContext,
+      bylawContext
+    ].filter(Boolean).join('\n\n');
 
     const formattedMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
       { role: "system", content: effectiveSystemPrompt },

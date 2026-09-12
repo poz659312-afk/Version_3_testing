@@ -1,4 +1,5 @@
 import bylawData from "../../data/faculty_courses_bylaw.json";
+import { getStudentCoursesForLevel, MarlineUserSession } from "./user-session-context";
 
 export interface CourseInfo {
   code: string;
@@ -56,7 +57,7 @@ const courseSynonyms: Record<string, string[]> = {
  * High-performance, lightweight retriever that extracts relevant courses and their prerequisites
  * without bloating the prompt or incurring unnecessary token costs.
  */
-export function getBylawContextForQuery(query: string): string | null {
+export function getBylawContextForQuery(query: string, userMeta?: MarlineUserSession): string | null {
   if (!query || typeof query !== 'string') return null;
 
   const normalized = query.toLowerCase().trim();
@@ -65,7 +66,8 @@ export function getBylawContextForQuery(query: string): string | null {
   const triggerKeywords = [
     'متطلب', 'متطلبات', 'بريريكويست', 'prereq', 'prerequisite', 'مادة', 'مواد', 'مقرر', 'مقررات',
     'كود', 'تفتح', 'بيفتح', 'مسار', 'خطة', 'ترم', 'تيرم', 'تيرمات', 'فصل', 'فصول', 'سنة', 'سنتين', 'سنوات',
-    'مستوى', 'قسم', 'تخصص', 'لائحة', 'ساعات', 'اختياري', 'إجباري', 'اجباري', 'مشروع', 'تخرج'
+    'مستوى', 'قسم', 'تخصص', 'لائحة', 'ساعات', 'اختياري', 'إجباري', 'اجباري', 'مشروع', 'تخرج', 'جدول', 'جدولي',
+    'موادي', 'مقرراتي', 'هدرس', 'عليا'
   ];
 
   const hasTrigger = triggerKeywords.some(kw => normalized.includes(kw));
@@ -74,6 +76,17 @@ export function getBylawContextForQuery(query: string): string | null {
   if (!hasTrigger && normalized.length < 5) return null;
 
   const contextParts: string[] = [];
+
+  // 0. Auto-retrieve student's specific level & department curriculum if asking about their courses
+  if (userMeta && userMeta.current_level) {
+    const isAskingOwnCourses = /(?:موادي|مقرراتي|المواد اللي عليا|المواد بتاعتي|المواد اللي عندي|ايه اللي هدرسه|ايه اللي درسه|جدولي|خطتي|المواد المقررة|مواد الترم|ايه اللي عليا)/.test(normalized);
+    if (isAskingOwnCourses) {
+      const studentCoursesSnippet = getStudentCoursesForLevel(userMeta.current_level, userMeta.specialization || '');
+      if (studentCoursesSnippet) {
+        contextParts.push(studentCoursesSnippet);
+      }
+    }
+  }
 
   // Check graduation duration & rules request
   const gradContext = checkGraduationDurationRequest(normalized);
