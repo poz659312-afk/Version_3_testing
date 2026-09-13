@@ -1,0 +1,845 @@
+{
+  "facultyElectives": {
+    "Computer Networks": {
+      "exams": "https://drive.google.com/drive/folders/1EmLql15mCr8uA34-QXQ2Xi6iQJZKlttG",
+      "sections": "https://drive.google.com/drive/folders/1kIPloPRLnnVbXQMv_ZXtlToA_rgKmYPo",
+      "summaries": "https://drive.google.com/drive/folders/1LBD6yOfgd5GMXgKdXxtvf5mJAF-n7Tce",
+      "lectures": "https://drive.google.com/drive/folders/18FIGRw3SN7D7o1c6NPNTLJ5e6g6FVkwi"
+    },
+    "Operating Systems": {
+      "exams": "https://drive.google.com/drive/folders/1wHkM2YBUVyIgWxZHY3TRgjHvrQr2vNmm",
+      "sections": "https://drive.google.com/drive/folders/1zwc_naH1LNxrQNlg2dk1G9NBpc49CsnO",
+      "summaries": "https://drive.google.com/drive/folders/104t-hBK8y_zdKkn4y81zliBFdVH4JkbR",
+      "lectures": "https://drive.google.com/drive/folders/1prGZYVyW0IhNbwpk3YteCyU8U0tPdPUI"
+    },
+    "Web Programming": {
+      "exams": "https://drive.google.com/drive/folders/1sFlhKV0JSNHvTwNQa4WmgxFdTtBYeVnT",
+      "sections": "https://drive.google.com/drive/folders/1-TxITJ_LAoIBDezq2xuBoSu2aT0pQpuV",
+      "summaries": "https://drive.google.com/drive/folders/1fFhUbWgayNPY8ZFjSuooztB3OnLHSwIA",
+      "lectures": "https://drive.google.com/drive/folders/1G3Kp4CDmmNoHQAUFh4nRG40O0-eQz4QA"
+    },
+    "Mobile Programming": {
+      "exams": "https://drive.google.com/drive/folders/156afEBxqK2SfUaTArvTjaCo3R9fhHk40",
+      "sections": "https://drive.google.com/drive/folders/1WF44fZAku_fX3QanyK5p-lufvxkZVEOu",
+      "summaries": "https://drive.google.com/drive/folders/14fDhewdqA6HXc7qT1apmJ4UZq-NPKtvi",
+      "lectures": "https://drive.google.com/drive/folders/1umZUFH4K8KvJuDsIH5aoRbkysOc7PXa4"
+    },
+    "Distributed Processing": {
+      "exams": "https://drive.google.com/drive/folders/1cvM2PvXOIdy-LkxjdUN0iGzEXKMDBioM",
+      "sections": "https://drive.google.com/drive/folders/1vQB0XI2iW7jHxwDY6Yz4UEKOIRvwEdl-",
+      "summaries": "https://drive.google.com/drive/folders/1svZqZR_BVrhwqx4Fz9lfNH_Gbv_3Zx0R",
+      "lectures": "https://drive.google.com/drive/folders/1i1wTyiuHhlNBsYI3pUjmVKUTQCb1BUKa"
+    },
+    "Algorithm Design": {
+      "exams": "https://drive.google.com/drive/folders/1ZkXu-YjLeBvy-ko1YMEEDs54bj-Fkxfy",
+      "sections": "https://drive.google.com/drive/folders/1n4G_l0VjXe9rD3cm2JOUC4mL83OmHoB7",
+      "summaries": "https://drive.google.com/drive/folders/1Aubey6NbCmc3vz_cEg64WBRyylAfGmL_",
+      "lectures": "https://drive.google.com/drive/folders/1TaxzWkdHgK0u1bm2YnAgpu3V_ek-e0FW"
+    },
+    "Systems Analysis and Design": {
+      "exams": "https://drive.google.com/drive/folders/1ncNfgjQtqLMJiXdQhlo_cbPbOZDSzBRN",
+      "sections": "https://drive.google.com/drive/folders/1PVlYVluCMDtHHDx-mCS48v7HTg4RPAcW",
+      "summaries": "https://drive.google.com/drive/folders/1PGhA60Wgx-C6wMydA46y3XUyq6i_0ueq",
+      "lectures": "https://drive.google.com/drive/folders/12ogVgB4XNe-YzWvGl5ZKSkvkQTE_yg0o"
+    },
+    "Software Engineering": {
+      "exams": "https://drive.google.com/drive/folders/1LNl1Cmkn9Bafw9fMJ8k29PfYhc_d0Vv3",
+      "sections": "https://drive.google.com/drive/folders/1BG28sICVi_POn3i-1dMwLplsStImUnjh",
+      "summaries": "https://drive.google.com/drive/folders/1_lccRyAW8-sBOpM9vPj9XxCz_kAzjQ4J",
+      "lectures": "https://drive.google.com/drive/folders/1GOdeH-HBvJ_ct_RCT4gMVoi4-PGpye8J"
+    }
+  },
+  "programElectives": {
+    "Media Analytics": {
+      "Digital Media Forensics": {
+        "exams": "https://drive.google.com/drive/folders/1pD_1OuX4f39nwCY9KD3-k8LqGn8dZPXR",
+        "sections": "https://drive.google.com/drive/folders/1XfpfdVPL4VisjFoXOzAMUc6zuh1Xt-3F",
+        "summaries": "https://drive.google.com/drive/folders/1a_cmGZnmp6gHSbmllU0JrHkEa_xec7fa",
+        "lectures": "https://drive.google.com/drive/folders/11S8IbHZhRj69IxbRRm1asWPFY-QF_Qfo"
+      },
+      "Virtual Reality": {
+        "exams": "https://drive.google.com/drive/folders/1EpzehGTtv_iFo5A-EZoFNZWV5PO1fROh",
+        "sections": "https://drive.google.com/drive/folders/1ZUhPJxPZIq6ZOMr7if_tvtgbeTnh0GUB",
+        "summaries": "https://drive.google.com/drive/folders/1EGMpGHHfwRd67ZD80eezebp8twCbU9up",
+        "lectures": "https://drive.google.com/drive/folders/1zguakKCuNCLWBjwDq-xIOhE12eC9qh0y"
+      },
+      "Video Game Design & Programming": {
+        "exams": "https://drive.google.com/drive/folders/1m5bAhfCz1jVDvoK_ZmOREK14M9uL6LRV",
+        "sections": "https://drive.google.com/drive/folders/1tevUSMjCmEu0XjBEn52lYBh44mgSQV6J",
+        "summaries": "https://drive.google.com/drive/folders/1_eACrFRRM_iXd3lrO1SCTfPQ2XqF0czQ",
+        "lectures": "https://drive.google.com/drive/folders/1UpxbqvqSA8pbv2JghNUez-FREZ3-QBF0"
+      },
+      "Computer Animations": {
+        "exams": "https://drive.google.com/drive/folders/1FHwWmSG1SsNe9eBJ7mLbGpw_7sTBJ0gx",
+        "sections": "https://drive.google.com/drive/folders/1ORT6wYNR18EV2xTO9rIrYRUtDMX4_ad6",
+        "summaries": "https://drive.google.com/drive/folders/1jU1WeeKX14TMuhjn9foaE2pEe1MXN561",
+        "lectures": "https://drive.google.com/drive/folders/13S1PQ1jA1shf6h35nZD9EOeGAAery-YI"
+      },
+      "Computational Photography": {
+        "exams": "https://drive.google.com/drive/folders/1SGiX0ntuHPmMPehHjyPjjGhuFGWMoNas",
+        "sections": "https://drive.google.com/drive/folders/1pbhhjiLoW4dxCa87M6I_GtG02V6czob5",
+        "summaries": "https://drive.google.com/drive/folders/1f6LrkZy7KJJq8STeENYMdWsxIVZ3kJb4",
+        "lectures": "https://drive.google.com/drive/folders/1Xhyv9rkBB66gG4RGN3uhsW6ys8b3wVRR"
+      },
+      "Online Journalism": {
+        "exams": "https://drive.google.com/drive/folders/13wPYKM_qP3wFsqzv9mgu1xGf12bestEt",
+        "sections": "https://drive.google.com/drive/folders/1LtQ5KfwEx3fHCso87v5CQYFTV9WAuKdy",
+        "summaries": "https://drive.google.com/drive/folders/1eNevIlcPcuuMwl7HyJCXRqGS6Qd6MsmP",
+        "lectures": "https://drive.google.com/drive/folders/1ofrOKC2FObq0hj8ivdAfDP87X6D7IEGv"
+      },
+      "Interactive Media": {
+        "exams": "https://drive.google.com/drive/folders/1B48ISCGKGRn41TIXquWSuPf9gvCiyneZ",
+        "sections": "https://drive.google.com/drive/folders/1PmN9T4zxuFhQFWNmcQA5HFOKKqdLV3S0",
+        "summaries": "https://drive.google.com/drive/folders/1anxTQ4tjbqphcUEhQep-_X-4Vp28hI3_",
+        "lectures": "https://drive.google.com/drive/folders/13aAuxsQ55EhzXqIqUsN7u2C2RmlNYzj6"
+      }
+    },
+    "Cybersecurity": {
+      "Mobile Computing": {
+        "exams": "https://drive.google.com/drive/folders/1ltXSlbvMalOR4YVTxmiDVI_gzEODpUIt",
+        "sections": "https://drive.google.com/drive/folders/1HuavWjV80PlM9iq4XkSX3pC38b7B92GC",
+        "summaries": "https://drive.google.com/drive/folders/1FeSQ8Fpb6p1sY_QdzoHjNN9HRHKhmYeQ",
+        "lectures": "https://drive.google.com/drive/folders/1koAyzrz6LlkGvo7LpyvHF3fM5B5Gi3Lf"
+      },
+      "Internet of Things": {
+        "exams": "https://drive.google.com/drive/folders/1JiPS3VrDW-4Xa1Vcu-4HcgFxlyTmOeRG",
+        "sections": "https://drive.google.com/drive/folders/10evPVCJ8nsllOvCSdTbQe9G6xbwnedLm",
+        "summaries": "https://drive.google.com/drive/folders/1ckdk9suy--Jonbnlvo89J2ZV5NWBccsC",
+        "lectures": "https://drive.google.com/drive/folders/1QWDBpl5KCbXjlmzR1fPfN1T5DRIczMFM"
+      },
+      "Social Networks Analytics": {
+        "exams": "https://drive.google.com/drive/folders/16J_RB19RBJpA4Cn33EhpQRJ1zVVpjJBe",
+        "sections": "https://drive.google.com/drive/folders/19v7EsQnVG8N0xhKcPivLZ-KPPFfPAP6N",
+        "summaries": "https://drive.google.com/drive/folders/1JU9qflvBbQBJqgNRurQRALGHPNO1WmsR",
+        "lectures": "https://drive.google.com/drive/folders/1w1tHJCH-i6x3Xxe_aLkJ0Wzwp2QMKaNF"
+      },
+      "Cloud Computing Security": {
+        "exams": "https://drive.google.com/drive/folders/1wM_txvsE8lJIY5cCFdXK94uDs-GeWiQY",
+        "sections": "https://drive.google.com/drive/folders/18synsRlDPotPoIzjH-zc2wMVmm9bAXtD",
+        "summaries": "https://drive.google.com/drive/folders/1DDxx78-I2ozwL2fv4fDVWHpB92Zok6z-",
+        "lectures": "https://drive.google.com/drive/folders/1p7OJpiU1nE5n7G5monPWyy3EqInS9kTQ"
+      },
+      "Blockchain & Security of Blockchain": {
+        "exams": "https://drive.google.com/drive/folders/1Vf4fZn4dVJQirJZ3ScASg_OMxPH2CGrX",
+        "sections": "https://drive.google.com/drive/folders/13hHnAMgDmJXnqTvR-uqUYhjBQ-9bt-Mc",
+        "summaries": "https://drive.google.com/drive/folders/1Levptc-JFQwZ6LcEu-gGhk4mrokPAjbS",
+        "lectures": "https://drive.google.com/drive/folders/1kqdzfungVSL-B__Kjmc_9XPuNuyCFkVF"
+      },
+      "Software Security Engineering": {
+        "exams": "https://drive.google.com/drive/folders/18AAc_IFkbufI2ASb1CCyEfekF_KtbD6M",
+        "sections": "https://drive.google.com/drive/folders/1Eyh8CVqGWOwZtLgVqn9J9ZRJIMyJgzI2",
+        "summaries": "https://drive.google.com/drive/folders/1JN1sPNh8tVnqfkqH6ChkWCCSqJUAcEY1",
+        "lectures": "https://drive.google.com/drive/folders/1ixq032wHBa-GuewjGhDPk8qeUzV1UZwL"
+      },
+      "Proactive Computer Security": {
+        "exams": "https://drive.google.com/drive/folders/1FVBCSHBE7K2OZotQYv_CVA46Qy8LCb9A",
+        "sections": "https://drive.google.com/drive/folders/1F0WVMvRWWPdIUiNepBYi0Z6Gt6gFFOSd",
+        "summaries": "https://drive.google.com/drive/folders/1ZBMN9kpbFwZa3hjy__svIEyrmxEA4r3s",
+        "lectures": "https://drive.google.com/drive/folders/1BV7OJqZZpB-vAFQdU_86U4LhEIcVFfSb"
+      },
+      "AI Security Issues": {
+        "exams": "https://drive.google.com/drive/folders/119esT_F4aseG3fH8uClOSt7hQJ0DwTMY",
+        "sections": "https://drive.google.com/drive/folders/19rzicu7FCEefjwqoVCOiF-ntfM-kzEjO",
+        "summaries": "https://drive.google.com/drive/folders/1oe1yRuvfCDAdOJzdh0Uj6Y6FIDpz9pA8",
+        "lectures": "https://drive.google.com/drive/folders/1Ra565nm7IwPvgvYbMMRtuDs0fGwVHoxK"
+      }
+    },
+    "Intelligent Systems (AI)": {
+      "Game Theory": {
+        "exams": "https://drive.google.com/drive/folders/1Y7KRpL1VmJ_aEyfCJRFvP_Nz698mzucV",
+        "sections": "https://drive.google.com/drive/folders/1tRb39cLfVUBKtsYnGyBAIhbDsxd385NJ",
+        "summaries": "https://drive.google.com/drive/folders/158qItgdZd4ClF-Q7K-BeeCJb4Wjc4y6e",
+        "lectures": "https://drive.google.com/drive/folders/1EvqD1975ZxzX_OmRaiGlDyIj7kfXmjj4"
+      },
+      "Virtual Reality": {
+        "exams": "https://drive.google.com/drive/folders/12pX23v_oHQNTgRYGnqVlkqmWQeiYLNLd",
+        "sections": "https://drive.google.com/drive/folders/1BjRm-wv60WK9APC6WtcK7ve4MkCImGNY",
+        "summaries": "https://drive.google.com/drive/folders/1126x-r97dNUE46kv5Nl7l99cSZrfsY7t",
+        "lectures": "https://drive.google.com/drive/folders/15Oxs-i30jkhkhqK-ia-PVC9n8NXjociN"
+      },
+      "Knowledge-Base AI": {
+        "exams": "https://drive.google.com/drive/folders/1mIMpqSoAHulkwscgiVSji6bZ9IvrKspM",
+        "sections": "https://drive.google.com/drive/folders/1CoDKpbCLfALtyMasSiLlu6Nid3kk0OD8",
+        "summaries": "https://drive.google.com/drive/folders/1NMPa6pqWuJXRcaGCOeQdfCnmW93hNS5e",
+        "lectures": "https://drive.google.com/drive/folders/1e-Zy0XPO2Uxq_0Mxx4AdrNC-nBAGuJqC"
+      },
+      "Internet of Things II": {
+        "exams": "https://drive.google.com/drive/folders/14sRdOpGRuA-QB4QofE_C3_1QR75CpZaF",
+        "sections": "https://drive.google.com/drive/folders/109i4ryTDUVYAY77zCephnS0nVTsWcD5w",
+        "summaries": "https://drive.google.com/drive/folders/1sDTr1Fj-5MXQYMfhzXuvsQUoky2aToQJ",
+        "lectures": "https://drive.google.com/drive/folders/10qjtOdZh9co_xnqR7HGrE9peNqUNub7K"
+      },
+      "Intelligence Technology Trends": {
+        "exams": "https://drive.google.com/drive/folders/11cxO8RtLruwEhmvEMWjCYr1bZaXysJ7L",
+        "sections": "https://drive.google.com/drive/folders/1S9Yl4BU2BcOxq_LXFw4Hh8cG_N2jf5IU",
+        "summaries": "https://drive.google.com/drive/folders/1piXj4GinQIPEEbGAqmXfl8iwiO04GE-p",
+        "lectures": "https://drive.google.com/drive/folders/1uWxs8EOZb4UKPmH6QPokySW7uMFq4X7-"
+      },
+      "Embedded Machine Learning": {
+        "exams": "https://drive.google.com/drive/folders/1X_87785Yk8hhHPxyyDwtNpokLIx76OdA",
+        "sections": "https://drive.google.com/drive/folders/1BKWQHs7LvWVgt8dPi1eGoQUeYLmUoAyB",
+        "summaries": "https://drive.google.com/drive/folders/1EwF5mEbwdCVtqqAZsXuDMcvL-WdyHo-l",
+        "lectures": "https://drive.google.com/drive/folders/1GBJ4mLRa0cO8pYgFPReO7ryUfCUF1kGO"
+      },
+      "Natural Language Understanding": {
+        "exams": "https://drive.google.com/drive/folders/1q5vtcf67_eDqGPhpojPG_9pa-mA-iCDM",
+        "sections": "https://drive.google.com/drive/folders/1T81qPd97Pi0NlaF0rMKK2gQwW6qKMsAp",
+        "summaries": "https://drive.google.com/drive/folders/1isGg8YNXpBOTQDqulmgbgSQEIknx010m",
+        "lectures": "https://drive.google.com/drive/folders/1usHthbMk9OZgXS0PXGMpgtx42Fz74_FX"
+      },
+      "Speech Recognition": {
+        "exams": "https://drive.google.com/drive/folders/1LqHId8OtFLTv6QdCl2_7Uq9E1Qsnzpko",
+        "sections": "https://drive.google.com/drive/folders/1-JQ_ofXGd82gijBg1401xNJVvJc8lllj",
+        "summaries": "https://drive.google.com/drive/folders/1MHOlJY3L4wfIE_p88IdCvVvmF2paBrCm",
+        "lectures": "https://drive.google.com/drive/folders/18_iuy9oF1I8oX_qNNJv4nZHK2947tzPj"
+      }
+    },
+    "Business Analytics": {
+      "NLP and Semantic Analysis": {
+        "exams": "https://drive.google.com/drive/folders/14aNH1yEOx5RyYUS4a_PXV1KY4jbp3LpU",
+        "sections": "https://drive.google.com/drive/folders/1QTRXhdRYpVTfe6539VmTKraHTjtXsarF",
+        "summaries": "https://drive.google.com/drive/folders/1cC3nNMnBYMxyz_fiNz1yOSCOL3P16yLW",
+        "lectures": "https://drive.google.com/drive/folders/17Zknj7Fq4MuV5X5_IrxS5azfwOIPv_ZQ"
+      },
+      "Predictive Analytics": {
+        "exams": "https://drive.google.com/drive/folders/1MR7R36D1CZ9tM6vQU7AlCjrkzir304V8",
+        "sections": "https://drive.google.com/drive/folders/1CfWvcXvu5xCUrWhXAFzaeIlTJC3-xEQy",
+        "summaries": "https://drive.google.com/drive/folders/1EDEsDGKMApiwh2fCHp--KWg47whzKbY2",
+        "lectures": "https://drive.google.com/drive/folders/1CsddnCuw1O4xIDqF1-YKk2CQmmv4W1dK"
+      },
+      "Manufacturing Analytics": {
+        "exams": "https://drive.google.com/drive/folders/1CkYXYKuqAA3MEDhZ1qss-OguwYgYicjI",
+        "sections": "https://drive.google.com/drive/folders/12-dNGJVovCvdcEjJ2Ad1ZresJ-CVvxWK",
+        "summaries": "https://drive.google.com/drive/folders/1GXnDsGeIB0p-NtQDfD52z9ZKtpX1ae2X",
+        "lectures": "https://drive.google.com/drive/folders/1DP0Wq9iJZatccBdyAihgZOZVcTrPXcFv"
+      },
+      "Digital Transformation and Digital Economics": {
+        "exams": "https://drive.google.com/drive/folders/1zZyncLx0KtAFC3V730O2m9k2E1pP-wjJ",
+        "sections": "https://drive.google.com/drive/folders/1H7TylB-xbadfvqeY1FG6Vk50l2xDjpeM",
+        "summaries": "https://drive.google.com/drive/folders/1vLxGTILEmLdRNcMeuGOEJtd6K42-a2s3",
+        "lectures": "https://drive.google.com/drive/folders/1LMz2Cdco8zbulUcWQMdJszSZSN8B57rd"
+      },
+      "Smart Cities and E-Government": {
+        "exams": "https://drive.google.com/drive/folders/1wJtnkHuv-FAPH0IwNPgi3DJZ67lxMHmM",
+        "sections": "https://drive.google.com/drive/folders/18MJVCeDsVCbcBeZdD_bDSo9B9Tmuo5bI",
+        "summaries": "https://drive.google.com/drive/folders/1tbMDY0Lq24PwWRgzyLb3JknHOSnh-xRf",
+        "lectures": "https://drive.google.com/drive/folders/137bDTu8vbreI8MAcL-lHe9KabIAJMivi"
+      },
+      "Managing Technology Projects": {
+        "exams": "https://drive.google.com/drive/folders/1tBmFzJT65QXOATr_EIPCu-mtVmrFeaZt",
+        "sections": "https://drive.google.com/drive/folders/1dlDbCRhqSZsJ-3Jt2SU1jsG2k2-FcZ4E",
+        "summaries": "https://drive.google.com/drive/folders/1mitvL08o_44ELbEMpHgoWgzFdoq7Plxb",
+        "lectures": "https://drive.google.com/drive/folders/1EK9onYfx9-d1zgeptVqTCfDx4UMEmRXq"
+      },
+      "GIS and Spatial Data Mining": {
+        "exams": "https://drive.google.com/drive/folders/1C8e-fiMH1WkdIQThmnbWzDV9TmDwBkaZ",
+        "sections": "https://drive.google.com/drive/folders/1Ujob3o2_PhK1E93UwoApyFKqb0glG7rD",
+        "summaries": "https://drive.google.com/drive/folders/1V_pk2s3ZuwnX_irWSlXahi4FKBiC7lQp",
+        "lectures": "https://drive.google.com/drive/folders/1ySuaVEeU3FAhQ0D0NBSlfQwz1Q_GXPAE"
+      },
+      "Technology Trends and Innovation": {
+        "exams": "https://drive.google.com/drive/folders/1COBezuUbJFVhFFWnwQcj6oMf-RtNd2DZ",
+        "sections": "https://drive.google.com/drive/folders/1Zn1d0e24Z2rB_USm8w0jafn_i7LPWnV1",
+        "summaries": "https://drive.google.com/drive/folders/1Vf_6FC1ayKweNVd_syoHfbhxms-7vSh9",
+        "lectures": "https://drive.google.com/drive/folders/1E2wmsIGblrei5LzOfoMBT-LiuKjP4hBO"
+      },
+      "Gamification & Games Development": {
+        "exams": "https://drive.google.com/drive/folders/1ulN1CuZcdGSl3w4IFIGxlQD3GUXPGsq6",
+        "sections": "https://drive.google.com/drive/folders/1Ifc45rgGz2P2jwSz8z-7O7Uo2Rx_aiyO",
+        "summaries": "https://drive.google.com/drive/folders/1ee87r-Vb_OckO1jzOGTUkVdeCFa0T030",
+        "lectures": "https://drive.google.com/drive/folders/1nOD8utZwEmmG5OhXaI2mYl4K7pUVuR_k"
+      },
+      "Human Computer Interaction (HCI)": {
+        "exams": "https://drive.google.com/drive/folders/1N7HJerkmKAziT4-eAq8COTuFe6E3-Y3O",
+        "sections": "https://drive.google.com/drive/folders/1llp_xJUKzLPbfvrHog2x2-sIaFgls18r",
+        "summaries": "https://drive.google.com/drive/folders/1zOYGIoL_XhraJgUYT9iMPM3sXJFw_15n",
+        "lectures": "https://drive.google.com/drive/folders/1UNHepTlAlgtbCBLUzuF-nyrsnaTJyrxh"
+      }
+    },
+    "Computing and Data Sciences": {
+      "Advanced Database Systems": {
+        "exams": "https://drive.google.com/drive/folders/13JYyGQwvrn_KDG2_GeJiJ491FekT4Fvd",
+        "sections": "https://drive.google.com/drive/folders/1Eyse8kVSNhnSDW8NqbGqZWwN_JrCiTnO",
+        "summaries": "https://drive.google.com/drive/folders/10C_0cr4m-XcNoMuPyVF6OdDNQ0f73rq5",
+        "lectures": "https://drive.google.com/drive/folders/17ze_MwFMFb2q6OaJ1bddqx9mmBy1MSqM"
+      },
+      "Distributed Database Systems": {
+        "exams": "https://drive.google.com/drive/folders/1nyak3i230ygiTNMvf3pQQqpfU5C1NMUa",
+        "sections": "https://drive.google.com/drive/folders/1Crr9Jdjo4VoPoMATuks4vnsb-w00-112",
+        "summaries": "https://drive.google.com/drive/folders/1lQSkybI6uJ6IN9m6T4HnpjBlq5_A9UbQ",
+        "lectures": "https://drive.google.com/drive/folders/1Lpey3A0pUWZOwgtQnafv_Nj5yk41PsPq"
+      },
+      "Concurrent Algorithms and Data Structures": {
+        "exams": "https://drive.google.com/drive/folders/12p_kTvJTMBgnhmt4XkLjcKsGyg-IGCRz",
+        "sections": "https://drive.google.com/drive/folders/16GXA4Merm9NmMasTcqeG1ITNdpmVr10Y",
+        "summaries": "https://drive.google.com/drive/folders/1aRZrz7cNQHlE5iOy8jS22W-DpHulQ8cr",
+        "lectures": "https://drive.google.com/drive/folders/1sC_WqAMh5kWK7OHLjtXRNcIJruPBJhwH"
+      },
+      "Data Compression Techniques": {
+        "exams": "https://drive.google.com/drive/folders/1s8Eo0wkKyOAUzKKM2BFh9oiDiS0DmxOP",
+        "sections": "https://drive.google.com/drive/folders/1T01RyeQgxDhQIbU9cbpIx02yY5gkrCYt",
+        "summaries": "https://drive.google.com/drive/folders/1g9B6tHyb8Wz_oTBPlXazNmxTUnA35_bb",
+        "lectures": "https://drive.google.com/drive/folders/1F6KsD40Cv3-8KQMTu4Ds1IXx8lNSMgZG"
+      },
+      "Bayesian Statistics": {
+        "exams": "https://drive.google.com/drive/folders/1SqV-E_q149-zrpWatb0fGHPN9gH4j1h7",
+        "sections": "https://drive.google.com/drive/folders/1Gp4cRqREtZ9cVB2Wz3ZtTCJGwYThyabl",
+        "summaries": "https://drive.google.com/drive/folders/1fCqIu47sWSFJOaGX3z3H_RB9pSSf24mS",
+        "lectures": "https://drive.google.com/drive/folders/1F5t6U38CESZXgdnKwQRjDQhBtb2Z6ESk"
+      },
+      "Multivariate Statistical Analysis": {
+        "exams": "https://drive.google.com/drive/folders/1XTmOSjIgcvE5cxkOFE3Tz37Imeo208ZV",
+        "sections": "https://drive.google.com/drive/folders/1K5UPpwqqJa5lGxRI1sUbyRJId9vVwztU",
+        "summaries": "https://drive.google.com/drive/folders/1ryDpNmy94nc78NTWSMG87kPqvjQhCoJd",
+        "lectures": "https://drive.google.com/drive/folders/1IDZkFI3Tzr2uCnHy3BJNzfw_nI6m2bQH"
+      },
+      "Non-Linear and Combinatorial Optimization": {
+        "exams": "https://drive.google.com/drive/folders/1JQlMTxRNMdjXLnBEECXcVGZF7OSqWX39",
+        "sections": "https://drive.google.com/drive/folders/1CZQmBauKojQiyI9W32EcxnMSth0hVT9L",
+        "summaries": "https://drive.google.com/drive/folders/1cYZFP1L-2iknhIrIDwbqJ1iX_fVrUoBD",
+        "lectures": "https://drive.google.com/drive/folders/1Pe-yFeCuMZYs6Uc7KAAZxvLWahKLWKOm"
+      },
+      "Convex Optimization": {
+        "exams": "https://drive.google.com/drive/folders/1GM0LkbSr0dNRg4uyf1S5bf9sdMjOK5ml",
+        "sections": "https://drive.google.com/drive/folders/1nz-5wZlYVOYvS7nLiOh6KZQi39OHeF_d",
+        "summaries": "https://drive.google.com/drive/folders/1P0icS9Jh_Ob-5vxsNbD9-CmMLkt-YPZc",
+        "lectures": "https://drive.google.com/drive/folders/1FVxo90R8ifEIrhJ5dWEy3GLnhJ4ZNFua"
+      }
+    }
+  },
+  "departmentCourses": {
+    "Nutrition": {
+      "summaries": "https://drive.google.com/drive/folders/1M8KKoO7JXWiyIW2ufLopc2q1OOnlRO2t",
+      "lectures": "https://drive.google.com/drive/folders/1NGdxbGGzU8U5OhAlZOQPHEc7a2J0b5VO"
+    },
+    "Pets Handle": {
+      "summaries": "https://drive.google.com/drive/folders/1mKEyk5nDDTEDJFzanmnswIKBZ4zOG2FT",
+      "exams": "https://drive.google.com/drive/folders/1C_HB4TlRYX-EY03Bm0OnVXtysbx9Mj-q",
+      "lectures": "https://drive.google.com/drive/folders/1XUbeT4ziAWio6R2Orj-FJogu2BAQKDDX"
+    },
+    "First Aids": {
+      "lectures": "https://drive.google.com/drive/folders/17Nw4Ek9RxMEAf1s2H1Kkqe37Yc7PwUqc",
+      "exams": "https://drive.google.com/drive/folders/1XURifRPnlFi7wOcminFvg6EVKxYsFOBS",
+      "summaries": "https://drive.google.com/drive/folders/1e4o5muXHUkxZ10e8idAEe8l546IRqQBh"
+    },
+    "Regression Analysis": {
+      "summaries": "https://drive.google.com/drive/folders/1sRjognRSht3yw_Qxf-O9NLM9YNsJ5UPJ",
+      "lectures": "https://drive.google.com/drive/folders/1Pr__JjKf-CRVGV7BeV1tkrQZfen4YRJO",
+      "exams": "https://drive.google.com/drive/folders/1TkHizwhqFL2uaHUU5Wy06SvdxlY8yCis",
+      "sections": "https://drive.google.com/drive/folders/1aTANc8wnepGacHG4YjoXxXbEoZu5TBT3"
+    },
+    "Data Science Tools and Software": {
+      "sections": "https://drive.google.com/drive/folders/1_kQzyyVVwFmFhbyewAgs3PZgfw7SZoVt",
+      "lectures": "https://drive.google.com/drive/folders/1CScYtfu-JWA5llL4EQAu46pZgL1lQNui",
+      "exams": "https://drive.google.com/drive/folders/1XJqxJZOjQCzXnEpeyQQQRRc8HOvEwyJ6",
+      "summaries": "https://drive.google.com/drive/folders/1-E0rOdeA_1463gM9sg93srLn-apu3_fV"
+    },
+    "Data Mining and Analytics": {
+      "sections": "https://drive.google.com/drive/folders/1yRLzmfdAksXPomOZCRLQLG48sWnkQIDc",
+      "lectures": "https://drive.google.com/drive/folders/1Ex-VAzuroLcg0fmSmg-Zd-x6KXCY7P1H",
+      "summaries": "https://drive.google.com/drive/folders/1HRedV6Iu8Djd_f0AE0MigL8nKoq8Yb8-",
+      "exams": "https://drive.google.com/drive/folders/1mrKwfr3Mgi9p3zp7VdIVLmsUiPYhJYCX"
+    },
+    "Machine Learning": {
+      "lectures": "https://drive.google.com/drive/folders/1CCeA8VUvw__jCBmZ-5Y1J3ujOyir4HSr",
+      "exams": "https://drive.google.com/drive/folders/1WI08MEt_kVSuMITdlqqgPaVpTUPwiqgK",
+      "summaries": "https://drive.google.com/drive/folders/1XdboKP5n65WZCznnqiCrE0BZfiarSl4Z",
+      "sections": "https://drive.google.com/drive/folders/1hO_vvmFpCD9zw4rlK77HIIeNVWpjgM2K"
+    },
+    "Cloud Computing": {
+      "summaries": "https://drive.google.com/drive/folders/11QHqhN6G_OmTNZTPdR_OVWzUZ5fEMO8X",
+      "sections": "https://drive.google.com/drive/folders/1ny-TP92zjTZrctHIBx_QmsTfl52bSP1Q",
+      "exams": "https://drive.google.com/drive/folders/1ICXoWQy7-nas1_KaLNCA_fHKXEVvRqw2",
+      "lectures": "https://drive.google.com/drive/folders/1P37WAFRKgkokNwr6R5MZNOFEpff5dUIB"
+    },
+    "Cryptography": {
+      "summaries": "https://drive.google.com/drive/folders/1JSmAexFJfF-PErax2AostO_K2GvA04ND",
+      "sections": "https://drive.google.com/drive/folders/1OajUBQFN1DTE_OoSUU4biCbVYFmp6FOF",
+      "lectures": "https://drive.google.com/drive/folders/1bIkavqwkpzhBJPskiAW9V__EXAUdmGLc",
+      "exams": "https://drive.google.com/drive/folders/17zQOsUJRZtQiePHUQzpsgwcjb4kbZFdl"
+    },
+    "TERM 2 - 2ND BUSINESS": {},
+    "Neural Networks": {
+      "exams": "https://drive.google.com/drive/folders/1_qwwnimCKUu5ZiwjeUJMsxk_KElXD3Ce",
+      "summaries": "https://drive.google.com/drive/folders/1oadfcwGdlId5wEIgOvhlsjTheLes1bGK",
+      "lectures": "https://drive.google.com/drive/folders/1TuR1Q_kC67HR5Tv-PTRAP26pMvDGfTuN",
+      "sections": "https://drive.google.com/drive/folders/1YzLUT2eb03jO0RWT1s1MzUgO43IM_yHp"
+    },
+    "Pattern Recognition": {
+      "exams": "https://drive.google.com/drive/folders/1EOh3fcjzdS4xbuedyW6nABttN7iCstLg",
+      "sections": "https://drive.google.com/drive/folders/1J0M6pREMxxh1Q1VfPTjq9YcZCA2QAQ0m",
+      "summaries": "https://drive.google.com/drive/folders/1I1FfAwEdenpHTKkQCkhBmyK87x0Jrtuo",
+      "lectures": "https://drive.google.com/drive/folders/1vN7tgKg2d-G_CdfvVxA7HU6j2I9Ydfy9"
+    },
+    "Modern Tourism": {
+      "summaries": "https://drive.google.com/drive/folders/1oCwYJQD0kkOWrECJCFI0uXXv4lpLmklI",
+      "lectures": "https://drive.google.com/drive/folders/1luEP1w4OZmcg05AwcncvVo2ZOi3LIToY"
+    },
+    "Economic Sciences": {
+      "lectures": "https://drive.google.com/drive/folders/1_Z4FSE1Dx0oJ9_nxbHoFvn1WP2wN-Iyd",
+      "summaries": "https://drive.google.com/drive/folders/1qI0ElMk-nNfGv8hH9h3M51Mz9KvEKhIZ"
+    },
+    "Numerical Computations": {
+      "sections": "https://drive.google.com/drive/folders/1K4WIBD41wo7MP_GwXpo6yfEg-93c2wVM",
+      "summaries": "https://drive.google.com/drive/folders/1WbNyHrPMQg8aBKK3pEUvBplv7gxzsxHS",
+      "exams": "https://drive.google.com/drive/folders/14RRGt31M6KSQAxypsDQ2sMI_DR939Wy5",
+      "lectures": "https://drive.google.com/drive/folders/1YerbhXBHp9cLVhuBlsp337xKVS_01139"
+    },
+    "Advanced Calculus": {
+      "exams": "https://drive.google.com/drive/folders/1NlpAB2MaIloRaoBeiNG2qiZagRn8EYPU",
+      "sections": "https://drive.google.com/drive/folders/19elXC7fQOQASSTk2cG9pa2GVU1i4gFW3",
+      "summaries": "https://drive.google.com/drive/folders/1iGMlitjUbTAe-PAr1Gm7ftOqMQjbmjvV",
+      "lectures": "https://drive.google.com/drive/folders/1kMuGgdNfirnO_HP6CYKL02-LRJXjpgfh"
+    },
+    "Probability and Statistics 2": {
+      "sections": "https://drive.google.com/drive/folders/17m-plzdlLyhkjM_TFmcYw5AZyC61yNrx",
+      "exams": "https://drive.google.com/drive/folders/1QRMaP_UgieJRGo5ebwvD_bIu9EMF0SYs",
+      "summaries": "https://drive.google.com/drive/folders/1z2c94GAfxG4TdX63ZY_rZSicvEZlrRHS",
+      "lectures": "https://drive.google.com/drive/folders/1Cat1L5ibgjDAx3qcU8XpKuM2Sp0jIWdA"
+    },
+    "Data Base": {
+      "summaries": "https://drive.google.com/drive/folders/1vMRqmZ7ID3YIT920N6loq_yJKOQSOG65",
+      "exams": "https://drive.google.com/drive/folders/1luaj1L4qB2T3hTcQvwra667abVRXOx9c",
+      "lectures": "https://drive.google.com/drive/folders/10DIqel1WkLIg5YZ1qbT604vRdpVPyLZ6",
+      "sections": "https://drive.google.com/drive/folders/1a78X1gWfKKui7qrsGkHvwycayAssG8Le"
+    },
+    "Data Science Methodology": {
+      "lectures": "https://drive.google.com/drive/folders/1euOjkcK23yHHMKwvx6zOJiPgrj7-m09k",
+      "sections": "https://drive.google.com/drive/folders/1C14zdESIjWhVfxFXP5eDsGY5D290Mu6Z",
+      "exams": "https://drive.google.com/drive/folders/1_PCpSjwGN8wHeO_uB0bthGi6iDcI5AsI",
+      "summaries": "https://drive.google.com/drive/folders/1G_XU_TmlwWBKyhFUOj0L055GBsTfniJT"
+    },
+    "Number Theory": {
+      "exams": "https://drive.google.com/drive/folders/1OjK4epFkpr0IDG94LuM7WZjrj2CZv_Kw",
+      "sections": "https://drive.google.com/drive/folders/1oGBn9RtjfZQ0jHV3LIHKDN1DF8qL_NSz",
+      "summaries": "https://drive.google.com/drive/folders/16KrHdQcwdcP1507oSL7MIPoxZBXY9cM3",
+      "lectures": "https://drive.google.com/drive/folders/1kLhhrcZR_-9aZqRkt8R_heUbhjvJC2Au"
+    },
+    "Introduction to CyberSecurity": {
+      "summaries": "https://drive.google.com/drive/folders/1hyS7CmYw3pg5LuB2bGi4DDLzEYNkoopm",
+      "exams": "https://drive.google.com/drive/folders/10sjQ3VXB32w3avBJQG60K-kjVT-KRbfh",
+      "sections": "https://drive.google.com/drive/folders/1QFYrLnoJhSwmoiAATSAeFxdMGkaKTu-g",
+      "lectures": "https://drive.google.com/drive/folders/1czNoBYcq9PxtDGhsK0m8PkY3jCermkUJ"
+    },
+    "Operations Research": {
+      "exams": "https://drive.google.com/drive/folders/1tovGbCvULpJCG6BXHaeuBXN0-EOjAk_Z",
+      "lectures": "https://drive.google.com/drive/folders/1UsjMAbX3Hylna15Q4mgMvTN60JDWlCsk",
+      "sections": "https://drive.google.com/drive/folders/1GNv82mzZ5heehxXkBmSz9bcwBF6twFiE",
+      "summaries": "https://drive.google.com/drive/folders/1FSJy5BRx93VYB9S5V13LWaVgsgtfDSfR"
+    },
+    "Smart Systems CI": {
+      "exams": "https://drive.google.com/drive/folders/1EB83ykK4iM7EKuX518digunlTHW1f48b",
+      "sections": "https://drive.google.com/drive/folders/1As8BizbMGdT8NgI2iyE79kHj9KyFsP_Y",
+      "lectures": "https://drive.google.com/drive/folders/1I-G13-wTo-QEympSlLygMyERa1fuuAzJ",
+      "summaries": "https://drive.google.com/drive/folders/1fYFXF7nzhy14DZjvCGBbfqOOIU2wG7Op"
+    },
+    "Accounting Information Systems": {
+      "lectures": "https://drive.google.com/drive/folders/16Ky0uBqcK_qLTTwt4H2kLR_OuqgqvQv-",
+      "sections": "https://drive.google.com/drive/folders/17rp47Vi0r6ORxAjsaHNnGBFqoeez0J_I",
+      "summaries": "https://drive.google.com/drive/folders/11GR8XB5TldP3B9S07T6V70-LURnmTAv2",
+      "exams": "https://drive.google.com/drive/folders/18f3nr-TvK01abgOtBZ1lZDwgrMf1E832"
+    },
+    "Introduction to Business": {
+      "lectures": "https://drive.google.com/drive/folders/1EHeFukmbY41Byh0ICRdOYeGEGlRFOjre",
+      "summaries": "https://drive.google.com/drive/folders/1hn-uMnhuaCRvLBDRrgzr4MIHEH6m-K0H",
+      "sections": "https://drive.google.com/drive/folders/1t4KpjfxW5gbLGby0sIB-q8jQwUHFP4N0",
+      "exams": "https://drive.google.com/drive/folders/1gzE-EwAi10rdxc6WIUYrrZR-tLOAnvid"
+    },
+    "Digital Mass Communication": {
+      "lectures": "https://drive.google.com/drive/folders/1Bah21GU7oDHCcmk5D5KEkSAjcDYMpw_0",
+      "summaries": "https://drive.google.com/drive/folders/1GJlTRf0RR_QsbqNUZzIzBNpZDdWa7_dB",
+      "exams": "https://drive.google.com/drive/folders/1l-eSxZso5-W62CCgJHhxe2OWChOGgKeF",
+      "sections": "https://drive.google.com/drive/folders/1c1vBKiBvFutaUARuKG38XCBdePWq_ryZ"
+    },
+    "DD Journalism": {
+      "sections": "https://drive.google.com/drive/folders/19yJcRK13uE_EhtZ87kCdxWrXYg1NVZ9y",
+      "summaries": "https://drive.google.com/drive/folders/1xaILR53ySZKUY_WLI9ifRoLIBcrnPRkY",
+      "lectures": "https://drive.google.com/drive/folders/17DyOBlP5AtyL9gfAWs69CGonO1tRD6Y9",
+      "exams": "https://drive.google.com/drive/folders/1zNkDQpkRlN0P6M8dXVLXd34BR6piY84O"
+    },
+    "Discrete Structure": {
+      "sections": "https://drive.google.com/drive/folders/1KnWe1Ciq3ETioGCIApu89Sc3Y1FvEgIO",
+      "lectures": "https://drive.google.com/drive/folders/12dEJoHHZhCBjBG1KiV2T92HLsGRtDIn8",
+      "summaries": "https://drive.google.com/drive/folders/1sqiDSQMkoYZCehzIgdyxZcNRSYpIkLnX",
+      "exams": "https://drive.google.com/drive/folders/1SgzQqrBfbam-yqOw8xOdq9SKXPlScR2k"
+    },
+    "Fitness": {
+      "lectures": "https://drive.google.com/drive/folders/1aEW9G3GneVHEUPvCwKs2PiQ-kFEbvn5x",
+      "summaries": "https://drive.google.com/drive/folders/13posL3y_6GC-0LnQakxkEVfbHnnSWur5",
+      "exams": "https://drive.google.com/drive/folders/162Bx_kHSG2w1hsC-xEWGy3e2oMcGioh7"
+    },
+    "Probability and Statistics |": {
+      "summaries": "https://drive.google.com/drive/folders/1CmL8lOIlbHdYCAhNa5cJSbDSTGEJVdMt",
+      "lectures": "https://drive.google.com/drive/folders/14WxYDv-3V5hBNF2FTrLEKkZpPQJjwyUb",
+      "exams": "https://drive.google.com/drive/folders/1reVZYtR8aOBqpHY8PSn2vmwVwNCS_nQC",
+      "sections": "https://drive.google.com/drive/folders/1yy9aqzmJsEDZasn2VT1nfzIdJoajEf6F"
+    },
+    "Innovation": {
+      "summaries": "https://drive.google.com/drive/folders/1n1AWZVhnH-Hr_8xmF8PiHdzTHYLGIsRa",
+      "lectures": "https://drive.google.com/drive/folders/1aEPdYTJoeTy0QhS3j1YE3GnJsjIs_8ij",
+      "exams": "https://drive.google.com/drive/folders/1MxzGEcFlQuweR0XHi7zuBMDuIfn00tcZ"
+    },
+    "Introduction To AI": {
+      "summaries": "https://drive.google.com/drive/folders/1RaS9fI4MaHKg_Bxs_GgyYE_LVuaG3kaJ",
+      "sections": "https://drive.google.com/drive/folders/1HYXjZlFJL8FfAKoyhDbshpwwLVBN700R",
+      "lectures": "https://drive.google.com/drive/folders/1tp-If4eJhcAY4dIzgSieKIj3YVdSF-8m",
+      "exams": "https://drive.google.com/drive/folders/1jjGy4TJ8EbON_k0hf2exQNQtQx2KR4wr"
+    },
+    "Data Structures and Algorithms": {
+      "sections": "https://drive.google.com/drive/folders/1nr2Og9PqyiRYGl7jFJOtgZx1LGZfeHvY",
+      "exams": "https://drive.google.com/drive/folders/1IADSkBhDhvgjpDJecfTf9VlvdoJ9P2hD",
+      "lectures": "https://drive.google.com/drive/folders/1U2vmhFrPOs46SZk-rNdzE4yrCIPL5Qow",
+      "summaries": "https://drive.google.com/drive/folders/1Oiki77OjApABjz0z7D3j2g-Kxc7-hN59"
+    },
+    "Programming ||": {
+      "exams": "https://drive.google.com/drive/folders/1dxwniB91RAEtAu0hKLt5cWqb3t1Q0FLI",
+      "sections": "https://drive.google.com/drive/folders/1geGGbmFKJYIN1yvyIskEeRyI0Y8zWhpU",
+      "summaries": "https://drive.google.com/drive/folders/1VGGZWwQmZdVD8LWI6piI_RzQqdwKq_st",
+      "lectures": "https://drive.google.com/drive/folders/1yiF9hcqLqa-wyKfEzdiWDF0bR4A_VtK2"
+    },
+    "Programming 1": {
+      "summaries": "https://drive.google.com/drive/folders/19GRYDzueyRIB45_CJGn9Qh3_3JkIgfQH",
+      "lectures": "https://drive.google.com/drive/folders/1VDUvvvKoRcBfdCAgdO5GUa8ourGzEj43",
+      "exams": "https://drive.google.com/drive/folders/1wT8Ad9IGifK4NMgE71xXzLhXs4FF0wuc",
+      "sections": "https://drive.google.com/drive/folders/14-W3wcsn8gw2ym8CnIo_L6jh0RfQW-mR"
+    },
+    "Intro into Computer System": {
+      "exams": "https://drive.google.com/drive/folders/1hTVXduWW2Icy8HY-uOc5lEiUUM42RSkB",
+      "summaries": "https://drive.google.com/drive/folders/1RFPXNiitr2yiHr1AyCsZWuTX0rYyOwIL",
+      "lectures": "https://drive.google.com/drive/folders/1yQK4QiXQ7e7Ui6DLMAGYQa3aTuQp0v9O",
+      "sections": "https://drive.google.com/drive/folders/1q0iRgXguAaa2zZTSA9J1smnCwN2PwCAn"
+    },
+    "Critical Thinking": {
+      "lectures": "https://drive.google.com/drive/folders/1mGHqF_BIXdX-S6BipXm942CsOvr6WHTG",
+      "exams": "https://drive.google.com/drive/folders/1ZfnkRMneHYU5wYlq4738XZt1NvGlRbt6",
+      "summaries": "https://drive.google.com/drive/folders/1He5H59nOzExcoG5GYaujPWQVnKTZwD2Z"
+    },
+    "Math0": {
+      "sections": "https://drive.google.com/drive/folders/1bGm1W2on979HuF1b618GI4S7UJ8ngkFK",
+      "summaries": "https://drive.google.com/drive/folders/1mQ6p7lVfmr_fKKYOYP9aBWwVeGEVGa4N",
+      "lectures": "https://drive.google.com/drive/folders/1YrNrKQC_tGwSoNuESo8xx31dpJNL7Kat"
+    },
+    "Data Science": {
+      "lectures": "https://drive.google.com/drive/folders/10SsZONPzWccvjTQB4ZcHmT0j_FU8b981",
+      "sections": "https://drive.google.com/drive/folders/14IwWgXRgD8G2IPJ2op1RdBIj9pgs77LJ",
+      "exams": "https://drive.google.com/drive/folders/1adpsd15n6hieC29aQECkrftCHNz20U9c",
+      "summaries": "https://drive.google.com/drive/folders/13IFz-O_64Ga8y9TyFe13CSovw0xzxdUQ"
+    },
+    "Calculus": {
+      "sections": "https://drive.google.com/drive/folders/1U2LbrtWkf-X8DL3c7Yo12kgV8bbZ0Wb6",
+      "exams": "https://drive.google.com/drive/folders/1Uf7LaRzQyqxEbTVG0dfmWFzTxmZNHLvB",
+      "lectures": "https://drive.google.com/drive/folders/1LsWVrCXpwVsL7YhGL_QFQhyryvpc_Yon",
+      "summaries": "https://drive.google.com/drive/folders/1UkJQ6mJmcSb_MTbzT_8liJZTUMCOLARt"
+    },
+    "Linear Algebra": {
+      "exams": "https://drive.google.com/drive/folders/1vUbUjWsbexiPgjDbJOuh-N43PVDc9hjc",
+      "summaries": "https://drive.google.com/drive/folders/150zP5Dc9vDKzazlm37IRttDG-_b-opK1",
+      "lectures": "https://drive.google.com/drive/folders/1yFYYS37ERUHG6Ft_HnC17Jmgo-Zsrg06",
+      "sections": "https://drive.google.com/drive/folders/191trjdbwAtjG6yz65q-C1Hd3gigqoti7"
+    },
+    "Software Engineering": {
+      "summaries": "https://drive.google.com/drive/folders/13C2VAFVwKFB2HHckl27f9dXfInsApJ_z",
+      "lectures": "https://drive.google.com/drive/folders/14kAH4lk1B8-_gt_jwGIVlPYDXUMqh9Ot",
+      "sections": "https://drive.google.com/drive/folders/1UAOG8RjkjYK5P5qCAKIhgp-YMCqkbzGc",
+      "exams": "https://drive.google.com/drive/folders/1gEr6m40AJJ1aawnhCMavO_2KCCKvAS8j"
+    },
+    "System Analysis & Design": {
+      "sections": "https://drive.google.com/drive/folders/1zQu9UMfP6Oc9nziu7bMSp7Y_TfdF_nMT",
+      "lectures": "https://drive.google.com/drive/folders/1S73UympopvkECcLBBUqA3weHhb7iv300",
+      "exams": "https://drive.google.com/drive/folders/1h4hDrf4BiINO1J11w2eU8Oqfn3igD-xR",
+      "summaries": "https://drive.google.com/drive/folders/1vmMociZ1acxFv4AHbqYAwb7UtmprdSSB"
+    },
+    "Computing Intensive Statistical Methods": {
+      "exams": "https://drive.google.com/drive/folders/1FVBJtarizr-5ZQbTRMZ3CQ5YaQlyusOV",
+      "sections": "https://drive.google.com/drive/folders/149t4EDeg2uQkt97V_m94S6aJYPqCaekY",
+      "summaries": "https://drive.google.com/drive/folders/1KJuTX2s7cXjBiX9al646SbgwfGXRLBXf",
+      "lectures": "https://drive.google.com/drive/folders/1rLxUL06kYDhdBrGfB1H-F_s1zomdjqd1"
+    },
+    "Data Visualization": {
+      "summaries": "https://drive.google.com/drive/folders/152JzhYGQ9AiMksjks4mIIoULsYBNQ0Jt",
+      "exams": "https://drive.google.com/drive/folders/1g8MeUv89wUc5meya3zO5_DBIIVvc4xu7",
+      "sections": "https://drive.google.com/drive/folders/1akup2XLHU9HNVhNrRoVPXGjoJGS_b7xH",
+      "lectures": "https://drive.google.com/drive/folders/1cPdkERtei3lc_XCT_5flekoJuYPWZ29Q"
+    },
+    "Advanced Database Systems": {
+      "sections": "https://drive.google.com/drive/folders/1OyFp7CRNwfGf3vHNbp5ZOTaDcwkCPFA7",
+      "exams": "https://drive.google.com/drive/folders/1HalJgXrhKyBuFRHGj0Z9WZiUQWr7GlmJ",
+      "lectures": "https://drive.google.com/drive/folders/1YJH8ZbwFduRGbS07v6nx2R66pqMkumyP",
+      "summaries": "https://drive.google.com/drive/folders/1trcmqKcpKAGVRNmGBl2ROkGeoete6nkO"
+    },
+    "Convex Optimization": {
+      "summaries": "https://drive.google.com/drive/folders/1dj1SQFmohMdDo7EVlr2mGXo7ZBWcxSpn",
+      "sections": "https://drive.google.com/drive/folders/1tFnr-E5ELvZKUVozVuVMMRD3ISlzdd1D",
+      "lectures": "https://drive.google.com/drive/folders/1PYIW3EDLw9NAyZQyEb2DusgVHHcLJV6M",
+      "exams": "https://drive.google.com/drive/folders/1VcS8JRTUQWcCsUOyfxxEcJiqBANgfhAW"
+    },
+    "Algorithm Design": {
+      "sections": "https://drive.google.com/drive/folders/11dk-88iCFHc_XGxy59t-CGgba0agQVSC",
+      "lectures": "https://drive.google.com/drive/folders/1iOGtM71_PlCnaT5uD9bYSdqhlThfCXMI",
+      "summaries": "https://drive.google.com/drive/folders/1PU9XmZgUtI8UBBCoGvgD1xim6SwrImdn",
+      "exams": "https://drive.google.com/drive/folders/1MolIrIQb07FOLf3PwwhCcVy_PW5NH7sg"
+    },
+    "Survey Methodology": {
+      "sections": "https://drive.google.com/drive/folders/1NwcCR9EQyYjtEqshFechfDzQJwERAr8-",
+      "exams": "https://drive.google.com/drive/folders/1vgvf18-SQ8zlkhFk_HyNQVl6HhzlbtC4",
+      "summaries": "https://drive.google.com/drive/folders/1AKHPJXp9VVhYGUutKPP7XqgPjfTbrkIf",
+      "lectures": "https://drive.google.com/drive/folders/10Q55FC9PkoQYlV2DiFlwYQqLUn7c0Hvs"
+    },
+    "Data Computation and Analysis": {
+      "exams": "https://drive.google.com/drive/folders/1_xO3Y7VY4qqYUdhncxq8D5IG10xvtN0t",
+      "summaries": "https://drive.google.com/drive/folders/1Je3MNYuv6V7HIj7dtQp87lt-i0IZ8OR5",
+      "sections": "https://drive.google.com/drive/folders/1mdMcLznO8KyNs91IWodCpdN8rdgIeV10",
+      "lectures": "https://drive.google.com/drive/folders/1DyWdkx1w4_8I-3jWEBU78r5AJtukFqaR"
+    },
+    "Data Warehousing & Business Intelligence": {
+      "exams": "https://drive.google.com/drive/folders/1hY_CGSou9ftbycUxMgeKPqt5MdLRugUN",
+      "sections": "https://drive.google.com/drive/folders/1LrAfAH1mBWqdVx5q4Q4ih10p5uS7hkwM",
+      "summaries": "https://drive.google.com/drive/folders/11aWXDahbIM4OT9R8qVgY_9Ny3bjXdJMg",
+      "lectures": "https://drive.google.com/drive/folders/16UbTJJctK4CsF8oyg0SAd8xXeSHOONN1"
+    },
+    "Quantitative Analysis": {
+      "exams": "https://drive.google.com/drive/folders/1rtSlR7xzXhC-qQVXyXXcVZFS9mVTXCvJ",
+      "sections": "https://drive.google.com/drive/folders/15FZ0zidfiGWHbKuwBalfvmUH25bM9D74",
+      "summaries": "https://drive.google.com/drive/folders/1dGcCFP1hlpjbA8sjWk7Sbou68Wb_p1cA",
+      "lectures": "https://drive.google.com/drive/folders/1gKcKZS4Wqn_Sl4Xn6rI6gqqzEekhm9_m"
+    },
+    "Business Process Modeling and Integration": {
+      "exams": "https://drive.google.com/drive/folders/1qXR1N2yaAL1dQKoso0PKRbdPFwvJhG-S",
+      "sections": "https://drive.google.com/drive/folders/1Z_8uBwlBi1XmSv4i3zX-_g6T2aWgiCaN",
+      "summaries": "https://drive.google.com/drive/folders/1nNKwTX7uz_62EildtA5EC-JMd5cz9rkL",
+      "lectures": "https://drive.google.com/drive/folders/1QKcsyn3CRJC48qfF42wyFITdTVKdia_W"
+    },
+    "System Analysis and Design": {
+      "summaries": "https://drive.google.com/drive/folders/1-TUMlZnHgD5NSahx8Ab5v8tR4gBZ_bGy",
+      "sections": "https://drive.google.com/drive/folders/10ttM9_EA2sEAPEj6_fsyKEaxP2AItRcP",
+      "lectures": "https://drive.google.com/drive/folders/1XCk9YrAfo70uV9hfybNmvLvJn69lHFiZ",
+      "exams": "https://drive.google.com/drive/folders/1bYzfL7z6ce132wz5wAEYxWP29khFj81k"
+    },
+    "Dist Processing": {
+      "sections": "https://drive.google.com/drive/folders/1SHTshE8VjDQvZXAjlOf3uVNr7ntMx-2p",
+      "summaries": "https://drive.google.com/drive/folders/1YJKn5zhVSV0YiAzfudohb8tO0IKawpKl",
+      "lectures": "https://drive.google.com/drive/folders/12niCwNHhJywcK8A9M6RsiY8mI9C2nxyN",
+      "exams": "https://drive.google.com/drive/folders/1tdG9OjPWoXds9z1fcJUXO2scrR1ZA4M6"
+    },
+    "Computer Networks": {
+      "sections": "https://drive.google.com/drive/folders/1XV94AxwvlgXikzZ3qbYR5QtJqNIIe-LI",
+      "lectures": "https://drive.google.com/drive/folders/18EfL-u4z06mBDNki39-XEfShYMKvMUXn",
+      "summaries": "https://drive.google.com/drive/folders/1y_ZHb47S0RCveSEoWc17PsXEsQDH019K",
+      "exams": "https://drive.google.com/drive/folders/1qPJuDNlabxV5IctxPU1_0tomDLmZIEVR"
+    },
+    "Web Programming": {
+      "exams": "https://drive.google.com/drive/folders/1pqHAxus_oyiKwz8aI4qxUAI1hyJeH3LO",
+      "summaries": "https://drive.google.com/drive/folders/1izlOiejC_W5u0KEwRrV3Gn7uGRsMLabV",
+      "lectures": "https://drive.google.com/drive/folders/10lmuusGOSB6PCUE0bLTddEKMDubhNmGu",
+      "sections": "https://drive.google.com/drive/folders/1elx6DFq_rBC-HBrMUwkvXetROKMb4xYP"
+    },
+    "Stochastic": {
+      "summaries": "https://drive.google.com/drive/folders/1ffKJxpEG86cFWOtlDa42CcQSECLlCVeg",
+      "lectures": "https://drive.google.com/drive/folders/1PKWYRXoXWqGpom2A64o1xZvKJZtEuPD1",
+      "sections": "https://drive.google.com/drive/folders/1OK_hd7pcqWv_8pm9dXTR4xYx9axAtDcD",
+      "exams": "https://drive.google.com/drive/folders/1k6L4jQgzqFxLMFdcPvm3kJp6m8B2bzUc"
+    },
+    "Design anf Analysis of Exp": {
+      "summaries": "https://drive.google.com/drive/folders/1q6Wct_XlOa-vcL5oZQmOh-M4DShs79pm",
+      "sections": "https://drive.google.com/drive/folders/1vKXnF7anmsn_vUMUCmL8geYGVFwWpz9R",
+      "lectures": "https://drive.google.com/drive/folders/1Dbp5JfaMcYG9DoJxOlgwL7eTw3n5v2_H",
+      "exams": "https://drive.google.com/drive/folders/1yalskt-sOK3_0envMxfdiVtTXD7OfV-k"
+    },
+    "OS": {
+      "summaries": "https://drive.google.com/drive/folders/12S1na5_w3TYn6AP1xGcz4-MVK4PwuSm_",
+      "sections": "https://drive.google.com/drive/folders/1HYW5w49TuHYjjaQolerASZ58QYH7HH48",
+      "lectures": "https://drive.google.com/drive/folders/1EpjZJ58zbMRasFyPNySKmYJuG7b-Bvua"
+    },
+    "Public Opinion and E Surveys": {
+      "exams": "https://drive.google.com/drive/folders/17agsMgu_xD5auLqWnHAMefCJVko-8F6B",
+      "sections": "https://drive.google.com/drive/folders/1_KAITzJX_YeylZLn7rUBVOX2vNuSHuQ-",
+      "summaries": "https://drive.google.com/drive/folders/1nB_Iwzcx2PLcG6Uzmr879RtGwzicn3rM",
+      "lectures": "https://drive.google.com/drive/folders/1cEws5ESprKjzZ9C8wU1L-zte-3Edf1wx"
+    },
+    "Multimedia Analytics": {
+      "exams": "https://drive.google.com/drive/folders/1dLMCJPU3jHNdg9IE5CxCUnjEqSxycp5U",
+      "sections": "https://drive.google.com/drive/folders/1c1BNdIoBGDlQRWZ2HoRmqHIfhvDGayTE",
+      "summaries": "https://drive.google.com/drive/folders/1wkBb6v02RWi6wm5-KOzCll4bfJqLRI-a",
+      "lectures": "https://drive.google.com/drive/folders/1mFZHEp6uKGiHjf0vQytVfvNGuR5rzDNm"
+    },
+    "Social Media Analytics": {
+      "exams": "https://drive.google.com/drive/folders/17gONZypcLecDVs1XINxuODK3z4ZwkEYE",
+      "sections": "https://drive.google.com/drive/folders/1srQguJiSBJ6Eml0-I00hHGfKp6khwwy3",
+      "summaries": "https://drive.google.com/drive/folders/108FF163ClHUHTfYQtnDg12SxBINByju2",
+      "lectures": "https://drive.google.com/drive/folders/1mAwAQ5fw1gQCsqQOKaSxYPatnvvOt-BK"
+    },
+    "Information Technology Laws and Ethics": {
+      "exams": "https://drive.google.com/drive/folders/1gDfwPJBpen1nhVBu-fkYmM_i4FVAH8zX",
+      "sections": "https://drive.google.com/drive/folders/1Je_tShtWBfHGdHj7Ep0ecFfS7kIsGTDx",
+      "summaries": "https://drive.google.com/drive/folders/1Dx_bu3JnyBjspSS8qd2YCjzpRBT6Hl4p",
+      "lectures": "https://drive.google.com/drive/folders/1CkGN2ikAyJ8z2u1mqS-XktHACL3Hkn5f"
+    },
+    "Logistics and Supply Chain Analytics": {
+      "exams": "https://drive.google.com/drive/folders/1H1wyRLy9icgEqpQA2CdgLcWcli-c3gML",
+      "sections": "https://drive.google.com/drive/folders/1uFXXSooRfsik3ARrT5P7HC6CIFxiQ_W-",
+      "summaries": "https://drive.google.com/drive/folders/1QoD6K83ufi7YnueDsZWyTGyOTiDfongm",
+      "lectures": "https://drive.google.com/drive/folders/1GriWftVSgG952MM9hGTtwTPppx3jkgrC"
+    },
+    "Text and Social Media Mining": {
+      "exams": "https://drive.google.com/drive/folders/1Aj2dePCcXGAYU3no9qNhLSPQmnMjOm7t",
+      "sections": "https://drive.google.com/drive/folders/1leC5AI9G_fRqrexGZne0djmlIY93KKYv",
+      "summaries": "https://drive.google.com/drive/folders/1EQdOuS7W8yGYXKsi_-_T3DSE-LcCtjR8",
+      "lectures": "https://drive.google.com/drive/folders/19YAUxPw3oKrIMBOD_NJATwenwL2TMNZv"
+    },
+    "Visual Recognition": {
+      "exams": "https://drive.google.com/drive/folders/1h5aKc6fhlIHOyHwB08WNHG6mu2g6R9wK",
+      "sections": "https://drive.google.com/drive/folders/1a9zU1ifMYuLv5p4KUMXKPHstFFQrHpMF",
+      "summaries": "https://drive.google.com/drive/folders/1ZnQTTvsg4ZYnJNyGStmXsCClQFbKZ7wR",
+      "lectures": "https://drive.google.com/drive/folders/1GGmebstFaTPWPnK0YVv730TwFmWwbiXl"
+    },
+    "AI for Robotics": {
+      "exams": "https://drive.google.com/drive/folders/1xiUAbXwzjlEBoZIBp2tYFAGWUI_RnHuc",
+      "sections": "https://drive.google.com/drive/folders/1kLQ8JOtradVotGQY5IA-oYmozLXOuSdg",
+      "summaries": "https://drive.google.com/drive/folders/1Eon_rwzYQjAjsRPyrW41OedREBpZ6cIy",
+      "lectures": "https://drive.google.com/drive/folders/1Yn6UCjScUNRlRUjP8-zjOY0uZLVZfMu6"
+    },
+    "Reinforcement Learning": {
+      "exams": "https://drive.google.com/drive/folders/1TI8qjwXi1CzpH8i_ETlbaz7jIGO5jqc_",
+      "sections": "https://drive.google.com/drive/folders/15szFTEbrnO92NT89J4pr10TeOEGDONd4",
+      "summaries": "https://drive.google.com/drive/folders/1K1oucOhCIj8ox0Uwmwspbafv0HSNkCoK",
+      "lectures": "https://drive.google.com/drive/folders/1DGvDGHfBkVJwQG2mBG7wD-O1ybhe0Fyt"
+    },
+    "Bayesian Statistics": {
+      "sections": "https://drive.google.com/drive/folders/1QcIQ1hkJHB_CD5qDusUQCJo2ikgHgImO",
+      "exams": "https://drive.google.com/drive/folders/1aMUOqCoZ2sL3ThwgdYLwAVL938PajT53",
+      "summaries": "https://drive.google.com/drive/folders/11EAehJm67_p7u8jtR3eTWat9oAm8s3tS",
+      "lectures": "https://drive.google.com/drive/folders/1wV0QeIDlpa3MhkUi4xodOuWPZ1UEQEjC"
+    },
+    "Stream Processing": {
+      "exams": "https://drive.google.com/drive/folders/18qtouIWhwaAzzKCyrzynn6tV6RSe2wde",
+      "lectures": "https://drive.google.com/drive/folders/19sE6SSdSOlv5C0PUJh9TLNNOB0Qen9TJ",
+      "summaries": "https://drive.google.com/drive/folders/1CamzrjeiXMhFHEQiq0Isr_N-M-bEQ3yo",
+      "sections": "https://drive.google.com/drive/folders/10Rq6XFVlRgjnMSlsG-Q_gI_8Zzc3wXW9"
+    },
+    "Distributed Data Analysis": {
+      "sections": "https://drive.google.com/drive/folders/1T5m-0APvW0e-CE2Aqse6cX1fD1hAGBe_",
+      "lectures": "https://drive.google.com/drive/folders/1WJxABPSaiv-pukYsdc-mBDWbjkMAICbk",
+      "summaries": "https://drive.google.com/drive/folders/1dp5U9cGlKNZvohGkPK00pXrJJY2Hm7xG",
+      "exams": "https://drive.google.com/drive/folders/1z3MG9hf0PPMJ7KmwwrMwPG2aqp196_s8"
+    },
+    "Social Data Analytics": {
+      "exams": "https://drive.google.com/drive/folders/1DP6gqmyFU-E6n-IUgDgkFZUACwr__m87",
+      "lectures": "https://drive.google.com/drive/folders/1oSgnG2Q-rf3mV-cmFQlqZRza889ReqeE",
+      "summaries": "https://drive.google.com/drive/folders/1Umbq7j05iHfo-Q7xCu9g142jA5HBrLyN",
+      "sections": "https://drive.google.com/drive/folders/1qhHVTrfR0NOAHQ7LO7yonpklE1FBPUMM"
+    },
+    "Audience Research and Analysis": {
+      "exams": "https://drive.google.com/drive/folders/1Ea49ZVPyeELf9U_EapPTzeoikSSbNVRE",
+      "sections": "https://drive.google.com/drive/folders/1F0vSvfNhNG5BPy_oQpeqpwbR94jKG6DX",
+      "summaries": "https://drive.google.com/drive/folders/1_oUAIX_YvWCNPmrOllDVEwebM_QtZHbL",
+      "lectures": "https://drive.google.com/drive/folders/13Kn36QMKkgD-csvf5sJwJa9a-KRFSXCM"
+    },
+    "Digital Broadcasting": {
+      "exams": "https://drive.google.com/drive/folders/1rFrtcZb-NQdYpbqAqcirlqwaZLjLgEGO",
+      "sections": "https://drive.google.com/drive/folders/19-lfaxvfvjdlDwgmya0HRnvJ9q79AAK7",
+      "summaries": "https://drive.google.com/drive/folders/1uJkMc4gN_htlcaMWpDHPaqnyI-rKGQJi",
+      "lectures": "https://drive.google.com/drive/folders/1UXFIyQt_6CN20dtjTSfaxAAjNvgEHHRP"
+    },
+    "Computer Graphics": {
+      "exams": "https://drive.google.com/drive/folders/1JmhhAh8sUtIrjRSIYZpWy1W54cKXmy9O",
+      "sections": "https://drive.google.com/drive/folders/1kk8-jxIuEj9LFd9loELzNRT5bRD5KnG-",
+      "summaries": "https://drive.google.com/drive/folders/1T4cPiAXSIJxDvlouAlhomoIjmdxTv9xv",
+      "lectures": "https://drive.google.com/drive/folders/1ji7KLb7Mjp7wsUKuzgVBPHpH6rtVVGI0"
+    },
+    "Law and Cybersecurity": {
+      "exams": "https://drive.google.com/drive/folders/1bCvb2OE0qha946st-MFYI3Z9fctN4ZtV",
+      "sections": "https://drive.google.com/drive/folders/1f2nQa6i4IaAw27OphtgUIGVgp9PlRHyN",
+      "summaries": "https://drive.google.com/drive/folders/1PyGqpN8nhlby26YyDRsvSxbPvrwUYNID",
+      "lectures": "https://drive.google.com/drive/folders/13DFQoSx7lWinrM7i4Id3VWZW1XCIAz3O"
+    },
+    "Digital Forensics": {
+      "exams": "https://drive.google.com/drive/folders/1XjIgVpuCF_cnQgVuDQVBksvQNnoPbZ7N",
+      "sections": "https://drive.google.com/drive/folders/1N8X9sHRypeFMbLY58R5JxBxBB2sSJam2",
+      "summaries": "https://drive.google.com/drive/folders/1qoRQO4sv7PID66WxVdgxSR3Hjvyp1Z6e",
+      "lectures": "https://drive.google.com/drive/folders/1vzJKO6UbGwTgNFZgKWBNSY-M51RDtbJ7"
+    },
+    "Cybersecurity Risk Management": {
+      "exams": "https://drive.google.com/drive/folders/1Cpmk8-RwP4idQx8-CFFy_t1SysDfsTw9",
+      "sections": "https://drive.google.com/drive/folders/1MWdLZnLNMoJsHHulOIMiBu2XRDMTfAys",
+      "summaries": "https://drive.google.com/drive/folders/1JmvotOz8E0LEWzPrjCOyaQMj2lH0v9xt",
+      "lectures": "https://drive.google.com/drive/folders/1YGc7BrSAC2M_CpIa-7gFDiNrGx7o1UCw"
+    },
+    "Human Security": {
+      "exams": "https://drive.google.com/drive/folders/1zUkjVA5NwbYsD_miY3bw0IZ2qKsrsWev",
+      "sections": "https://drive.google.com/drive/folders/1aAP-jMw62fnKryaQyME7xt38_b-8GC28",
+      "summaries": "https://drive.google.com/drive/folders/1rVkWpgIFVW-UkN47pQXAodAi7ZnGOx8O",
+      "lectures": "https://drive.google.com/drive/folders/1y-_7pHiiuJ6af8he0osTEVxk0-Gy-RkY"
+    },
+    "Security of Distributed Systems": {
+      "exams": "https://drive.google.com/drive/folders/1thJMXnTQiX3IIcyvH9WMAK-AGQz3nIti",
+      "sections": "https://drive.google.com/drive/folders/153ZuNfJzelpRgCkObImQ6TZGih1fkKUV",
+      "summaries": "https://drive.google.com/drive/folders/1S9-fvgo-2TXAeViz8i4LGLrvMRyQ0__s",
+      "lectures": "https://drive.google.com/drive/folders/1gpYYhWScuN83mjKtOnWQoPYQTl8rKJKV"
+    },
+    "Social Network Computing": {
+      "exams": "https://drive.google.com/drive/folders/1bN2SfAjSoydsg0pSz1a3og4f1b2ay1ME",
+      "sections": "https://drive.google.com/drive/folders/1mAr6_Uv5xSXtxEXO4O4RLDyvBU_9hqje",
+      "summaries": "https://drive.google.com/drive/folders/1ZbpLGICe_RSDfR5hyeyGTnAqWYLNs1fA",
+      "lectures": "https://drive.google.com/drive/folders/1OLCI4tzEEYPNs-vqiTzf4yA5Z-z71if2"
+    },
+    "Information Retrieval": {
+      "exams": "https://drive.google.com/drive/folders/12sTWIY853fm1c8u9_hioMXCdoZs6VC5f",
+      "sections": "https://drive.google.com/drive/folders/15IEyjPSHxu3qYNHD8Ie_gHrEvxkmYde0",
+      "summaries": "https://drive.google.com/drive/folders/1rla3Hu9s8er_iQY8UpPwOjoFOoLZWhVj",
+      "lectures": "https://drive.google.com/drive/folders/1bJqQYd2fcQ8mMxV8cjD0ntuJGcae854-"
+    },
+    "Data and IT Governance": {
+      "exams": "https://drive.google.com/drive/folders/1k8RdV9E534AQieICjv1oP3aa4qSVP28O",
+      "sections": "https://drive.google.com/drive/folders/11Bb-pno434CjpSIKf1EfsMtLgfMuiOOp",
+      "summaries": "https://drive.google.com/drive/folders/1fVhsb6iAr7htke2UtGMqbBv7br_t-yV1",
+      "lectures": "https://drive.google.com/drive/folders/1KSm0LY51y2muMNtgdXujq-956X29K04y"
+    },
+    "Leadership and People Analytics": {
+      "exams": "https://drive.google.com/drive/folders/1s2-TVGPFUo8YWhw11CF-aQu3KXLUx29E",
+      "sections": "https://drive.google.com/drive/folders/1BG4XS8h0H2QOzpUKSixYkeMOURk3rNMT",
+      "summaries": "https://drive.google.com/drive/folders/1NH5nC89K7o0XLETziaJGqB05g-s06_vp",
+      "lectures": "https://drive.google.com/drive/folders/1MYRZzhVTKl7O3q4CsN0sPS0MkRcVSH2b"
+    },
+    "Natural Language Processing": {
+      "exams": "https://drive.google.com/drive/folders/1DmZMnnRDeI42XiQYHhvkQi5OmwBz6pn8",
+      "sections": "https://drive.google.com/drive/folders/1_caEKnancQl_3a_1uE7ZYJN80so92QAF",
+      "summaries": "https://drive.google.com/drive/folders/1GxHo9kvY26K0_FFV3pN1_g9lWsqQDYPs",
+      "lectures": "https://drive.google.com/drive/folders/11d1LHDgabqdfbvvQR9SQIpv-Y_E7PyV9"
+    },
+    "Internet of Things I": {
+      "exams": "https://drive.google.com/drive/folders/1plcjrbq9IaIEYP0-EybqBNxkXPnl39Mv",
+      "sections": "https://drive.google.com/drive/folders/1cqm4KHxaw4B11kMksHodWnZ01eTG4QT1",
+      "summaries": "https://drive.google.com/drive/folders/1XjW0IPyORzgifqqht_bcqer8JnhFYkgx",
+      "lectures": "https://drive.google.com/drive/folders/1xsdMuQHI4Tf1jdKlhYaPGyJSRGHouZRG"
+    },
+    "AI Platforms": {
+      "exams": "https://drive.google.com/drive/folders/1sq4cCFBaD6PXJHb3EzcA7f-iY17rj1RN",
+      "sections": "https://drive.google.com/drive/folders/1npE1wDy6bYcLa8Y2xNBsNqZjBbyWP0ca",
+      "summaries": "https://drive.google.com/drive/folders/1qZMef23zdFZATAcMmp9f6Sw4P8ISp3cq",
+      "lectures": "https://drive.google.com/drive/folders/1mEsI49nPM4aEXIn-ozL0LfbVNuTbhxD8"
+    },
+    "Simulations": {
+      "exams": "https://drive.google.com/drive/folders/1m9oZxLuNlQyHR5y9DXk-jMUearFu2v4X",
+      "sections": "https://drive.google.com/drive/folders/1iSN9XQ1-l_sFJxuOI9frRZ7IowrNoTDU",
+      "summaries": "https://drive.google.com/drive/folders/1ZtyTVQe6I4n9-s-aHul-WNt8uAVF8dWA",
+      "lectures": "https://drive.google.com/drive/folders/1l5ZPoIvEehAF8K0JEVNhQ3ns4NRndm7u"
+    },
+    "Introduction to Social Networks": {
+      "exams": "https://drive.google.com/drive/folders/1Dvq4nBeoavTE0KQwym1O_mjscNfBFUrp",
+      "sections": "https://drive.google.com/drive/folders/1QQJf4G0l0QOyTNS00XXCuckWzuz0qaJ-",
+      "summaries": "https://drive.google.com/drive/folders/1f30BL2yOEenLm7eJPp1x-bET81fECeaO",
+      "lectures": "https://drive.google.com/drive/folders/1_65rVBclWbNMIkD2IFdb8E-fVoXtNela"
+    },
+    "Big Data Analytics": {
+      "exams": "https://drive.google.com/drive/folders/1QEgss5XshLKu8zy_7_6UOz0evEUiOFK7",
+      "sections": "https://drive.google.com/drive/folders/1zvDWYTK9JZMebXdatLRWvdQIdw02e3V4",
+      "summaries": "https://drive.google.com/drive/folders/1cOdJfBRveI3eu32-23c5rWGAQ4aVWPjb",
+      "lectures": "https://drive.google.com/drive/folders/1XCDa4h8-updjGudG12oSDSvmwD5-bLlV"
+    },
+    "Data Compression": {
+      "summaries": "https://drive.google.com/drive/folders/1qEincMirbMS3EpzPu5aAla9E2N9K-Bit",
+      "sections": "https://drive.google.com/drive/folders/1vm3q0QIZTurW9U0BsIe_0voYS05m51oW",
+      "lectures": "https://drive.google.com/drive/folders/1tmFCYnon_26G9nSgQoP3iWAPJQPE078t"
+    }
+  }
+}

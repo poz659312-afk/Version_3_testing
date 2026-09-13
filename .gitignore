@@ -46,3 +46,6 @@ nvidia-chat.html
 /push-changes.sh
 
 /scratch
+/src/app/drive-builder
+/src/app/api/drive-builder
+/scripts

@@ -37,7 +37,11 @@ export interface Department {
   levels: {
     [key: number]: Level
   }
+  facultyElectives?: Subject[]
+  programElectives?: Subject[]
 }
+
+export * from './electives-data'
 
 export const departmentKeyMap: { [key: string]: string } = {
   'computing and data sciences': 'computing-data-sciences',
@@ -120,144 +124,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLskaQRgiRMYb0SqvJ-wKx2n4Q3CB5uQ8e&si=wXANl6gRLW404zuP"],
                 summaries: "https://drive.google.com/drive/folders/1RFPXNiitr2yiHr1AyCsZWuTX0rYyOwIL?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1hTVXduWW2Icy8HY-uOc5lEiUUM42RSkB?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "CS_001",
-                    name: "Chapter 1 : Introduction to Computer Systems",
-                    code: "CS_001",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Compcuter System/CS_001.json"
-                  },
-                  {
-                    id: "CS_002",
-                    name: "Chapter 2 : Processing and Memory Management",
-                    code: "CS_002",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_002.json"
-                  },
-                  {
-                    id: "CS_003",
-                    name: "Chapter 3 : Storage",
-                    code: "CS_003",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_003.json"
-                  },
-                  {
-                    id: "CS_004",
-                    name: "Chapter 4 : Input and Output",
-                    code: "CS_004",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_004.json"
-                  },
-                  {
-                    id: "CS_005",
-                    name: "Chapter 5 : System Software",
-                    code: "CS_005",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_005.json"
-                  },
-                  {
-                    id: "CS_006",
-                    name: "Chapter 6 : Applications Software (1/2)",
-                    code: "CS_006",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_006.json"
-                  }
-                  ,{
-                    id: "CS_007",
-                    name: "Chapter 6 : Applications Software (2/2)",
-                    code: "CS_007",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_007.json"
-                  }
-                  ,{
-                    id: "CS_008",
-                    name: "Chapter 7 : Computer Networks",
-                    code: "CS_008",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_008.json"
-                  },
-                  {
-                    id: "CS_009",
-                    name: "Chapter 13 : Program Dev & Programming Languages",
-                    code: "CS_009",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_009.json"
-                  },
-                  {
-                    id: "CS_010",
-                    name: "Converting Binary to Decimal and Vice Versa",
-                    code: "CS_010",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_010.json"
-                  },
-                  {
-                    id: "CS_011",
-                    name: "Converting Binary to Octal and Vice Versa",
-                    code: "CS_011",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_011.json"
-                  },
-                  {
-                    id: "CS_012",
-                    name: "Converting Binary to Hexadecimal and Vice Versa",
-                    code: "CS_012",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_012.json"
-                  },
-                  {
-                    id: "CS_013",
-                    name: "Converting Decimal to Octal and Vice Versa",
-                    code: "CS_013",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_013.json"
-                  },
-                  {
-                    id: "CS_014",
-                    name: "Converting Decimal to Hexadecimal and Vice Versa",
-                    code: "CS_014",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_014.json"
-                  },
-                  {
-                    id: "CS_015",
-                    name: "Converting Octal to Hexadecimal and Vice Versa",
-                    code: "CS_015",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_015.json"
-                  },
-                  {
-                    id: "CS_016",
-                    name: "Converting Gray Code to Binary and Vice Versa",
-                    code: "CS_016",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/Computer System/CS_016.json"
-                  },
-                  {
-                    id: "CS_017",
-                    name: "Converting BCD to Decimal and Vice Versa",
-                    code: "CS_017",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/Computer System/CS_017.json"
-                  }
-                ],
               },
             },
             {
@@ -272,88 +138,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLNVsyemi1cQyXLWT3vm4GbWzVxAK_4nbR&si=Q7kxeMYT4iXhr2uC"],
                 summaries: "https://drive.google.com/drive/folders/13IFz-O_64Ga8y9TyFe13CSovw0xzxdUQ?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1adpsd15n6hieC29aQECkrftCHNz20U9c?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DS_001",
-                    name: "Lecture 1 - Introduction to Data Science",
-                    code: "DS_001",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_001.json"
-                  },
-                  {
-                    id: "DS_002",
-                    name: "Lecture 2 - Big Data",
-                    code: "DS_002",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_002.json"
-                  },
-                  {
-                    id: "DS_003",
-                    name: "Lecture 3 - Data Analytics lifecycle (Characters)",
-                    code: "DS_003",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_003.json"
-                  },
-                  {
-                    id: "DS_004",
-                    name: "Lecture 4 - Data Analytics lifecycle (Phases)",
-                    code: "DS_004",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_004.json"
-                  },
-                  {
-                    id: "DS_005",
-                    name: "Lecture 5 - Clustering Analysis",
-                    code: "DS_005",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_005.json"
-                  },
-                  {
-                    id: "DS_006",
-                    name: "Lecture 6 - Introduction Association Rules (1/2)",
-                    code: "DS_006",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_006.json"
-                  },
-                  {
-                    id: "DS_007",
-                    name: "Lecture 7 - Introduction Association Rules (2/2)",
-                    code: "DS_007",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_007.json"
-                  },
-                  {
-                    id: "DS_008",
-                    name: "Lecture 8 - Data Visualization",
-                    code: "DS_008",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_008.json"
-                  },
-                  {
-                    id: "DS_009",
-                    name: "Lecture 9 - Classification Analysis",
-                    code: "DS_009",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_009.json"
-                  },
-                  {
-                    id: "DS_010",
-                    name: "Lecture 10 - Decision Trees",
-                    code: "DS_010",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_010.json"
-                  }
-                ],
               },
             },
             {
@@ -368,104 +152,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLCInYL3l2AajYlZGzU_LVrHdoouf8W6ZN&si=_3EUjHYYQd7xAuGr", "https://youtube.com/playlist?list=PL1DUmTEdeA6K7rdxKiWJq6JIxTvHalY8f&si=wl8ryBAWTyTatxTw"],
                 summaries: "https://drive.google.com/drive/folders/19GRYDzueyRIB45_CJGn9Qh3_3JkIgfQH?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1wT8Ad9IGifK4NMgE71xXzLhXs4FF0wuc?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "PR1_30001",
-                    name: "Chapter 1 : Introduction to Programming",
-                    code: "PR1_30001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30001.json"
-                  },
-                  {
-                    id: "PR1_30002",
-                    name: "Chapter 2-1 : Introduction to Java Programming",
-                    code: "PR1_30002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30002.json"
-                  },
-                  {
-                    id: "PR1_30003",
-                    name: "Chapter 2-2 : Java Basics",
-                    code: "PR1_30003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30003.json"
-                  },
-                  {
-                    id: "PR1_30004",
-                    name: "Chapter 2-3 : Java Basics",
-                    code: "PR1_30004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30004.json"
-                  },
-                  {
-                    id: "PR1_30005",
-                    name: "Chapter 2-4 : Deep Dive into Java",
-                    code: "PR1_30005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30005.json"
-                  },
-                  {
-                    id: "PR1_30006",
-                    name: "Chapter 3-1 : Controlling Program Flow",
-                    code: "PR1_30006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30006.json"
-                  },
-                  {
-                    id: "PR1_30007",
-                    name: "Chapter 3-2 : Controlling Program Flow",
-                    code: "PR1_30007",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30007.json"
-                  },
-                  {
-                    id: "PR1_30008",
-                    name: "Chapter 4-1 : One Dimensional Arrays",
-                    code: "PR1_30008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30008.json"
-                  },
-                  {
-                    id: "PR1_30009",
-                    name: "Chapter 4-2 : Multi Dimensional Arrays",
-                    code: "PR1_30009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30009.json"
-                  },
-                  {
-                    id: "PR1_30010",
-                    name: "Review 1",
-                    code: "PR1_30010",
-                    duration: "OP", // in minutes
-                    questions: 50,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30010.json"
-                  },
-                  {
-                    id: "PR1_30011",
-                    name: "Review 2",
-                    code: "PR1_30011",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30011.json"
-                  },
-                  {
-                    id: "PR1_30012",
-                    name: "Tracing and Debugging",
-                    code: "PR1_30012",
-                    duration: "OP", // in minutes
-                    questions: 50,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30012.json"
-                  },
-                ],
               
               },
             },
@@ -525,80 +211,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PLxIvc-MGOs6gZlMVYOOEtUHJmfUquCjwz",
                 summaries: "https://drive.google.com/drive/folders/1sqiDSQMkoYZCehzIgdyxZcNRSYpIkLnX?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1SgzQqrBfbam-yqOw8xOdq9SKXPlScR2k?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DM_001",
-                    name: "Intro to Discrete Math",
-                    code: "DM_001",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_001.json"
-                  },
-                  {
-                    id: "DM_002",
-                    name: "Bit Operations",
-                    code: "DM_002",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_002.json"
-                  },
-                  {
-                    id: "DM_003",
-                    name: "Predicates and Quantifiers",
-                    code: "DM_003",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_003.json"
-                  },
-                  {
-                    id: "DM_004",
-                    name: "Sets and Functions",
-                    code: "DM_004",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_004.json"
-                  },
-                  {
-                    id: "DM_005",
-                    name: "Set Operations",
-                    code: "DM_005",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_005.json"
-                  },
-                  {
-                    id: "DM_006",
-                    name: "Functions Domain",
-                    code: "DM_006",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_006.json"
-                  },
-                  {
-                    id: "DM_007",
-                    name: "Product Rule",
-                    code: "DM_007",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_007.json"
-                  },
-                  {
-                    id: "DM_008",
-                    name: "Password Counting",
-                    code: "DM_008",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_008.json"
-                  },
-                  {
-                    id: "DM_009",
-                    name: "Permutations Combinations",
-                    code: "DM_009",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_009.json"
-                  },
-                ]
               },
             },
             {
@@ -613,88 +225,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PLCInYL3l2AajqOUW_2SwjWeMwf4vL4RSp",
                 summaries: "https://drive.google.com/drive/folders/1Oiki77OjApABjz0z7D3j2g-Kxc7-hN59?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1IADSkBhDhvgjpDJecfTf9VlvdoJ9P2hD?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "STR_001",
-                    name: "Introduction to Data Structures",
-                    code: "STR_001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_001.json"
-                  },
-                  {
-                    id: "STR_002",
-                    name: "Singly Linked List",
-                    code: "STR_002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_002.json"
-                  },
-                  {
-                    id: "STR_003",
-                    name: "Doubly Linked List",
-                    code: "STR_003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_003.json"
-                  },
-                  {
-                    id: "STR_004",
-                    name: "Hash Table",
-                    code: "STR_004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_004.json"
-                  },
-                  {
-                    id: "STR_005",
-                    name: "Stack - Queue - PQ",
-                    code: "STR_005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_005.json"
-                  },
-                  {
-                    id: "STR_006",
-                    name: "BST (Binary Search Tree)",
-                    code: "STR_006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_006.json"
-                  },
-                  {
-                    id: "STR_007",
-                    name: "Sorting Algorithms",
-                    code: "STR_007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_007.json"
-                  },
-                  {
-                    id: "STR_008",
-                    name: "Heap Tree",
-                    code: "STR_008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_008.json"
-                  },
-                  {
-                    id: "STR_009",
-                    name: "General Review (Part 1)",
-                    code: "STR_009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_009.json"
-                  },
-                  {
-                    id: "STR_010",
-                    name: "General Review (Part 2)",
-                    code: "STR_010",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_010.json"
-                  },
-                ]
               },
             },
             {
@@ -723,112 +253,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLCInYL3l2AagY7fFlhCrjpLiIFybW3yQv","https://youtube.com/playlist?list=PL1DUmTEdeA6Icttz-O9C3RPRF8R8Px5vk"],
                 summaries: "https://drive.google.com/drive/folders/1VGGZWwQmZdVD8LWI6piI_RzQqdwKq_st?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1dxwniB91RAEtAu0hKLt5cWqb3t1Q0FLI?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "PR2_50001",
-                    name: "Functions - Methods (Part 1)",
-                    code: "PR2_50001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50001.json"
-                  },
-                  {
-                    id: "PR2_50002",
-                    name: "Functions - Methods (Part 2)",
-                    code: "PR2_50002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50002.json"
-                  },
-                  {
-                    id: "PR2_50003",
-                    name: "Introduction To Object-Oriented Programming",
-                    code: "PR2_50003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50003.json"
-                  },
-                  {
-                    id: "PR2_50004",
-                    name: "Constructor and It's Types",
-                    code: "PR2_50004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50004.json"
-                  },
-                  {
-                    id: "PR2_50005",
-                    name: "Inheritance and Polymorphism (Part 1)",
-                    code: "PR2_50005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50005.json"
-                  },
-                  {
-                    id: "PR2_50006",
-                    name: "Inheritance and Polymorphism (Part 2)",
-                    code: "PR2_50006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50006.json"
-                  },
-                  {
-                    id: "PR2_50007",
-                    name: "Abstract Class and Interface",
-                    code: "PR2_50007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50007.json"
-                  },
-                  {
-                    id: "PR2_50008",
-                    name: "Class Relations (Part 1)",
-                    code: "PR2_50008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50008.json"
-                  },
-                  {
-                    id: "PR2_50009",
-                    name: "Class Relations (Part 2)",
-                    code: "PR2_50009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50009.json"
-                  },
-                  {
-                    id: "PR2_50010",
-                    name: "Array List in Java",
-                    code: "PR2_50010",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50010.json"
-                  },
-                  {
-                    id: "PR2_50011",
-                    name: "Exception Handling",
-                    code: "PR2_50011",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50011.json"
-                  },
-                  {
-                    id: "PR2_50012",
-                    name: "Static Keyword and Static Methods",
-                    code: "PR2_50012",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50012.json"
-                  },
-                  {
-                    id: "PR2_50013",
-                    name: "Recursive Methods and Recursion Concept",
-                    code: "PR2_50013",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50013.json"
-                  },
-                ]
               },
             },
             {
@@ -932,96 +356,6 @@ export const departmentData: { [key: string]: Department } = {
                 sections: "https://drive.google.com/drive/folders/1LuCRHkTxVc_uKOX7SdVEwcc0WrEL-n2D?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1B_bMKIcqQ4t_PsxDR6-GMUWQOv67AvNK?usp=drive_link",
                 summaries: "https://drive.google.com/drive/folders/1qI0ElMk-nNfGv8hH9h3M51Mz9KvEKhIZ?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "ECO_001",
-                    name: "الفصل الاول - مقدمة في علم الاقتصاد",
-                    code: "ECO_001",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_001.json"
-                  },
-                  {
-                    id: "ECO_002",
-                    name: "الفصل الثاني -المشكلة الاقتصادية والنظم الاقتصادية",
-                    code: "ECO_002",
-                    duration: "OP",
-                    questions: 17,
-                    jsonFile: "/quizzes/Economic/ECO_002.json"
-                  },
-                  {
-                    id: "ECO_003",
-                    name: "الفصل الثالث - نظرية طلب المستهلك",
-                    code: "ECO_003",
-                    duration: "OP",
-                    questions: 19,
-                    jsonFile: "/quizzes/Economic/ECO_003.json"
-                  },
-                  {
-                    id: "ECO_004",
-                    name: "الفصل الرابع - العرض في السوق",
-                    code: "ECO_004",
-                    duration: "OP",
-                    questions: 17,
-                    jsonFile: "/quizzes/Economic/ECO_004.json"
-                  },
-                  {
-                    id: "ECO_005",
-                    name: "الفصل الخامس - التوازن في السوق",
-                    code: "ECO_005",
-                    duration: "OP",
-                    questions: 12,
-                    jsonFile: "/quizzes/Economic/ECO_005.json"
-                  },
-                  {
-                    id: "ECO_006",
-                    name: "الفصل السادس - مرونات العرض والطلب",
-                    code: "ECO_006",
-                    duration: "OP",
-                    questions: 27,
-                    jsonFile: "/quizzes/Economic/ECO_006.json"
-                  },
-                  {
-                    id: "ECO_007",
-                    name: "الفصل السابع - نظرية المنفعة الحدية",
-                    code: "ECO_007",
-                    duration: "OP",
-                    questions: 18,
-                    jsonFile: "/quizzes/Economic/ECO_007.json"
-                  },
-                  {
-                    id: "ECO_008",
-                    name: "الفصل التاسع - نظرية الإنتاج",
-                    code: "ECO_008",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_008.json"
-                  },
-                  {
-                    id: "ECO_009",
-                    name: "الفصل العاشر - تكاليف الإنتاج",
-                    code: "ECO_009",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_009.json"
-                  },
-                  {
-                    id: "ECO_010",
-                    name: "الفصل الحادي عشر - اسواق المنافسة الكاملة",
-                    code: "ECO_010",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_010.json"
-                  },
-                  {
-                    id: "ECO_011",
-                    name: "الفصل الثاني عشر - اسواق المنافسة غير الكاملة",
-                    code: "ECO_011",
-                    duration: "OP",
-                    questions: 18,
-                    jsonFile: "/quizzes/Economic/ECO_011.json"
-                  },
-                ],
               },
             },
             {
@@ -1051,72 +385,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/11QHqhN6G_OmTNZTPdR_OVWzUZ5fEMO8X?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1ICXoWQy7-nas1_KaLNCA_fHKXEVvRqw2?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "CLC_10661",
-                    name: "Introduction to Cloud Computing (Team Materials)",
-                    code: "CLC_10661",
-                    duration: "OP", // <-- CHANGED THIS LINE
-                    questions: 20,
-                    jsonFile: "/quizzes/cloud computing/CLC_10661.json"
-                  },
-                  {
-                    id: "CLC_10662",
-                    name: "Platform and Infrastructure Services",
-                    code: "CLC_10662",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10662.json"
-                  },
-                  {
-                    id: "CLC_10663",
-                    name: "Virtualization",
-                    code: "CLC_10663",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10663.json"
-                  },
-                  {
-                    id: "CLC_10664",
-                    name: "Parallel Programming",
-                    code: "CLC_10664",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10664.json"
-                  },
-                  {
-                    id: "CLC_10665",
-                    name: "Distributed Storage Systems",
-                    code: "CLC_10665",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10665.json"
-                  },
-                  {
-                    id: "CLC_10666",
-                    name: "Cloud Security",
-                    code: "CLC_10666",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10666.json"
-                  },
-                  {
-                    id: "CLC_10667",
-                    name: "Cloud Performance",
-                    code: "CLC_10667",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10667.json"
-                  },
-                  {
-                    id: "CLC_10668",
-                    name: "General Overview + 20Q of 2025's Midterm",
-                    code: "CLC_10668",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/cloud computing/CLC_10668_TOT.json"
-                  }
-                ],
               },
             },
             {
@@ -1131,24 +399,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1XdboKP5n65WZCznnqiCrE0BZfiarSl4Z?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1WI08MEt_kVSuMITdlqqgPaVpTUPwiqgK?usp=drive_link",
-                quizzes:[
-                  {
-                    id: "ML_001",
-                    name: "Introduction to Machine Learning (Team Materials)",
-                    code: "ML_001",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/machine-learning/ML_001.json"
-                  },
-                  {
-                    id: "ML_004",
-                    name: "Lecture 2 to Midterm (Team Materials)",
-                    code: "ML_004",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/machine-learning/ML_004.json"
-                  }
-                ]
               },
             },
             {
@@ -1163,56 +413,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1HRedV6Iu8Djd_f0AE0MigL8nKoq8Yb8-?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1mrKwfr3Mgi9p3zp7VdIVLmsUiPYhJYCX?usp=drive_link",
-                quizzes:[
-                  {
-                    id: "MIG_14331",
-                    name: "Data Mining Lecture 1,2 (Team Materials)",
-                    code: "MIG_14331",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Mining/MIG_14331.json"
-                  },
-                  {
-                    id: "MIG_14332",
-                    name: "Data Mining Lecture 2",
-                    code: "MIG_14332",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14332.json"
-                  },
-                  {
-                    id: "MIG_14333",
-                    name: "Data Mining Lecture 3",
-                    code: "MIG_14333",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14333.json"
-                  },
-                  {
-                    id: "MIG_14334",
-                    name: "Data Mining Lecture 4",
-                    code: "MIG_14334",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14334.json"
-                  },
-                  {
-                    id: "MIG_14335",
-                    name: "Data Mining Lecture 5",
-                    code: "MIG_14335",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14335.json"
-                  },
-                  {
-                    id: "MIG_14336",
-                    name: "Data Mining Lecture 6",
-                    code: "MIG_14336",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14336.json"
-                  },
-                ]
               },
             },
             {
@@ -1227,96 +427,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1-E0rOdeA_1463gM9sg93srLn-apu3_fV?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1XJqxJZOjQCzXnEpeyQQQRRc8HOvEwyJ6?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DST_001",
-                    name: "Introduction to Data Science Tools",
-                    code: "DST_001",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/Data Science Tools/DST_Quizzes/DST_001.json"
-                  },
-                  {
-                    id: "DST_002",
-                    name: "Visualization",
-                    code: "DST_002",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/Data Science Tools/DST_Quizzes/DST_002.json"
-                  },
-                  {
-                    id: "DST_003",
-                    name: "Data Preprocessing",
-                    code: "DST_003",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/Data Science Tools/DST_Quizzes/DST_003.json"
-                  },
-                  {
-                    id: "DST_004",
-                    name: "Database Management Systems",
-                    code: "DST_004",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/Data Science Tools/DST_Quizzes/DST_004.json"
-                  },
-                  {
-                    id: "DST_005",
-                    name: "Supervised Learning",
-                    code: "DST_005",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/Data Science Tools/DST_Quizzes/DST_005.json"
-                  },
-                  {
-                    id: "DST_006",
-                    name: "Unsupervised Learning",
-                    code: "DST_006",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/Data Science Tools/DST_Quizzes/DST_006.json"
-                  },
-                  {
-                    id: "DST_007",
-                    name: "Feature Selection and Dimensionality Reduction",
-                    code: "DST_007",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/Data Science Tools/DST_Quizzes/DST_007.json"
-                  },
-                  {
-                    id: "DST_008",
-                    name: "Feature Engineering",
-                    code: "DST_008",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/Data Science Tools/DST_Quizzes/DST_008.json"
-                  },
-                  {
-                    id: "DST_009",
-                    name: "Review 1",
-                    code: "DST_009",
-                    duration: "OP",
-                    questions: 53,
-                    jsonFile: "/quizzes/Data Science Tools/DST_Quizzes/DST_009.json"
-                  },
-                  {
-                    id: "DST_010",
-                    name: "Review 2",
-                    code: "DST_010",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Data Science Tools/DST_Quizzes/DST_010.json"
-                  },
-                  {
-                    id: "DST_011",
-                    name: "Review 3",
-                    code: "DST_011",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Data Science Tools/DST_Quizzes/DST_011.json"
-                  }
-                ]
               },
             },
             {
@@ -1345,88 +455,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1e4o5muXHUkxZ10e8idAEe8l546IRqQBh?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1XURifRPnlFi7wOcminFvg6EVKxYsFOBS?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "FA_28101",
-                    name: "Lecture 1 - Introduction to First Aids",
-                    code: "FA_28101",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/First Aids/FA_28101.json"
-                  },
-                  {
-                    id: "FA_28102",
-                    name: "Lecture 2 - Cardiopulmonary Resuscitation",
-                    code: "FA_28102",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/First Aids/FA_28102.json"
-                  },
-                  {
-                    id: "FA_28103",
-                    name: "Lecture 3 - Bleeding",
-                    code: "FA_28103",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/First Aids/FA_28103.json"
-                  },
-                  {
-                    id: "FA_28104",
-                    name: "Lecture 4 - Wounds",
-                    code: "FA_28104",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/First Aids/FA_28104.json"
-                  },
-                  {
-                    id: "FA_28105",
-                    name: "Lecture 5 - Burns",
-                    code: "FA_28105",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/First Aids/FA_28105.json"
-                  },
-                  {
-                    id: "FA_28106",
-                    name: "Lecture 6 - Fractures",
-                    code: "FA_28106",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/First Aids/FA_28106.json"
-                  },
-                  {
-                    id: "FA_28107",
-                    name: "Lecture 7 - Shocks",
-                    code: "FA_28107",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/First Aids/FA_28107.json"
-                  },
-                  {
-                    id: "FA_28108",
-                    name: "Lecture 8 - Unconsciousness",
-                    code: "FA_28108",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/First Aids/FA_28108.json"
-                  },
-                  {
-                    id: "FA_28109",
-                    name: "Lecture 9 - Hyperglycemia",
-                    code: "FA_28109",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/First Aids/FA_28109.json"
-                  },
-                  {
-                    id: "FA_28110",
-                    name: "Review",
-                    code: "FA_28110",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/First Aids/FA_28110.json"
-                  },
-                ]
               },
             },
             {
@@ -1474,80 +502,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: [""],
                 summaries: "https://drive.google.com/drive/folders/1q6Wct_XlOa-vcL5oZQmOh-M4DShs79pm?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1yalskt-sOK3_0envMxfdiVtTXD7OfV-k?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DOE_001",
-                    name: "Introduction to Design of Experiments",
-                    code: "DOE_001",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/DOE/DOE_Quizzes/DOE_001.json"
-                  },
-                  {
-                    id: "DOE_002",
-                    name: "DOE with Statistics",
-                    code: "DOE_002",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/DOE/DOE_Quizzes/DOE_002.json"
-                  },
-                  {
-                    id: "DOE_003",
-                    name: "Completely Randomized Design - Testing A Hypothesis",
-                    code: "DOE_003",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/DOE/DOE_Quizzes/DOE_003.json"
-                  },
-                  {
-                    id: "DOE_004",
-                    name: "Stratified Random Sampling",
-                    code: "DOE_004",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/DOE/DOE_Quizzes/DOE_004.json"
-                  },
-                  {
-                    id: "DOE_005",
-                    name: "Domain Estimation",
-                    code: "DOE_005",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/DOE/DOE_Quizzes/DOE_005.json"
-                  },
-                  {
-                    id: "DOE_006",
-                    name: "Cluster Sampling",
-                    code: "DOE_006",
-                    duration: "OP", // in minutes
-                    questions: 15,  
-                    jsonFile: "/quizzes/DOE/DOE_Quizzes/DOE_006.json"
-                  },
-                  {
-                    id: "DOE_007",
-                    name: "Cluster Sampling (continued)",
-                    code: "DOE_007",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/DOE/DOE_Quizzes/DOE_007.json"
-                  },
-                  {
-                    id: "DOE_008",
-                    name: "Fully Design of Experiments Revision (Theoritical)",
-                    code: "DOE_008",
-                    duration: "OP", // in minutes
-                    questions: 50,
-                    jsonFile: "/quizzes/DOE/DOE_Quizzes/DOE_008.json"
-                  },
-                  {
-                    id: "DOE_009",
-                    name: "Fully Design of Experiments Revision (Practical)",
-                    code: "DOE_009",
-                    duration: "OP", // in minutes
-                    questions: 50,
-                    jsonFile: "/quizzes/DOE/DOE_Quizzes/DOE_009.json"
-                  }
-                ]
               },
             },
             {
@@ -1562,72 +516,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: " ",
                 summaries: "https://drive.google.com/drive/folders/152JzhYGQ9AiMksjks4mIIoULsYBNQ0Jt?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1g8MeUv89wUc5meya3zO5_DBIIVvc4xu7?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DVT_001",
-                    name: "Introduction to Data Visualization",
-                    code: "DVT_001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Visualization/VIZ_Quizzes/DVT_001.json"
-                  },
-                  {
-                    id: "DVT_002",
-                    name: "Story telling with Data",
-                    code: "DVT_002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Visualization/VIZ_Quizzes/DVT_002.json"
-                  },
-                  {
-                    id: "DVT_003",
-                    name: "Data Encoding Principles (1)",
-                    code: "DVT_003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Visualization/VIZ_Quizzes/DVT_003.json"
-                  },
-                  {
-                    id: "DVT_004",
-                    name: "Data Encoding Principles (2)",
-                    code: "DVT_004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Visualization/VIZ_Quizzes/DVT_004.json"
-                  },
-                  {
-                    id: "DVT_005",
-                    name: "Data Vision",
-                    code: "DVT_005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Visualization/VIZ_Quizzes/DVT_005.json"
-                  },
-                  {
-                    id: "DVT_006",
-                    name: "Data Visual Analytics (1)",
-                    code: "DVT_006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Visualization/VIZ_Quizzes/DVT_006.json"
-                  },
-                  {
-                    id: "DVT_007",
-                    name: "Data Visual Analytics (2)",
-                    code: "DVT_007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Visualization/VIZ_Quizzes/DVT_007.json"
-                  },
-                  {
-                    id: "VIS_STAR",
-                    name: "Fully Data Visualization Revision",
-                    code: "VIS_STAR",
-                    duration: "OP", // in minutes
-                    questions: 140,
-                    jsonFile: "/quizzes/Visualization/VIZ_Quizzes/VIS_STAR.json"
-                  },
-                ],
               },
             },
             {
@@ -1642,136 +530,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLDoPjvoNmBAw_t_XWUFbBX-c9MafPk9ji&si=SrbjHtzgw5XhuvwE","https://youtube.com/playlist?list=PLDoPjvoNmBAzjsz06gkzlSrlev53MGIKe&si=iWjgud4FmxHht6-V","https://youtube.com/playlist?list=PLDoPjvoNmBAx3kiplQR_oeDqLDBUDYwVv&si=IMPINKzaCcwKyPFy"],
                 summaries: "https://drive.google.com/drive/folders/1izlOiejC_W5u0KEwRrV3Gn7uGRsMLabV?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1pqHAxus_oyiKwz8aI4qxUAI1hyJeH3LO?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "WP_001",
-                    name: "HTML & CSS Basics - P1",
-                    code: "WP_001",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_001.json"
-                  },
-                  {
-                    id: "WP_002",
-                    name: "HTML & CSS Basics - P2",
-                    code: "WP_002",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_002.json"
-                  },
-                  {
-                    id: "WP_003",
-                    name: "HTML & CSS Basics - P3",
-                    code: "WP_003",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_003.json"
-                  },
-                  {
-                    id: "WP_004",
-                    name: "HTML & CSS Basics - P4",
-                    code: "WP_004",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_004.json"
-                  },
-                  {
-                    id: "WP_005",
-                    name: "HTML & CSS Basics - P5",
-                    code: "WP_005",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_005.json"
-                  },
-                  {
-                    id: "WP_006",
-                    name: "Java Script Basics - P1",
-                    code: "WP_006",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_006.json"
-                  },
-                  {
-                    id: "WP_007",
-                    name: "Java Script Basics - P2",
-                    code: "WP_007",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_007.json"
-                  },
-                  {
-                    id: "WP_008",
-                    name: "Fetch API, HTTP Methods",
-                    code: "WP_008",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_008.json"
-                  },
-                  {
-                    id: "WP_009",
-                    name: "Promises Async/Await",
-                    code: "WP_009",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_009.json"
-                  },
-                  {
-                    id: "WP_010",
-                    name: "Forms and Validation",
-                    code: "WP_010",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_010.json"
-                  },
-                  {
-                    id: "WP_011",
-                    name: "JSON and Storage",
-                    code: "WP_011",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_011.json"
-                  },
-                  {
-                    id: "WP_012",
-                    name: "Browser Object Model",
-                    code: "WP_012",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_012.json"
-                  },
-                  {
-                    id: "WP_013",
-                    name: "ES6 and Node.js Basics",
-                    code: "WP_013",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/Web/WP_013.json"
-                  },
-                  {
-                    id: "WP_MID",
-                    name: "Before Midterm Revision",
-                    code: "WP_MID",
-                    duration: "OP", // in minutes
-                    questions: 90,
-                    jsonFile: "/quizzes/Web/WP_MID.json"
-                  },
-                  {
-                    id: "WP_FINAL",
-                    name: "After Midterm Revision",
-                    code: "WP_FINAL",
-                    duration: "OP", // in minutes
-                    questions: 50,
-                    jsonFile: "/quizzes/Web/WP_FINAL.json"
-                  },
-                  {
-                    id: "WP_STAR",
-                    name: "Final Revision Quiz",
-                    code: "WP_STAR",
-                    duration: "OP", // in minutes
-                    questions: 140,
-                    jsonFile: "/quizzes/Web/WP_STAR.json"
-                  },
-                ]
               },
             },
             {
@@ -1786,120 +544,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PL8v_bZALWLKE9Lo2BIy8nsdsakbSvQlEo&si=jBAfivc5JJCLnv5-"],
                 summaries: "https://drive.google.com/drive/folders/1y_ZHb47S0RCveSEoWc17PsXEsQDH019K?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1qPJuDNlabxV5IctxPU1_0tomDLmZIEVR?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "CN_001",
-                    name: "Network Devices & Standards",
-                    code: "CN_001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_001.json"
-                  },
-                  {
-                    id: "CN_002",
-                    name: "OSI Model",
-                    code: "CN_002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_002.json"
-                  },
-                  {
-                    id: "CN_003",
-                    name: "Network Protocols and Subnetting",
-                    code: "CN_003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_003.json"
-                  },
-                  {
-                    id: "CN_004",
-                    name: "Ethernet and LAN Technologies",
-                    code: "CN_004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_004.json"
-                  },
-                  {
-                    id: "CN_005",
-                    name: "Network Address Translation (NAT)",
-                    code: "CN_005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_005.json"
-                  },
-                  {
-                    id: "CN_006",
-                    name: "Transport Layer Protocols (TCP/UDP)",
-                    code: "CN_006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_006.json"
-                  },
-                  {
-                    id: "CN_007",
-                    name: "Routing Protocols - OSPF(1)",
-                    code: "CN_007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_007.json"
-                  },
-                  {
-                    id: "CN_008",
-                    name: "OSPF(2) - DR & BDR",
-                    code: "CN_008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_008.json"
-                  },
-                  {
-                    id: "CN_009",
-                    name: "ACL (Standard & Extended)",
-                    code: "CN_009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_009.json"
-                  },
-                  {
-                    id: "CN_010",
-                    name: "VLAN - Trunking - VTP",
-                    code: "CN_010",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_010.json"
-                  },
-                  {
-                    id: "CN_011",
-                    name: "WAN - Frame Relay - DSL",
-                    code: "CN_011",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_011.json"
-                  },
-                  {
-                    id: "CN_012",
-                    name: "Wireless Connection Protocols",
-                    code: "CN_012",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_012.json"
-                  },
-                  {
-                    id: "CN_013",
-                    name: "Wireshark (Packet Capture)",
-                    code: "CN_013",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer_Network/CN_013.json"
-                  },
-                  {
-                    id: "CN_STAR",
-                    name: "Final Revision Quiz (Anti-long Answers)",
-                    code: "CN_STAR",
-                    duration: "OP", // in minutes
-                    questions: 130,
-                    jsonFile: "/quizzes/Computer_Network/CN_STAR.json"
-                  },
-                ]
               },
             },
             {
@@ -1958,104 +602,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1AKHPJXp9VVhYGUutKPP7XqgPjfTbrkIf?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1vgvf18-SQ8zlkhFk_HyNQVl6HhzlbtC4?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "SUR_001",
-                    name: "Quiz 1 : Introduction to Survey Methodology",
-                    code: "SUR_001",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Survey/SUR_001.json"
-                  },
-                  {
-                    id: "SUR_002",
-                    name: "Quiz 2 : Surveys based on Time Frame",
-                    code: "SUR_002",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Survey/SUR_002.json"
-                  },
-                  {
-                    id: "SUR_003",
-                    name: "Quiz 3 : Experimental Surveys & Ethics",
-                    code: "SUR_003",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Survey/SUR_003.json"
-                  },
-                  {
-                    id: "SUR_004",
-                    name: "Quiz 4 : Sampling Strategies",
-                    code: "SUR_004",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Survey/SUR_004.json"
-                  },
-                  {
-                    id: "SUR_005",
-                    name: "Quiz 5 : Pilot Testing & Validity",
-                    code: "SUR_005",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Survey/SUR_005.json"
-                  },
-                  {
-                    id: "SUR_006",
-                    name: "Quiz 6 : Data Cleaning & Preparation",
-                    code: "SUR_006",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Survey/SUR_006.json"
-                  },
-                  {
-                    id: "SUR_007",
-                    name: "Quiz 7 : Descriptive & Inferential Statistics",
-                    code: "SUR_007",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Survey/SUR_007.json"
-                  },
-                  {
-                    id: "SUR_008",
-                    name: "Quiz 8 : Advanced Survey Data Analysis",
-                    code: "SUR_008",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Survey/SUR_008.json"
-                  },
-                  {
-                    id: "SUR_MID",
-                    name: "Quiz 9 : Midterm Exam",
-                    code: "SUR_MID",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Survey/SUR_MID.json"
-                  },
-                  {
-                    id: "SUR_LEC",
-                    name: "Quiz 10 : Lecture Quizzes",
-                    code: "SUR_LEC",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Survey/SUR_LEC.json"
-                  },
-                  {
-                    id: "SUR_STAR1",
-                    name: "Review 1 (SUR_STAR1) : General Course Review (Easy)",
-                    code: "SUR_STAR1",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Survey/SUR_STAR1.json"
-                  },
-                  {
-                    id: "SUR_STAR2",
-                    name: "Review 2 (SUR_STAR2) : Core Concepts & Hidden Points (Hard)",
-                    code: "SUR_STAR2",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Survey/SUR_STAR2.json"
-                  }
-                ]
               },
             },
             {
@@ -2070,48 +616,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PL7snZ0LSsq3ghVGnrH2n6jIdY40wFrKcl&si=fRZbzfepWYhW7xGJ",
                 summaries: "https://drive.google.com/drive/folders/1KJuTX2s7cXjBiX9al646SbgwfGXRLBXf?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1FVBJtarizr-5ZQbTRMZ3CQ5YaQlyusOV?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "CISM_001",
-                    name: "Quiz 1 : Simulation and Bootstrap Methods",
-                    code: "CISM_001",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/computing-intensive-statistical-methods/CISM_001.json"
-                  },
-                  {
-                    id: "CISM_002",
-                    name: "Quiz 2 : Jackknife Resampling and Estimation",
-                    code: "CISM_002",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/computing-intensive-statistical-methods/CISM_002.json"
-                  },
-                  {
-                    id: "CISM_003",
-                    name: "Quiz 3 : Empirical Distribution Function & Plug-in Principle",
-                    code: "CISM_003",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/computing-intensive-statistical-methods/CISM_003.json"
-                  },
-                  {
-                    id: "CISM_004",
-                    name: "Quiz 4 : Parameter Estimation (MME, MLE) & EM Algorithm",
-                    code: "CISM_004",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/computing-intensive-statistical-methods/CISM_004.json"
-                  },
-                  {
-                    id: "CISM_005",
-                    name: "Quiz 5 : Hypothesis Testing & Likelihood Ratio Tests (LRT)",
-                    code: "CISM_005",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/computing-intensive-statistical-methods/CISM_005.json"
-                  }
-                ]
               },
             },
             // {
@@ -2140,104 +644,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1trcmqKcpKAGVRNmGBl2ROkGeoete6nkO?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1HalJgXrhKyBuFRHGj0Z9WZiUQWr7GlmJ?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "ADV_001",
-                    name: "Lecture 1: Introduction",
-                    code: "ADV_001",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/AdvancedDB/ADV_001.json"
-                  },
-                  {
-                    id: "ADV_002",
-                    name: "Lecture 2: Transaction 1",
-                    code: "ADV_002",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/AdvancedDB/ADV_002.json"
-                  },
-                  {
-                    id: "ADV_003",
-                    name: "Lecture 3: Transaction 2",
-                    code: "ADV_003",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/AdvancedDB/ADV_003.json"
-                  },
-                  {
-                    id: "ADV_004",
-                    name: "Lecture 3: Concurrency",
-                    code: "ADV_004",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/AdvancedDB/ADV_004.json"
-                  },
-                  {
-                    id: "ADV_005",
-                    name: "Lecture 4: Lock",
-                    code: "ADV_005",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/AdvancedDB/ADV_005.json"
-                  },
-                  {
-                    id: "ADV_006",
-                    name: "Lecture 5: Modeling",
-                    code: "ADV_006",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/AdvancedDB/ADV_006.json"
-                  },
-                  {
-                    id: "ADV_007",
-                    name: "Lecture 6: Recovery",
-                    code: "ADV_007",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/AdvancedDB/ADV_007.json"
-                  },
-                  {
-                    id: "ADV_008",
-                    name: "Lecture 8: NoSQL",
-                    code: "ADV_008",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/AdvancedDB/ADV_008.json"
-                  },
-                  {
-                    id: "ADV_009",
-                    name: "Lecture 9: Query Optimization 1",
-                    code: "ADV_009",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/AdvancedDB/ADV_009.json"
-                  },
-                  {
-                    id: "ADV_010",
-                    name: "Lecture 10: Query Optimization 2",
-                    code: "ADV_010",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/AdvancedDB/ADV_010.json"
-                  },
-                  {
-                    id: "ADV_STAR1",
-                    name: "Review Quiz 1 (Standard)",
-                    code: "ADV_STAR1",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/AdvancedDB/ADV_STAR1.json"
-                  },
-                  {
-                    id: "ADV_STAR2",
-                    name: "Review Quiz 2 (Advanced)",
-                    code: "ADV_STAR2",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/AdvancedDB/ADV_STAR2.json"
-                  }
-                ]
               },
             },
             // {
@@ -2309,11 +715,10 @@ export const departmentData: { [key: string]: Department } = {
               description: "Processing and analyzing large-scale datasets",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/big-data-analytics-lectures",
-                sections: "https://drive.google.com/drive/folders/big-data-analytics-sections",
-                videos: "https://youtube.com/playlist?list=big-data-analytics-videos",
-                summaries: "https://drive.google.com/drive/folders/big-data-analytics-summaries",
-                exams: "https://drive.google.com/drive/folders/big-data-analytics-lastexam",
+                lectures: "https://drive.google.com/drive/folders/1XCDa4h8-updjGudG12oSDSvmwD5-bLlV",
+                summaries: "https://drive.google.com/drive/folders/1cOdJfBRveI3eu32-23c5rWGAQ4aVWPjb",
+                sections: "https://drive.google.com/drive/folders/1zvDWYTK9JZMebXdatLRWvdQIdw02e3V4",
+                exams: "https://drive.google.com/drive/folders/1QEgss5XshLKu8zy_7_6UOz0evEUiOFK7"
               },
             },
             {
@@ -2323,12 +728,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Analysis of social network structures and dynamics",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/intro-social-networks-lectures",
-                sections: "https://drive.google.com/drive/folders/intro-social-networks-sections",
-                videos: "https://youtube.com/playlist?list=intro-social-networks-videos",
-                summaries: "https://drive.google.com/drive/folders/intro-social-networks-summaries",
-                exams: "https://drive.google.com/drive/folders/intro-social-networks-lastexam",
-              },
+                lectures: "https://drive.google.com/drive/folders/1_65rVBclWbNMIkD2IFdb8E-fVoXtNela",
+                summaries: "https://drive.google.com/drive/folders/1f30BL2yOEenLm7eJPp1x-bET81fECeaO",
+                sections: "https://drive.google.com/drive/folders/1QQJf4G0l0QOyTNS00XXCuckWzuz0qaJ-",
+                exams: "https://drive.google.com/drive/folders/1Dvq4nBeoavTE0KQwym1O_mjscNfBFUrp"
+              }
             },
             {
               id: "simulations",
@@ -2337,12 +741,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Monte Carlo methods and simulation techniques",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/simulations-lectures",
-                sections: "https://drive.google.com/drive/folders/simulations-sections",
-                videos: "https://youtube.com/playlist?list=simulations-videos",
-                summaries: "https://drive.google.com/drive/folders/simulations-summaries",
-                exams: "https://drive.google.com/drive/folders/simulations-lastexam",
-              },
+                lectures: "https://drive.google.com/drive/folders/1l5ZPoIvEehAF8K0JEVNhQ3ns4NRndm7u",
+                summaries: "https://drive.google.com/drive/folders/1ZtyTVQe6I4n9-s-aHul-WNt8uAVF8dWA",
+                sections: "https://drive.google.com/drive/folders/1iSN9XQ1-l_sFJxuOI9frRZ7IowrNoTDU",
+                exams: "https://drive.google.com/drive/folders/1m9oZxLuNlQyHR5y9DXk-jMUearFu2v4X"
+              }
             },
             {
               id: "program-elective-1",
@@ -2351,11 +754,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized program elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-1-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-1-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-1-videos",
-                summaries: "https://drive.google.com/drive/folders/program-elective-1-summaries",
-                exams: "https://drive.google.com/drive/folders/program-elective-1-lastexam",
+                summaries: "",
+                exams: "",
               },
             },
             {
@@ -2365,11 +768,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized program elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-2-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-2-videos",
-                summaries: "https://drive.google.com/drive/folders/program-elective-2-summaries",
-                exams: "https://drive.google.com/drive/folders/program-elective-2-lastexam",
+                summaries: "",
+                exams: "",
               },
             },
             {
@@ -2379,11 +782,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Elective course from university-wide offerings",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-4-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-4-videos",
-                summaries: "https://drive.google.com/drive/folders/university-elective-4-summaries",
-                exams: "https://drive.google.com/drive/folders/university-elective-4-lastexam",
+                summaries: "",
+                exams: "",
               },
             },
           ],
@@ -2395,12 +798,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Analysis of social media and behavioral data",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/social-data-analytics-lectures",
-                sections: "https://drive.google.com/drive/folders/social-data-analytics-sections",
-                videos: "https://youtube.com/playlist?list=social-data-analytics-videos",
-                summaries: "https://drive.google.com/drive/folders/social-data-analytics-summaries",
-                exams: "https://drive.google.com/drive/folders/social-data-analytics-lastexam",
-              },
+                lectures: "https://drive.google.com/drive/folders/1oSgnG2Q-rf3mV-cmFQlqZRza889ReqeE",
+                summaries: "https://drive.google.com/drive/folders/1Umbq7j05iHfo-Q7xCu9g142jA5HBrLyN",
+                sections: "https://drive.google.com/drive/folders/1qhHVTrfR0NOAHQ7LO7yonpklE1FBPUMM",
+                exams: "https://drive.google.com/drive/folders/1DP6gqmyFU-E6n-IUgDgkFZUACwr__m87"
+              }
             },
             {
               id: "distributed-data-analysis",
@@ -2409,12 +811,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Parallel and distributed computing for data analysis",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/distributed-data-analysis-lectures",
-                sections: "https://drive.google.com/drive/folders/distributed-data-analysis-sections",
-                videos: "https://youtube.com/playlist?list=distributed-data-analysis-videos",
-                summaries: "https://drive.google.com/drive/folders/distributed-data-analysis-summaries",
-                exams: "https://drive.google.com/drive/folders/distributed-data-analysis-lastexam",
-              },
+                lectures: "https://drive.google.com/drive/folders/1WJxABPSaiv-pukYsdc-mBDWbjkMAICbk",
+                summaries: "https://drive.google.com/drive/folders/1dp5U9cGlKNZvohGkPK00pXrJJY2Hm7xG",
+                sections: "https://drive.google.com/drive/folders/178pB4K_IPE4ttuYzDV8V1lHJ5LSWSPcK",
+                exams: "https://drive.google.com/drive/folders/1z3MG9hf0PPMJ7KmwwrMwPG2aqp196_s8"
+              }
             },
             {
               id: "stream-processing",
@@ -2423,12 +824,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Real-time data processing and streaming analytics",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/stream-processing-lectures",
-                sections: "https://drive.google.com/drive/folders/stream-processing-sections",
-                videos: "https://youtube.com/playlist?list=stream-processing-videos",
-                summaries: "https://drive.google.com/drive/folders/stream-processing-summaries",
-                exams: "https://drive.google.com/drive/folders/stream-processing-lastexam",
-              },
+                lectures: "https://drive.google.com/drive/folders/19sE6SSdSOlv5C0PUJh9TLNNOB0Qen9TJ",
+                summaries: "https://drive.google.com/drive/folders/1CamzrjeiXMhFHEQiq0Isr_N-M-bEQ3yo",
+                sections: "https://drive.google.com/drive/folders/10Rq6XFVlRgjnMSlsG-Q_gI_8Zzc3wXW9",
+                exams: "https://drive.google.com/drive/folders/18qtouIWhwaAzzKCyrzynn6tV6RSe2wde"
+              }
             },
             {
               id: "program-elective-3",
@@ -2437,11 +837,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized program elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-3-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-3-videos",
-                summaries: "https://drive.google.com/drive/folders/program-elective-3-summaries",
-                exams: "https://drive.google.com/drive/folders/program-elective-3-lastexam",
+                summaries: "",
+                exams: "",
               },
             },
             {
@@ -2451,11 +851,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized program elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-4-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-4-videos",
-                summaries: "https://drive.google.com/drive/folders/program-elective-4-summaries",
-                exams: "https://drive.google.com/drive/folders/program-elective-4-lastexam",
+                summaries: "",
+                exams: "",
               },
             },
             {
@@ -2465,11 +865,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Elective course from university-wide offerings",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-5-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-5-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-5-videos",
-                summaries: "https://drive.google.com/drive/folders/university-elective-5-summaries",
-                exams: "https://drive.google.com/drive/folders/university-elective-5-lastexam",
+                summaries: "",
+                exams: "",
               },
             },
           ],
@@ -2525,144 +925,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLskaQRgiRMYb0SqvJ-wKx2n4Q3CB5uQ8e&si=wXANl6gRLW404zuP"],
                 summaries: "https://drive.google.com/drive/folders/1RFPXNiitr2yiHr1AyCsZWuTX0rYyOwIL?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1hTVXduWW2Icy8HY-uOc5lEiUUM42RSkB?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "CS_001",
-                    name: "Chapter 1 : Introduction to Computer Systems",
-                    code: "CS_001",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_001.json"
-                  },
-                  {
-                    id: "CS_002",
-                    name: "Chapter 2 : Processing and Memory Management",
-                    code: "CS_002",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_002.json"
-                  },
-                  {
-                    id: "CS_003",
-                    name: "Chapter 3 : Storage",
-                    code: "CS_003",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_003.json"
-                  },
-                  {
-                    id: "CS_004",
-                    name: "Chapter 4 : Input and Output",
-                    code: "CS_004",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_004.json"
-                  },
-                  {
-                    id: "CS_005",
-                    name: "Chapter 5 : System Software",
-                    code: "CS_005",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_005.json"
-                  },
-                  {
-                    id: "CS_006",
-                    name: "Chapter 6 : Applications Software (1/2)",
-                    code: "CS_006",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_006.json"
-                  }
-                  ,{
-                    id: "CS_007",
-                    name: "Chapter 6 : Applications Software (2/2)",
-                    code: "CS_007",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_007.json"
-                  }
-                  ,{
-                    id: "CS_008",
-                    name: "Chapter 7 : Computer Networks",
-                    code: "CS_008",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_008.json"
-                  },
-                  {
-                    id: "CS_009",
-                    name: "Chapter 13 : Program Dev & Programming Languages",
-                    code: "CS_009",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_009.json"
-                  },
-                  {
-                    id: "CS_010",
-                    name: "Converting Binary to Decimal and Vice Versa",
-                    code: "CS_010",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_010.json"
-                  },
-                  {
-                    id: "CS_011",
-                    name: "Converting Binary to Octal and Vice Versa",
-                    code: "CS_011",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_011.json"
-                  },
-                  {
-                    id: "CS_012",
-                    name: "Converting Binary to Hexadecimal and Vice Versa",
-                    code: "CS_012",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_012.json"
-                  },
-                  {
-                    id: "CS_013",
-                    name: "Converting Decimal to Octal and Vice Versa",
-                    code: "CS_013",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_013.json"
-                  },
-                  {
-                    id: "CS_014",
-                    name: "Converting Decimal to Hexadecimal and Vice Versa",
-                    code: "CS_014",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_014.json"
-                  },
-                  {
-                    id: "CS_015",
-                    name: "Converting Octal to Hexadecimal and Vice Versa",
-                    code: "CS_015",
-                    duration: "OP",
-                    questions: 10,
-                    jsonFile: "/quizzes/Computer System/CS_015.json"
-                  },
-                  {
-                    id: "CS_016",
-                    name: "Converting Gray Code to Binary and Vice Versa",
-                    code: "CS_016",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/Computer System/CS_016.json"
-                  },
-                  {
-                    id: "CS_017",
-                    name: "Converting BCD to Decimal and Vice Versa",
-                    code: "CS_017",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/Computer System/CS_017.json"
-                  }
-                ],
               },
             },
             {
@@ -2677,88 +939,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLNVsyemi1cQyXLWT3vm4GbWzVxAK_4nbR&si=Q7kxeMYT4iXhr2uC"],
                 summaries: "https://drive.google.com/drive/folders/13IFz-O_64Ga8y9TyFe13CSovw0xzxdUQ?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1adpsd15n6hieC29aQECkrftCHNz20U9c?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DS_001",
-                    name: "Lecture 1 - Introduction to Data Science",
-                    code: "DS_001",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_001.json"
-                  },
-                  {
-                    id: "DS_002",
-                    name: "Lecture 2 - Big Data",
-                    code: "DS_002",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_002.json"
-                  },
-                  {
-                    id: "DS_003",
-                    name: "Lecture 3 - Data Analytics lifecycle (Characters)",
-                    code: "DS_003",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_003.json"
-                  },
-                  {
-                    id: "DS_004",
-                    name: "Lecture 4 - Data Analytics lifecycle (Phases)",
-                    code: "DS_004",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_004.json"
-                  },
-                  {
-                    id: "DS_005",
-                    name: "Lecture 5 - Clustering Analysis",
-                    code: "DS_005",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_005.json"
-                  },
-                  {
-                    id: "DS_006",
-                    name: "Lecture 6 - Introduction Association Rules (1/2)",
-                    code: "DS_006",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_006.json"
-                  },
-                  {
-                    id: "DS_007",
-                    name: "Lecture 7 - Introduction Association Rules (2/2)",
-                    code: "DS_007",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_007.json"
-                  },
-                  {
-                    id: "DS_008",
-                    name: "Lecture 8 - Data Visualization",
-                    code: "DS_008",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_008.json"
-                  },
-                  {
-                    id: "DS_009",
-                    name: "Lecture 9 - Classification Analysis",
-                    code: "DS_009",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_009.json"
-                  },
-                  {
-                    id: "DS_010",
-                    name: "Lecture 10 - Decision Trees",
-                    code: "DS_010",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_010.json"
-                  }
-                ],
               },
             },
             {
@@ -2773,104 +953,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLCInYL3l2AajYlZGzU_LVrHdoouf8W6ZN&si=_3EUjHYYQd7xAuGr", "https://youtube.com/playlist?list=PL1DUmTEdeA6K7rdxKiWJq6JIxTvHalY8f&si=wl8ryBAWTyTatxTw"],
                 summaries: "https://drive.google.com/drive/folders/19GRYDzueyRIB45_CJGn9Qh3_3JkIgfQH?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1wT8Ad9IGifK4NMgE71xXzLhXs4FF0wuc?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "PR1_30001",
-                    name: "Chapter 1 : Introduction to Programming",
-                    code: "PR1_30001",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30001.json"
-                  },
-                  {
-                    id: "PR1_30002",
-                    name: "Chapter 2-1 : Introduction to Java Programming",
-                    code: "PR1_30002",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30002.json"
-                  },
-                  {
-                    id: "PR1_30003",
-                    name: "Chapter 2-2 : Java Basics",
-                    code: "PR1_30003",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30003.json"
-                  },
-                  {
-                    id: "PR1_30004",
-                    name: "Chapter 2-3 : Java Basics",
-                    code: "PR1_30004",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30004.json"
-                  },
-                  {
-                    id: "PR1_30005",
-                    name: "Chapter 2-4 : Deep Dive into Java",
-                    code: "PR1_30005",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30005.json"
-                  },
-                  {
-                    id: "PR1_30006",
-                    name: "Chapter 3-1 : Controlling Program Flow",
-                    code: "PR1_30006",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30006.json"
-                  },
-                  {
-                    id: "PR1_30007",
-                    name: "Chapter 3-2 : Controlling Program Flow",
-                    code: "PR1_30007",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30007.json"
-                  },
-                  {
-                    id: "PR1_30008",
-                    name: "Chapter 4-1 : One Dimensional Arrays",
-                    code: "PR1_30008",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30008.json"
-                  },
-                  {
-                    id: "PR1_30009",
-                    name: "Chapter 4-2 : Multi Dimensional Arrays",
-                    code: "PR1_30009",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30009.json"
-                  },
-                  {
-                    id: "PR1_30010",
-                    name: "Review 1",
-                    code: "PR1_30010",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30010.json"
-                  },
-                  {
-                    id: "PR1_30011",
-                    name: "Review 2",
-                    code: "PR1_30011",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30011.json"
-                  },
-                  {
-                    id: "PR1_30012",
-                    name: "Tracing and Debugging",
-                    code: "PR1_30012",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30012.json"
-                  },
-                ],
               
               },
             },
@@ -2916,80 +998,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PLxIvc-MGOs6gZlMVYOOEtUHJmfUquCjwz",
                 summaries: "https://drive.google.com/drive/folders/1sqiDSQMkoYZCehzIgdyxZcNRSYpIkLnX?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1SgzQqrBfbam-yqOw8xOdq9SKXPlScR2k?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DM_001",
-                    name: "Intro to Discrete Math",
-                    code: "DM_001",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_001.json"
-                  },
-                  {
-                    id: "DM_002",
-                    name: "Bit Operations",
-                    code: "DM_002",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_002.json"
-                  },
-                  {
-                    id: "DM_003",
-                    name: "Predicates and Quantifiers",
-                    code: "DM_003",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_003.json"
-                  },
-                  {
-                    id: "DM_004",
-                    name: "Sets and Functions",
-                    code: "DM_004",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_004.json"
-                  },
-                  {
-                    id: "DM_005",
-                    name: "Set Operations",
-                    code: "DM_005",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_005.json"
-                  },
-                  {
-                    id: "DM_006",
-                    name: "Functions Domain",
-                    code: "DM_006",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_006.json"
-                  },
-                  {
-                    id: "DM_007",
-                    name: "Product Rule",
-                    code: "DM_007",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_007.json"
-                  },
-                  {
-                    id: "DM_008",
-                    name: "Password Counting",
-                    code: "DM_008",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_008.json"
-                  },
-                  {
-                    id: "DM_009",
-                    name: "Permutations Combinations",
-                    code: "DM_009",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_009.json"
-                  },
-                ]
               },
             },
             {
@@ -3004,88 +1012,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PLCInYL3l2AajqOUW_2SwjWeMwf4vL4RSp",
                 summaries: "https://drive.google.com/drive/folders/1Oiki77OjApABjz0z7D3j2g-Kxc7-hN59?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1IADSkBhDhvgjpDJecfTf9VlvdoJ9P2hD?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "STR_001",
-                    name: "Introduction to Data Structures",
-                    code: "STR_001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_001.json"
-                  },
-                  {
-                    id: "STR_002",
-                    name: "Singly Linked List",
-                    code: "STR_002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_002.json"
-                  },
-                  {
-                    id: "STR_003",
-                    name: "Doubly Linked List",
-                    code: "STR_003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_003.json"
-                  },
-                  {
-                    id: "STR_004",
-                    name: "Hash Table",
-                    code: "STR_004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_004.json"
-                  },
-                  {
-                    id: "STR_005",
-                    name: "Stack - Queue - PQ",
-                    code: "STR_005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_005.json"
-                  },
-                  {
-                    id: "STR_006",
-                    name: "BST (Binary Search Tree)",
-                    code: "STR_006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_006.json"
-                  },
-                  {
-                    id: "STR_007",
-                    name: "Sorting Algorithms",
-                    code: "STR_007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_007.json"
-                  },
-                  {
-                    id: "STR_008",
-                    name: "Heap Tree",
-                    code: "STR_008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_008.json"
-                  },
-                  {
-                    id: "STR_009",
-                    name: "General Review (Part 1)",
-                    code: "STR_009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_009.json"
-                  },
-                  {
-                    id: "STR_010",
-                    name: "General Review (Part 2)",
-                    code: "STR_010",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_010.json"
-                  },
-                ]
               },
             },
             {
@@ -3114,112 +1040,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLCInYL3l2AagY7fFlhCrjpLiIFybW3yQv","https://youtube.com/playlist?list=PL1DUmTEdeA6Icttz-O9C3RPRF8R8Px5vk"],
                 summaries: "https://drive.google.com/drive/folders/1VGGZWwQmZdVD8LWI6piI_RzQqdwKq_st?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1dxwniB91RAEtAu0hKLt5cWqb3t1Q0FLI?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "PR2_50001",
-                    name: "Functions - Methods (Part 1)",
-                    code: "PR2_50001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50001.json"
-                  },
-                  {
-                    id: "PR2_50002",
-                    name: "Functions - Methods (Part 2)",
-                    code: "PR2_50002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50002.json"
-                  },
-                  {
-                    id: "PR2_50003",
-                    name: "Introduction To Object-Oriented Programming",
-                    code: "PR2_50003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50003.json"
-                  },
-                  {
-                    id: "PR2_50004",
-                    name: "Constructor and It's Types",
-                    code: "PR2_50004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50004.json"
-                  },
-                  {
-                    id: "PR2_50005",
-                    name: "Inheritance and Polymorphism (Part 1)",
-                    code: "PR2_50005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50005.json"
-                  },
-                  {
-                    id: "PR2_50006",
-                    name: "Inheritance and Polymorphism (Part 2)",
-                    code: "PR2_50006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50006.json"
-                  },
-                  {
-                    id: "PR2_50007",
-                    name: "Abstract Class and Interface",
-                    code: "PR2_50007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50007.json"
-                  },
-                  {
-                    id: "PR2_50008",
-                    name: "Class Relations (Part 1)",
-                    code: "PR2_50008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50008.json"
-                  },
-                  {
-                    id: "PR2_50009",
-                    name: "Class Relations (Part 2)",
-                    code: "PR2_50009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50009.json"
-                  },
-                  {
-                    id: "PR2_50010",
-                    name: "Array List in Java",
-                    code: "PR2_50010",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50010.json"
-                  },
-                  {
-                    id: "PR2_50011",
-                    name: "Exception Handling",
-                    code: "PR2_50011",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50011.json"
-                  },
-                  {
-                    id: "PR2_50012",
-                    name: "Static Keyword and Static Methods",
-                    code: "PR2_50012",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50012.json"
-                  },
-                  {
-                    id: "PR2_50013",
-                    name: "Recursive Methods and Recursion Concept",
-                    code: "PR2_50013",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50013.json"
-                  },
-                ],
               },
             },
             {
@@ -3323,96 +1143,6 @@ export const departmentData: { [key: string]: Department } = {
                 sections: "https://drive.google.com/drive/folders/1LuCRHkTxVc_uKOX7SdVEwcc0WrEL-n2D?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1B_bMKIcqQ4t_PsxDR6-GMUWQOv67AvNK?usp=drive_link",
                 summaries: "https://drive.google.com/drive/folders/1qI0ElMk-nNfGv8hH9h3M51Mz9KvEKhIZ?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "ECO_001",
-                    name: "الفصل الاول - مقدمة في علم الاقتصاد",
-                    code: "ECO_001",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_001.json"
-                  },
-                  {
-                    id: "ECO_002",
-                    name: "الفصل الثاني -المشكلة الاقتصادية والنظم الاقتصادية",
-                    code: "ECO_002",
-                    duration: "OP",
-                    questions: 17,
-                    jsonFile: "/quizzes/Economic/ECO_002.json"
-                  },
-                  {
-                    id: "ECO_003",
-                    name: "الفصل الثالث - نظرية طلب المستهلك",
-                    code: "ECO_003",
-                    duration: "OP",
-                    questions: 19,
-                    jsonFile: "/quizzes/Economic/ECO_003.json"
-                  },
-                  {
-                    id: "ECO_004",
-                    name: "الفصل الرابع - العرض في السوق",
-                    code: "ECO_004",
-                    duration: "OP",
-                    questions: 17,
-                    jsonFile: "/quizzes/Economic/ECO_004.json"
-                  },
-                  {
-                    id: "ECO_005",
-                    name: "الفصل الخامس - التوازن في السوق",
-                    code: "ECO_005",
-                    duration: "OP",
-                    questions: 12,
-                    jsonFile: "/quizzes/Economic/ECO_005.json"
-                  },
-                  {
-                    id: "ECO_006",
-                    name: "الفصل السادس - مرونات العرض والطلب",
-                    code: "ECO_006",
-                    duration: "OP",
-                    questions: 27,
-                    jsonFile: "/quizzes/Economic/ECO_006.json"
-                  },
-                  {
-                    id: "ECO_007",
-                    name: "الفصل السابع - نظرية المنفعة الحدية",
-                    code: "ECO_007",
-                    duration: "OP",
-                    questions: 18,
-                    jsonFile: "/quizzes/Economic/ECO_007.json"
-                  },
-                  {
-                    id: "ECO_008",
-                    name: "الفصل التاسع - نظرية الإنتاج",
-                    code: "ECO_008",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_008.json"
-                  },
-                  {
-                    id: "ECO_009",
-                    name: "الفصل العاشر - تكاليف الإنتاج",
-                    code: "ECO_009",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_009.json"
-                  },
-                  {
-                    id: "ECO_010",
-                    name: "الفصل الحادي عشر - اسواق المنافسة الكاملة",
-                    code: "ECO_010",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_010.json"
-                  },
-                  {
-                    id: "ECO_011",
-                    name: "الفصل الثاني عشر - اسواق المنافسة غير الكاملة",
-                    code: "ECO_011",
-                    duration: "OP",
-                    questions: 18,
-                    jsonFile: "/quizzes/Economic/ECO_011.json"
-                  },
-                ],
               },
             },
             {
@@ -3457,72 +1187,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/11QHqhN6G_OmTNZTPdR_OVWzUZ5fEMO8X?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1ICXoWQy7-nas1_KaLNCA_fHKXEVvRqw2?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "CLC_10661",
-                    name: "Introduction to Cloud Computing",
-                    code: "CLC_10661",
-                    duration: "OP", // <-- CHANGED THIS LINE
-                    questions: 50,
-                    jsonFile: "/quizzes/cloud computing/CLC_10661.json"
-                  },
-                  {
-                    id: "CLC_10662",
-                    name: "Platform and Infrastructure Services",
-                    code: "CLC_10662",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10662.json"
-                  },
-                  {
-                    id: "CLC_10663",
-                    name: "Virtualization",
-                    code: "CLC_10663",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10663.json"
-                  },
-                  {
-                    id: "CLC_10664",
-                    name: "Parallel Programming",
-                    code: "CLC_10664",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10664.json"
-                  },
-                  {
-                    id: "CLC_10665",
-                    name: "Distributed Storage Systems",
-                    code: "CLC_10665",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10665.json"
-                  },
-                  {
-                    id: "CLC_10666",
-                    name: "Cloud Security",
-                    code: "CLC_10666",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10666.json"
-                  },
-                  {
-                    id: "CLC_10667",
-                    name: "Cloud Performance",
-                    code: "CLC_10667",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10667.json"
-                  },
-                  {
-                    id: "CLC_10668",
-                    name: "General Overview + 20Q of 2025's Midterm",
-                    code: "CLC_10668",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/cloud computing/CLC_10668_TOT.json"
-                  }
-                ],
               },
             },
             {
@@ -3537,24 +1201,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1XdboKP5n65WZCznnqiCrE0BZfiarSl4Z?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1WI08MEt_kVSuMITdlqqgPaVpTUPwiqgK?usp=drive_link",
-                quizzes:[
-                  {
-                    id: "ML_001",
-                    name: "Introduction to Machine Learning (Team Materials)",
-                    code: "ML_001",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/machine-learning/ML_001.json"
-                  },
-                  {
-                    id: "ML_004",
-                    name: "Lecture 2 to Midterm (Team Materials)",
-                    code: "ML_004",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/machine-learning/ML_004.json"
-                  }
-                ]              
               },
             },
             {
@@ -3569,56 +1215,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1HRedV6Iu8Djd_f0AE0MigL8nKoq8Yb8-?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1mrKwfr3Mgi9p3zp7VdIVLmsUiPYhJYCX?usp=drive_link",
-                quizzes:[
-                  {
-                    id: "MIG_14331",
-                    name: "Data Mining Lecture 1",
-                    code: "MIG_14331",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14331.json"
-                  },
-                  {
-                    id: "MIG_14332",
-                    name: "Data Mining Lecture 2",
-                    code: "MIG_14332",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14332.json"
-                  },
-                  {
-                    id: "MIG_14333",
-                    name: "Data Mining Lecture 3",
-                    code: "MIG_14333",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14333.json"
-                  },
-                  {
-                    id: "MIG_14334",
-                    name: "Data Mining Lecture 4",
-                    code: "MIG_14334",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14334.json"
-                  },
-                  {
-                    id: "MIG_14335",
-                    name: "Data Mining Lecture 5",
-                    code: "MIG_14335",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14335.json"
-                  },
-                  {
-                    id: "MIG_14336",
-                    name: "Data Mining Lecture 6",
-                    code: "MIG_14336",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14336.json"
-                  },
-                ]
               },
             },
             {
@@ -3628,11 +1224,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Business system analysis and design methodologies",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/system-analysis-design-lectures",
-                sections: "https://drive.google.com/drive/folders/system-analysis-design-sections",
+                lectures: "https://drive.google.com/drive/folders/1XCk9YrAfo70uV9hfybNmvLvJn69lHFiZ",
+                sections: "https://drive.google.com/drive/folders/10ttM9_EA2sEAPEj6_fsyKEaxP2AItRcP",
                 videos: "https://youtube.com/playlist?list=system-analysis-design-videos",
-                summaries: "https://drive.google.com/drive/folders/system-analysis-design-summaries",
-                exams: "https://drive.google.com/drive/folders/system-analysis-design-lastexam"
+                summaries: "https://drive.google.com/drive/folders/1-TUMlZnHgD5NSahx8Ab5v8tR4gBZ_bGy",
+                exams: "https://drive.google.com/drive/folders/1bYzfL7z6ce132wz5wAEYxWP29khFj81k"
               },
             },
             {
@@ -3642,11 +1238,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Financial planning and analytical techniques",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/financial-planning-analysis-lectures",
-                sections: "https://drive.google.com/drive/folders/financial-planning-analysis-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=financial-planning-analysis-videos",
-                summaries: "https://drive.google.com/drive/folders/financial-planning-analysis-summaries",
-                exams: "https://drive.google.com/drive/folders/financial-planning-analysis-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -3656,11 +1252,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 1,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-ba-2-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-ba-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-ba-2-videos",
-                summaries: "https://drive.google.com/drive/folders/university-elective-ba-2-summaries",
-                exams: "https://drive.google.com/drive/folders/university-elective-ba-2-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
           ],
@@ -3675,13 +1271,12 @@ export const departmentData: { [key: string]: Department } = {
               code: "02-24-02301",
               description: "Business process analysis and integration strategies",
               creditHours: 3,
-              materials: {
-                lectures: "https://drive.google.com/drive/folders/business-process-modeling-lectures",
-                sections: "https://drive.google.com/drive/folders/business-process-modeling-sections",
-                videos: "https://youtube.com/playlist?list=business-process-modeling-videos",
-                summaries: "https://drive.google.com/drive/folders/business-process-modeling-summaries",
-                exams: "https://drive.google.com/drive/folders/business-process-modeling-lastexam"
-              },
+                materials: {
+                  lectures: "https://drive.google.com/drive/folders/1QKcsyn3CRJC48qfF42wyFITdTVKdia_W",
+                  summaries: "https://drive.google.com/drive/folders/1nNKwTX7uz_62EildtA5EC-JMd5cz9rkL",
+                  sections: "https://drive.google.com/drive/folders/1Z_8uBwlBi1XmSv4i3zX-_g6T2aWgiCaN",
+                  exams: "https://drive.google.com/drive/folders/1qXR1N2yaAL1dQKoso0PKRbdPFwvJhG-S"
+                }
             },
             {
               id: "quantitative-analysis",
@@ -3689,13 +1284,12 @@ export const departmentData: { [key: string]: Department } = {
               code: "02-24-02302",
               description: "Quantitative methods for business decision making",
               creditHours: 3,
-              materials: {
-                lectures: "https://drive.google.com/drive/folders/quantitative-analysis-lectures",
-                sections: "https://drive.google.com/drive/folders/quantitative-analysis-sections",
-                videos: "https://youtube.com/playlist?list=quantitative-analysis-videos",
-                summaries: "https://drive.google.com/drive/folders/quantitative-analysis-summaries",
-                exams: "https://drive.google.com/drive/folders/quantitative-analysis-lastexam"
-              },
+                materials: {
+                  lectures: "https://drive.google.com/drive/folders/1gKcKZS4Wqn_Sl4Xn6rI6gqqzEekhm9_m",
+                  summaries: "https://drive.google.com/drive/folders/1dGcCFP1hlpjbA8sjWk7Sbou68Wb_p1cA",
+                  sections: "https://drive.google.com/drive/folders/15FZ0zidfiGWHbKuwBalfvmUH25bM9D74",
+                  exams: "https://drive.google.com/drive/folders/1rtSlR7xzXhC-qQVXyXXcVZFS9mVTXCvJ"
+                }
             },
             {
               id: "data-warehousing-bi",
@@ -3703,13 +1297,12 @@ export const departmentData: { [key: string]: Department } = {
               code: "02-24-02303",
               description: "Data warehousing and business intelligence systems",
               creditHours: 3,
-              materials: {
-                lectures: "https://drive.google.com/drive/folders/data-warehousing-bi-lectures",
-                sections: "https://drive.google.com/drive/folders/data-warehousing-bi-sections",
-                videos: "https://youtube.com/playlist?list=data-warehousing-bi-videos",
-                summaries: "https://drive.google.com/drive/folders/data-warehousing-bi-summaries",
-                exams: "https://drive.google.com/drive/folders/data-warehousing-bi-lastexam"  
-              },
+                materials: {
+                  lectures: "https://drive.google.com/drive/folders/16UbTJJctK4CsF8oyg0SAd8xXeSHOONN1",
+                  summaries: "https://drive.google.com/drive/folders/11aWXDahbIM4OT9R8qVgY_9Ny3bjXdJMg",
+                  sections: "https://drive.google.com/drive/folders/1LrAfAH1mBWqdVx5q4Q4ih10p5uS7hkwM",
+                  exams: "https://drive.google.com/drive/folders/1hY_CGSou9ftbycUxMgeKPqt5MdLRugUN"
+                }
             },
             {
               id: "faculty-elective-ba-1",
@@ -3718,11 +1311,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-ba-1-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-ba-1-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-ba-1-videos",
-                summaries: "https://drive.google.com/drive/folders/faculty-elective-ba-1-summaries",
-                exams: "https://drive.google.com/drive/folders/faculty-elective-ba-1-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -3732,10 +1325,10 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-ba-2-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-ba-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-ba-2-videos",
-                summaries: "https://drive.google.com/drive/folders/faculty-elective-ba-2-summaries",
+                summaries: "",
               },
             },
             {
@@ -3745,11 +1338,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-ba-3-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-ba-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-ba-3-videos",
-                summaries: "https://drive.google.com/drive/folders/university-elective-ba-3-summaries",
-                exams: "https://drive.google.com/drive/folders/university-elective-ba-3-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
           ],
@@ -3761,11 +1354,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Advanced data visualization techniques for business",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/data-visualization-ba-lectures",
-                sections: "https://drive.google.com/drive/folders/data-visualization-ba-sections",
+                lectures: "https://drive.google.com/drive/folders/1cPdkERtei3lc_XCT_5flekoJuYPWZ29Q",
+                sections: "https://drive.google.com/drive/folders/1akup2XLHU9HNVhNrRoVPXGjoJGS_b7xH",
                 videos: "https://youtube.com/playlist?list=data-visualization-ba-videos",
-                summaries: "https://drive.google.com/drive/folders/data-visualization-ba-summaries",
-                exams: "https://drive.google.com/drive/folders/data-visualization-ba-lastexam"
+                summaries: "https://drive.google.com/drive/folders/152JzhYGQ9AiMksjks4mIIoULsYBNQ0Jt",
+                exams: "https://drive.google.com/drive/folders/1g8MeUv89wUc5meya3zO5_DBIIVvc4xu7"
               },
             },
             {
@@ -3775,11 +1368,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Enterprise-level information system design and management",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/enterprise-information-systems-lectures",
-                sections: "https://drive.google.com/drive/folders/enterprise-information-systems-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=enterprise-information-systems-videos",
-                summaries: "https://drive.google.com/drive/folders/enterprise-information-systems-summaries",
-                exams: "https://drive.google.com/drive/folders/enterprise-information-systems-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -3789,11 +1382,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Marketing analytics and data-driven marketing strategies",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/data-driven-marketing-lectures",
-                sections: "https://drive.google.com/drive/folders/data-driven-marketing-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=data-driven-marketing-videos",
-                summaries: "https://drive.google.com/drive/folders/data-driven-marketing-summaries",
-                exams: "https://drive.google.com/drive/folders/data-driven-marketing-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -3803,11 +1396,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-ba-3-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-ba-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-ba-3-videos",
-                summaries: "https://drive.google.com/drive/folders/faculty-elective-ba-3-summaries",
-                exams: "https://drive.google.com/drive/folders/faculty-elective-ba-3-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -3817,11 +1410,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-ba-4-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-ba-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-ba-4-videos",
-                summaries: "https://drive.google.com/drive/folders/faculty-elective-ba-4-summaries",
-                exams: "https://drive.google.com/drive/folders/faculty-elective-ba-4-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
           ],
@@ -3837,11 +1430,10 @@ export const departmentData: { [key: string]: Department } = {
               description: "Analytics for human resources and leadership development",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/leadership-people-analytics-lectures",
-                sections: "https://drive.google.com/drive/folders/leadership-people-analytics-sections",
-                videos: "https://youtube.com/playlist?list=leadership-people-analytics-videos",
-                exams: "https://drive.google.com/drive/folders/leadership-people-analytics-lastexam",
-                summaries: "https://drive.google.com/drive/folders/leadership-people-analytics-summaries"
+                lectures: "https://drive.google.com/drive/folders/1MYRZzhVTKl7O3q4CsN0sPS0MkRcVSH2b",
+                summaries: "https://drive.google.com/drive/folders/1NH5nC89K7o0XLETziaJGqB05g-s06_vp",
+                sections: "https://drive.google.com/drive/folders/1BG4XS8h0H2QOzpUKSixYkeMOURk3rNMT",
+                exams: "https://drive.google.com/drive/folders/1s2-TVGPFUo8YWhw11CF-aQu3KXLUx29E"
               },
             },
             {
@@ -3851,11 +1443,10 @@ export const departmentData: { [key: string]: Department } = {
               description: "Governance frameworks for data and IT management",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/data-it-governance-lectures",
-                sections: "https://drive.google.com/drive/folders/data-it-governance-sections",
-                videos: "https://youtube.com/playlist?list=data-it-governance-videos",
-                summaries: "https://drive.google.com/drive/folders/data-it-governance-summaries",
-                exams: "https://drive.google.com/drive/folders/data-it-governance-lastexam"
+                lectures: "https://drive.google.com/drive/folders/1KSm0LY51y2muMNtgdXujq-956X29K04y",
+                summaries: "https://drive.google.com/drive/folders/1fVhsb6iAr7htke2UtGMqbBv7br_t-yV1",
+                sections: "https://drive.google.com/drive/folders/11Bb-pno434CjpSIKf1EfsMtLgfMuiOOp",
+                exams: "https://drive.google.com/drive/folders/1k8RdV9E534AQieICjv1oP3aa4qSVP28O"
               },
             },
             {
@@ -3865,12 +1456,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Information retrieval systems and search technologies",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/information-retrieval-lectures",
-                sections: "https://drive.google.com/drive/folders/information-retrieval-sections",
-                videos: "https://youtube.com/playlist?list=information-retrieval-videos",
-                summaries: "https://drive.google.com/drive/folders/information-retrieval-summaries",
-                exams: "https://drive.google.com/drive/folders/information-retrieval-lastexam"
-              },
+                lectures: "https://drive.google.com/drive/folders/1bJqQYd2fcQ8mMxV8cjD0ntuJGcae854-",
+                summaries: "https://drive.google.com/drive/folders/1rla3Hu9s8er_iQY8UpPwOjoFOoLZWhVj",
+                sections: "https://drive.google.com/drive/folders/15IEyjPSHxu3qYNHD8Ie_gHrEvxkmYde0",
+                exams: "https://drive.google.com/drive/folders/12sTWIY853fm1c8u9_hioMXCdoZs6VC5f"
+              }
             },
             {
               id: "program-elective-ba-1",
@@ -3879,11 +1469,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized business analytics program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-ba-1-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-ba-1-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-ba-1-videos",
-                summaries: "https://drive.google.com/drive/folders/program-elective-ba-1-summaries",
-                exams: "https://drive.google.com/drive/folders/program-elective-ba-1-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -3893,11 +1483,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized business analytics program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-ba-2-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-ba-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-ba-2-videos",
-                summaries: "https://drive.google.com/drive/folders/program-elective-ba-2-summaries",
-                exams: "https://drive.google.com/drive/folders/program-elective-ba-2-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -3907,11 +1497,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-ba-4-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-ba-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-ba-4-videos",
-                summaries: "https://drive.google.com/drive/folders/university-elective-ba-4-summaries",
-                exams: "https://drive.google.com/drive/folders/university-elective-ba-4-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
           ],
@@ -3923,12 +1513,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Mining and analysis of text and social media data",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/text-social-media-mining-lectures",
-                sections: "https://drive.google.com/drive/folders/text-social-media-mining-sections",
-                videos: "https://youtube.com/playlist?list=text-social-media-mining-videos",
-                summaries: "https://drive.google.com/drive/folders/text-social-media-mining-summaries",
-                exams: "https://drive.google.com/drive/folders/text-social-media-mining-lastexam"
-              },
+                lectures: "https://drive.google.com/drive/folders/19YAUxPw3oKrIMBOD_NJATwenwL2TMNZv",
+                summaries: "https://drive.google.com/drive/folders/1EQdOuS7W8yGYXKsi_-_T3DSE-LcCtjR8",
+                sections: "https://drive.google.com/drive/folders/1leC5AI9G_fRqrexGZne0djmlIY93KKYv",
+                exams: "https://drive.google.com/drive/folders/1Aj2dePCcXGAYU3no9qNhLSPQmnMjOm7t"
+              }
             },
             {
               id: "logistics-supply-chain-analytics",
@@ -3936,13 +1525,12 @@ export const departmentData: { [key: string]: Department } = {
               code: "02-24-02406",
               description: "Analytics for logistics and supply chain optimization",
               creditHours: 3,
-              materials: {
-                lectures: "https://drive.google.com/drive/folders/logistics-supply-chain-analytics-lectures",
-                sections: "https://drive.google.com/drive/folders/logistics-supply-chain-analytics-sections",
-                videos: "https://youtube.com/playlist?list=logistics-supply-chain-analytics-videos",
-                summaries: "https://drive.google.com/drive/folders/logistics-supply-chain-analytics-summaries",
-                exams: "https://drive.google.com/drive/folders/logistics-supply-chain-analytics-lastexam"
-              },
+                materials: {
+                  lectures: "https://drive.google.com/drive/folders/1GriWftVSgG952MM9hGTtwTPppx3jkgrC",
+                  summaries: "https://drive.google.com/drive/folders/1QoD6K83ufi7YnueDsZWyTGyOTiDfongm",
+                  sections: "https://drive.google.com/drive/folders/1uFXXSooRfsik3ARrT5P7HC6CIFxiQ_W-",
+                  exams: "https://drive.google.com/drive/folders/1H1wyRLy9icgEqpQA2CdgLcWcli-c3gML"
+                }
             },
             {
               id: "it-laws-ethics",
@@ -3951,12 +1539,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Legal and ethical aspects of information technology",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/it-laws-ethics-lectures",
-                sections: "https://drive.google.com/drive/folders/it-laws-ethics-sections",
-                videos: "https://youtube.com/playlist?list=it-laws-ethics-videos",
-                summaries: "https://drive.google.com/drive/folders/it-laws-ethics-summaries",
-                exams: "https://drive.google.com/drive/folders/it-laws-ethics-lastexam"
-              },
+                lectures: "https://drive.google.com/drive/folders/1CkGN2ikAyJ8z2u1mqS-XktHACL3Hkn5f",
+                summaries: "https://drive.google.com/drive/folders/1Dx_bu3JnyBjspSS8qd2YCjzpRBT6Hl4p",
+                sections: "https://drive.google.com/drive/folders/1Je_tShtWBfHGdHj7Ep0ecFfS7kIsGTDx",
+                exams: "https://drive.google.com/drive/folders/1gDfwPJBpen1nhVBu-fkYmM_i4FVAH8zX"
+              }
             },
             {
               id: "program-elective-ba-3",
@@ -3965,11 +1552,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized business analytics program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-ba-3-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-ba-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-ba-3-videos",
-                summaries: "https://drive.google.com/drive/folders/program-elective-ba-3-summaries",
-                exams: "https://drive.google.com/drive/folders/program-elective-ba-3-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -3979,11 +1566,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized business analytics program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-ba-4-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-ba-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-ba-4-videos",
-                summaries: "https://drive.google.com/drive/folders/program-elective-ba-4-summaries",
-                exams: "https://drive.google.com/drive/folders/program-elective-ba-4-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -3993,11 +1580,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-ba-5-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-ba-5-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-ba-5-videos",
-                summaries: "https://drive.google.com/drive/folders/university-elective-ba-5-summaries",
-                exams: "https://drive.google.com/drive/folders/university-elective-ba-5-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
           ],
@@ -4053,144 +1640,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLskaQRgiRMYb0SqvJ-wKx2n4Q3CB5uQ8e&si=wXANl6gRLW404zuP"],
                 summaries: "https://drive.google.com/drive/folders/1RFPXNiitr2yiHr1AyCsZWuTX0rYyOwIL?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1hTVXduWW2Icy8HY-uOc5lEiUUM42RSkB?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "CS_001",
-                    name: "Chapter 1 : Introduction to Computer Systems",
-                    code: "CS_001",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_001.json"
-                  },
-                  {
-                    id: "CS_002",
-                    name: "Chapter 2 : Processing and Memory Management",
-                    code: "CS_002",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_002.json"
-                  },
-                  {
-                    id: "CS_003",
-                    name: "Chapter 3 : Storage",
-                    code: "CS_003",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_003.json"
-                  },
-                  {
-                    id: "CS_004",
-                    name: "Chapter 4 : Input and Output",
-                    code: "CS_004",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_004.json"
-                  },
-                  {
-                    id: "CS_005",
-                    name: "Chapter 5 : System Software",
-                    code: "CS_005",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_005.json"
-                  },
-                  {
-                    id: "CS_006",
-                    name: "Chapter 6 : Applications Software (1/2)",
-                    code: "CS_006",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_006.json"
-                  }
-                  ,{
-                    id: "CS_007",
-                    name: "Chapter 6 : Applications Software (2/2)",
-                    code: "CS_007",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_007.json"
-                  }
-                  ,{
-                    id: "CS_008",
-                    name: "Chapter 7 : Computer Networks",
-                    code: "CS_008",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_008.json"
-                  },
-                  {
-                    id: "CS_009",
-                    name: "Chapter 13 : Program Dev & Programming Languages",
-                    code: "CS_009",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_009.json"
-                  },
-                  {
-                    id: "CS_010",
-                    name: "Converting Binary to Decimal and Vice Versa",
-                    code: "CS_010",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_010.json"
-                  },
-                  {
-                    id: "CS_011",
-                    name: "Converting Binary to Octal and Vice Versa",
-                    code: "CS_011",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_011.json"
-                  },
-                  {
-                    id: "CS_012",
-                    name: "Converting Binary to Hexadecimal and Vice Versa",
-                    code: "CS_012",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_012.json"
-                  },
-                  {
-                    id: "CS_013",
-                    name: "Converting Decimal to Octal and Vice Versa",
-                    code: "CS_013",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_013.json"
-                  },
-                  {
-                    id: "CS_014",
-                    name: "Converting Decimal to Hexadecimal and Vice Versa",
-                    code: "CS_014",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_014.json"
-                  },
-                  {
-                    id: "CS_015",
-                    name: "Converting Octal to Hexadecimal and Vice Versa",
-                    code: "CS_015",
-                    duration: "OP",
-                    questions: 10,
-                    jsonFile: "/quizzes/Computer System/CS_015.json"
-                  },
-                  {
-                    id: "CS_016",
-                    name: "Converting Gray Code to Binary and Vice Versa",
-                    code: "CS_016",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/Computer System/CS_016.json"
-                  },
-                  {
-                    id: "CS_017",
-                    name: "Converting BCD to Decimal and Vice Versa",
-                    code: "CS_017",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/Computer System/CS_017.json"
-                  }
-                ],
               },
             },
             {
@@ -4205,88 +1654,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLNVsyemi1cQyXLWT3vm4GbWzVxAK_4nbR&si=Q7kxeMYT4iXhr2uC"],
                 summaries: "https://drive.google.com/drive/folders/13IFz-O_64Ga8y9TyFe13CSovw0xzxdUQ?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1adpsd15n6hieC29aQECkrftCHNz20U9c?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DS_001",
-                    name: "Lecture 1 - Introduction to Data Science",
-                    code: "DS_001",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_001.json"
-                  },
-                  {
-                    id: "DS_002",
-                    name: "Lecture 2 - Big Data",
-                    code: "DS_002",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_002.json"
-                  },
-                  {
-                    id: "DS_003",
-                    name: "Lecture 3 - Data Analytics lifecycle (Characters)",
-                    code: "DS_003",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_003.json"
-                  },
-                  {
-                    id: "DS_004",
-                    name: "Lecture 4 - Data Analytics lifecycle (Phases)",
-                    code: "DS_004",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_004.json"
-                  },
-                  {
-                    id: "DS_005",
-                    name: "Lecture 5 - Clustering Analysis",
-                    code: "DS_005",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_005.json"
-                  },
-                  {
-                    id: "DS_006",
-                    name: "Lecture 6 - Introduction Association Rules (1/2)",
-                    code: "DS_006",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_006.json"
-                  },
-                  {
-                    id: "DS_007",
-                    name: "Lecture 7 - Introduction Association Rules (2/2)",
-                    code: "DS_007",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_007.json"
-                  },
-                  {
-                    id: "DS_008",
-                    name: "Lecture 8 - Data Visualization",
-                    code: "DS_008",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_008.json"
-                  },
-                  {
-                    id: "DS_009",
-                    name: "Lecture 9 - Classification Analysis",
-                    code: "DS_009",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_009.json"
-                  },
-                  {
-                    id: "DS_010",
-                    name: "Lecture 10 - Decision Trees",
-                    code: "DS_010",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_010.json"
-                  }
-                ],
               },
             },
             {
@@ -4301,104 +1668,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLCInYL3l2AajYlZGzU_LVrHdoouf8W6ZN&si=_3EUjHYYQd7xAuGr", "https://youtube.com/playlist?list=PL1DUmTEdeA6K7rdxKiWJq6JIxTvHalY8f&si=wl8ryBAWTyTatxTw"],
                 summaries: "https://drive.google.com/drive/folders/19GRYDzueyRIB45_CJGn9Qh3_3JkIgfQH?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1wT8Ad9IGifK4NMgE71xXzLhXs4FF0wuc?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "PR1_30001",
-                    name: "Chapter 1 : Introduction to Programming",
-                    code: "PR1_30001",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30001.json"
-                  },
-                  {
-                    id: "PR1_30002",
-                    name: "Chapter 2-1 : Introduction to Java Programming",
-                    code: "PR1_30002",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30002.json"
-                  },
-                  {
-                    id: "PR1_30003",
-                    name: "Chapter 2-2 : Java Basics",
-                    code: "PR1_30003",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30003.json"
-                  },
-                  {
-                    id: "PR1_30004",
-                    name: "Chapter 2-3 : Java Basics",
-                    code: "PR1_30004",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30004.json"
-                  },
-                  {
-                    id: "PR1_30005",
-                    name: "Chapter 2-4 : Deep Dive into Java",
-                    code: "PR1_30005",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30005.json"
-                  },
-                  {
-                    id: "PR1_30006",
-                    name: "Chapter 3-1 : Controlling Program Flow",
-                    code: "PR1_30006",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30006.json"
-                  },
-                  {
-                    id: "PR1_30007",
-                    name: "Chapter 3-2 : Controlling Program Flow",
-                    code: "PR1_30007",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30007.json"
-                  },
-                  {
-                    id: "PR1_30008",
-                    name: "Chapter 4-1 : One Dimensional Arrays",
-                    code: "PR1_30008",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30008.json"
-                  },
-                  {
-                    id: "PR1_30009",
-                    name: "Chapter 4-2 : Multi Dimensional Arrays",
-                    code: "PR1_30009",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30009.json"
-                  },
-                  {
-                    id: "PR1_30010",
-                    name: "Review 1",
-                    code: "PR1_30010",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30010.json"
-                  },
-                  {
-                    id: "PR1_30011",
-                    name: "Review 2",
-                    code: "PR1_30011",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30011.json"
-                  },
-                  {
-                    id: "PR1_30012",
-                    name: "Tracing and Debugging",
-                    code: "PR1_30012",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30012.json"
-                  },
-                ],
               
               },
             },
@@ -4444,80 +1713,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PLxIvc-MGOs6gZlMVYOOEtUHJmfUquCjwz",
                 summaries: "https://drive.google.com/drive/folders/1sqiDSQMkoYZCehzIgdyxZcNRSYpIkLnX?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1SgzQqrBfbam-yqOw8xOdq9SKXPlScR2k?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DM_001",
-                    name: "Intro to Discrete Math",
-                    code: "DM_001",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_001.json"
-                  },
-                  {
-                    id: "DM_002",
-                    name: "Bit Operations",
-                    code: "DM_002",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_002.json"
-                  },
-                  {
-                    id: "DM_003",
-                    name: "Predicates and Quantifiers",
-                    code: "DM_003",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_003.json"
-                  },
-                  {
-                    id: "DM_004",
-                    name: "Sets and Functions",
-                    code: "DM_004",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_004.json"
-                  },
-                  {
-                    id: "DM_005",
-                    name: "Set Operations",
-                    code: "DM_005",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_005.json"
-                  },
-                  {
-                    id: "DM_006",
-                    name: "Functions Domain",
-                    code: "DM_006",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_006.json"
-                  },
-                  {
-                    id: "DM_007",
-                    name: "Product Rule",
-                    code: "DM_007",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_007.json"
-                  },
-                  {
-                    id: "DM_008",
-                    name: "Password Counting",
-                    code: "DM_008",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_008.json"
-                  },
-                  {
-                    id: "DM_009",
-                    name: "Permutations Combinations",
-                    code: "DM_009",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_009.json"
-                  },
-                ] 
               },
             },
             {
@@ -4532,88 +1727,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PLCInYL3l2AajqOUW_2SwjWeMwf4vL4RSp",
                 summaries: "https://drive.google.com/drive/folders/1Oiki77OjApABjz0z7D3j2g-Kxc7-hN59?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1IADSkBhDhvgjpDJecfTf9VlvdoJ9P2hD?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "STR_001",
-                    name: "Introduction to Data Structures",
-                    code: "STR_001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_001.json"
-                  },
-                  {
-                    id: "STR_002",
-                    name: "Singly Linked List",
-                    code: "STR_002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_002.json"
-                  },
-                  {
-                    id: "STR_003",
-                    name: "Doubly Linked List",
-                    code: "STR_003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_003.json"
-                  },
-                  {
-                    id: "STR_004",
-                    name: "Hash Table",
-                    code: "STR_004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_004.json"
-                  },
-                  {
-                    id: "STR_005",
-                    name: "Stack - Queue - PQ",
-                    code: "STR_005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_005.json"
-                  },
-                  {
-                    id: "STR_006",
-                    name: "BST (Binary Search Tree)",
-                    code: "STR_006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_006.json"
-                  },
-                  {
-                    id: "STR_007",
-                    name: "Sorting Algorithms",
-                    code: "STR_007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_007.json"
-                  },
-                  {
-                    id: "STR_008",
-                    name: "Heap Tree",
-                    code: "STR_008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_008.json"
-                  },
-                  {
-                    id: "STR_009",
-                    name: "General Review (Part 1)",
-                    code: "STR_009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_009.json"
-                  },
-                  {
-                    id: "STR_010",
-                    name: "General Review (Part 2)",
-                    code: "STR_010",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_010.json"
-                  },
-                ]
               },
             },
             {
@@ -4642,112 +1755,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLCInYL3l2AagY7fFlhCrjpLiIFybW3yQv","https://youtube.com/playlist?list=PL1DUmTEdeA6Icttz-O9C3RPRF8R8Px5vk"],
                 summaries: "https://drive.google.com/drive/folders/1VGGZWwQmZdVD8LWI6piI_RzQqdwKq_st?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1dxwniB91RAEtAu0hKLt5cWqb3t1Q0FLI?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "PR2_50001",
-                    name: "Functions - Methods (Part 1)",
-                    code: "PR2_50001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50001.json"
-                  },
-                  {
-                    id: "PR2_50002",
-                    name: "Functions - Methods (Part 2)",
-                    code: "PR2_50002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50002.json"
-                  },
-                  {
-                    id: "PR2_50003",
-                    name: "Introduction To Object-Oriented Programming",
-                    code: "PR2_50003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50003.json"
-                  },
-                  {
-                    id: "PR2_50004",
-                    name: "Constructor and It's Types",
-                    code: "PR2_50004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50004.json"
-                  },
-                  {
-                    id: "PR2_50005",
-                    name: "Inheritance and Polymorphism (Part 1)",
-                    code: "PR2_50005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50005.json"
-                  },
-                  {
-                    id: "PR2_50006",
-                    name: "Inheritance and Polymorphism (Part 2)",
-                    code: "PR2_50006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50006.json"
-                  },
-                  {
-                    id: "PR2_50007",
-                    name: "Abstract Class and Interface",
-                    code: "PR2_50007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50007.json"
-                  },
-                  {
-                    id: "PR2_50008",
-                    name: "Class Relations (Part 1)",
-                    code: "PR2_50008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50008.json"
-                  },
-                  {
-                    id: "PR2_50009",
-                    name: "Class Relations (Part 2)",
-                    code: "PR2_50009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50009.json"
-                  },
-                  {
-                    id: "PR2_50010",
-                    name: "Array List in Java",
-                    code: "PR2_50010",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50010.json"
-                  },
-                  {
-                    id: "PR2_50011",
-                    name: "Exception Handling",
-                    code: "PR2_50011",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50011.json"
-                  },
-                  {
-                    id: "PR2_50012",
-                    name: "Static Keyword and Static Methods",
-                    code: "PR2_50012",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50012.json"
-                  },
-                  {
-                    id: "PR2_50013",
-                    name: "Recursive Methods and Recursion Concept",
-                    code: "PR2_50013",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50013.json"
-                  },
-                ]
               },
             },
             {
@@ -4851,96 +1858,6 @@ export const departmentData: { [key: string]: Department } = {
                 sections: "https://drive.google.com/drive/folders/1LuCRHkTxVc_uKOX7SdVEwcc0WrEL-n2D?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1B_bMKIcqQ4t_PsxDR6-GMUWQOv67AvNK?usp=drive_link",
                 summaries: "https://drive.google.com/drive/folders/1qI0ElMk-nNfGv8hH9h3M51Mz9KvEKhIZ?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "ECO_001",
-                    name: "الفصل الاول - مقدمة في علم الاقتصاد",
-                    code: "ECO_001",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_001.json"
-                  },
-                  {
-                    id: "ECO_002",
-                    name: "الفصل الثاني -المشكلة الاقتصادية والنظم الاقتصادية",
-                    code: "ECO_002",
-                    duration: "OP",
-                    questions: 17,
-                    jsonFile: "/quizzes/Economic/ECO_002.json"
-                  },
-                  {
-                    id: "ECO_003",
-                    name: "الفصل الثالث - نظرية طلب المستهلك",
-                    code: "ECO_003",
-                    duration: "OP",
-                    questions: 19,
-                    jsonFile: "/quizzes/Economic/ECO_003.json"
-                  },
-                  {
-                    id: "ECO_004",
-                    name: "الفصل الرابع - العرض في السوق",
-                    code: "ECO_004",
-                    duration: "OP",
-                    questions: 17,
-                    jsonFile: "/quizzes/Economic/ECO_004.json"
-                  },
-                  {
-                    id: "ECO_005",
-                    name: "الفصل الخامس - التوازن في السوق",
-                    code: "ECO_005",
-                    duration: "OP",
-                    questions: 12,
-                    jsonFile: "/quizzes/Economic/ECO_005.json"
-                  },
-                  {
-                    id: "ECO_006",
-                    name: "الفصل السادس - مرونات العرض والطلب",
-                    code: "ECO_006",
-                    duration: "OP",
-                    questions: 27,
-                    jsonFile: "/quizzes/Economic/ECO_006.json"
-                  },
-                  {
-                    id: "ECO_007",
-                    name: "الفصل السابع - نظرية المنفعة الحدية",
-                    code: "ECO_007",
-                    duration: "OP",
-                    questions: 18,
-                    jsonFile: "/quizzes/Economic/ECO_007.json"
-                  },
-                  {
-                    id: "ECO_008",
-                    name: "الفصل التاسع - نظرية الإنتاج",
-                    code: "ECO_008",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_008.json"
-                  },
-                  {
-                    id: "ECO_009",
-                    name: "الفصل العاشر - تكاليف الإنتاج",
-                    code: "ECO_009",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_009.json"
-                  },
-                  {
-                    id: "ECO_010",
-                    name: "الفصل الحادي عشر - اسواق المنافسة الكاملة",
-                    code: "ECO_010",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_010.json"
-                  },
-                  {
-                    id: "ECO_011",
-                    name: "الفصل الثاني عشر - اسواق المنافسة غير الكاملة",
-                    code: "ECO_011",
-                    duration: "OP",
-                    questions: 18,
-                    jsonFile: "/quizzes/Economic/ECO_011.json"
-                  },
-                ],
               },
             },
           ],
@@ -4957,72 +1874,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/11QHqhN6G_OmTNZTPdR_OVWzUZ5fEMO8X?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1ICXoWQy7-nas1_KaLNCA_fHKXEVvRqw2?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "CLC_10661",
-                    name: "Introduction to Cloud Computing",
-                    code: "CLC_10661",
-                    duration: "OP", // <-- CHANGED THIS LINE
-                    questions: 50,
-                    jsonFile: "/quizzes/cloud computing/CLC_10661.json"
-                  },
-                  {
-                    id: "CLC_10662",
-                    name: "Platform and Infrastructure Services",
-                    code: "CLC_10662",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10662.json"
-                  },
-                  {
-                    id: "CLC_10663",
-                    name: "Virtualization",
-                    code: "CLC_10663",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10663.json"
-                  },
-                  {
-                    id: "CLC_10664",
-                    name: "Parallel Programming",
-                    code: "CLC_10664",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10664.json"
-                  },
-                  {
-                    id: "CLC_10665",
-                    name: "Distributed Storage Systems",
-                    code: "CLC_10665",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10665.json"
-                  },
-                  {
-                    id: "CLC_10666",
-                    name: "Cloud Security",
-                    code: "CLC_10666",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10666.json"
-                  },
-                  {
-                    id: "CLC_10667",
-                    name: "Cloud Performance",
-                    code: "CLC_10667",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10667.json"
-                  },
-                  {
-                    id: "CLC_10668",
-                    name: "General Overview + 20Q of 2025's Midterm",
-                    code: "CLC_10668",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/cloud computing/CLC_10668_TOT.json"
-                  }
-                ],
               },
             },
             {
@@ -5037,24 +1888,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1XdboKP5n65WZCznnqiCrE0BZfiarSl4Z?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1WI08MEt_kVSuMITdlqqgPaVpTUPwiqgK?usp=drive_link",
-                quizzes:[
-                  {
-                    id: "ML_001",
-                    name: "Introduction to Machine Learning (Team Materials)",
-                    code: "ML_001",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/machine-learning/ML_001.json"
-                  },
-                  {
-                    id: "ML_004",
-                    name: "Lecture 2 to Midterm (Team Materials)",
-                    code: "ML_004",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/machine-learning/ML_004.json"
-                  }
-                ]   
               },
             },
             {
@@ -5069,56 +1902,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1HRedV6Iu8Djd_f0AE0MigL8nKoq8Yb8-?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1mrKwfr3Mgi9p3zp7VdIVLmsUiPYhJYCX?usp=drive_link",
-                quizzes:[
-                  {
-                    id: "MIG_14331",
-                    name: "Data Mining Lecture 1",
-                    code: "MIG_14331",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14331.json"
-                  },
-                  {
-                    id: "MIG_14332",
-                    name: "Data Mining Lecture 2",
-                    code: "MIG_14332",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14332.json"
-                  },
-                  {
-                    id: "MIG_14333",
-                    name: "Data Mining Lecture 3",
-                    code: "MIG_14333",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14333.json"
-                  },
-                  {
-                    id: "MIG_14334",
-                    name: "Data Mining Lecture 4",
-                    code: "MIG_14334",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14334.json"
-                  },
-                  {
-                    id: "MIG_14335",
-                    name: "Data Mining Lecture 5",
-                    code: "MIG_14335",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14335.json"
-                  },
-                  {
-                    id: "MIG_14336",
-                    name: "Data Mining Lecture 6",
-                    code: "MIG_14336",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14336.json"
-                  },
-                ]
               },
             },
             {
@@ -5156,11 +1939,11 @@ export const departmentData: { [key: string]: Department } = {
             //   description: "University-wide elective course",
             //   creditHours: 1,
             //   materials: {
-            //     lectures: "https://drive.google.com/drive/folders/university-elective-is-2-lectures",
-            //     sections: "https://drive.google.com/drive/folders/university-elective-is-2-sections",
+            //     lectures: "",
+            //     sections: "",
             //     videos: "https://youtube.com/playlist?list=university-elective-is-2-videos",
-            //     summaries: "https://drive.google.com/drive/folders/university-elective-is-2-summaries",
-            //     exams: "https://drive.google.com/drive/folders/university-elective-is-2-lastexam"
+            //     summaries: "",
+            //     exams: ""
             //   },
             // },
           ],
@@ -5176,11 +1959,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Programming techniques for intelligent systems",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/intelligent-programming-lectures",
-                sections: "https://drive.google.com/drive/folders/intelligent-programming-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=intelligent-programming-videos",
-                exams: "https://drive.google.com/drive/folders/intelligent-programming-lastexam",
-                summaries: "https://drive.google.com/drive/folders/intelligent-programming-summaries"
+                exams: "",
+                summaries: ""
               },
             },
             {
@@ -5190,11 +1973,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Deep neural networks and advanced architectures",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/deep-learning-lectures",
-                sections: "https://drive.google.com/drive/folders/deep-learning-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=deep-learning-videos",
-                exams: "https://drive.google.com/drive/folders/deep-learning-lastexam",
-                summaries: "https://drive.google.com/drive/folders/deep-learning-summaries"
+                exams: "",
+                summaries: ""
               },
             },
             {
@@ -5204,11 +1987,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Control theory for intelligent systems",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/modern-control-systems-lectures",
-                sections: "https://drive.google.com/drive/folders/modern-control-systems-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=modern-control-systems-videos",
-                exams: "https://drive.google.com/drive/folders/modern-control-systems-lastexam",
-                summaries: "https://drive.google.com/drive/folders/modern-control-systems-summaries"
+                exams: "",
+                summaries: ""
               },
             },
             {
@@ -5218,11 +2001,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-is-1-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-is-1-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-is-1-videos",
-                exams: "https://drive.google.com/drive/folders/faculty-elective-is-1-lastexam",
-                summaries: "https://drive.google.com/drive/folders/faculty-elective-is-1-summaries"
+                exams: "",
+                summaries: ""
               },
             },
             {
@@ -5232,11 +2015,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-is-2-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-is-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-is-2-videos",
-                exams: "https://drive.google.com/drive/folders/faculty-elective-is-2-lastexam",
-                summaries: "https://drive.google.com/drive/folders/faculty-elective-is-2-summaries"
+                exams: "",
+                summaries: ""
               },
             },
             {
@@ -5246,11 +2029,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 1,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-is-3-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-is-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-is-3-videos",
-                summaries: "https://drive.google.com/drive/folders/university-elective-is-3-summaries",
-                exams: "https://drive.google.com/drive/folders/university-elective-is-3-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
           ],
@@ -5262,11 +2045,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Embedded systems for intelligent applications",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/embedded-systems-lectures",
-                sections: "https://drive.google.com/drive/folders/embedded-systems-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=embedded-systems-videos",
-                exams: "https://drive.google.com/drive/folders/embedded-systems-lastexam",
-                summaries: "https://drive.google.com/drive/folders/embedded-systems-summaries"
+                exams: "",
+                summaries: ""
               },
             },
             {
@@ -5276,11 +2059,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Computer vision algorithms and applications",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/computer-vision-lectures",
-                sections: "https://drive.google.com/drive/folders/computer-vision-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=computer-vision-videos",
-                exams: "https://drive.google.com/drive/folders/computer-vision-lastexam",
-                summaries: "https://drive.google.com/drive/folders/computer-vision-summaries"
+                exams: "",
+                summaries: ""
               },
             },
             {
@@ -5290,11 +2073,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Security challenges and solutions in AI systems",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/ai-security-issues-lectures",
-                sections: "https://drive.google.com/drive/folders/ai-security-issues-sections",
+                lectures: "https://drive.google.com/drive/folders/1Ra565nm7IwPvgvYbMMRtuDs0fGwVHoxK",
+                sections: "https://drive.google.com/drive/folders/19rzicu7FCEefjwqoVCOiF-ntfM-kzEjO",
                 videos: "https://youtube.com/playlist?list=ai-security-issues-videos",
-                exams: "https://drive.google.com/drive/folders/ai-security-issues-lastexam",
-                summaries: "https://drive.google.com/drive/folders/ai-security-issues-summaries"
+                exams: "https://drive.google.com/drive/folders/119esT_F4aseG3fH8uClOSt7hQJ0DwTMY",
+                summaries: "https://drive.google.com/drive/folders/1oe1yRuvfCDAdOJzdh0Uj6Y6FIDpz9pA8"
               },
             },
             {
@@ -5304,11 +2087,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-is-3-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-is-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-is-3-videos",
-                exams: "https://drive.google.com/drive/folders/faculty-elective-is-3-lastexam",
-                summaries: "https://drive.google.com/drive/folders/faculty-elective-is-3-summaries"
+                exams: "",
+                summaries: ""
               },
             },
             {
@@ -5318,11 +2101,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-is-4-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-is-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-is-4-videos",
-                exams: "https://drive.google.com/drive/folders/faculty-elective-is-4-lastexam",
-                summaries: "https://drive.google.com/drive/folders/faculty-elective-is-4-summaries"
+                exams: "",
+                summaries: ""
               },
             },
           ],
@@ -5338,11 +2121,10 @@ export const departmentData: { [key: string]: Department } = {
               description: "AI development platforms and frameworks",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/ai-platforms-lectures",
-                sections: "https://drive.google.com/drive/folders/ai-platforms-sections",
-                videos: "https://youtube.com/playlist?list=ai-platforms-videos",
-                exams: "https://drive.google.com/drive/folders/ai-platforms-lastexam",
-                summaries: "https://drive.google.com/drive/folders/ai-platforms-summaries"
+                lectures: "https://drive.google.com/drive/folders/1mEsI49nPM4aEXIn-ozL0LfbVNuTbhxD8",
+                summaries: "https://drive.google.com/drive/folders/1qZMef23zdFZATAcMmp9f6Sw4P8ISp3cq",
+                sections: "https://drive.google.com/drive/folders/1npE1wDy6bYcLa8Y2xNBsNqZjBbyWP0ca",
+                exams: "https://drive.google.com/drive/folders/1sq4cCFBaD6PXJHb3EzcA7f-iY17rj1RN"
               },
             },
             {
@@ -5352,11 +2134,10 @@ export const departmentData: { [key: string]: Department } = {
               description: "IoT fundamentals and intelligent device integration",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/internet-of-things-1-lectures",
-                sections: "https://drive.google.com/drive/folders/internet-of-things-1-sections",
-                videos: "https://youtube.com/playlist?list=internet-of-things-1-videos",
-                summaries: "https://drive.google.com/drive/folders/internet-of-things-1-summaries",
-                exams: "https://drive.google.com/drive/folders/internet-of-things-1-lastexam"
+                lectures: "https://drive.google.com/drive/folders/1xsdMuQHI4Tf1jdKlhYaPGyJSRGHouZRG",
+                summaries: "https://drive.google.com/drive/folders/1XjW0IPyORzgifqqht_bcqer8JnhFYkgx",
+                sections: "https://drive.google.com/drive/folders/1cqm4KHxaw4B11kMksHodWnZ01eTG4QT1",
+                exams: "https://drive.google.com/drive/folders/1plcjrbq9IaIEYP0-EybqBNxkXPnl39Mv"
               },
             },
             {
@@ -5366,11 +2147,10 @@ export const departmentData: { [key: string]: Department } = {
               description: "NLP techniques for intelligent systems",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/natural-language-processing-is-lectures",
-                sections: "https://drive.google.com/drive/folders/natural-language-processing-is-sections",
-                videos: "https://youtube.com/playlist?list=natural-language-processing-is-videos",
-                summaries: "https://drive.google.com/drive/folders/natural-language-processing-is-summaries",
-                exams: "https://drive.google.com/drive/folders/natural-language-processing-is-lastexam"
+                lectures: "https://drive.google.com/drive/folders/11d1LHDgabqdfbvvQR9SQIpv-Y_E7PyV9",
+                summaries: "https://drive.google.com/drive/folders/1GxHo9kvY26K0_FFV3pN1_g9lWsqQDYPs",
+                sections: "https://drive.google.com/drive/folders/1_caEKnancQl_3a_1uE7ZYJN80so92QAF",
+                exams: "https://drive.google.com/drive/folders/1DmZMnnRDeI42XiQYHhvkQi5OmwBz6pn8"
               },
             },
             {
@@ -5380,11 +2160,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized intelligent systems program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-is-1-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-is-1-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-is-1-videos",
-                summaries: "https://drive.google.com/drive/folders/program-elective-is-1-summaries",
-                exams: "https://drive.google.com/drive/folders/program-elective-is-1-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -5394,11 +2174,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized intelligent systems program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-is-2-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-is-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-is-2-videos",
-                summaries: "https://drive.google.com/drive/folders/program-elective-is-2-summaries",
-                exams: "https://drive.google.com/drive/folders/program-elective-is-2-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -5408,11 +2188,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-is-4-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-is-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-is-4-videos",
-                summaries: "https://drive.google.com/drive/folders/university-elective-is-4-summaries",
-                exams: "https://drive.google.com/drive/folders/university-elective-is-4-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
           ],
@@ -5424,12 +2204,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Reinforcement learning algorithms and applications",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/reinforcement-learning-lectures",
-                sections: "https://drive.google.com/drive/folders/reinforcement-learning-sections",
-                videos: "https://youtube.com/playlist?list=reinforcement-learning-videos",
-                summaries: "https://drive.google.com/drive/folders/reinforcement-learning-summaries",
-                exams: "https://drive.google.com/drive/folders/reinforcement-learning-lastexam"
-              },
+                lectures: "https://drive.google.com/drive/folders/1DGvDGHfBkVJwQG2mBG7wD-O1ybhe0Fyt",
+                summaries: "https://drive.google.com/drive/folders/1K1oucOhCIj8ox0Uwmwspbafv0HSNkCoK",
+                sections: "https://drive.google.com/drive/folders/15szFTEbrnO92NT89J4pr10TeOEGDONd4",
+                exams: "https://drive.google.com/drive/folders/1TI8qjwXi1CzpH8i_ETlbaz7jIGO5jqc_"
+              }
             },
             {
               id: "ai-for-robotics",
@@ -5438,12 +2217,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Artificial intelligence applications in robotics",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/ai-for-robotics-lectures",
-                sections: "https://drive.google.com/drive/folders/ai-for-robotics-sections",
-                videos: "https://youtube.com/playlist?list=ai-for-robotics-videos",
-                summaries: "https://drive.google.com/drive/folders/ai-for-robotics-summaries",
-                exams: "https://drive.google.com/drive/folders/ai-for-robotics-lastexam"
-              },
+                lectures: "https://drive.google.com/drive/folders/1Yn6UCjScUNRlRUjP8-zjOY0uZLVZfMu6",
+                summaries: "https://drive.google.com/drive/folders/1Eon_rwzYQjAjsRPyrW41OedREBpZ6cIy",
+                sections: "https://drive.google.com/drive/folders/1kLQ8JOtradVotGQY5IA-oYmozLXOuSdg",
+                exams: "https://drive.google.com/drive/folders/1xiUAbXwzjlEBoZIBp2tYFAGWUI_RnHuc"
+              }
             },
             {
               id: "visual-recognition",
@@ -5452,12 +2230,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Advanced visual recognition and image analysis",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/visual-recognition-lectures",
-                sections: "https://drive.google.com/drive/folders/visual-recognition-sections",
-                videos: "https://youtube.com/playlist?list=visual-recognition-videos",
-                summaries: "https://drive.google.com/drive/folders/visual-recognition-summaries",
-                exams: "https://drive.google.com/drive/folders/visual-recognition-lastexam"
-              },
+                lectures: "https://drive.google.com/drive/folders/1GGmebstFaTPWPnK0YVv730TwFmWwbiXl",
+                summaries: "https://drive.google.com/drive/folders/1ZnQTTvsg4ZYnJNyGStmXsCClQFbKZ7wR",
+                sections: "https://drive.google.com/drive/folders/1a9zU1ifMYuLv5p4KUMXKPHstFFQrHpMF",
+                exams: "https://drive.google.com/drive/folders/1h5aKc6fhlIHOyHwB08WNHG6mu2g6R9wK"
+              }
             },
             {
               id: "program-elective-is-3",
@@ -5466,11 +2243,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized intelligent systems program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-is-3-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-is-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-is-3-videos",
-                summaries: "https://drive.google.com/drive/folders/program-elective-is-3-summaries",
-                exams: "https://drive.google.com/drive/folders/program-elective-is-3-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -5480,11 +2257,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized intelligent systems program elective",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-is-4-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-is-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-is-4-videos",
-                summaries: "https://drive.google.com/drive/folders/program-elective-is-4-summaries",
-                exams: "https://drive.google.com/drive/folders/program-elective-is-4-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -5494,11 +2271,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-is-5-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-is-5-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-is-5-videos",
-                summaries: "https://drive.google.com/drive/folders/university-elective-is-5-summaries",
-                exams: "https://drive.google.com/drive/folders/university-elective-is-5-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
           ],
@@ -5520,11 +2297,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Mathematical foundations for media analytics",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/linear-algebra-ma-lectures",
-                sections: "https://drive.google.com/drive/folders/linear-algebra-ma-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=linear-algebra-ma-videos",
-                summaries: "https://drive.google.com/drive/folders/linear-algebra-ma-summaries",
-                exams: "https://drive.google.com/drive/folders/linear-algebra-ma-lastexam"
+                summaries: "",
+                exams: ""
               },
             },
             {
@@ -5534,8 +2311,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Calculus for media and digital content analysis",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/calculus-ma-lectures",
-                sections: "https://drive.google.com/drive/folders/calculus-ma-sections",
+                lectures: "https://drive.google.com/drive/folders/1LsWVrCXpwVsL7YhGL_QFQhyryvpc_Yon",
+                sections: "https://drive.google.com/drive/folders/1U2LbrtWkf-X8DL3c7Yo12kgV8bbZ0Wb6",
                 videos: "https://youtube.com/playlist?list=calculus-ma-videos",
               },
             },
@@ -5546,149 +2323,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Computer systems for media processing",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/computer-systems-ma-lectures",
-                sections: "https://drive.google.com/drive/folders/computer-systems-ma-sections",
+                lectures: "https://drive.google.com/drive/folders/1yQK4QiXQ7e7Ui6DLMAGYQa3aTuQp0v9O",
+                sections: "https://drive.google.com/drive/folders/1q0iRgXguAaa2zZTSA9J1smnCwN2PwCAn",
                 videos: "https://youtube.com/playlist?list=computer-systems-ma-videos",
-                summaries: "https://drive.google.com/drive/folders/computer-systems-ma-summaries",
-                exams: "https://drive.google.com/drive/folders/computer-systems-ma-lastexam",
-                quizzes: [
-                  {
-                    id: "CS_001",
-                    name: "Chapter 1 : Introduction to Computer Systems",
-                    code: "CS_001",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_001.json"
-                  },
-                  {
-                    id: "CS_002",
-                    name: "Chapter 2 : Processing and Memory Management",
-                    code: "CS_002",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_002.json"
-                  },
-                  {
-                    id: "CS_003",
-                    name: "Chapter 3 : Storage",
-                    code: "CS_003",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_003.json"
-                  },
-                  {
-                    id: "CS_004",
-                    name: "Chapter 4 : Input and Output",
-                    code: "CS_004",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_004.json"
-                  },
-                  {
-                    id: "CS_005",
-                    name: "Chapter 5 : System Software",
-                    code: "CS_005",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_005.json"
-                  },
-                  {
-                    id: "CS_006",
-                    name: "Chapter 6 : Applications Software (1/2)",
-                    code: "CS_006",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_006.json"
-                  }
-                  ,{
-                    id: "CS_007",
-                    name: "Chapter 6 : Applications Software (2/2)",
-                    code: "CS_007",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_007.json"
-                  }
-                  ,{
-                    id: "CS_008",
-                    name: "Chapter 7 : Computer Networks",
-                    code: "CS_008",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_008.json"
-                  },
-                  {
-                    id: "CS_009",
-                    name: "Chapter 13 : Program Dev & Programming Languages",
-                    code: "CS_009",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_009.json"
-                  },
-                  {
-                    id: "CS_010",
-                    name: "Converting Binary to Decimal and Vice Versa",
-                    code: "CS_010",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_010.json"
-                  },
-                  {
-                    id: "CS_011",
-                    name: "Converting Binary to Octal and Vice Versa",
-                    code: "CS_011",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_011.json"
-                  },
-                  {
-                    id: "CS_012",
-                    name: "Converting Binary to Hexadecimal and Vice Versa",
-                    code: "CS_012",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_012.json"
-                  },
-                  {
-                    id: "CS_013",
-                    name: "Converting Decimal to Octal and Vice Versa",
-                    code: "CS_013",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_013.json"
-                  },
-                  {
-                    id: "CS_014",
-                    name: "Converting Decimal to Hexadecimal and Vice Versa",
-                    code: "CS_014",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_014.json"
-                  },
-                  {
-                    id: "CS_015",
-                    name: "Converting Octal to Hexadecimal and Vice Versa",
-                    code: "CS_015",
-                    duration: "OP",
-                    questions: 10,
-                    jsonFile: "/quizzes/Computer System/CS_015.json"
-                  },
-                  {
-                    id: "CS_016",
-                    name: "Converting Gray Code to Binary and Vice Versa",
-                    code: "CS_016",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/Computer System/CS_016.json"
-                  },
-                  {
-                    id: "CS_017",
-                    name: "Converting BCD to Decimal and Vice Versa",
-                    code: "CS_017",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/Computer System/CS_017.json"
-                  }
-                ],
+                summaries: "https://drive.google.com/drive/folders/1RFPXNiitr2yiHr1AyCsZWuTX0rYyOwIL",
+                exams: "https://drive.google.com/drive/folders/1hTVXduWW2Icy8HY-uOc5lEiUUM42RSkB",
               },
             },
             {
@@ -5698,91 +2337,9 @@ export const departmentData: { [key: string]: Department } = {
               description: "Data science fundamentals for media analytics",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/data-sciences-ma-lectures",
-                sections: "https://drive.google.com/drive/folders/data-sciences-ma-sections",
+                lectures: "https://drive.google.com/drive/folders/10SsZONPzWccvjTQB4ZcHmT0j_FU8b981",
+                sections: "https://drive.google.com/drive/folders/14IwWgXRgD8G2IPJ2op1RdBIj9pgs77LJ",
                 videos: "https://youtube.com/playlist?list=data-sciences-ma-videos",
-                quizzes: [
-                  {
-                    id: "DS_001",
-                    name: "Lecture 1 - Introduction to Data Science",
-                    code: "DS_001",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_001.json"
-                  },
-                  {
-                    id: "DS_002",
-                    name: "Lecture 2 - Big Data",
-                    code: "DS_002",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_002.json"
-                  },
-                  {
-                    id: "DS_003",
-                    name: "Lecture 3 - Data Analytics lifecycle (Characters)",
-                    code: "DS_003",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_003.json"
-                  },
-                  {
-                    id: "DS_004",
-                    name: "Lecture 4 - Data Analytics lifecycle (Phases)",
-                    code: "DS_004",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_004.json"
-                  },
-                  {
-                    id: "DS_005",
-                    name: "Lecture 5 - Clustering Analysis",
-                    code: "DS_005",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_005.json"
-                  },
-                  {
-                    id: "DS_006",
-                    name: "Lecture 6 - Introduction Association Rules (1/2)",
-                    code: "DS_006",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_006.json"
-                  },
-                  {
-                    id: "DS_007",
-                    name: "Lecture 7 - Introduction Association Rules (2/2)",
-                    code: "DS_007",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_007.json"
-                  },
-                  {
-                    id: "DS_008",
-                    name: "Lecture 8 - Data Visualization",
-                    code: "DS_008",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_008.json"
-                  },
-                  {
-                    id: "DS_009",
-                    name: "Lecture 9 - Classification Analysis",
-                    code: "DS_009",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_009.json"
-                  },
-                  {
-                    id: "DS_010",
-                    name: "Lecture 10 - Decision Trees",
-                    code: "DS_010",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_010.json"
-                  }
-                ],
               },
             },
             {
@@ -5792,8 +2349,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Programming fundamentals for media applications",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/programming-1-ma-lectures",
-                sections: "https://drive.google.com/drive/folders/programming-1-ma-sections",
+                lectures: "https://drive.google.com/drive/folders/1VDUvvvKoRcBfdCAgdO5GUa8ourGzEj43",
+                sections: "https://drive.google.com/drive/folders/14-W3wcsn8gw2ym8CnIo_L6jh0RfQW-mR",
                 videos: "https://youtube.com/playlist?list=programming-1-ma-videos",
               },
             },
@@ -5804,8 +2361,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Critical thinking for media analysis",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/critical-thinking-ma-lectures",
-                sections: "https://drive.google.com/drive/folders/critical-thinking-ma-sections",
+                lectures: "https://drive.google.com/drive/folders/1mGHqF_BIXdX-S6BipXm942CsOvr6WHTG",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=critical-thinking-ma-videos",
               },
             },
@@ -5837,80 +2394,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PLxIvc-MGOs6gZlMVYOOEtUHJmfUquCjwz",
                 summaries: "https://drive.google.com/drive/folders/1sqiDSQMkoYZCehzIgdyxZcNRSYpIkLnX?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1SgzQqrBfbam-yqOw8xOdq9SKXPlScR2k?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DM_001",
-                    name: "Intro to Discrete Math",
-                    code: "DM_001",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_001.json"
-                  },
-                  {
-                    id: "DM_002",
-                    name: "Bit Operations",
-                    code: "DM_002",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_002.json"
-                  },
-                  {
-                    id: "DM_003",
-                    name: "Predicates and Quantifiers",
-                    code: "DM_003",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_003.json"
-                  },
-                  {
-                    id: "DM_004",
-                    name: "Sets and Functions",
-                    code: "DM_004",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_004.json"
-                  },
-                  {
-                    id: "DM_005",
-                    name: "Set Operations",
-                    code: "DM_005",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_005.json"
-                  },
-                  {
-                    id: "DM_006",
-                    name: "Functions Domain",
-                    code: "DM_006",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_006.json"
-                  },
-                  {
-                    id: "DM_007",
-                    name: "Product Rule",
-                    code: "DM_007",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_007.json"
-                  },
-                  {
-                    id: "DM_008",
-                    name: "Password Counting",
-                    code: "DM_008",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_008.json"
-                  },
-                  {
-                    id: "DM_009",
-                    name: "Permutations Combinations",
-                    code: "DM_009",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_009.json"
-                  },
-                ]      
               },
             },
             {
@@ -5925,88 +2408,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PLCInYL3l2AajqOUW_2SwjWeMwf4vL4RSp",
                 summaries: "https://drive.google.com/drive/folders/1Oiki77OjApABjz0z7D3j2g-Kxc7-hN59?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1IADSkBhDhvgjpDJecfTf9VlvdoJ9P2hD?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "STR_001",
-                    name: "Introduction to Data Structures",
-                    code: "STR_001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_001.json"
-                  },
-                  {
-                    id: "STR_002",
-                    name: "Singly Linked List",
-                    code: "STR_002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_002.json"
-                  },
-                  {
-                    id: "STR_003",
-                    name: "Doubly Linked List",
-                    code: "STR_003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_003.json"
-                  },
-                  {
-                    id: "STR_004",
-                    name: "Hash Table",
-                    code: "STR_004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_004.json"
-                  },
-                  {
-                    id: "STR_005",
-                    name: "Stack - Queue - PQ",
-                    code: "STR_005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_005.json"
-                  },
-                  {
-                    id: "STR_006",
-                    name: "BST (Binary Search Tree)",
-                    code: "STR_006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_006.json"
-                  },
-                  {
-                    id: "STR_007",
-                    name: "Sorting Algorithms",
-                    code: "STR_007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_007.json"
-                  },
-                  {
-                    id: "STR_008",
-                    name: "Heap Tree",
-                    code: "STR_008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_008.json"
-                  },
-                  {
-                    id: "STR_009",
-                    name: "General Review (Part 1)",
-                    code: "STR_009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_009.json"
-                  },
-                  {
-                    id: "STR_010",
-                    name: "General Review (Part 2)",
-                    code: "STR_010",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_010.json"
-                  },
-                ]
               },
             },
             {
@@ -6035,112 +2436,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLCInYL3l2AagY7fFlhCrjpLiIFybW3yQv","https://youtube.com/playlist?list=PL1DUmTEdeA6Icttz-O9C3RPRF8R8Px5vk"],
                 summaries: "https://drive.google.com/drive/folders/1VGGZWwQmZdVD8LWI6piI_RzQqdwKq_st?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1dxwniB91RAEtAu0hKLt5cWqb3t1Q0FLI?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "PR2_50001",
-                    name: "Functions - Methods (Part 1)",
-                    code: "PR2_50001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50001.json"
-                  },
-                  {
-                    id: "PR2_50002",
-                    name: "Functions - Methods (Part 2)",
-                    code: "PR2_50002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50002.json"
-                  },
-                  {
-                    id: "PR2_50003",
-                    name: "Introduction To Object-Oriented Programming",
-                    code: "PR2_50003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50003.json"
-                  },
-                  {
-                    id: "PR2_50004",
-                    name: "Constructor and It's Types",
-                    code: "PR2_50004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50004.json"
-                  },
-                  {
-                    id: "PR2_50005",
-                    name: "Inheritance and Polymorphism (Part 1)",
-                    code: "PR2_50005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50005.json"
-                  },
-                  {
-                    id: "PR2_50006",
-                    name: "Inheritance and Polymorphism (Part 2)",
-                    code: "PR2_50006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50006.json"
-                  },
-                  {
-                    id: "PR2_50007",
-                    name: "Abstract Class and Interface",
-                    code: "PR2_50007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50007.json"
-                  },
-                  {
-                    id: "PR2_50008",
-                    name: "Class Relations (Part 1)",
-                    code: "PR2_50008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50008.json"
-                  },
-                  {
-                    id: "PR2_50009",
-                    name: "Class Relations (Part 2)",
-                    code: "PR2_50009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50009.json"
-                  },
-                  {
-                    id: "PR2_50010",
-                    name: "Array List in Java",
-                    code: "PR2_50010",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50010.json"
-                  },
-                  {
-                    id: "PR2_50011",
-                    name: "Exception Handling",
-                    code: "PR2_50011",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50011.json"
-                  },
-                  {
-                    id: "PR2_50012",
-                    name: "Static Keyword and Static Methods",
-                    code: "PR2_50012",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50012.json"
-                  },
-                  {
-                    id: "PR2_50013",
-                    name: "Recursive Methods and Recursion Concept",
-                    code: "PR2_50013",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50013.json"
-                  },
-                ]
               },
             },
             {
@@ -6244,96 +2539,6 @@ export const departmentData: { [key: string]: Department } = {
                 sections: "https://drive.google.com/drive/folders/1LuCRHkTxVc_uKOX7SdVEwcc0WrEL-n2D?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1B_bMKIcqQ4t_PsxDR6-GMUWQOv67AvNK?usp=drive_link",
                 summaries: "https://drive.google.com/drive/folders/1qI0ElMk-nNfGv8hH9h3M51Mz9KvEKhIZ?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "ECO_001",
-                    name: "الفصل الاول - مقدمة في علم الاقتصاد",
-                    code: "ECO_001",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_001.json"
-                  },
-                  {
-                    id: "ECO_002",
-                    name: "الفصل الثاني -المشكلة الاقتصادية والنظم الاقتصادية",
-                    code: "ECO_002",
-                    duration: "OP",
-                    questions: 17,
-                    jsonFile: "/quizzes/Economic/ECO_002.json"
-                  },
-                  {
-                    id: "ECO_003",
-                    name: "الفصل الثالث - نظرية طلب المستهلك",
-                    code: "ECO_003",
-                    duration: "OP",
-                    questions: 19,
-                    jsonFile: "/quizzes/Economic/ECO_003.json"
-                  },
-                  {
-                    id: "ECO_004",
-                    name: "الفصل الرابع - العرض في السوق",
-                    code: "ECO_004",
-                    duration: "OP",
-                    questions: 17,
-                    jsonFile: "/quizzes/Economic/ECO_004.json"
-                  },
-                  {
-                    id: "ECO_005",
-                    name: "الفصل الخامس - التوازن في السوق",
-                    code: "ECO_005",
-                    duration: "OP",
-                    questions: 12,
-                    jsonFile: "/quizzes/Economic/ECO_005.json"
-                  },
-                  {
-                    id: "ECO_006",
-                    name: "الفصل السادس - مرونات العرض والطلب",
-                    code: "ECO_006",
-                    duration: "OP",
-                    questions: 27,
-                    jsonFile: "/quizzes/Economic/ECO_006.json"
-                  },
-                  {
-                    id: "ECO_007",
-                    name: "الفصل السابع - نظرية المنفعة الحدية",
-                    code: "ECO_007",
-                    duration: "OP",
-                    questions: 18,
-                    jsonFile: "/quizzes/Economic/ECO_007.json"
-                  },
-                  {
-                    id: "ECO_008",
-                    name: "الفصل التاسع - نظرية الإنتاج",
-                    code: "ECO_008",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_008.json"
-                  },
-                  {
-                    id: "ECO_009",
-                    name: "الفصل العاشر - تكاليف الإنتاج",
-                    code: "ECO_009",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_009.json"
-                  },
-                  {
-                    id: "ECO_010",
-                    name: "الفصل الحادي عشر - اسواق المنافسة الكاملة",
-                    code: "ECO_010",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_010.json"
-                  },
-                  {
-                    id: "ECO_011",
-                    name: "الفصل الثاني عشر - اسواق المنافسة غير الكاملة",
-                    code: "ECO_011",
-                    duration: "OP",
-                    questions: 18,
-                    jsonFile: "/quizzes/Economic/ECO_011.json"
-                  },
-                ],
               },
             },
           ],
@@ -6350,72 +2555,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/11QHqhN6G_OmTNZTPdR_OVWzUZ5fEMO8X?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1ICXoWQy7-nas1_KaLNCA_fHKXEVvRqw2?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "CLC_10661",
-                    name: "Introduction to Cloud Computing",
-                    code: "CLC_10661",
-                    duration: "OP", // <-- CHANGED THIS LINE
-                    questions: 50,
-                    jsonFile: "/quizzes/cloud computing/CLC_10661.json"
-                  },
-                  {
-                    id: "CLC_10662",
-                    name: "Platform and Infrastructure Services",
-                    code: "CLC_10662",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10662.json"
-                  },
-                  {
-                    id: "CLC_10663",
-                    name: "Virtualization",
-                    code: "CLC_10663",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10663.json"
-                  },
-                  {
-                    id: "CLC_10664",
-                    name: "Parallel Programming",
-                    code: "CLC_10664",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10664.json"
-                  },
-                  {
-                    id: "CLC_10665",
-                    name: "Distributed Storage Systems",
-                    code: "CLC_10665",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10665.json"
-                  },
-                  {
-                    id: "CLC_10666",
-                    name: "Cloud Security",
-                    code: "CLC_10666",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10666.json"
-                  },
-                  {
-                    id: "CLC_10667",
-                    name: "Cloud Performance",
-                    code: "CLC_10667",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10667.json"
-                  },
-                  {
-                    id: "CLC_10668",
-                    name: "General Overview + 20Q of 2025's Midterm",
-                    code: "CLC_10668",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/cloud computing/CLC_10668_TOT.json"
-                  }
-                ],
               },
             },
             {
@@ -6430,24 +2569,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1XdboKP5n65WZCznnqiCrE0BZfiarSl4Z?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1WI08MEt_kVSuMITdlqqgPaVpTUPwiqgK?usp=drive_link",
-                quizzes:[
-                  {
-                    id: "ML_001",
-                    name: "Introduction to Machine Learning (Team Materials)",
-                    code: "ML_001",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/machine-learning/ML_001.json"
-                  },
-                  {
-                    id: "ML_004",
-                    name: "Lecture 2 to Midterm (Team Materials)",
-                    code: "ML_004",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/machine-learning/ML_004.json"
-                  }
-                ]   
               },
             },
             {
@@ -6462,56 +2583,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1HRedV6Iu8Djd_f0AE0MigL8nKoq8Yb8-?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1mrKwfr3Mgi9p3zp7VdIVLmsUiPYhJYCX?usp=drive_link",
-                quizzes:[
-                  {
-                    id: "MIG_14331",
-                    name: "Data Mining Lecture 1",
-                    code: "MIG_14331",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14331.json"
-                  },
-                  {
-                    id: "MIG_14332",
-                    name: "Data Mining Lecture 2",
-                    code: "MIG_14332",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14332.json"
-                  },
-                  {
-                    id: "MIG_14333",
-                    name: "Data Mining Lecture 3",
-                    code: "MIG_14333",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14333.json"
-                  },
-                  {
-                    id: "MIG_14334",
-                    name: "Data Mining Lecture 4",
-                    code: "MIG_14334",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14334.json"
-                  },
-                  {
-                    id: "MIG_14335",
-                    name: "Data Mining Lecture 5",
-                    code: "MIG_14335",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14335.json"
-                  },
-                  {
-                    id: "MIG_14336",
-                    name: "Data Mining Lecture 6",
-                    code: "MIG_14336",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14336.json"
-                  },
-                ]
               },
             },
             {
@@ -6521,8 +2592,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Digital video creation and production techniques",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/digital-video-production-lectures",
-                sections: "https://drive.google.com/drive/folders/digital-video-production-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=digital-video-production-videos",
               },
             },
@@ -6533,8 +2604,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Digital content editing and blog management",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/news-editing-blogging-lectures",
-                sections: "https://drive.google.com/drive/folders/news-editing-blogging-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=news-editing-blogging-videos",
               },
             },
@@ -6545,8 +2616,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 1,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-ma-2-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-ma-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-ma-2-videos",
               },
             },
@@ -6563,8 +2634,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Digital image processing and enhancement techniques",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/image-processing-lectures",
-                sections: "https://drive.google.com/drive/folders/image-processing-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=image-processing-videos",
               },
             },
@@ -6575,8 +2646,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Web design principles and SEO strategies",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/web-design-seo-lectures",
-                sections: "https://drive.google.com/drive/folders/web-design-seo-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=web-design-seo-videos",
               },
             },
@@ -6587,8 +2658,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Digital audio processing and synthesis",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/computer-audio-lectures",
-                sections: "https://drive.google.com/drive/folders/computer-audio-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=computer-audio-videos",
               },
             },
@@ -6599,8 +2670,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-ma-1-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-ma-1-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-ma-1-videos",
               },
             },
@@ -6611,8 +2682,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-ma-2-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-ma-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-ma-2-videos",
               },
             },
@@ -6623,8 +2694,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-ma-3-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-ma-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-ma-3-videos",
               },
             },
@@ -6637,8 +2708,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Creating effective infographics and data visualizations",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/infographics-data-visualization-lectures",
-                sections: "https://drive.google.com/drive/folders/infographics-data-visualization-sections",
+                lectures: "https://drive.google.com/drive/folders/1cPdkERtei3lc_XCT_5flekoJuYPWZ29Q",
+                sections: "https://drive.google.com/drive/folders/1akup2XLHU9HNVhNrRoVPXGjoJGS_b7xH",
                 videos: "https://youtube.com/playlist?list=infographics-data-visualization-videos",
               },
             },
@@ -6649,8 +2720,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "NLP for media content analysis and generation",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/natural-language-processing-ma-lectures",
-                sections: "https://drive.google.com/drive/folders/natural-language-processing-ma-sections",
+                lectures: "https://drive.google.com/drive/folders/11d1LHDgabqdfbvvQR9SQIpv-Y_E7PyV9",
+                sections: "https://drive.google.com/drive/folders/1_caEKnancQl_3a_1uE7ZYJN80so92QAF",
                 videos: "https://youtube.com/playlist?list=natural-language-processing-ma-videos",
               },
             },
@@ -6661,8 +2732,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Advanced multimedia processing techniques",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/media-processing-lectures",
-                sections: "https://drive.google.com/drive/folders/media-processing-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=media-processing-videos",
               },
             },
@@ -6673,8 +2744,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-ma-3-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-ma-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-ma-3-videos",
               },
             },
@@ -6685,8 +2756,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-ma-4-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-ma-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-ma-4-videos",
               },
             },
@@ -6703,10 +2774,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "3D graphics programming and rendering techniques",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/computer-graphics-lectures",
-                sections: "https://drive.google.com/drive/folders/computer-graphics-sections",
-                videos: "https://youtube.com/playlist?list=computer-graphics-videos",
-              },
+                lectures: "https://drive.google.com/drive/folders/1ji7KLb7Mjp7wsUKuzgVBPHpH6rtVVGI0",
+                summaries: "https://drive.google.com/drive/folders/1T4cPiAXSIJxDvlouAlhomoIjmdxTv9xv",
+                sections: "https://drive.google.com/drive/folders/1kk8-jxIuEj9LFd9loELzNRT5bRD5KnG-",
+                exams: "https://drive.google.com/drive/folders/1JmhhAh8sUtIrjRSIYZpWy1W54cKXmy9O"
+              }
             },
             {
               id: "digital-broadcasting",
@@ -6715,10 +2787,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Digital broadcasting technologies and systems",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/digital-broadcasting-lectures",
-                sections: "https://drive.google.com/drive/folders/digital-broadcasting-sections",
-                videos: "https://youtube.com/playlist?list=digital-broadcasting-videos",
-              },
+                lectures: "https://drive.google.com/drive/folders/1UXFIyQt_6CN20dtjTSfaxAAjNvgEHHRP",
+                summaries: "https://drive.google.com/drive/folders/1uJkMc4gN_htlcaMWpDHPaqnyI-rKGQJi",
+                sections: "https://drive.google.com/drive/folders/19-lfaxvfvjdlDwgmya0HRnvJ9q79AAK7",
+                exams: "https://drive.google.com/drive/folders/1rFrtcZb-NQdYpbqAqcirlqwaZLjLgEGO"
+              }
             },
             {
               id: "audience-research-analysis",
@@ -6727,10 +2800,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Media audience research and behavioral analysis",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/audience-research-analysis-lectures",
-                sections: "https://drive.google.com/drive/folders/audience-research-analysis-sections",
-                videos: "https://youtube.com/playlist?list=audience-research-analysis-videos",
-              },
+                lectures: "https://drive.google.com/drive/folders/13Kn36QMKkgD-csvf5sJwJa9a-KRFSXCM",
+                summaries: "https://drive.google.com/drive/folders/1_oUAIX_YvWCNPmrOllDVEwebM_QtZHbL",
+                sections: "https://drive.google.com/drive/folders/1F0vSvfNhNG5BPy_oQpeqpwbR94jKG6DX",
+                exams: "https://drive.google.com/drive/folders/1Ea49ZVPyeELf9U_EapPTzeoikSSbNVRE"
+              }
             },
             {
               id: "program-elective-ma-1",
@@ -6739,8 +2813,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized media analytics program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-ma-1-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-ma-1-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-ma-1-videos",
               },
             },
@@ -6751,8 +2825,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized media analytics program elective",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-ma-2-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-ma-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-ma-2-videos",
               },
             },
@@ -6763,8 +2837,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-ma-4-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-ma-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-ma-4-videos",
               },
             },
@@ -6777,10 +2851,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Analysis of social media data and engagement metrics",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/social-media-analytics-lectures",
-                sections: "https://drive.google.com/drive/folders/social-media-analytics-sections",
-                videos: "https://youtube.com/playlist?list=social-media-analytics-videos",
-              },
+                lectures: "https://drive.google.com/drive/folders/1mAwAQ5fw1gQCsqQOKaSxYPatnvvOt-BK",
+                summaries: "https://drive.google.com/drive/folders/108FF163ClHUHTfYQtnDg12SxBINByju2",
+                sections: "https://drive.google.com/drive/folders/1srQguJiSBJ6Eml0-I00hHGfKp6khwwy3",
+                exams: "https://drive.google.com/drive/folders/17gONZypcLecDVs1XINxuODK3z4ZwkEYE"
+              }
             },
             {
               id: "multimedia-analytics",
@@ -6789,10 +2864,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Advanced analytics for multimedia content",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/multimedia-analytics-lectures",
-                sections: "https://drive.google.com/drive/folders/multimedia-analytics-sections",
-                videos: "https://youtube.com/playlist?list=multimedia-analytics-videos",
-              },
+                lectures: "https://drive.google.com/drive/folders/1mFZHEp6uKGiHjf0vQytVfvNGuR5rzDNm",
+                summaries: "https://drive.google.com/drive/folders/1wkBb6v02RWi6wm5-KOzCll4bfJqLRI-a",
+                sections: "https://drive.google.com/drive/folders/1c1BNdIoBGDlQRWZ2HoRmqHIfhvDGayTE",
+                exams: "https://drive.google.com/drive/folders/1dLMCJPU3jHNdg9IE5CxCUnjEqSxycp5U"
+              }
             },
             {
               id: "public-opinion-e-surveys",
@@ -6801,10 +2877,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Digital survey methods and public opinion analysis",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/public-opinion-e-surveys-lectures",
-                sections: "https://drive.google.com/drive/folders/public-opinion-e-surveys-sections",
-                videos: "https://youtube.com/playlist?list=public-opinion-e-surveys-videos",
-              },
+                lectures: "https://drive.google.com/drive/folders/1cEws5ESprKjzZ9C8wU1L-zte-3Edf1wx",
+                summaries: "https://drive.google.com/drive/folders/1nB_Iwzcx2PLcG6Uzmr879RtGwzicn3rM",
+                sections: "https://drive.google.com/drive/folders/1_KAITzJX_YeylZLn7rUBVOX2vNuSHuQ-",
+                exams: "https://drive.google.com/drive/folders/17agsMgu_xD5auLqWnHAMefCJVko-8F6B"
+              }
             },
             {
               id: "program-elective-ma-3",
@@ -6813,8 +2890,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized media analytics program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-ma-3-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-ma-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-ma-3-videos",
               },
             },
@@ -6825,8 +2902,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized media analytics program elective",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-ma-4-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-ma-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-ma-4-videos",
               },
             },
@@ -6837,8 +2914,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-ma-5-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-ma-5-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-ma-5-videos",
               },
             },
@@ -6861,8 +2938,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Mathematical foundations for healthcare data analysis",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/linear-algebra-hi-lectures",
-                sections: "https://drive.google.com/drive/folders/linear-algebra-hi-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=linear-algebra-hi-videos",
               },
             },
@@ -6873,8 +2950,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Calculus applications in healthcare analytics",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/calculus-hi-lectures",
-                sections: "https://drive.google.com/drive/folders/calculus-hi-sections",
+                lectures: "https://drive.google.com/drive/folders/1LsWVrCXpwVsL7YhGL_QFQhyryvpc_Yon",
+                sections: "https://drive.google.com/drive/folders/1U2LbrtWkf-X8DL3c7Yo12kgV8bbZ0Wb6",
                 videos: "https://youtube.com/playlist?list=calculus-hi-videos",
               },
             },
@@ -6885,149 +2962,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Computer systems for healthcare applications",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/computer-systems-hi-lectures",
-                sections: "https://drive.google.com/drive/folders/computer-systems-hi-sections",
+                lectures: "https://drive.google.com/drive/folders/1yQK4QiXQ7e7Ui6DLMAGYQa3aTuQp0v9O",
+                sections: "https://drive.google.com/drive/folders/1q0iRgXguAaa2zZTSA9J1smnCwN2PwCAn",
                 videos: "https://youtube.com/playlist?list=computer-systems-hi-videos",
-                summaries: "https://drive.google.com/drive/folders/computer-systems-hi-summaries",
-                exams: "https://drive.google.com/drive/folders/computer-systems-hi-exams",
-                quizzes: [
-                  {
-                    id: "CS_001",
-                    name: "Chapter 1 : Introduction to Computer Systems",
-                    code: "CS_001",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_001.json"
-                  },
-                  {
-                    id: "CS_002",
-                    name: "Chapter 2 : Processing and Memory Management",
-                    code: "CS_002",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_002.json"
-                  },
-                  {
-                    id: "CS_003",
-                    name: "Chapter 3 : Storage",
-                    code: "CS_003",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_003.json"
-                  },
-                  {
-                    id: "CS_004",
-                    name: "Chapter 4 : Input and Output",
-                    code: "CS_004",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_004.json"
-                  },
-                  {
-                    id: "CS_005",
-                    name: "Chapter 5 : System Software",
-                    code: "CS_005",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_005.json"
-                  },
-                  {
-                    id: "CS_006",
-                    name: "Chapter 6 : Applications Software (1/2)",
-                    code: "CS_006",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_006.json"
-                  }
-                  ,{
-                    id: "CS_007",
-                    name: "Chapter 6 : Applications Software (2/2)",
-                    code: "CS_007",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_007.json"
-                  }
-                  ,{
-                    id: "CS_008",
-                    name: "Chapter 7 : Computer Networks",
-                    code: "CS_008",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_008.json"
-                  },
-                  {
-                    id: "CS_009",
-                    name: "Chapter 13 : Program Dev & Programming Languages",
-                    code: "CS_009",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_009.json"
-                  },
-                  {
-                    id: "CS_010",
-                    name: "Converting Binary to Decimal and Vice Versa",
-                    code: "CS_010",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_010.json"
-                  },
-                  {
-                    id: "CS_011",
-                    name: "Converting Binary to Octal and Vice Versa",
-                    code: "CS_011",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_011.json"
-                  },
-                  {
-                    id: "CS_012",
-                    name: "Converting Binary to Hexadecimal and Vice Versa",
-                    code: "CS_012",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_012.json"
-                  },
-                  {
-                    id: "CS_013",
-                    name: "Converting Decimal to Octal and Vice Versa",
-                    code: "CS_013",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_013.json"
-                  },
-                  {
-                    id: "CS_014",
-                    name: "Converting Decimal to Hexadecimal and Vice Versa",
-                    code: "CS_014",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_014.json"
-                  },
-                  {
-                    id: "CS_015",
-                    name: "Converting Octal to Hexadecimal and Vice Versa",
-                    code: "CS_015",
-                    duration: "OP",
-                    questions: 10,
-                    jsonFile: "/quizzes/Computer System/CS_015.json"
-                  },
-                  {
-                    id: "CS_016",
-                    name: "Converting Gray Code to Binary and Vice Versa",
-                    code: "CS_016",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/Computer System/CS_016.json"
-                  },
-                  {
-                    id: "CS_017",
-                    name: "Converting BCD to Decimal and Vice Versa",
-                    code: "CS_017",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/Computer System/CS_017.json"
-                  }
-                ],
+                summaries: "https://drive.google.com/drive/folders/1RFPXNiitr2yiHr1AyCsZWuTX0rYyOwIL",
+                exams: "https://drive.google.com/drive/folders/1hTVXduWW2Icy8HY-uOc5lEiUUM42RSkB",
               },
             },
             {
@@ -7037,91 +2976,9 @@ export const departmentData: { [key: string]: Department } = {
               description: "Data science fundamentals for healthcare",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/data-sciences-hi-lectures",
-                sections: "https://drive.google.com/drive/folders/data-sciences-hi-sections",
+                lectures: "https://drive.google.com/drive/folders/10SsZONPzWccvjTQB4ZcHmT0j_FU8b981",
+                sections: "https://drive.google.com/drive/folders/14IwWgXRgD8G2IPJ2op1RdBIj9pgs77LJ",
                 videos: "https://youtube.com/playlist?list=data-sciences-hi-videos",
-                quizzes: [
-                  {
-                    id: "DS_001",
-                    name: "Lecture 1 - Introduction to Data Science",
-                    code: "DS_001",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_001.json"
-                  },
-                  {
-                    id: "DS_002",
-                    name: "Lecture 2 - Big Data",
-                    code: "DS_002",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_002.json"
-                  },
-                  {
-                    id: "DS_003",
-                    name: "Lecture 3 - Data Analytics lifecycle (Characters)",
-                    code: "DS_003",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_003.json"
-                  },
-                  {
-                    id: "DS_004",
-                    name: "Lecture 4 - Data Analytics lifecycle (Phases)",
-                    code: "DS_004",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_004.json"
-                  },
-                  {
-                    id: "DS_005",
-                    name: "Lecture 5 - Clustering Analysis",
-                    code: "DS_005",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_005.json"
-                  },
-                  {
-                    id: "DS_006",
-                    name: "Lecture 6 - Introduction Association Rules (1/2)",
-                    code: "DS_006",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_006.json"
-                  },
-                  {
-                    id: "DS_007",
-                    name: "Lecture 7 - Introduction Association Rules (2/2)",
-                    code: "DS_007",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_007.json"
-                  },
-                  {
-                    id: "DS_008",
-                    name: "Lecture 8 - Data Visualization",
-                    code: "DS_008",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_008.json"
-                  },
-                  {
-                    id: "DS_009",
-                    name: "Lecture 9 - Classification Analysis",
-                    code: "DS_009",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_009.json"
-                  },
-                  {
-                    id: "DS_010",
-                    name: "Lecture 10 - Decision Trees",
-                    code: "DS_010",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_010.json"
-                  }
-                ],
               },
             },
             {
@@ -7131,8 +2988,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Programming fundamentals for healthcare informatics",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/programming-1-hi-lectures",
-                sections: "https://drive.google.com/drive/folders/programming-1-hi-sections",
+                lectures: "https://drive.google.com/drive/folders/1VDUvvvKoRcBfdCAgdO5GUa8ourGzEj43",
+                sections: "https://drive.google.com/drive/folders/14-W3wcsn8gw2ym8CnIo_L6jh0RfQW-mR",
                 videos: "https://youtube.com/playlist?list=programming-1-hi-videos",
               },
             },
@@ -7143,8 +3000,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Critical thinking in healthcare decision making",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/critical-thinking-hi-lectures",
-                sections: "https://drive.google.com/drive/folders/critical-thinking-hi-sections",
+                lectures: "https://drive.google.com/drive/folders/1mGHqF_BIXdX-S6BipXm942CsOvr6WHTG",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=critical-thinking-hi-videos",
               },
             },
@@ -7176,80 +3033,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PLxIvc-MGOs6gZlMVYOOEtUHJmfUquCjwz",
                 summaries: "https://drive.google.com/drive/folders/1sqiDSQMkoYZCehzIgdyxZcNRSYpIkLnX?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1SgzQqrBfbam-yqOw8xOdq9SKXPlScR2k?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DM_001",
-                    name: "Intro to Discrete Math",
-                    code: "DM_001",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_001.json"
-                  },
-                  {
-                    id: "DM_002",
-                    name: "Bit Operations",
-                    code: "DM_002",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_002.json"
-                  },
-                  {
-                    id: "DM_003",
-                    name: "Predicates and Quantifiers",
-                    code: "DM_003",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_003.json"
-                  },
-                  {
-                    id: "DM_004",
-                    name: "Sets and Functions",
-                    code: "DM_004",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_004.json"
-                  },
-                  {
-                    id: "DM_005",
-                    name: "Set Operations",
-                    code: "DM_005",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_005.json"
-                  },
-                  {
-                    id: "DM_006",
-                    name: "Functions Domain",
-                    code: "DM_006",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_006.json"
-                  },
-                  {
-                    id: "DM_007",
-                    name: "Product Rule",
-                    code: "DM_007",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_007.json"
-                  },
-                  {
-                    id: "DM_008",
-                    name: "Password Counting",
-                    code: "DM_008",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_008.json"
-                  },
-                  {
-                    id: "DM_009",
-                    name: "Permutations Combinations",
-                    code: "DM_009",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_009.json"
-                  },
-                ]
               },
             },
             {
@@ -7264,88 +3047,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PLCInYL3l2AajqOUW_2SwjWeMwf4vL4RSp",
                 summaries: "https://drive.google.com/drive/folders/1Oiki77OjApABjz0z7D3j2g-Kxc7-hN59?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1IADSkBhDhvgjpDJecfTf9VlvdoJ9P2hD?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "STR_001",
-                    name: "Introduction to Data Structures",
-                    code: "STR_001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_001.json"
-                  },
-                  {
-                    id: "STR_002",
-                    name: "Singly Linked List",
-                    code: "STR_002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_002.json"
-                  },
-                  {
-                    id: "STR_003",
-                    name: "Doubly Linked List",
-                    code: "STR_003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_003.json"
-                  },
-                  {
-                    id: "STR_004",
-                    name: "Hash Table",
-                    code: "STR_004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_004.json"
-                  },
-                  {
-                    id: "STR_005",
-                    name: "Stack - Queue - PQ",
-                    code: "STR_005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_005.json"
-                  },
-                  {
-                    id: "STR_006",
-                    name: "BST (Binary Search Tree)",
-                    code: "STR_006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_006.json"
-                  },
-                  {
-                    id: "STR_007",
-                    name: "Sorting Algorithms",
-                    code: "STR_007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_007.json"
-                  },
-                  {
-                    id: "STR_008",
-                    name: "Heap Tree",
-                    code: "STR_008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_008.json"
-                  },
-                  {
-                    id: "STR_009",
-                    name: "General Review (Part 1)",
-                    code: "STR_009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_009.json"
-                  },
-                  {
-                    id: "STR_010",
-                    name: "General Review (Part 2)",
-                    code: "STR_010",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_010.json"
-                  },
-                ]
               },
             },
             {
@@ -7374,112 +3075,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLCInYL3l2AagY7fFlhCrjpLiIFybW3yQv","https://youtube.com/playlist?list=PL1DUmTEdeA6Icttz-O9C3RPRF8R8Px5vk"],
                 summaries: "https://drive.google.com/drive/folders/1VGGZWwQmZdVD8LWI6piI_RzQqdwKq_st?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1dxwniB91RAEtAu0hKLt5cWqb3t1Q0FLI?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "PR2_50001",
-                    name: "Functions - Methods (Part 1)",
-                    code: "PR2_50001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50001.json"
-                  },
-                  {
-                    id: "PR2_50002",
-                    name: "Functions - Methods (Part 2)",
-                    code: "PR2_50002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50002.json"
-                  },
-                  {
-                    id: "PR2_50003",
-                    name: "Introduction To Object-Oriented Programming",
-                    code: "PR2_50003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50003.json"
-                  },
-                  {
-                    id: "PR2_50004",
-                    name: "Constructor and It's Types",
-                    code: "PR2_50004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50004.json"
-                  },
-                  {
-                    id: "PR2_50005",
-                    name: "Inheritance and Polymorphism (Part 1)",
-                    code: "PR2_50005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50005.json"
-                  },
-                  {
-                    id: "PR2_50006",
-                    name: "Inheritance and Polymorphism (Part 2)",
-                    code: "PR2_50006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50006.json"
-                  },
-                  {
-                    id: "PR2_50007",
-                    name: "Abstract Class and Interface",
-                    code: "PR2_50007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50007.json"
-                  },
-                  {
-                    id: "PR2_50008",
-                    name: "Class Relations (Part 1)",
-                    code: "PR2_50008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50008.json"
-                  },
-                  {
-                    id: "PR2_50009",
-                    name: "Class Relations (Part 2)",
-                    code: "PR2_50009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50009.json"
-                  },
-                  {
-                    id: "PR2_50010",
-                    name: "Array List in Java",
-                    code: "PR2_50010",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50010.json"
-                  },
-                  {
-                    id: "PR2_50011",
-                    name: "Exception Handling",
-                    code: "PR2_50011",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50011.json"
-                  },
-                  {
-                    id: "PR2_50012",
-                    name: "Static Keyword and Static Methods",
-                    code: "PR2_50012",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50012.json"
-                  },
-                  {
-                    id: "PR2_50013",
-                    name: "Recursive Methods and Recursion Concept",
-                    code: "PR2_50013",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50013.json"
-                  },
-                ]
               },
             },
             {
@@ -7509,8 +3104,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Advanced statistics for healthcare research",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/probability-statistics-2-hi-lectures",
-                sections: "https://drive.google.com/drive/folders/probability-statistics-2-hi-sections",
+                lectures: "https://drive.google.com/drive/folders/1Cat1L5ibgjDAx3qcU8XpKuM2Sp0jIWdA",
+                sections: "https://drive.google.com/drive/folders/17m-plzdlLyhkjM_TFmcYw5AZyC61yNrx",
                 videos: ["https://youtube.com/playlist?list=PL7snZ0LSsq3g6KzD6pdqwU3_Do8WPY4M8&si=1ZMtkTPNNIX7q31M","https://youtube.com/playlist?list=PLtK59GunEou_TMg812_orrEE3H8UbUSta&si=zISZN1TFNbmCSoXn"],
               },
             },
@@ -7521,8 +3116,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Database systems for healthcare information management",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/intro-databases-hi-lectures",
-                sections: "https://drive.google.com/drive/folders/intro-databases-hi-sections",
+                lectures: "https://drive.google.com/drive/folders/10DIqel1WkLIg5YZ1qbT604vRdpVPyLZ6",
+                sections: "https://drive.google.com/drive/folders/1a78X1gWfKKui7qrsGkHvwycayAssG8Le",
                 videos: "https://youtube.com/playlist?list=intro-databases-hi-videos",
               },
             },
@@ -7533,8 +3128,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Numerical methods for healthcare modeling",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/numerical-computations-hi-lectures",
-                sections: "https://drive.google.com/drive/folders/numerical-computations-hi-sections",
+                lectures: "https://drive.google.com/drive/folders/1YerbhXBHp9cLVhuBlsp337xKVS_01139",
+                sections: "https://drive.google.com/drive/folders/1K4WIBD41wo7MP_GwXpo6yfEg-93c2wVM",
                 videos: "https://youtube.com/playlist?list=numerical-computations-hi-videos",
               },
             },
@@ -7545,8 +3140,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Epidemiological principles and disease surveillance",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/intro-epidemiology-lectures",
-                sections: "https://drive.google.com/drive/folders/intro-epidemiology-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=intro-epidemiology-videos",
               },
             },
@@ -7557,8 +3152,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Human anatomy and physiological systems",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/anatomy-physiology-lectures",
-                sections: "https://drive.google.com/drive/folders/anatomy-physiology-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=anatomy-physiology-videos",
               },
             },
@@ -7569,8 +3164,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-hi-1-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-hi-1-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-hi-1-videos",
               },
             },
@@ -7588,72 +3183,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/11QHqhN6G_OmTNZTPdR_OVWzUZ5fEMO8X?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1ICXoWQy7-nas1_KaLNCA_fHKXEVvRqw2?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "CLC_10661",
-                    name: "Introduction to Cloud Computing",
-                    code: "CLC_10661",
-                    duration: "OP", // <-- CHANGED THIS LINE
-                    questions: 50,
-                    jsonFile: "/quizzes/cloud computing/CLC_10661.json"
-                  },
-                  {
-                    id: "CLC_10662",
-                    name: "Platform and Infrastructure Services",
-                    code: "CLC_10662",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10662.json"
-                  },
-                  {
-                    id: "CLC_10663",
-                    name: "Virtualization",
-                    code: "CLC_10663",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10663.json"
-                  },
-                  {
-                    id: "CLC_10664",
-                    name: "Parallel Programming",
-                    code: "CLC_10664",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10664.json"
-                  },
-                  {
-                    id: "CLC_10665",
-                    name: "Distributed Storage Systems",
-                    code: "CLC_10665",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10665.json"
-                  },
-                  {
-                    id: "CLC_10666",
-                    name: "Cloud Security",
-                    code: "CLC_10666",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10666.json"
-                  },
-                  {
-                    id: "CLC_10667",
-                    name: "Cloud Performance",
-                    code: "CLC_10667",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10667.json"
-                  },
-                  {
-                    id: "CLC_10668",
-                    name: "General Overview + 20Q of 2025's Midterm",
-                    code: "CLC_10668",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/cloud computing/CLC_10668_TOT.json"
-                  }
-                ],
               },
             },
             {
@@ -7668,24 +3197,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1XdboKP5n65WZCznnqiCrE0BZfiarSl4Z?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1WI08MEt_kVSuMITdlqqgPaVpTUPwiqgK?usp=drive_link",
-                quizzes:[
-                  {
-                    id: "ML_001",
-                    name: "Introduction to Machine Learning (Team Materials)",
-                    code: "ML_001",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/machine-learning/ML_001.json"
-                  },
-                  {
-                    id: "ML_004",
-                    name: "Lecture 2 to Midterm (Team Materials)",
-                    code: "ML_004",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/machine-learning/ML_004.json"
-                  }
-                ]   
               },
             },
             {
@@ -7700,56 +3211,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1HRedV6Iu8Djd_f0AE0MigL8nKoq8Yb8-?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1mrKwfr3Mgi9p3zp7VdIVLmsUiPYhJYCX?usp=drive_link",
-                quizzes:[
-                  {
-                    id: "MIG_14331",
-                    name: "Data Mining Lecture 1",
-                    code: "MIG_14331",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14331.json"
-                  },
-                  {
-                    id: "MIG_14332",
-                    name: "Data Mining Lecture 2",
-                    code: "MIG_14332",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14332.json"
-                  },
-                  {
-                    id: "MIG_14333",
-                    name: "Data Mining Lecture 3",
-                    code: "MIG_14333",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14333.json"
-                  },
-                  {
-                    id: "MIG_14334",
-                    name: "Data Mining Lecture 4",
-                    code: "MIG_14334",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14334.json"
-                  },
-                  {
-                    id: "MIG_14335",
-                    name: "Data Mining Lecture 5",
-                    code: "MIG_14335",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14335.json"
-                  },
-                  {
-                    id: "MIG_14336",
-                    name: "Data Mining Lecture 6",
-                    code: "MIG_14336",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14336.json"
-                  },
-                ]
               },
             },
             {
@@ -7759,8 +3220,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Drug mechanisms and pharmaceutical chemistry",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/pharmacology-chemistry-drugs-lectures",
-                sections: "https://drive.google.com/drive/folders/pharmacology-chemistry-drugs-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=pharmacology-chemistry-drugs-videos",
               },
             },
@@ -7771,8 +3232,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Healthcare ethics and regulatory compliance",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/ethics-regulations-healthcare-lectures",
-                sections: "https://drive.google.com/drive/folders/ethics-regulations-healthcare-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=ethics-regulations-healthcare-videos",
               },
             },
@@ -7783,8 +3244,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 1,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-hi-2-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-hi-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-hi-2-videos",
               },
             },
@@ -7801,8 +3262,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Neuroscience applications in medical robotics",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/neuroscience-robotics-lectures",
-                sections: "https://drive.google.com/drive/folders/neuroscience-robotics-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=neuroscience-robotics-videos",
               },
             },
@@ -7813,8 +3274,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Design and implementation of health information systems",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/health-information-systems-lectures",
-                sections: "https://drive.google.com/drive/folders/health-information-systems-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=health-information-systems-videos",
               },
             },
@@ -7825,8 +3286,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Computational methods for drug discovery and design",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/computer-assisted-drug-design-lectures",
-                sections: "https://drive.google.com/drive/folders/computer-assisted-drug-design-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=computer-assisted-drug-design-videos",
               },
             },
@@ -7837,8 +3298,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-hi-1-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-hi-1-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-hi-1-videos",
               },
             },
@@ -7849,8 +3310,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-hi-2-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-hi-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-hi-2-videos",
               },
             },
@@ -7861,8 +3322,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-hi-3-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-hi-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-hi-3-videos",
               },
             },
@@ -7875,8 +3336,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Comparative analysis of healthcare systems worldwide",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/national-international-healthcare-systems-lectures",
-                sections: "https://drive.google.com/drive/folders/national-international-healthcare-systems-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=national-international-healthcare-systems-videos",
               },
             },
@@ -7887,8 +3348,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Healthcare policy analysis and health economics",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/health-policy-economics-lectures",
-                sections: "https://drive.google.com/drive/folders/health-policy-economics-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=health-policy-economics-videos",
               },
             },
@@ -7899,8 +3360,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Market analysis and analytics in healthcare industry",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/healthcare-market-analytics-lectures",
-                sections: "https://drive.google.com/drive/folders/healthcare-market-analytics-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=healthcare-market-analytics-videos",
               },
             },
@@ -7911,8 +3372,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-hi-3-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-hi-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-hi-3-videos",
               },
             },
@@ -7923,8 +3384,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-hi-4-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-hi-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-hi-4-videos",
               },
             },
@@ -7941,8 +3402,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Digital health technologies and remote healthcare delivery",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/e-health-telehealth-telemedicine-lectures",
-                sections: "https://drive.google.com/drive/folders/e-health-telehealth-telemedicine-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=e-health-telehealth-telemedicine-videos",
               },
             },
@@ -7953,8 +3414,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Mathematical models for healthcare and epidemiology",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/mathematical-modelling-health-lectures",
-                sections: "https://drive.google.com/drive/folders/mathematical-modelling-health-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=mathematical-modelling-health-videos",
               },
             },
@@ -7965,8 +3426,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Healthcare delivery systems and clinical workflows",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/clinical-medical-care-delivery-lectures",
-                sections: "https://drive.google.com/drive/folders/clinical-medical-care-delivery-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=clinical-medical-care-delivery-videos",
               },
             },
@@ -7977,8 +3438,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized healthcare informatics program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-hi-1-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-hi-1-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-hi-1-videos",
               },
             },
@@ -7989,8 +3450,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized healthcare informatics program elective",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-hi-2-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-hi-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-hi-2-videos",
               },
             },
@@ -8001,8 +3462,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-hi-4-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-hi-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-hi-4-videos",
               },
             },
@@ -8015,8 +3476,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Design and management of electronic disease registries",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/computerized-disease-registries-lectures",
-                sections: "https://drive.google.com/drive/folders/computerized-disease-registries-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=computerized-disease-registries-videos",
               },
             },
@@ -8027,8 +3488,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "AI-powered clinical decision support and expert systems",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/clinical-decision-support-systems-lectures",
-                sections: "https://drive.google.com/drive/folders/clinical-decision-support-systems-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=clinical-decision-support-systems-videos",
               },
             },
@@ -8039,8 +3500,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Psychological factors in health and illness",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/health-psychology-lectures",
-                sections: "https://drive.google.com/drive/folders/health-psychology-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=health-psychology-videos",
               },
             },
@@ -8051,8 +3512,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized healthcare informatics program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-hi-3-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-hi-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-hi-3-videos",
               },
             },
@@ -8063,8 +3524,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized healthcare informatics program elective",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-hi-4-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-hi-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-hi-4-videos",
               },
             },
@@ -8075,8 +3536,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-hi-5-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-hi-5-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-hi-5-videos",
               },
             },
@@ -8133,144 +3594,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLskaQRgiRMYb0SqvJ-wKx2n4Q3CB5uQ8e&si=wXANl6gRLW404zuP"],
                 summaries: "https://drive.google.com/drive/folders/1RFPXNiitr2yiHr1AyCsZWuTX0rYyOwIL?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1hTVXduWW2Icy8HY-uOc5lEiUUM42RSkB?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "CS_001",
-                    name: "Chapter 1 : Introduction to Computer Systems",
-                    code: "CS_001",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_001.json"
-                  },
-                  {
-                    id: "CS_002",
-                    name: "Chapter 2 : Processing and Memory Management",
-                    code: "CS_002",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_002.json"
-                  },
-                  {
-                    id: "CS_003",
-                    name: "Chapter 3 : Storage",
-                    code: "CS_003",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_003.json"
-                  },
-                  {
-                    id: "CS_004",
-                    name: "Chapter 4 : Input and Output",
-                    code: "CS_004",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_004.json"
-                  },
-                  {
-                    id: "CS_005",
-                    name: "Chapter 5 : System Software",
-                    code: "CS_005",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_005.json"
-                  },
-                  {
-                    id: "CS_006",
-                    name: "Chapter 6 : Applications Software (1/2)",
-                    code: "CS_006",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_006.json"
-                  }
-                  ,{
-                    id: "CS_007",
-                    name: "Chapter 6 : Applications Software (2/2)",
-                    code: "CS_007",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_007.json"
-                  }
-                  ,{
-                    id: "CS_008",
-                    name: "Chapter 7 : Computer Networks",
-                    code: "CS_008",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_008.json"
-                  },
-                  {
-                    id: "CS_009",
-                    name: "Chapter 13 : Program Dev & Programming Languages",
-                    code: "CS_009",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/Computer System/CS_009.json"
-                  },
-                  {
-                    id: "CS_010",
-                    name: "Converting Binary to Decimal and Vice Versa",
-                    code: "CS_010",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_010.json"
-                  },
-                  {
-                    id: "CS_011",
-                    name: "Converting Binary to Octal and Vice Versa",
-                    code: "CS_011",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_011.json"
-                  },
-                  {
-                    id: "CS_012",
-                    name: "Converting Binary to Hexadecimal and Vice Versa",
-                    code: "CS_012",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_012.json"
-                  },
-                  {
-                    id: "CS_013",
-                    name: "Converting Decimal to Octal and Vice Versa",
-                    code: "CS_013",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_013.json"
-                  },
-                  {
-                    id: "CS_014",
-                    name: "Converting Decimal to Hexadecimal and Vice Versa",
-                    code: "CS_014",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Computer System/CS_014.json"
-                  },
-                  {
-                    id: "CS_015",
-                    name: "Converting Octal to Hexadecimal and Vice Versa",
-                    code: "CS_015",
-                    duration: "OP",
-                    questions: 10,
-                    jsonFile: "/quizzes/Computer System/CS_015.json"
-                  },
-                  {
-                    id: "CS_016",
-                    name: "Converting Gray Code to Binary and Vice Versa",
-                    code: "CS_016",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/Computer System/CS_016.json"
-                  },
-                  {
-                    id: "CS_017",
-                    name: "Converting BCD to Decimal and Vice Versa",
-                    code: "CS_017",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/Computer System/CS_017.json"
-                  }
-                ],
               },
             },
             {
@@ -8285,88 +3608,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLNVsyemi1cQyXLWT3vm4GbWzVxAK_4nbR&si=Q7kxeMYT4iXhr2uC"],
                 summaries: "https://drive.google.com/drive/folders/13IFz-O_64Ga8y9TyFe13CSovw0xzxdUQ?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1adpsd15n6hieC29aQECkrftCHNz20U9c?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DS_001",
-                    name: "Lecture 1 - Introduction to Data Science",
-                    code: "DS_001",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_001.json"
-                  },
-                  {
-                    id: "DS_002",
-                    name: "Lecture 2 - Big Data",
-                    code: "DS_002",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_002.json"
-                  },
-                  {
-                    id: "DS_003",
-                    name: "Lecture 3 - Data Analytics lifecycle (Characters)",
-                    code: "DS_003",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_003.json"
-                  },
-                  {
-                    id: "DS_004",
-                    name: "Lecture 4 - Data Analytics lifecycle (Phases)",
-                    code: "DS_004",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_004.json"
-                  },
-                  {
-                    id: "DS_005",
-                    name: "Lecture 5 - Clustering Analysis",
-                    code: "DS_005",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_005.json"
-                  },
-                  {
-                    id: "DS_006",
-                    name: "Lecture 6 - Introduction Association Rules (1/2)",
-                    code: "DS_006",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_006.json"
-                  },
-                  {
-                    id: "DS_007",
-                    name: "Lecture 7 - Introduction Association Rules (2/2)",
-                    code: "DS_007",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_007.json"
-                  },
-                  {
-                    id: "DS_008",
-                    name: "Lecture 8 - Data Visualization",
-                    code: "DS_008",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_008.json"
-                  },
-                  {
-                    id: "DS_009",
-                    name: "Lecture 9 - Classification Analysis",
-                    code: "DS_009",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_009.json"
-                  },
-                  {
-                    id: "DS_010",
-                    name: "Lecture 10 - Decision Trees",
-                    code: "DS_010",
-                    duration: "OP",
-                    questions: 25,
-                    jsonFile: "/quizzes/Data Science/DS_Quizzes/DS_010.json"
-                  }
-                ],
               },
             },
             {
@@ -8381,104 +3622,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLCInYL3l2AajYlZGzU_LVrHdoouf8W6ZN&si=_3EUjHYYQd7xAuGr", "https://youtube.com/playlist?list=PL1DUmTEdeA6K7rdxKiWJq6JIxTvHalY8f&si=wl8ryBAWTyTatxTw"],
                 summaries: "https://drive.google.com/drive/folders/19GRYDzueyRIB45_CJGn9Qh3_3JkIgfQH?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1wT8Ad9IGifK4NMgE71xXzLhXs4FF0wuc?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "PR1_30001",
-                    name: "Chapter 1 : Introduction to Programming",
-                    code: "PR1_30001",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30001.json"
-                  },
-                  {
-                    id: "PR1_30002",
-                    name: "Chapter 2-1 : Introduction to Java Programming",
-                    code: "PR1_30002",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30002.json"
-                  },
-                  {
-                    id: "PR1_30003",
-                    name: "Chapter 2-2 : Java Basics",
-                    code: "PR1_30003",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30003.json"
-                  },
-                  {
-                    id: "PR1_30004",
-                    name: "Chapter 2-3 : Java Basics",
-                    code: "PR1_30004",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30004.json"
-                  },
-                  {
-                    id: "PR1_30005",
-                    name: "Chapter 2-4 : Deep Dive into Java",
-                    code: "PR1_30005",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30005.json"
-                  },
-                  {
-                    id: "PR1_30006",
-                    name: "Chapter 3-1 : Controlling Program Flow",
-                    code: "PR1_30006",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30006.json"
-                  },
-                  {
-                    id: "PR1_30007",
-                    name: "Chapter 3-2 : Controlling Program Flow",
-                    code: "PR1_30007",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30007.json"
-                  },
-                  {
-                    id: "PR1_30008",
-                    name: "Chapter 4-1 : One Dimensional Arrays",
-                    code: "PR1_30008",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30008.json"
-                  },
-                  {
-                    id: "PR1_30009",
-                    name: "Chapter 4-2 : Multi Dimensional Arrays",
-                    code: "PR1_30009",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30009.json"
-                  },
-                  {
-                    id: "PR1_30010",
-                    name: "Review 1",
-                    code: "PR1_30010",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30010.json"
-                  },
-                  {
-                    id: "PR1_30011",
-                    name: "Review 2",
-                    code: "PR1_30011",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30011.json"
-                  },
-                  {
-                    id: "PR1_30012",
-                    name: "Tracing and Debugging",
-                    code: "PR1_30012",
-                    duration: "OP", // in minutes
-                    questions: 30,
-                    jsonFile: "/quizzes/programming/programming1/PR1_30012.json"
-                  },
-                ],
               
               },
             },
@@ -8524,80 +3667,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PLxIvc-MGOs6gZlMVYOOEtUHJmfUquCjwz",
                 summaries: "https://drive.google.com/drive/folders/1sqiDSQMkoYZCehzIgdyxZcNRSYpIkLnX?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1SgzQqrBfbam-yqOw8xOdq9SKXPlScR2k?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "DM_001",
-                    name: "Intro to Discrete Math",
-                    code: "DM_001",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_001.json"
-                  },
-                  {
-                    id: "DM_002",
-                    name: "Bit Operations",
-                    code: "DM_002",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_002.json"
-                  },
-                  {
-                    id: "DM_003",
-                    name: "Predicates and Quantifiers",
-                    code: "DM_003",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_003.json"
-                  },
-                  {
-                    id: "DM_004",
-                    name: "Sets and Functions",
-                    code: "DM_004",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_004.json"
-                  },
-                  {
-                    id: "DM_005",
-                    name: "Set Operations",
-                    code: "DM_005",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_005.json"
-                  },
-                  {
-                    id: "DM_006",
-                    name: "Functions Domain",
-                    code: "DM_006",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_006.json"
-                  },
-                  {
-                    id: "DM_007",
-                    name: "Product Rule",
-                    code: "DM_007",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_007.json"
-                  },
-                  {
-                    id: "DM_008",
-                    name: "Password Counting",
-                    code: "DM_008",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_008.json"
-                  },
-                  {
-                    id: "DM_009",
-                    name: "Permutations Combinations",
-                    code: "DM_009",
-                    duration: "OP", // in minutes
-                    questions: 25,
-                    jsonFile: "/quizzes/Discrete Math/DM_009.json"
-                  },
-                ]  
               },
             },
             {
@@ -8612,88 +3681,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "https://youtube.com/playlist?list=PLCInYL3l2AajqOUW_2SwjWeMwf4vL4RSp",
                 summaries: "https://drive.google.com/drive/folders/1Oiki77OjApABjz0z7D3j2g-Kxc7-hN59?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1IADSkBhDhvgjpDJecfTf9VlvdoJ9P2hD?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "STR_001",
-                    name: "Introduction to Data Structures",
-                    code: "STR_001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_001.json"
-                  },
-                  {
-                    id: "STR_002",
-                    name: "Singly Linked List",
-                    code: "STR_002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_002.json"
-                  },
-                  {
-                    id: "STR_003",
-                    name: "Doubly Linked List",
-                    code: "STR_003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_003.json"
-                  },
-                  {
-                    id: "STR_004",
-                    name: "Hash Table",
-                    code: "STR_004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_004.json"
-                  },
-                  {
-                    id: "STR_005",
-                    name: "Stack - Queue - PQ",
-                    code: "STR_005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_005.json"
-                  },
-                  {
-                    id: "STR_006",
-                    name: "BST (Binary Search Tree)",
-                    code: "STR_006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_006.json"
-                  },
-                  {
-                    id: "STR_007",
-                    name: "Sorting Algorithms",
-                    code: "STR_007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_007.json"
-                  },
-                  {
-                    id: "STR_008",
-                    name: "Heap Tree",
-                    code: "STR_008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_008.json"
-                  },
-                  {
-                    id: "STR_009",
-                    name: "General Review (Part 1)",
-                    code: "STR_009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_009.json"
-                  },
-                  {
-                    id: "STR_010",
-                    name: "General Review (Part 2)",
-                    code: "STR_010",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Structures/STR_010.json"
-                  },
-                ]
               },
             },
             {
@@ -8722,112 +3709,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: ["https://youtube.com/playlist?list=PLCInYL3l2AagY7fFlhCrjpLiIFybW3yQv","https://youtube.com/playlist?list=PL1DUmTEdeA6Icttz-O9C3RPRF8R8Px5vk"],
                 summaries: "https://drive.google.com/drive/folders/1VGGZWwQmZdVD8LWI6piI_RzQqdwKq_st?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1dxwniB91RAEtAu0hKLt5cWqb3t1Q0FLI?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "PR2_50001",
-                    name: "Functions - Methods (Part 1)",
-                    code: "PR2_50001",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50001.json"
-                  },
-                  {
-                    id: "PR2_50002",
-                    name: "Functions - Methods (Part 2)",
-                    code: "PR2_50002",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50002.json"
-                  },
-                  {
-                    id: "PR2_50003",
-                    name: "Introduction To Object-Oriented Programming",
-                    code: "PR2_50003",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50003.json"
-                  },
-                  {
-                    id: "PR2_50004",
-                    name: "Constructor and It's Types",
-                    code: "PR2_50004",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50004.json"
-                  },
-                  {
-                    id: "PR2_50005",
-                    name: "Inheritance and Polymorphism (Part 1)",
-                    code: "PR2_50005",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50005.json"
-                  },
-                  {
-                    id: "PR2_50006",
-                    name: "Inheritance and Polymorphism (Part 2)",
-                    code: "PR2_50006",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50006.json"
-                  },
-                  {
-                    id: "PR2_50007",
-                    name: "Abstract Class and Interface",
-                    code: "PR2_50007",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50007.json"
-                  },
-                  {
-                    id: "PR2_50008",
-                    name: "Class Relations (Part 1)",
-                    code: "PR2_50008",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50008.json"
-                  },
-                  {
-                    id: "PR2_50009",
-                    name: "Class Relations (Part 2)",
-                    code: "PR2_50009",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50009.json"
-                  },
-                  {
-                    id: "PR2_50010",
-                    name: "Array List in Java",
-                    code: "PR2_50010",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50010.json"
-                  },
-                  {
-                    id: "PR2_50011",
-                    name: "Exception Handling",
-                    code: "PR2_50011",
-                    duration: "OP", // in minutes
-                    questions: 20,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50011.json"
-                  },
-                  {
-                    id: "PR2_50012",
-                    name: "Static Keyword and Static Methods",
-                    code: "PR2_50012",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50012.json"
-                  },
-                  {
-                    id: "PR2_50013",
-                    name: "Recursive Methods and Recursion Concept",
-                    code: "PR2_50013",
-                    duration: "OP", // in minutes
-                    questions: 15,
-                    jsonFile: "/quizzes/programming/programming2/PR2_50013.json"
-                  },
-                ]
               },
             },
             {
@@ -8931,96 +3812,6 @@ export const departmentData: { [key: string]: Department } = {
                 sections: "https://drive.google.com/drive/folders/1LuCRHkTxVc_uKOX7SdVEwcc0WrEL-n2D?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1B_bMKIcqQ4t_PsxDR6-GMUWQOv67AvNK?usp=drive_link",
                 summaries: "https://drive.google.com/drive/folders/1qI0ElMk-nNfGv8hH9h3M51Mz9KvEKhIZ?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "ECO_001",
-                    name: "الفصل الاول - مقدمة في علم الاقتصاد",
-                    code: "ECO_001",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_001.json"
-                  },
-                  {
-                    id: "ECO_002",
-                    name: "الفصل الثاني -المشكلة الاقتصادية والنظم الاقتصادية",
-                    code: "ECO_002",
-                    duration: "OP",
-                    questions: 17,
-                    jsonFile: "/quizzes/Economic/ECO_002.json"
-                  },
-                  {
-                    id: "ECO_003",
-                    name: "الفصل الثالث - نظرية طلب المستهلك",
-                    code: "ECO_003",
-                    duration: "OP",
-                    questions: 19,
-                    jsonFile: "/quizzes/Economic/ECO_003.json"
-                  },
-                  {
-                    id: "ECO_004",
-                    name: "الفصل الرابع - العرض في السوق",
-                    code: "ECO_004",
-                    duration: "OP",
-                    questions: 17,
-                    jsonFile: "/quizzes/Economic/ECO_004.json"
-                  },
-                  {
-                    id: "ECO_005",
-                    name: "الفصل الخامس - التوازن في السوق",
-                    code: "ECO_005",
-                    duration: "OP",
-                    questions: 12,
-                    jsonFile: "/quizzes/Economic/ECO_005.json"
-                  },
-                  {
-                    id: "ECO_006",
-                    name: "الفصل السادس - مرونات العرض والطلب",
-                    code: "ECO_006",
-                    duration: "OP",
-                    questions: 27,
-                    jsonFile: "/quizzes/Economic/ECO_006.json"
-                  },
-                  {
-                    id: "ECO_007",
-                    name: "الفصل السابع - نظرية المنفعة الحدية",
-                    code: "ECO_007",
-                    duration: "OP",
-                    questions: 18,
-                    jsonFile: "/quizzes/Economic/ECO_007.json"
-                  },
-                  {
-                    id: "ECO_008",
-                    name: "الفصل التاسع - نظرية الإنتاج",
-                    code: "ECO_008",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_008.json"
-                  },
-                  {
-                    id: "ECO_009",
-                    name: "الفصل العاشر - تكاليف الإنتاج",
-                    code: "ECO_009",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_009.json"
-                  },
-                  {
-                    id: "ECO_010",
-                    name: "الفصل الحادي عشر - اسواق المنافسة الكاملة",
-                    code: "ECO_010",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Economic/ECO_010.json"
-                  },
-                  {
-                    id: "ECO_011",
-                    name: "الفصل الثاني عشر - اسواق المنافسة غير الكاملة",
-                    code: "ECO_011",
-                    duration: "OP",
-                    questions: 18,
-                    jsonFile: "/quizzes/Economic/ECO_011.json"
-                  },
-                ],
               },
             },
           ],
@@ -9037,72 +3828,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/11QHqhN6G_OmTNZTPdR_OVWzUZ5fEMO8X?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1ICXoWQy7-nas1_KaLNCA_fHKXEVvRqw2?usp=drive_link",
-                quizzes: [
-                  {
-                    id: "CLC_10661",
-                    name: "Introduction to Cloud Computing",
-                    code: "CLC_10661",
-                    duration: "OP", // <-- CHANGED THIS LINE
-                    questions: 50,
-                    jsonFile: "/quizzes/cloud computing/CLC_10661.json"
-                  },
-                  {
-                    id: "CLC_10662",
-                    name: "Platform and Infrastructure Services",
-                    code: "CLC_10662",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10662.json"
-                  },
-                  {
-                    id: "CLC_10663",
-                    name: "Virtualization",
-                    code: "CLC_10663",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10663.json"
-                  },
-                  {
-                    id: "CLC_10664",
-                    name: "Parallel Programming",
-                    code: "CLC_10664",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10664.json"
-                  },
-                  {
-                    id: "CLC_10665",
-                    name: "Distributed Storage Systems",
-                    code: "CLC_10665",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10665.json"
-                  },
-                  {
-                    id: "CLC_10666",
-                    name: "Cloud Security",
-                    code: "CLC_10666",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10666.json"
-                  },
-                  {
-                    id: "CLC_10667",
-                    name: "Cloud Performance",
-                    code: "CLC_10667",
-                    duration: "OP",
-                    questions: 30,
-                    jsonFile: "/quizzes/cloud computing/CLC_10667.json"
-                  },
-                  {
-                    id: "CLC_10668",
-                    name: "General Overview + 20Q of 2025's Midterm",
-                    code: "CLC_10668",
-                    duration: "OP",
-                    questions: 50,
-                    jsonFile: "/quizzes/cloud computing/CLC_10668_TOT.json"
-                  }
-                ],
               },
             },
             {
@@ -9117,24 +3842,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1XdboKP5n65WZCznnqiCrE0BZfiarSl4Z?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1WI08MEt_kVSuMITdlqqgPaVpTUPwiqgK?usp=drive_link",
-                quizzes:[
-                  {
-                    id: "ML_001",
-                    name: "Introduction to Machine Learning (Team Materials)",
-                    code: "ML_001",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/machine-learning/ML_001.json"
-                  },
-                  {
-                    id: "ML_004",
-                    name: "Lecture 2 to Midterm (Team Materials)",
-                    code: "ML_004",
-                    duration: "OP",
-                    questions: 40,
-                    jsonFile: "/quizzes/machine-learning/ML_004.json"
-                  }
-                ]   
               },
             },
             {
@@ -9149,56 +3856,6 @@ export const departmentData: { [key: string]: Department } = {
                 videos: "",
                 summaries: "https://drive.google.com/drive/folders/1HRedV6Iu8Djd_f0AE0MigL8nKoq8Yb8-?usp=drive_link",
                 exams: "https://drive.google.com/drive/folders/1mrKwfr3Mgi9p3zp7VdIVLmsUiPYhJYCX?usp=drive_link",
-                quizzes:[
-                  {
-                    id: "MIG_14331",
-                    name: "Data Mining Lecture 1",
-                    code: "MIG_14331",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14331.json"
-                  },
-                  {
-                    id: "MIG_14332",
-                    name: "Data Mining Lecture 2",
-                    code: "MIG_14332",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14332.json"
-                  },
-                  {
-                    id: "MIG_14333",
-                    name: "Data Mining Lecture 3",
-                    code: "MIG_14333",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14333.json"
-                  },
-                  {
-                    id: "MIG_14334",
-                    name: "Data Mining Lecture 4",
-                    code: "MIG_14334",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14334.json"
-                  },
-                  {
-                    id: "MIG_14335",
-                    name: "Data Mining Lecture 5",
-                    code: "MIG_14335",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14335.json"
-                  },
-                  {
-                    id: "MIG_14336",
-                    name: "Data Mining Lecture 6",
-                    code: "MIG_14336",
-                    duration: "OP",
-                    questions: 20,
-                    jsonFile: "/quizzes/Data Mining/MIG_14336.json"
-                  },
-                ]
               },
             },
             {
@@ -9242,8 +3899,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Network protocols and network security fundamentals",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/computer-networks-cs-lectures",
-                sections: "https://drive.google.com/drive/folders/computer-networks-cs-sections",
+                lectures: "https://drive.google.com/drive/folders/18FIGRw3SN7D7o1c6NPNTLJ5e6g6FVkwi",
+                sections: "https://drive.google.com/drive/folders/1kIPloPRLnnVbXQMv_ZXtlToA_rgKmYPo",
                 videos: "https://youtube.com/playlist?list=computer-networks-cs-videos",
               },
             },
@@ -9254,8 +3911,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Advanced operating system security mechanisms",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/operating-systems-security-lectures",
-                sections: "https://drive.google.com/drive/folders/operating-systems-security-sections",
+                lectures: "https://drive.google.com/drive/folders/1EpjZJ58zbMRasFyPNySKmYJuG7b-Bvua",
+                sections: "https://drive.google.com/drive/folders/1HYW5w49TuHYjjaQolerASZ58QYH7HH48",
                 videos: "https://youtube.com/playlist?list=operating-systems-security-videos",
               },
             },
@@ -9266,8 +3923,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Secure coding practices and software security",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/secure-software-development-lectures",
-                sections: "https://drive.google.com/drive/folders/secure-software-development-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=secure-software-development-videos",
               },
             },
@@ -9278,8 +3935,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-cs-1-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-cs-1-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-cs-1-videos",
               },
             },
@@ -9290,8 +3947,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-cs-2-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-cs-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-cs-2-videos",
               },
             },
@@ -9302,8 +3959,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-cs-3-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-cs-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-cs-3-videos",
               },
             },
@@ -9316,8 +3973,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Advanced network security and intrusion detection",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/computer-network-security-lectures",
-                sections: "https://drive.google.com/drive/folders/computer-network-security-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=computer-network-security-videos",
               },
             },
@@ -9328,8 +3985,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Data protection and authentication mechanisms",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/data-integrity-authentication-lectures",
-                sections: "https://drive.google.com/drive/folders/data-integrity-authentication-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=data-integrity-authentication-videos",
               },
             },
@@ -9340,8 +3997,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Security governance and risk management",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/information-security-management-lectures",
-                sections: "https://drive.google.com/drive/folders/information-security-management-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=information-security-management-videos",
               },
             },
@@ -9352,8 +4009,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-cs-3-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-cs-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-cs-3-videos",
               },
             },
@@ -9364,8 +4021,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized faculty elective course",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/faculty-elective-cs-4-lectures",
-                sections: "https://drive.google.com/drive/folders/faculty-elective-cs-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=faculty-elective-cs-4-videos",
               },
             },
@@ -9382,9 +4039,10 @@ export const departmentData: { [key: string]: Department } = {
               description: "Security and privacy in social networks",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/social-network-computing-lectures",
-                sections: "https://drive.google.com/drive/folders/social-network-computing-sections",
-                videos: "https://youtube.com/playlist?list=social-network-computing-videos",
+                lectures: "https://drive.google.com/drive/folders/1OLCI4tzEEYPNs-vqiTzf4yA5Z-z71if2",
+                summaries: "https://drive.google.com/drive/folders/1ZbpLGICe_RSDfR5hyeyGTnAqWYLNs1fA",
+                sections: "https://drive.google.com/drive/folders/1mAr6_Uv5xSXtxEXO4O4RLDyvBU_9hqje",
+                exams: "https://drive.google.com/drive/folders/1bN2SfAjSoydsg0pSz1a3og4f1b2ay1ME"
               },
             },
             {
@@ -9394,9 +4052,10 @@ export const departmentData: { [key: string]: Department } = {
               description: "Security challenges in distributed computing environments",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/security-distributed-systems-lectures",
-                sections: "https://drive.google.com/drive/folders/security-distributed-systems-sections",
-                videos: "https://youtube.com/playlist?list=security-distributed-systems-videos",
+                lectures: "https://drive.google.com/drive/folders/1gpYYhWScuN83mjKtOnWQoPYQTl8rKJKV",
+                summaries: "https://drive.google.com/drive/folders/1S9-fvgo-2TXAeViz8i4LGLrvMRyQ0__s",
+                sections: "https://drive.google.com/drive/folders/153ZuNfJzelpRgCkObImQ6TZGih1fkKUV",
+                exams: "https://drive.google.com/drive/folders/1thJMXnTQiX3IIcyvH9WMAK-AGQz3nIti"
               },
             },
             {
@@ -9406,9 +4065,10 @@ export const departmentData: { [key: string]: Department } = {
               description: "Human factors in cybersecurity and social engineering",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/human-security-lectures",
-                sections: "https://drive.google.com/drive/folders/human-security-sections",
-                videos: "https://youtube.com/playlist?list=human-security-videos",
+                lectures: "https://drive.google.com/drive/folders/1y-_7pHiiuJ6af8he0osTEVxk0-Gy-RkY",
+                summaries: "https://drive.google.com/drive/folders/1rVkWpgIFVW-UkN47pQXAodAi7ZnGOx8O",
+                sections: "https://drive.google.com/drive/folders/1aAP-jMw62fnKryaQyME7xt38_b-8GC28",
+                exams: "https://drive.google.com/drive/folders/1zUkjVA5NwbYsD_miY3bw0IZ2qKsrsWev"
               },
             },
             {
@@ -9418,8 +4078,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized cybersecurity program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-cs-1-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-cs-1-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-cs-1-videos",
               },
             },
@@ -9430,8 +4090,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized cybersecurity program elective",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-cs-2-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-cs-2-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-cs-2-videos",
               },
             },
@@ -9442,8 +4102,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-cs-4-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-cs-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-cs-4-videos",
               },
             },
@@ -9456,10 +4116,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Risk assessment and management in cybersecurity",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/cybersecurity-risk-management-lectures",
-                sections: "https://drive.google.com/drive/folders/cybersecurity-risk-management-sections",
-                videos: "https://youtube.com/playlist?list=cybersecurity-risk-management-videos",
-              },
+                lectures: "https://drive.google.com/drive/folders/1YGc7BrSAC2M_CpIa-7gFDiNrGx7o1UCw",
+                summaries: "https://drive.google.com/drive/folders/1JmvotOz8E0LEWzPrjCOyaQMj2lH0v9xt",
+                sections: "https://drive.google.com/drive/folders/1MWdLZnLNMoJsHHulOIMiBu2XRDMTfAys",
+                exams: "https://drive.google.com/drive/folders/1Cpmk8-RwP4idQx8-CFFy_t1SysDfsTw9"
+              }
             },
             {
               id: "digital-forensics",
@@ -9468,10 +4129,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Digital evidence collection and forensic analysis",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/digital-forensics-lectures",
-                sections: "https://drive.google.com/drive/folders/digital-forensics-sections",
-                videos: "https://youtube.com/playlist?list=digital-forensics-videos",
-              },
+                lectures: "https://drive.google.com/drive/folders/1vzJKO6UbGwTgNFZgKWBNSY-M51RDtbJ7",
+                summaries: "https://drive.google.com/drive/folders/1qoRQO4sv7PID66WxVdgxSR3Hjvyp1Z6e",
+                sections: "https://drive.google.com/drive/folders/1N8X9sHRypeFMbLY58R5JxBxBB2sSJam2",
+                exams: "https://drive.google.com/drive/folders/1XjIgVpuCF_cnQgVuDQVBksvQNnoPbZ7N"
+              }
             },
             {
               id: "law-cybersecurity",
@@ -9480,10 +4142,11 @@ export const departmentData: { [key: string]: Department } = {
               description: "Legal aspects of cybersecurity and cyber law",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/law-cybersecurity-lectures",
-                sections: "https://drive.google.com/drive/folders/law-cybersecurity-sections",
-                videos: "https://youtube.com/playlist?list=law-cybersecurity-videos",
-              },
+                lectures: "https://drive.google.com/drive/folders/13DFQoSx7lWinrM7i4Id3VWZW1XCIAz3O",
+                summaries: "https://drive.google.com/drive/folders/1PyGqpN8nhlby26YyDRsvSxbPvrwUYNID",
+                sections: "https://drive.google.com/drive/folders/1f2nQa6i4IaAw27OphtgUIGVgp9PlRHyN",
+                exams: "https://drive.google.com/drive/folders/1bCvb2OE0qha946st-MFYI3Z9fctN4ZtV"
+              }
             },
             {
               id: "program-elective-cs-3",
@@ -9492,8 +4155,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized cybersecurity program elective",
               creditHours: 3,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-cs-3-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-cs-3-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-cs-3-videos",
               },
             },
@@ -9504,8 +4167,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "Specialized cybersecurity program elective",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/program-elective-cs-4-lectures",
-                sections: "https://drive.google.com/drive/folders/program-elective-cs-4-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=program-elective-cs-4-videos",
               },
             },
@@ -9516,8 +4179,8 @@ export const departmentData: { [key: string]: Department } = {
               description: "University-wide elective course",
               creditHours: 2,
               materials: {
-                lectures: "https://drive.google.com/drive/folders/university-elective-cs-5-lectures",
-                sections: "https://drive.google.com/drive/folders/university-elective-cs-5-sections",
+                lectures: "",
+                sections: "",
                 videos: "https://youtube.com/playlist?list=university-elective-cs-5-videos",
               },
             },

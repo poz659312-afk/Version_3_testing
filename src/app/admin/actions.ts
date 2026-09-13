@@ -5,6 +5,7 @@ import { getServerStudentSession } from '@/lib/auth-server'
 import { syncUserFolderAccess, getMatchingRules } from '@/lib/drive-sharing'
 import { revalidatePath } from 'next/cache'
 import { departmentData } from '@/lib/department-data'
+import { getQuizSubjectCandidates } from '@/lib/quiz-mapping'
 
 /**
  * Validates that the active session belongs to a Super Admin.
@@ -885,11 +886,14 @@ export async function verifyQuizWithAI(params: {
     return { success: false, error: `Subject ID '${subjectId}' not found under department '${departmentSlug}' at level ${levelNum}.` }
   }
 
-  // 5. Generate Code: check last quiz code and add +1
+  const subjectObj = level ? [...level.subjects.term1, ...level.subjects.term2].find(s => s.id === subjectId) : null
+  const candidateIds = getQuizSubjectCandidates(subjectId, subjectObj?.name)
+
+  // 5. Generate Code: check last quiz code and add +1 across all shared departments
   const { data: dbQuizzes } = await supabase
     .from('quiz_department')
     .select('code')
-    .eq('subject_id', subjectId)
+    .in('subject_id', candidateIds)
 
   let lastCode = ''
   if (dbQuizzes && dbQuizzes.length > 0) {

@@ -22,6 +22,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { departmentData, type Department, type Subject } from "@/lib/department-data";
+import { findElectiveSubject } from "@/lib/electives-data";
 import { cn } from "@/lib/utils";
 import React, { Suspense, memo, useState, useEffect, useRef } from "react";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -197,12 +198,15 @@ function TabsWrapper({
     const fetchQuizzes = async () => {
       try {
         const { createBrowserClient } = await import('@/lib/supabase/client');
+        const { getQuizSubjectCandidates } = await import('@/lib/quiz-mapping');
         const supabase = createBrowserClient();
+        const candidateIds = getQuizSubjectCandidates(resolvedParams.subject, subject.name);
+
         const { data, error } = await supabase
           .from('quiz_department')
           .select('code, name, duration, questions_count')
-          .eq('department_slug', resolvedParams.department)
-          .eq('subject_id', resolvedParams.subject);
+          .in('subject_id', candidateIds)
+          .order('code', { ascending: true });
 
         if (!error && data) {
           setDbQuizzes(data);
@@ -215,13 +219,13 @@ function TabsWrapper({
     };
 
     fetchQuizzes();
-  }, [resolvedParams.department, resolvedParams.subject, mounted]);
+  }, [resolvedParams.department, resolvedParams.subject, subject.name, mounted]);
 
   const dynamicSections = React.useMemo(() => {
     return sections.map(sec => {
       if (sec.id === 'quizzes') {
         const hasDbQuizzes = dbQuizzes && dbQuizzes.length > 0;
-        const hasStaticQuizzes = (subject.materials.quizzes?.length || 0) > 0;
+        const hasStaticQuizzes = (subject.materials?.quizzes?.length || 0) > 0;
         return {
           ...sec,
           content: hasDbQuizzes || hasStaticQuizzes ? true : null
@@ -229,7 +233,7 @@ function TabsWrapper({
       }
       return sec;
     });
-  }, [sections, dbQuizzes, subject.materials.quizzes]);
+  }, [sections, dbQuizzes, subject.materials?.quizzes]);
 
   // Auto scroll active tab button into view on mobile/tablet
   useEffect(() => {
@@ -516,7 +520,7 @@ const TabContentRenderer = memo(({
           duration: q.duration,
           questions: q.questions_count
         }))
-      : subject.materials.quizzes;
+      : (subject.materials?.quizzes || []);
 
     if (!quizzesToDisplay || quizzesToDisplay.length === 0) {
       return (
@@ -586,7 +590,7 @@ const TabContentRenderer = memo(({
         transition={{ duration: 0.3 }}
       >
         <Link 
-          href={`/drive/${extractDriveId(typeof section.content === 'string' ? section.content : (Array.isArray(section.content) ? section.content[0] : ''))}`}
+          href={`/drive/${extractDriveId(typeof section.content === 'string' ? section.content : (Array.isArray(section.content) ? section.content[0] : ''))}?subject=${encodeURIComponent(subject.name)}`}
         >
           <div className={cn(
             "group relative w-full flex items-center justify-between p-6 sm:p-8 bg-card border border-border rounded-2xl transition-all duration-300 hover:shadow-2xl overflow-hidden cursor-pointer",
@@ -668,30 +672,48 @@ TabContentRenderer.displayName = "TabContentRenderer";
 async function SubjectContent({ params }: Props) {
   const resolvedParams = await params;
   const dept = departmentData[resolvedParams.department];
-  const levelNum = Number.parseInt(resolvedParams.level);
 
-  if (!dept || !dept.levels[levelNum]) {
+  if (!dept) {
     notFound();
   }
 
-  const level = dept.levels[levelNum];
-  const subject = [...level.subjects.term1, ...level.subjects.term2].find(
-    (s) => s.id === resolvedParams.subject
-  );
+  const isFacultyElective = resolvedParams.level === "faculty-electives";
+  const isProgramElective = resolvedParams.level === "program-electives";
+  const isElective = isFacultyElective || isProgramElective;
+
+  let subject: Subject | null | undefined = null;
+  let levelTitle = "";
+  let backTitle = "";
+
+  if (isElective) {
+    subject = findElectiveSubject(resolvedParams.department, resolvedParams.subject);
+    levelTitle = isFacultyElective ? "Faculty Elective" : "Program Elective";
+    backTitle = isFacultyElective ? "Faculty Electives" : "Program Electives";
+  } else {
+    const levelNum = Number.parseInt(resolvedParams.level);
+    if (!dept.levels[levelNum]) {
+      notFound();
+    }
+    const level = dept.levels[levelNum];
+    subject = [...level.subjects.term1, ...level.subjects.term2].find(
+      (s) => s.id === resolvedParams.subject
+    );
+    const yearSuffix = levelNum === 1 ? "st" : levelNum === 2 ? "nd" : levelNum === 3 ? "rd" : "th";
+    levelTitle = `${levelNum}${yearSuffix} Year Level`;
+    backTitle = `${levelNum}${yearSuffix} Year Data`;
+  }
 
   if (!subject) notFound();
 
-  const yearSuffix = levelNum === 1 ? "st" : levelNum === 2 ? "nd" : levelNum === 3 ? "rd" : "th";
-
   const getPrerequisiteSubjects = () => {
-    if (!subject.prerequisites || subject.prerequisites.length === 0) return null;
+    if (!subject || !subject.prerequisites || subject.prerequisites.length === 0) return null;
 
     const allSubjects: Subject[] = [];
     for (const level of Object.values(dept.levels)) {
       allSubjects.push(...level.subjects.term1, ...level.subjects.term2);
     }
     return subject.prerequisites
-      .map((prereqId) => allSubjects.find((s) => s.id === prereqId))
+      .map((prereqId) => allSubjects.find((s) => s.id === prereqId || s.name.toLowerCase() === prereqId.toLowerCase()))
       .filter((prereq): prereq is Subject => prereq !== undefined);
   };
 
@@ -748,7 +770,7 @@ async function SubjectContent({ params }: Props) {
       icon: ClipboardList,
       color: "from-secondary/15",
       iconColor: "text-secondary",
-      content: (subject.materials.quizzes?.length || 0) > 0 ? true : null,
+      content: true,
       description: "Evaluate your knowledge",
       buttonText: "View Quizzes",
       redirectToDrive: false,
@@ -787,7 +809,7 @@ async function SubjectContent({ params }: Props) {
                 className="text-muted-foreground hover:text-primary hover:bg-primary/10 hover:border-primary/30 rounded-full h-9 bg-background/50 border-border/50 backdrop-blur-md font-outfit transition-all duration-300"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Return to {levelNum}{yearSuffix} Year Data
+                Return to {backTitle}
               </Button>
             </Link>
           </motion.div>
@@ -812,7 +834,7 @@ async function SubjectContent({ params }: Props) {
                     {dept.name}
                   </Badge>
                   <Badge variant="outline" className="bg-secondary/10 text-secondary border-secondary/20 px-3 py-1 font-outfit text-sm tracking-wide rounded-lg">
-                    {levelNum}{yearSuffix} Year Level
+                    {levelTitle}
                   </Badge>
                   <Badge variant="outline" className="bg-accent/10 text-accent border-accent/20 px-3 py-1 font-outfit text-sm tracking-wide rounded-lg flex items-center gap-1">
                     <Sparkles className="w-3.5 h-3.5" />

@@ -35,16 +35,29 @@ export async function getDepartmentSlugs(): Promise<string[]> {
 export async function findQuiz(departmentSlug: string, subjectId: string, quizId: string) {
   try {
     const { createBrowserClient } = await import('@/lib/supabase/client')
+    const { getQuizSubjectCandidates } = await import('@/lib/quiz-mapping')
     const supabase = createBrowserClient()
-    const { data, error } = await supabase
+    const candidates = getQuizSubjectCandidates(subjectId)
+
+    // 1. Try finding by quiz code + candidate subject_ids
+    let { data, error } = await supabase
       .from('quiz_department')
       .select('*')
-      .eq('department_slug', departmentSlug)
-      .eq('subject_id', subjectId)
       .eq('code', quizId)
-      .single()
+      .in('subject_id', candidates)
+      .maybeSingle()
 
-    if (!error && data) {
+    // 2. Fallback to finding by quiz code alone (since code is unique across all quizzes)
+    if (!data) {
+      const fallbackRes = await supabase
+        .from('quiz_department')
+        .select('*')
+        .eq('code', quizId)
+        .maybeSingle()
+      data = fallbackRes.data
+    }
+
+    if (data) {
       const mod = await getDepartmentModule()
       const deptName = mod.departmentData[departmentSlug]?.name || departmentSlug
       
@@ -66,7 +79,7 @@ export async function findQuiz(departmentSlug: string, subjectId: string, quizId
           name: data.name,
           code: data.code,
           duration: data.duration === 'OP' ? 'OP' : Number(data.duration),
-          questions: data.questions, // Load the raw JSON questions directly
+          questions: data.questions, // Load the raw JSON questions directly from database
           subjectName,
           departmentName: deptName,
         },

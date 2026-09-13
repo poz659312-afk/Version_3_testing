@@ -647,6 +647,7 @@ function VisualEffectsSettings({ inventory = [] }: { inventory?: string[] }) {
 export default function ProfilePage() {
   const { colorTheme } = useColorTheme()
   const [userSubjects, setUserSubjects] = useState<any[]>([])
+  const [subjectsWithDbQuizzes, setSubjectsWithDbQuizzes] = useState<Set<string>>(new Set())
   const [userDepartmentKey, setUserDepartmentKey] = useState<string>('computing-data-sciences')
   const [subjectsLoading, setSubjectsLoading] = useState(true)
   const [userData, setUserData] = useState<any>(null)
@@ -880,6 +881,20 @@ export default function ProfilePage() {
       setPaginatedData(pageData || [])
       setHasMore((pageData?.length || 0) === 5 && (totalQuizCount || 0) > 5)
       setPage(0)
+
+      // Query which subjects have quizzes in the database
+      try {
+        const { data: dbQuizSubjects } = await supabase
+          .from("quiz_department")
+          .select("subject_id")
+        if (dbQuizSubjects && dbQuizSubjects.length > 0) {
+          const subSet = new Set<string>(dbQuizSubjects.map((q: any) => q.subject_id).filter(Boolean))
+          setSubjectsWithDbQuizzes(subSet)
+        }
+      } catch (e) {
+        console.error("Failed to load quiz subjects from DB:", e)
+      }
+
       setLoading(false)
     }
 
@@ -1665,7 +1680,7 @@ export default function ProfilePage() {
                                   <Link href={createDriveLink(subject.materials.sections)}><FileText className="w-3 h-3 mr-1" /> SECTIONS</Link>
                                 </Button>
                               )}
-                              {subject.materials.quizzes && subject.materials.quizzes.length > 0 && (
+                              {(subjectsWithDbQuizzes.has(subject.id) || (subject.materials?.quizzes && subject.materials.quizzes.length > 0)) && (
                                 <Button asChild size="sm" variant="outline" className="h-9 rounded-md border text-primary font-outfit font-bold text-[11px] transition-all hover:bg-primary/10">
                                   <Link href={`/specialization/${userDepartmentKey}/${subject.level}/${subject.id}?tab=quizzes`}><Trophy className="w-3 h-3 mr-1" /> QUIZZES</Link>
                                 </Button>

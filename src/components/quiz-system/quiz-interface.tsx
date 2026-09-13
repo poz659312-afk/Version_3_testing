@@ -113,7 +113,7 @@ function parseCssColorToHex(val: string, fallback: string): string {
   if (!val || typeof val !== 'string') return fallback;
   const trimmed = val.trim();
   if (trimmed.startsWith('#')) return trimmed;
-  
+
   const hslMatch = trimmed.match(/(?:hsl\s*\(\s*)?([\d.]+)(?:deg)?[\s,]+([\d.]+)%?[\s,]+([\d.]+)%?\s*\)?/i);
   if (hslMatch) {
     const h = parseFloat(hslMatch[1]);
@@ -234,26 +234,26 @@ const THEME_WAVE_PALETTES: Record<string, ThemeWaveColors> = {
 function useReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent));
     };
     checkMobile();
-    
+
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(mediaQuery.matches || isMobile);
-    
+
     const listener = (event: MediaQueryListEvent) => setPrefersReducedMotion(event.matches || isMobile);
     mediaQuery.addEventListener('change', listener);
     window.addEventListener('resize', checkMobile);
-    
+
     return () => {
       mediaQuery.removeEventListener('change', listener);
       window.removeEventListener('resize', checkMobile);
     };
   }, [isMobile]);
-  
+
   return { prefersReducedMotion: prefersReducedMotion || isMobile, isMobile };
 }
 
@@ -387,15 +387,15 @@ function TableRenderer({ tableContent }: { tableContent?: string | null }) {
 }
 
 // Memoized Option Button Component with sleek border-free glass aesthetic
-const OptionButton = memo(function OptionButton({ 
-  option, 
-  index, 
-  isSelected, 
-  isCorrectOption, 
-  showFeedback, 
-  isQuestionAnswered, 
-  onSelect, 
-  isMobile 
+const OptionButton = memo(function OptionButton({
+  option,
+  index,
+  isSelected,
+  isCorrectOption,
+  showFeedback,
+  isQuestionAnswered,
+  onSelect,
+  isMobile
 }: {
   option: string;
   index: number;
@@ -431,11 +431,11 @@ const OptionButton = memo(function OptionButton({
             ? isCorrectOption
               ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40 shadow-emerald-500/10"
               : isSelected
-              ? "bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/40 shadow-rose-500/10"
-              : "bg-background/40 dark:bg-background/30 text-muted-foreground border border-white/10 opacity-60"
+                ? "bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/40 shadow-rose-500/10"
+                : "bg-background/40 dark:bg-background/30 text-muted-foreground border border-white/10 opacity-60"
             : isSelected
-            ? "bg-primary text-primary-foreground border border-primary shadow-md shadow-primary/20 scale-105"
-            : "bg-background/60 dark:bg-background/40 text-foreground border border-white/15 dark:border-white/10 group-hover:border-primary/50 group-hover:bg-primary/10 group-hover:text-primary"
+              ? "bg-primary text-primary-foreground border border-primary shadow-md shadow-primary/20 scale-105"
+              : "bg-background/60 dark:bg-background/40 text-foreground border border-white/15 dark:border-white/10 group-hover:border-primary/50 group-hover:bg-primary/10 group-hover:text-primary"
         )}
       >
         {letter}
@@ -449,17 +449,17 @@ const OptionButton = memo(function OptionButton({
             ? isCorrectOption
               ? "bg-emerald-500/15 text-emerald-950 dark:text-emerald-200 border border-emerald-500/50 shadow-md shadow-emerald-500/10 ring-1 ring-emerald-500/30"
               : isSelected
-              ? "bg-rose-500/15 text-rose-950 dark:text-rose-200 border border-rose-500/50 shadow-md shadow-rose-500/10 ring-1 ring-rose-500/30"
-              : "bg-background/30 dark:bg-background/20 text-foreground/70 border border-white/10 opacity-60"
+                ? "bg-rose-500/15 text-rose-950 dark:text-rose-200 border border-rose-500/50 shadow-md shadow-rose-500/10 ring-1 ring-rose-500/30"
+                : "bg-background/30 dark:bg-background/20 text-foreground/70 border border-white/10 opacity-60"
             : isSelected
-            ? "bg-primary/15 text-foreground border border-primary/50 shadow-lg shadow-primary/10 ring-2 ring-primary/30"
-            : "bg-background/50 dark:bg-background/40 text-foreground border border-white/15 dark:border-white/10 hover:border-primary/40 hover:bg-background/70 hover:shadow-md"
+              ? "bg-primary/15 text-foreground border border-primary/50 shadow-lg shadow-primary/10 ring-2 ring-primary/30"
+              : "bg-background/50 dark:bg-background/40 text-foreground border border-white/15 dark:border-white/10 hover:border-primary/40 hover:bg-background/70 hover:shadow-md"
         )}
       >
         <span className="text-base md:text-lg font-medium leading-relaxed flex-1">
           {formatTextWithLatex(cleanOptionText(option))}
         </span>
-        
+
         {showFeedback && isCorrectOption && (
           <CheckCircle className="w-6 h-6 text-emerald-500 shrink-0 ml-3 animate-in zoom-in" />
         )}
@@ -483,7 +483,7 @@ const ConfettiParticles = memo(function ConfettiParticles() {
       delay: Math.random() * 0.25,
       shape: i % 3,
     })),
-  []);
+    []);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden">
@@ -525,7 +525,7 @@ export default function QuizInterface({
   initialQuestions,
 }: QuizInterfaceProps) {
   const { prefersReducedMotion, isMobile } = useReducedMotion();
-  
+
   // Theme & Dark Mode dynamic detection for GradientWaves
   const { resolvedTheme, theme } = useTheme();
   const { colorTheme } = useColorTheme();
@@ -558,7 +558,7 @@ export default function QuizInterface({
           });
           return;
         }
-      } catch {}
+      } catch { }
 
       setLiveThemeColors(baseColors);
     };
@@ -606,11 +606,11 @@ export default function QuizInterface({
   const [isIslandExpanded, setIsIslandExpanded] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [shakeCard, setShakeCard] = useState(false);
-  
+
   // Quantum Warp Transition State
   const [isWarpingToQuiz, setIsWarpingToQuiz] = useState(false);
   const [warpPhase, setWarpPhase] = useState<"idle" | "charging" | "hyperjump" | "bloom">("idle");
-  
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const submissionInProgress = useRef(false);
   const correctAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -627,12 +627,12 @@ export default function QuizInterface({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isBanned, setIsBanned] = useState(false);
   const [showBannedDialog, setShowBannedDialog] = useState(false);
-  
+
   useEffect(() => {
     const checkAuth = async () => {
       const session = await getStudentSession();
       setIsAuthenticated(!!session);
-      
+
       if (session) {
         if (session.is_banned) {
           setIsBanned(true);
@@ -641,11 +641,11 @@ export default function QuizInterface({
         }
       }
     };
-    
+
     sessionStorage.removeItem(`quiz_${quizData.code}_answers`);
     checkAuth();
   }, [quizData.code]);
-  
+
   const handleBannedLogout = async () => {
     try {
       const client = createBrowserClient();
@@ -685,14 +685,14 @@ export default function QuizInterface({
 
   useEffect(() => {
     loadQuestions();
-    
+
     if (currentStep === "quiz") {
       const savedAnswers = sessionStorage.getItem(`quiz_${quizData.code}_answers`);
       if (savedAnswers) {
         setUserAnswers(JSON.parse(savedAnswers));
       }
     }
-    
+
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
       if (currentStep === "setup") {
@@ -706,7 +706,7 @@ export default function QuizInterface({
       sessionStorage.setItem(`quiz_${quizData.code}_answers`, JSON.stringify(userAnswers));
     }
   }, [userAnswers, quizData.code, currentStep]);
-  
+
   useEffect(() => {
     if (currentStep === "setup") {
       sessionStorage.removeItem(`quiz_${quizData.code}_answers`);
@@ -718,7 +718,7 @@ export default function QuizInterface({
       setShowAuthDialog(true);
       return;
     }
-    
+
     if (isBanned) {
       setShowBannedDialog(true);
       return;
@@ -728,18 +728,18 @@ export default function QuizInterface({
       sessionStorage.removeItem(`quiz_${quizData.code}_answers`);
       localStorage.removeItem(`quiz_${quizData.id}_result`);
       localStorage.removeItem(`quiz_${quizData.code}_result`);
-      
+
       submissionInProgress.current = false;
       setQuizSubmitted(false);
       setScore(0);
       setCurrentCombo(0);
       setMaxCombo(0);
-      
+
       setUserAnswers({});
       setAnswerRevealed({});
       setShowAnswer(false);
       setCurrentQuestion(0);
-      
+
       setCurrentStep("quiz");
 
       if (selectedDuration > 0) {
@@ -762,18 +762,18 @@ export default function QuizInterface({
       sessionStorage.removeItem(`quiz_${quizData.code}_answers`);
       localStorage.removeItem(`quiz_${quizData.id}_result`);
       localStorage.removeItem(`quiz_${quizData.code}_result`);
-      
+
       submissionInProgress.current = false;
       setQuizSubmitted(false);
       setScore(0);
       setCurrentCombo(0);
       setMaxCombo(0);
-      
+
       setUserAnswers({});
       setAnswerRevealed({});
       setShowAnswer(false);
       setCurrentQuestion(0);
-      
+
       setCurrentStep("quiz");
 
       if (selectedDuration > 0) {
@@ -815,7 +815,7 @@ export default function QuizInterface({
       const isAnswerCorrect = answer === questions[currentQuestion]?.answer;
       if (isAnswerCorrect) {
         setShowConfetti(true);
-        try { correctAudioRef.current?.play(); } catch {}
+        try { correctAudioRef.current?.play(); } catch { }
         setTimeout(() => { setShowConfetti(false); }, 1800);
         setCurrentCombo(prev => {
           const nextCombo = prev + 1;
@@ -824,7 +824,7 @@ export default function QuizInterface({
         });
       } else {
         setShakeCard(true);
-        try { wrongAudioRef.current?.play(); } catch {}
+        try { wrongAudioRef.current?.play(); } catch { }
         setTimeout(() => { setShakeCard(false); }, 600);
         setCurrentCombo(0);
       }
@@ -861,10 +861,10 @@ export default function QuizInterface({
 
   const saveScoreToSupabase = async (finalScore: number, status: "completed" | "timed-out") => {
     if (submissionInProgress.current && quizSubmitted) return;
-    
+
     submissionInProgress.current = true;
     setQuizSubmitted(true);
-    
+
     try {
       const session = await getStudentSession();
       if (!session) return;
@@ -924,7 +924,7 @@ export default function QuizInterface({
   const finishQuiz = useCallback((answersToUse = userAnswers) => {
     if (submissionInProgress.current) return;
     submissionInProgress.current = true;
-    
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -933,7 +933,7 @@ export default function QuizInterface({
     let correctAnswers = 0;
     let tempCombo = 0;
     let calculatedMaxCombo = 0;
-    
+
     questions.forEach((question, index) => {
       const userAnswer = answersToUse[index]?.trim();
       const correctAnswer = question.answer?.trim();
@@ -998,7 +998,7 @@ export default function QuizInterface({
   const handleTimeExpired = useCallback(() => {
     if (submissionInProgress.current) return;
     submissionInProgress.current = true;
-    
+
     setUserAnswers(currentAnswers => {
       let correctAnswers = 0;
       let tempCombo = 0;
@@ -1019,7 +1019,7 @@ export default function QuizInterface({
       setScore(correctAnswers);
       setMaxCombo(calculatedMaxCombo);
       setCurrentStep("results");
-      
+
       const quizResult = {
         quizId: quizData.code,
         score: correctAnswers,
@@ -1204,14 +1204,14 @@ export default function QuizInterface({
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-3 mt-6">
-              <Button 
+              <Button
                 onClick={() => { window.location.href = "/auth/signin"; }}
                 className="w-full py-3 text-base font-semibold rounded-2xl bg-primary text-primary-foreground hover:opacity-90 shadow-md"
               >
                 Sign In
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => setShowAuthDialog(false)}
                 className="w-full py-3 text-base rounded-2xl border-white/15 dark:border-white/10 hover:bg-muted/40"
               >
@@ -1224,7 +1224,7 @@ export default function QuizInterface({
 
 
         {/* Banned Dialog */}
-        <Dialog open={showBannedDialog} onOpenChange={() => {}}>
+        <Dialog open={showBannedDialog} onOpenChange={() => { }}>
           <DialogContent className="bg-background/80 backdrop-blur-2xl border border-rose-500/40 rounded-3xl p-6 shadow-2xl">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold flex items-center gap-2 text-rose-500">
@@ -1236,7 +1236,7 @@ export default function QuizInterface({
               </DialogDescription>
             </DialogHeader>
             <div className="mt-6">
-              <Button 
+              <Button
                 onClick={handleBannedLogout}
                 className="w-full py-3 text-base rounded-2xl bg-rose-600 hover:bg-rose-700 text-white"
               >
@@ -1256,9 +1256,9 @@ export default function QuizInterface({
           className="relative min-h-screen w-full flex flex-col items-center justify-center py-10 px-4 md:px-8"
           style={{ perspective: 1200 }}
         >
-          
+
           {/* Header Brand */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -1281,7 +1281,7 @@ export default function QuizInterface({
           {/* Setup Main Glass Panel */}
           <div className="relative z-10 w-full max-w-5xl">
             <div className="bg-background/40 dark:bg-background/30 backdrop-blur-2xl border border-white/15 dark:border-white/10 shadow-2xl rounded-3xl md:rounded-[2.5rem] p-6 md:p-10 relative overflow-hidden">
-              
+
               {/* Back navigation */}
               <div className="flex items-center justify-between mb-6">
                 <Button
@@ -1513,8 +1513,8 @@ export default function QuizInterface({
         {BackgroundWaves}
 
         {/* Exit Confirmation Dialog */}
-        <Dialog 
-          open={showExitConfirm} 
+        <Dialog
+          open={showExitConfirm}
           onOpenChange={(open) => {
             setShowExitConfirm(open);
             if (!open) setConfirmExitCheckbox(false);
@@ -1532,7 +1532,7 @@ export default function QuizInterface({
                 Leaving now will discard all your scored answers and ongoing combo streak in this session.
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="my-4 flex items-start gap-3 p-4 bg-rose-500/5 border border-rose-500/15 rounded-2xl">
               <input
                 id="confirm-exit-checkbox"
@@ -1579,7 +1579,7 @@ export default function QuizInterface({
 
         {/* Full-page Quiz Layout */}
         <div className="relative min-h-screen w-full flex flex-col justify-between py-6 px-4 md:px-8">
-          
+
           {/* Top Control Layer */}
           <div className="relative z-30 max-w-5xl mx-auto w-full h-11 md:h-12 flex items-center justify-between">
             {/* Exit button */}
@@ -1629,7 +1629,7 @@ export default function QuizInterface({
                       {currentQuestion + 1}/{questions.length}
                     </span>
                   </div>
-                  
+
                   {selectedDuration > 0 ? (
                     <div className="flex items-center gap-1.5 text-primary">
                       <Clock className="w-4 h-4 animate-pulse" />
@@ -1662,7 +1662,7 @@ export default function QuizInterface({
                       {selectedDuration > 0 ? <Timer className="w-4 h-4" /> : <InfinityIcon className="w-4 h-4" />}
                     </div>
                   </div>
-                  
+
                   <div className="w-full space-y-2.5">
                     <div className="flex justify-between items-center text-xs font-semibold text-muted-foreground">
                       <span>Overall Progress</span>
@@ -1676,7 +1676,7 @@ export default function QuizInterface({
                         className="h-full rounded-full bg-primary"
                       />
                     </div>
-                    
+
                     {selectedDuration > 0 && (
                       <div className="flex justify-between items-center pt-1.5 border-t border-white/10 text-xs">
                         <span className="text-muted-foreground">Time Left:</span>
@@ -1952,14 +1952,6 @@ export default function QuizInterface({
           <ImageDialogContent className="bg-background/90 backdrop-blur-2xl border border-white/15 dark:border-white/10 max-w-4xl rounded-3xl p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold">Code Reference</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowImageDialog(false)}
-                className="rounded-full px-3"
-              >
-                ✖
-              </Button>
             </div>
             {currentImage && (
               <div className="relative w-full h-96 bg-gray-950 rounded-2xl overflow-hidden flex items-center justify-center border border-white/10">
@@ -1993,7 +1985,7 @@ export default function QuizInterface({
                 </div>
               </div>
             </DialogHeader>
-            
+
             <div className="my-4 max-h-[65vh] overflow-y-auto pr-1">
               <TableRenderer tableContent={currentTable} />
             </div>
@@ -2016,7 +2008,7 @@ export default function QuizInterface({
   if (currentStep === "results") {
     const percentage = Math.round((score / questions.length) * 100);
     const scoreInfo = getScoreMessage();
-    
+
     let formattedTimeTaken = "Unlimited";
     if (selectedDuration > 0) {
       const totalSeconds = (selectedDuration * 60) - timeLeft;
@@ -2024,7 +2016,7 @@ export default function QuizInterface({
       const secs = totalSeconds % 60;
       formattedTimeTaken = `${mins}:${secs.toString().padStart(2, "0")}`;
     }
-    
+
     const isPassing = percentage >= 60;
 
     return (
@@ -2039,7 +2031,7 @@ export default function QuizInterface({
             className="relative z-10 w-full max-w-4xl"
           >
             <div className="bg-background/40 dark:bg-background/30 backdrop-blur-2xl border border-white/15 dark:border-white/10 shadow-2xl rounded-3xl md:rounded-[2.5rem] p-6 md:p-12 relative overflow-hidden text-center">
-              
+
               {/* Victory Mascot Showcase */}
               <motion.div
                 initial={{ scale: 0, y: 20 }}
@@ -2058,11 +2050,11 @@ export default function QuizInterface({
                 />
               </motion.div>
 
-              <Badge 
+              <Badge
                 className={cn(
                   "mb-4 text-xs font-bold px-4 py-1.5 rounded-full border shadow-sm",
-                  quizStatus === "timed-out" 
-                    ? "bg-amber-500/15 text-amber-500 border-amber-500/40" 
+                  quizStatus === "timed-out"
+                    ? "bg-amber-500/15 text-amber-500 border-amber-500/40"
                     : "bg-primary/20 text-primary border-primary/40"
                 )}
               >
@@ -2073,16 +2065,16 @@ export default function QuizInterface({
                 {scoreInfo.message}
               </h2>
               <p className="text-sm md:text-base text-muted-foreground font-medium max-w-lg mx-auto mb-8">
-                {percentage === 100 
-                  ? "Flawless score! You have completely mastered this content." 
-                  : isPassing 
-                  ? "Great job! You achieved a passing score on this session."
-                  : "Keep practicing! Review your answers and try again to improve."}
+                {percentage === 100
+                  ? "Flawless score! You have completely mastered this content."
+                  : isPassing
+                    ? "Great job! You achieved a passing score on this session."
+                    : "Keep practicing! Review your answers and try again to improve."}
               </p>
 
               {/* Big Score Circular Gauge & Stats Grid */}
               <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-14 my-8">
-                
+
                 {/* Circular Meter */}
                 <div className="relative w-48 h-48 md:w-56 md:h-56 flex items-center justify-center shrink-0">
                   <svg className="absolute inset-0 w-full h-full transform -rotate-90 drop-shadow-lg" viewBox="0 0 120 120">
@@ -2202,7 +2194,7 @@ export default function QuizInterface({
 
         <div className="relative min-h-screen w-full py-12 px-4 md:px-8">
           <div className="max-w-5xl mx-auto">
-            
+
             {/* Review Header Bar */}
             <div className="flex items-center justify-between mb-8">
               <Button
@@ -2404,7 +2396,7 @@ export default function QuizInterface({
                 </div>
               </div>
             </DialogHeader>
-            
+
             <div className="my-4 max-h-[65vh] overflow-y-auto pr-1">
               <TableRenderer tableContent={currentTable} />
             </div>

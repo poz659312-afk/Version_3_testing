@@ -39,7 +39,8 @@ import {
   ChevronRight,
   FolderOpen,
   Plus,
-  Loader2
+  Loader2,
+  BookOpen
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -60,7 +61,7 @@ import dynamic from "next/dynamic";
 const ScrollAnimatedSection = dynamic(() => import("@/components/scroll-animated-section"), { ssr: false });
 const AIModal = dynamic(() => import("@/components/AIModal"), { ssr: false });
 const PDFViewer = dynamic(() => import("@/components/PDFViewer"), { ssr: false });
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { getStudentSession } from "@/lib/auth";
 import {
   AdminControls,
@@ -82,7 +83,7 @@ import {
   useDynamicMetadata,
   dynamicPageMetadata,
 } from "@/lib/dynamic-metadata";
-import { isValidDriveId, resolveActualDriveId } from "@/lib/drive-mapping";
+import { isValidDriveId, resolveActualDriveId, getSubjectNameByDriveId } from "@/lib/drive-mapping";
 import { createSecureDriveUrl } from "@/lib/secure-drive-urls";
 import { AdminAuthGuard } from "@/components/AdminAuthGuard";
 import { UploadProvider } from "@/components/upload-context";
@@ -234,6 +235,7 @@ function OwnerDisplay({
 export default function DriveRootPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const urlParam = params.driveId as string;
 
   const [files, setFiles] = useState<DriveFile[]>([]);
@@ -318,6 +320,15 @@ export default function DriveRootPage() {
   const [notFound, setNotFound] = useState(false);
   const [actualDriveId, setActualDriveId] = useState<string | null>(null);
   const [isHashed, setIsHashed] = useState(false);
+
+  // Subject detection for header badge
+  const querySubject = searchParams?.get("subject") || searchParams?.get("name");
+  const detectedSubject = useMemo(() => {
+    if (querySubject) return querySubject;
+    if (actualDriveId) return getSubjectNameByDriveId(actualDriveId);
+    if (urlParam) return getSubjectNameByDriveId(urlParam);
+    return null;
+  }, [querySubject, actualDriveId, urlParam]);
 
   // Dynamic metadata
   useDynamicMetadata(dynamicPageMetadata.driveRoot(driveInfo?.name));
@@ -846,11 +857,11 @@ export default function DriveRootPage() {
 
               <div className="text-center mb-8 sm:mb-12">
                 <div
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border mb-4 sm:mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4 sm:mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-sm"
                 >
-                  <Folder className="w-4 h-4 text-blue-400" />
-                  <span className="text-sm text-muted-foreground tracking-wide">
-                    Drive Root
+                  <BookOpen className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-semibold text-primary tracking-wide">
+                    {detectedSubject || "Drive Root"}
                   </span>
                 </div>
 

@@ -44,7 +44,8 @@ import {
   Lock,
   FolderOpen,
   Plus,
-  Loader2
+  Loader2,
+  BookOpen
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -67,7 +68,7 @@ import dynamic from "next/dynamic"
 const AIModal = dynamic(() => import("@/components/AIModal"), { ssr: false })
 const ScrollAnimatedSection = dynamic(() => import("@/components/scroll-animated-section"), { ssr: false })
 const PDFViewer = dynamic(() => import("@/components/PDFViewer"), { ssr: false })
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { getStudentSession } from "@/lib/auth"
 import {
   AdminControls,
@@ -81,7 +82,7 @@ import {
 import { CreateActions } from "@/components/create-actions"
 import { AdminAuthWarningButton } from "@/components/admin-auth-warning-button"
 import { useDynamicMetadata, dynamicPageMetadata } from "@/lib/dynamic-metadata"
-import { isValidDriveId, resolveActualDriveId } from "@/lib/drive-mapping"
+import { isValidDriveId, resolveActualDriveId, getSubjectNameByDriveId } from "@/lib/drive-mapping"
 import { createSecureDriveUrl } from "@/lib/secure-drive-urls"
 import { FileCardSkeleton, StatsCardSkeleton } from "@/components/loading-skeletons"
 import { UploadProvider } from "@/components/upload-context"
@@ -258,8 +259,16 @@ function OwnershipBadge() {
 export default function DrivePage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const urlParam = params.driveId as string
   const folderPath = (params.folderPath as string[]) || []
+
+  const querySubject = searchParams?.get("subject") || searchParams?.get("name")
+  const detectedSubject = useMemo(() => {
+    if (querySubject) return querySubject
+    if (urlParam) return getSubjectNameByDriveId(urlParam)
+    return null
+  }, [querySubject, urlParam])
 
   const [files, setFiles] = useState<DriveFile[]>([])
   const [loading, setLoading] = useState(true)
@@ -908,10 +917,10 @@ export default function DrivePage() {
           </div>
 
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border mb-4">
-              <Folder className="w-4 h-4 text-blue-400" aria-hidden="true" />
-              <span className="text-sm text-muted-foreground tracking-wide">
-                {isRootLevel ? "Drive Root" : "Folder Contents"}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4 shadow-sm">
+              <BookOpen className="w-4 h-4 text-primary" aria-hidden="true" />
+              <span className="text-sm font-semibold text-primary tracking-wide">
+                {detectedSubject || (isRootLevel ? "Drive Root" : "Folder Contents")}
               </span>
             </div>
 

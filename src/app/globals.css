@@ -28,7 +28,7 @@
   pointer-events: none !important;
 }
 
-/* Global Scrollbar Hiding (Preserves Full Scrolling Functionality) */
+/* Global Scrollbar Hiding (Preserves Full Scrolling Functionality while enabling .custom-scrollbar) */
 html, body {
   scrollbar-width: none !important; /* Firefox */
   -ms-overflow-style: none !important; /* IE and Edge */
@@ -36,10 +36,57 @@ html, body {
 
 html::-webkit-scrollbar,
 body::-webkit-scrollbar,
-*::-webkit-scrollbar {
+*:not(.custom-scrollbar):not(.custom-scrollbar *)::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
+}
+
+/* Elegant visible scrollbar for interactive lists, modals, and code blocks */
+.custom-scrollbar {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(100, 116, 139, 0.65) rgba(0, 0, 0, 0.06) !important;
+  overscroll-behavior: contain !important;
+  touch-action: pan-y;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: block !important;
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border-radius: 9999px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.6) !important;
+  border-radius: 9999px !important;
+  border: 1.5px solid transparent !important;
+  background-clip: padding-box !important;
+  cursor: pointer !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.9) !important;
+}
+
+.dark .custom-scrollbar {
+  scrollbar-color: rgba(255, 255, 255, 0.38) rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.36) !important;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(52, 211, 153, 0.9) !important;
 }
 
 .fade-out {

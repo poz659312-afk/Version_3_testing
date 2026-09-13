@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, GraduationCap } from "lucide-react";
+import { ArrowLeft, GraduationCap, BookOpen, Sparkles } from "lucide-react";
 import { departmentData } from "@/lib/department-data";
 import { cn } from "@/lib/utils";
 import AdBanner from "@/components/AdBanner";
@@ -62,10 +62,39 @@ export default async function DepartmentPage({ params }: Props) {
 
             <Badge
               variant="outline"
-              className="text-lg px-4 py-2 bg-white/[0.03] border-primary/20 text-primary/90"
+              className="text-lg px-4 py-2 bg-white/[0.03] border-primary/20 text-primary/90 mb-4 inline-block"
             >
               Choose Your Academic Level
             </Badge>
+
+            {/* Specialized Electives Direct Actions */}
+            <div className="flex items-center justify-center gap-3 flex-wrap mt-2">
+              <Link href={`/specialization/${resolvedParams.department}/faculty-electives`}>
+                <Button
+                  variant="outline"
+                  className="bg-white/[0.03] border-primary/30 hover:border-primary/60 hover:bg-primary/10 text-primary hover:text-primary transition-all duration-300 font-semibold px-5 py-2.5 rounded-xl shadow-sm flex items-center gap-2 group cursor-pointer"
+                >
+                  <BookOpen className="w-4 h-4 text-primary transition-transform group-hover:scale-110" />
+                  <span>Faculty Electives</span>
+                  <Badge variant="secondary" className="ml-1 text-[11px] bg-primary/15 text-primary border border-primary/20 font-mono">
+                    8 Courses
+                  </Badge>
+                </Button>
+              </Link>
+
+              <Link href={`/specialization/${resolvedParams.department}/program-electives`}>
+                <Button
+                  variant="outline"
+                  className="bg-white/[0.03] border-secondary/30 hover:border-secondary/60 hover:bg-secondary/10 text-secondary hover:text-secondary transition-all duration-300 font-semibold px-5 py-2.5 rounded-xl shadow-sm flex items-center gap-2 group cursor-pointer"
+                >
+                  <GraduationCap className="w-4 h-4 text-secondary transition-transform group-hover:scale-110" />
+                  <span>Program Electives</span>
+                  <Badge variant="secondary" className="ml-1 text-[11px] bg-secondary/15 text-secondary border border-secondary/20 font-mono">
+                    Specialized
+                  </Badge>
+                </Button>
+              </Link>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">

@@ -58,11 +58,11 @@ export const DRIVE_TREE: DriveTreeNode = {
           name: 'TERM 1 - 2ND Chameleon',
           type: 'term',
           children: [
-            { id: '1-WY58dUDVQTsBlBhXNRkvHsk7SRrNyPt', name: 'GENERAL', type: 'department' },
-            { id: '19r6XP6Pd6az8_ziZYxt6waHl8CiKu_7s', name: 'CYBER', type: 'department' },
-            { id: '11ldH3sCp0kFM-0Xl9oIFNs5tPzWGwrbT', name: 'AI', type: 'department' },
-            { id: '1LMm-2cFbfzRR83K7jg18YSr9xdimQ4rv', name: 'BUSINESS', type: 'department' },
-            { id: '1oUcPDdT63GjSJQpZ7mejDv-b34o3I8AJ', name: 'MEDIA', type: 'department' }
+            { id: '1-WY58dUDVQTsBlBhXNRkvHsk7SRrNyPt', name: 'TERM 1 - 2ND GENERAL', type: 'department' },
+            { id: '19r6XP6Pd6az8_ziZYxt6waHl8CiKu_7s', name: 'TERM 1 - 2ND CYBER', type: 'department' },
+            { id: '11ldH3sCp0kFM-0Xl9oIFNs5tPzWGwrbT', name: 'TERM 1 - 2ND AI', type: 'department' },
+            { id: '1LMm-2cFbfzRR83K7jg18YSr9xdimQ4rv', name: 'TERM 1 - 2ND BUSINESS', type: 'department' },
+            { id: '1oUcPDdT63GjSJQpZ7mejDv-b34o3I8AJ', name: 'TERM 1 - 2ND MEDIA', type: 'department' }
           ]
         },
         {
@@ -70,10 +70,10 @@ export const DRIVE_TREE: DriveTreeNode = {
           name: 'TERM 2 - 2ND Chameleon',
           type: 'term',
           children: [
-            { id: '1FrAIVSMAmL7vLv9jBdJUhpYhtYxNSftq', name: 'GENERAL', type: 'department' },
-            { id: '1grj7koi81E3DO8r2sqCDzrdisZWy6qt0', name: 'MEDIA', type: 'department' },
-            { id: '1q3Nc8iBtTf-sWxPbhGSV6FoVpK1A02oM', name: 'CYBER', type: 'department' },
-            { id: '1q0dL1h1YVZGmZhZSisztQfjAV51pUjja', name: 'AI', type: 'department' }
+            { id: '1FrAIVSMAmL7vLv9jBdJUhpYhtYxNSftq', name: 'TERM 2 - 2ND GENERAL', type: 'department' },
+            { id: '1grj7koi81E3DO8r2sqCDzrdisZWy6qt0', name: 'TERM 2 - 2ND MEDIA', type: 'department' },
+            { id: '1q3Nc8iBtTf-sWxPbhGSV6FoVpK1A02oM', name: 'TERM 2 - 2ND CYBER', type: 'department' },
+            { id: '1q0dL1h1YVZGmZhZSisztQfjAV51pUjja', name: 'TERM 2 - 2ND AI', type: 'department' }
           ]
         }
       ]
@@ -88,11 +88,11 @@ export const DRIVE_TREE: DriveTreeNode = {
           name: 'TERM 1 - 3RD Chameleon',
           type: 'term',
           children: [
-            { id: '1cVtwXyzETI162psi30Z-8ua4MsNpzpWn', name: 'GENERAL', type: 'department' },
-            { id: '1tJOk37-O5ddTOWeAiWn85M1ZFV7mjfDl', name: 'CYBER', type: 'department' },
-            { id: '1HMVFaYKUlVJD62RadiT8auWA2UpFy6W8', name: 'AI', type: 'department' },
-            { id: '1FDZUrBjiUhq6_l7yWTLSV8jnoDHM2YD2', name: 'BUSINESS', type: 'department' },
-            { id: '1OWaxXeDQV5yn3lMC8gJj7OHybIUxRabm', name: 'MEDIA', type: 'department' }
+            { id: '1cVtwXyzETI162psi30Z-8ua4MsNpzpWn', name: 'TERM 1 - 3RD GENERAL', type: 'department' },
+            { id: '1tJOk37-O5ddTOWeAiWn85M1ZFV7mjfDl', name: 'TERM 1 - 3RD CYBER', type: 'department' },
+            { id: '1HMVFaYKUlVJD62RadiT8auWA2UpFy6W8', name: 'TERM 1 - 3RD AI', type: 'department' },
+            { id: '1FDZUrBjiUhq6_l7yWTLSV8jnoDHM2YD2', name: 'TERM 1 - 3RD BUSINESS', type: 'department' },
+            { id: '1OWaxXeDQV5yn3lMC8gJj7OHybIUxRabm', name: 'TERM 1 - 3RD MEDIA', type: 'department' }
           ]
         },
         {
@@ -100,11 +100,11 @@ export const DRIVE_TREE: DriveTreeNode = {
           name: 'TERM 2 - 3RD Chameleon',
           type: 'term',
           children: [
-            { id: '1KT9v35YBfm2vQBfOq3LP-bxLz3o757Ps', name: 'GENERAL', type: 'department' },
-            { id: '1JBpk0-mmNOzw-jZ4D6laE0Uqze4mJ80-', name: 'CYBER', type: 'department' },
-            { id: '1hPx-F9_FlWdFgjpsBDSmXrZYqjVWSsYa', name: 'AI', type: 'department' },
-            { id: '1XPfn2wJdp7oCW1wDz72YCIu5g2yzz1X2', name: 'BUSINESS', type: 'department' },
-            { id: '1jxOdsWat-Dgde-Y673vcIDwXmfsAHZAC', name: 'MEDIA', type: 'department' }
+            { id: '1KT9v35YBfm2vQBfOq3LP-bxLz3o757Ps', name: 'TERM 2 - 3RD GENERAL', type: 'department' },
+            { id: '1JBpk0-mmNOzw-jZ4D6laE0Uqze4mJ80-', name: 'TERM 2 - 3RD CYBER', type: 'department' },
+            { id: '1hPx-F9_FlWdFgjpsBDSmXrZYqjVWSsYa', name: 'TERM 2 - 3RD AI', type: 'department' },
+            { id: '1XPfn2wJdp7oCW1wDz72YCIu5g2yzz1X2', name: 'TERM 2 - 3RD BUSINESS', type: 'department' },
+            { id: '1jxOdsWat-Dgde-Y673vcIDwXmfsAHZAC', name: 'TERM 2 - 3RD MEDIA', type: 'department' }
           ]
         }
       ]
@@ -119,11 +119,11 @@ export const DRIVE_TREE: DriveTreeNode = {
           name: 'TERM 1 - 4TH Chameleon',
           type: 'term',
           children: [
-            { id: '1rh1mRAuJ0tK0_Rc0dlmycxKry1CkkSGL', name: 'GENERAL', type: 'department' },
-            { id: '1SAOXqMJncEFZpadggJ_QFTnh5XCDNxCS', name: 'CYBER', type: 'department' },
-            { id: '1GE8zvZyQO0s0oWjti_gBW6musCWku9IK', name: 'AI', type: 'department' },
-            { id: '1Duf2e9wld9zXDvhZJ46jq-FfkN4cqntv', name: 'BUSINESS', type: 'department' },
-            { id: '1JbTgJIlhG3W_MYLrZuXooPvXbnFGSRs6', name: 'MEDIA', type: 'department' }
+            { id: '1rh1mRAuJ0tK0_Rc0dlmycxKry1CkkSGL', name: 'TERM 1 - 4TH GENERAL', type: 'department' },
+            { id: '1SAOXqMJncEFZpadggJ_QFTnh5XCDNxCS', name: 'TERM 1 - 4TH CYBER', type: 'department' },
+            { id: '1GE8zvZyQO0s0oWjti_gBW6musCWku9IK', name: 'TERM 1 - 4TH AI', type: 'department' },
+            { id: '1Duf2e9wld9zXDvhZJ46jq-FfkN4cqntv', name: 'TERM 1 - 4TH BUSINESS', type: 'department' },
+            { id: '1JbTgJIlhG3W_MYLrZuXooPvXbnFGSRs6', name: 'TERM 1 - 4TH MEDIA', type: 'department' }
           ]
         },
         {
@@ -131,11 +131,11 @@ export const DRIVE_TREE: DriveTreeNode = {
           name: 'TERM 2 - 4TH Chameleon',
           type: 'term',
           children: [
-            { id: '1xyCPhgjbbMz2WD-XoJCmYBsBW09L8iH7', name: 'GENERAL', type: 'department' },
-            { id: '118jjq7pMMJDMV34oW5-mMP-PggI80bOp', name: 'CYBER', type: 'department' },
-            { id: '1n2bruTs4yAPwavTgLoyJxjibWfTg_sgD', name: 'AI', type: 'department' },
-            { id: '1gGeNt-Mj8JidMTDGztOWe2lQg7yoQrgC', name: 'BUSINESS', type: 'department' },
-            { id: '12y6-nP-0f2-CUKsw_oscBprnIoZgpnIb', name: 'MEDIA', type: 'department' }
+            { id: '1xyCPhgjbbMz2WD-XoJCmYBsBW09L8iH7', name: 'TERM 2 - 4TH GENERAL', type: 'department' },
+            { id: '118jjq7pMMJDMV34oW5-mMP-PggI80bOp', name: 'TERM 2 - 4TH CYBER', type: 'department' },
+            { id: '1n2bruTs4yAPwavTgLoyJxjibWfTg_sgD', name: 'TERM 2 - 4TH AI', type: 'department' },
+            { id: '1gGeNt-Mj8JidMTDGztOWe2lQg7yoQrgC', name: 'TERM 2 - 4TH BUSINESS', type: 'department' },
+            { id: '12y6-nP-0f2-CUKsw_oscBprnIoZgpnIb', name: 'TERM 2 - 4TH MEDIA', type: 'department' }
           ]
         }
       ]
@@ -144,16 +144,16 @@ export const DRIVE_TREE: DriveTreeNode = {
 }
 
 /**
- * Map Supabase user specialization values to tree department names.
+ * Map Supabase user specialization or department key to tree department code.
  */
-export function mapSpecializationToDeptCode(specialization: string | null): string {
+export function mapSpecializationToDeptCode(specialization: string | null): 'GENERAL' | 'CYBER' | 'AI' | 'BUSINESS' | 'MEDIA' {
   if (!specialization) return 'GENERAL'
   const spec = specialization.toLowerCase()
-  if (spec.includes('data science') || spec.includes('computing')) return 'GENERAL'
-  if (spec.includes('cyber')) return 'CYBER'
+  if (spec.includes('business') || spec.includes('ba')) return 'BUSINESS'
+  if (spec.includes('cyber') || spec.includes('security') || spec === 'cs') return 'CYBER'
   if (spec.includes('intelligent') || spec.includes('ai') || spec.includes('artificial')) return 'AI'
-  if (spec.includes('business')) return 'BUSINESS'
-  if (spec.includes('media')) return 'MEDIA'
+  if (spec.includes('media') || spec.includes('digital') || spec.includes('dmt') || spec === 'ma') return 'MEDIA'
+  if (spec.includes('data science') || spec.includes('computing') || spec.includes('general') || spec.includes('fcds')) return 'GENERAL'
   return 'GENERAL'
 }
 
