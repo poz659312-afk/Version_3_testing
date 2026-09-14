@@ -487,36 +487,6 @@ export const departmentData: { [key: string]: Department } = {
               }
             },
             {
-              id: "Web-Programming",
-              name: "Web Programming",
-              code: "02-24-00306",
-              description: "Explore web development technologies and frameworks to build the next chameleon",
-              creditHours: 3,
-              prerequisites: ["programming-1"],
-              materials: {
-                lectures: "https://drive.google.com/drive/folders/10lmuusGOSB6PCUE0bLTddEKMDubhNmGu?usp=drive_link",
-                sections: "https://drive.google.com/drive/folders/1elx6DFq_rBC-HBrMUwkvXetROKMb4xYP?usp=drive_link",
-                videos: ["https://youtube.com/playlist?list=PLDoPjvoNmBAw_t_XWUFbBX-c9MafPk9ji&si=SrbjHtzgw5XhuvwE","https://youtube.com/playlist?list=PLDoPjvoNmBAzjsz06gkzlSrlev53MGIKe&si=iWjgud4FmxHht6-V","https://youtube.com/playlist?list=PLDoPjvoNmBAx3kiplQR_oeDqLDBUDYwVv&si=IMPINKzaCcwKyPFy"],
-                summaries: "https://drive.google.com/drive/folders/1izlOiejC_W5u0KEwRrV3Gn7uGRsMLabV?usp=drive_link",
-                exams: "https://drive.google.com/drive/folders/1pqHAxus_oyiKwz8aI4qxUAI1hyJeH3LO?usp=drive_link"
-              }
-            },
-            {
-              id: "Computer-Networks",
-              name: "Computer Networks",
-              code: "02-24-00308",
-              description: "Fundamentals of computer networking and communication protocols",
-              creditHours: 3,
-              prerequisites: ["intro-computer-systems","programming-1"],
-              materials: {
-                lectures: "https://drive.google.com/drive/folders/18EfL-u4z06mBDNki39-XEfShYMKvMUXn?usp=drive_link",
-                sections: "https://drive.google.com/drive/folders/1XV94AxwvlgXikzZ3qbYR5QtJqNIIe-LI?usp=drive_link",
-                videos: ["https://youtube.com/playlist?list=PL8v_bZALWLKE9Lo2BIy8nsdsakbSvQlEo&si=jBAfivc5JJCLnv5-"],
-                summaries: "https://drive.google.com/drive/folders/1y_ZHb47S0RCveSEoWc17PsXEsQDH019K?usp=drive_link",
-                exams: "https://drive.google.com/drive/folders/1qPJuDNlabxV5IctxPU1_0tomDLmZIEVR?usp=drive_link"
-              }
-            },
-            {
               id: "Dist-Processing",
               name: "Dist Processing",
               code: "02-24-00302",
