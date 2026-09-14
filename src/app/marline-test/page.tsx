@@ -64,12 +64,17 @@ export default function MarlineTestPage() {
   const [selectedModels, setSelectedModels] = useState<Record<string, string>>({});
   const [results, setResults] = useState<Record<string, ProviderTestResult>>({});
   const [isBenchmarkingAll, setIsBenchmarkingAll] = useState(false);
+  const [isUnauthorized, setIsUnauthorized] = useState(false);
 
   // Load server-side provider metadata on mount
   useEffect(() => {
     async function loadMeta() {
       try {
         const res = await fetch("/api/marline-test");
+        if (res.status === 401 || res.status === 403) {
+          setIsUnauthorized(true);
+          return;
+        }
         if (res.ok) {
           const data = await res.json();
           setProviders(data.providers || []);
@@ -279,6 +284,22 @@ export default function MarlineTestPage() {
       </span>
     );
   };
+
+  if (isUnauthorized) {
+    return (
+      <div className="min-h-screen bg-black text-zinc-100 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-6 text-center space-y-4">
+          <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-full w-fit mx-auto text-rose-400">
+            <XCircle className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-bold">Access Denied</h2>
+          <p className="text-sm text-zinc-400">
+            The Marline AI Provider Lab is restricted to Super Administrators. Please sign in with an authorized account.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-black text-zinc-100 p-4 sm:p-8 font-sans">

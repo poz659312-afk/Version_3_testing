@@ -571,6 +571,8 @@ export default function StudySpaceClient({
   const [isLoadingEarlierMessages, setIsLoadingEarlierMessages] = useState(false)
   const [hasMoreEarlierMessages, setHasMoreEarlierMessages] = useState((initialDetails?.messages?.length || 0) >= 50)
   const isPrependingEarlierRef = useRef(false)
+  const messagesRef = useRef(messages)
+  messagesRef.current = messages
 
   const handleLoadEarlierMessages = async () => {
     if (messages.length === 0 || isLoadingEarlierMessages) return
@@ -774,6 +776,9 @@ export default function StudySpaceClient({
         (payload: any) => {
           if (payload.eventType === 'INSERT') {
             const newReaction = payload.new
+            const isTargetMessageInRoom = messagesRef.current?.some((m: any) => m.id === newReaction.message_id)
+            if (!isTargetMessageInRoom) return
+
             setMessageReactions((prev: any[]) => {
               if (prev.some(r => r.message_id === newReaction.message_id && r.user_id === newReaction.user_id && r.emoji === newReaction.emoji)) return prev
               return [...prev, newReaction]

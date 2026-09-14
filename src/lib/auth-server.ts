@@ -40,7 +40,7 @@ export const getServerStudentSession = cache(async (): Promise<StudentUser | nul
       dbError = fallbackRes.error;
     }
 
-    if (dbError || !userData) {
+    if (dbError || !userData || userData.is_banned) {
       return null;
     }
 

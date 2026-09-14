@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerStudentSession } from '@/lib/auth-server';
 import {
   MARLINE_PROVIDERS,
   MARLINE_LAYER_TOGGLES,
@@ -13,10 +14,26 @@ import { estimateTokens } from '@/lib/token-budget-manager';
 const ALLOWED_PROVIDERS: ProviderId[] = ['cerebras', 'groq', 'google', 'openrouter', 'cloudflare'];
 
 /**
- * GET: Returns sanitized metadata for all 5 providers (no secrets).
+ * Validates caller has super-admin privileges.
+ */
+async function verifySuperAdmin() {
+  const session = await getServerStudentSession();
+  if (!session || !session.is_super_admin || session.is_banned) {
+    return null;
+  }
+  return session;
+}
+
+/**
+ * GET: Returns sanitized metadata for all 5 providers (no secrets) — Super Admin ONLY.
  */
 export async function GET() {
   try {
+    const admin = await verifySuperAdmin();
+    if (!admin) {
+      return NextResponse.json({ error: 'Unauthorized. Super Admin access required.' }, { status: 403 });
+    }
+
     const providers = ALLOWED_PROVIDERS.map((id) => {
       const meta = MARLINE_PROVIDERS[id];
       const adapter = marlineRouter.getAdapter(id);
@@ -51,12 +68,16 @@ export async function GET() {
 }
 
 /**
- * POST: Runs an isolated benchmark/test against a single provider WITHOUT fallback.
+ * POST: Runs an isolated benchmark/test against a single provider — Super Admin ONLY.
  */
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
 
   try {
+    const admin = await verifySuperAdmin();
+    if (!admin) {
+      return NextResponse.json({ error: 'Unauthorized. Super Admin access required.' }, { status: 403 });
+    }
     const body = await req.json();
 
     // 0. Toggle Layer Action Handler

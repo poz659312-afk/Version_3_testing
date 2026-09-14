@@ -46,6 +46,15 @@ export async function POST(req: Request) {
 
     const auth_id = session.auth_id;
 
+    // Rate limit Marline requests per user to prevent burst abuse
+    const userAiRateLimit = checkRateLimit(`marline:${auth_id}`, RateLimitTier.WRITE);
+    if (!userAiRateLimit.success) {
+      return NextResponse.json(
+        { error: "يرجى الانتظار قليلاً قبل إرسال سؤال جديد إلى مارلين." },
+        { status: 429 }
+      );
+    }
+
     // Deduct daily question credit from DB for authenticated user
     try {
       const { createAdminClient } = await import("@/lib/supabase/admin");
@@ -64,10 +73,19 @@ export async function POST(req: Request) {
         );
       }
 
-      await (supabaseAdmin as any)
+      const { data: updatedRecord, error: updateErr } = await (supabaseAdmin as any)
         .from('chameleons')
         .update({ ai_credits: Math.max(0, currentCredits - 1) })
-        .eq('auth_id', auth_id);
+        .eq('auth_id', auth_id)
+        .gt('ai_credits', 0)
+        .select('ai_credits');
+
+      if (updateErr || !updatedRecord || updatedRecord.length === 0) {
+        return NextResponse.json(
+          { error: "لقد استنفدت رصيد الأسئلة اليومي (0/20 سؤالاً). يرجى العودة غداً عند تجديد الرصيد!" },
+          { status: 429 }
+        );
+      }
     } catch (dbErr) {
       console.warn("Could not update ai_credits in DB:", dbErr);
     }

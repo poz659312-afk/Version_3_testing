@@ -1,58 +1,37 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
-import type { CookieOptions } from '@supabase/ssr'
 import bcrypt from 'bcryptjs'
+import { checkRateLimit, getRequestIdentifier, RateLimitTier } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, newPassword } = await request.json()
-
-    // Validate input
-    if (!email || !newPassword) {
+    // Rate limit sensitive operations
+    const identifier = getRequestIdentifier(request)
+    const rateLimit = checkRateLimit(identifier, RateLimitTier.SENSITIVE)
+    if (!rateLimit.success) {
       return NextResponse.json(
-        { error: 'Email and new password are required' },
-        { status: 400 }
+        { error: 'Too many attempts. Please try again later.' },
+        { status: 429 }
       )
     }
 
-    if (newPassword.length < 6) {
+    // Authenticate caller server-side
+    const supabase = await createServerSupabaseClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError || !user) {
       return NextResponse.json(
-        { error: 'Password must be at least 6 characters' },
-        { status: 400 }
+        { error: 'Unauthorized. Authentication required to reset password.' },
+        { status: 401 }
       )
     }
 
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value
-          },
-          set(name: string, value: string, options: CookieOptions) {
-            cookieStore.set({ name, value, ...options })
-          },
-          remove(name: string, options: CookieOptions) {
-            cookieStore.set({ name, value: '', ...options })
-          },
-        },
-      }
-    )
+    const { newPassword } = await request.json()
 
-    // Verify the user exists
-    const { data: existingUser, error: fetchError } = await supabase
-      .from('chameleons')
-      .select('user_id, email')
-      .eq('email', email)
-      .single()
-
-    if (fetchError || !existingUser) {
+    if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
       return NextResponse.json(
-        { error: 'No account found with this email address' },
-        { status: 404 }
+        { error: 'New password must be at least 6 characters long' },
+        { status: 400 }
       )
     }
 
@@ -60,11 +39,11 @@ export async function POST(request: NextRequest) {
     const saltRounds = 12
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds)
 
-    // Update the password in the database
-    const { error: updateError } = await supabase
-      .from('chameleons')
+    // Update password strictly for the authenticated user's account
+    const { error: updateError } = await (supabase
+      .from('chameleons') as any)
       .update({ pass: hashedPassword })
-      .eq('email', email)
+      .eq('auth_id', user.id)
 
     if (updateError) {
       console.error('Password update error:', updateError)

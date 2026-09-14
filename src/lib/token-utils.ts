@@ -19,30 +19,19 @@ export interface RefreshResult {
   timestamp: string;
 }
 
-// Check token status by calling the API
+import { checkAdminTokensAction, refreshAdminTokensAction } from '@/app/admin/actions';
+
+// Check token status via secure server action
 export async function checkTokenStatus(): Promise<TokenStatus> {
   try {
-    const response = await fetch('/api/cron/token-refresh?checkOnly=true', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-cron-secret': process.env.NEXT_PUBLIC_CRON_SECRET || 'your-secret-key-here'
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-
+    const data = await checkAdminTokensAction();
     return {
-      isValid: data.success,
-      needsRefresh: data.failedCount > 0,
-      lastChecked: new Date(data.timestamp),
-      totalCount: data.totalUsers,
-      expiredCount: data.failedCount,
-      validCount: data.totalUsers !== undefined && data.failedCount !== undefined ? data.totalUsers - data.failedCount : undefined,
+      isValid: data.isValid,
+      needsRefresh: data.needsRefresh,
+      lastChecked: new Date(data.lastChecked),
+      totalCount: data.totalCount,
+      expiredCount: data.expiredCount,
+      validCount: data.validCount,
       message: data.message
     };
   } catch (error) {
@@ -55,22 +44,10 @@ export async function checkTokenStatus(): Promise<TokenStatus> {
   }
 }
 
-// Manual token refresh trigger
+// Manual token refresh trigger via secure server action
 export async function triggerTokenRefresh(): Promise<RefreshResult> {
   try {
-    const response = await fetch('/api/cron/token-refresh', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-cron-secret': process.env.NEXT_PUBLIC_CRON_SECRET || 'your-secret-key-here'
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data: RefreshResult = await response.json();
+    const data = await refreshAdminTokensAction();
     return data;
   } catch (error) {
     console.error('Error triggering token refresh:', error);

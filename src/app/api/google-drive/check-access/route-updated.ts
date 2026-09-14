@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     const userIdNum = parseInt(userId)
     
     // Use the new admin access check
-    const accessCheck = await checkAdminAccess(userIdNum)
+    const accessCheck = await checkAdminAccess(userId)
     
     if (!accessCheck.isAdmin) {
       return NextResponse.json({
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get admin tokens from admins table
-    const tokens = await getAdminGoogleTokens(userIdNum)
+    const tokens = await getAdminGoogleTokens(userId)
     
     const hasAccess = !!(tokens?.access_token && tokens?.authorized)
     

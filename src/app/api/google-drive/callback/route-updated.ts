@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Store tokens in admins table using the new helper function
-    const result = await authorizeAdmin(userId, {
+    const result = await authorizeAdmin(String(userId), {
       google_id: userInfo.id,
       google_email: userInfo.email,
       access_token: tokens.access_token,

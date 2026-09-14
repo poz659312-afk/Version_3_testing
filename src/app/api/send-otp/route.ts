@@ -1,19 +1,46 @@
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
+import { checkRateLimit, getRequestIdentifier, RateLimitTier } from '@/lib/rate-limit'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export async function POST(request: Request) {
   try {
+    // Rate limit OTP requests to prevent spamming Resend quota
+    const identifier = getRequestIdentifier(request)
+    const rateLimit = checkRateLimit(`otp:${identifier}`, RateLimitTier.AUTH)
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many OTP requests. Please wait a minute and try again.' },
+        { status: 429 }
+      )
+    }
+
     const { email, otp, name } = await request.json()
 
-    console.log('Send OTP API called:', { email, otpLength: otp?.length, name })
-
-    if (!email || !otp) {
-      console.error('Missing email or OTP')
+    if (!email || !otp || typeof email !== 'string' || typeof otp !== 'string') {
       return NextResponse.json(
-        { error: 'Email and OTP are required' },
+        { error: 'Valid email and OTP are required' },
         { status: 400 }
+      )
+    }
+
+    const cleanEmail = email.trim().toLowerCase()
+    if (!EMAIL_REGEX.test(cleanEmail)) {
+      return NextResponse.json(
+        { error: 'Invalid email address' },
+        { status: 400 }
+      )
+    }
+
+    // Rate limit per target email as well
+    const emailRateLimit = checkRateLimit(`otp_target:${cleanEmail}`, RateLimitTier.AUTH)
+    if (!emailRateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many OTP requests for this email. Please wait a minute.' },
+        { status: 429 }
       )
     }
 
@@ -21,13 +48,8 @@ export async function POST(request: Request) {
     if (!process.env.RESEND_API_KEY) {
       console.error('RESEND_API_KEY not configured')
       return NextResponse.json(
-        { 
-          success: true,
-          message: 'OTP generated (email service not configured)',
-          otp,
-          email 
-        },
-        { status: 200 }
+        { error: 'Email delivery service is currently unavailable. Please contact support.' },
+        { status: 503 }
       )
     }
 

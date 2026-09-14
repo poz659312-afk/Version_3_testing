@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     const formatedPrompt = messages.map((m: any) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`).join('\n') + '\nAssistant: ';
     const completePrompt = prompt + formatedPrompt;
 
-    const result = streamText({
+    const result = (streamText as any)({
       model: hf(MODEL),
       prompt: completePrompt,
       maxTokens: 1024,

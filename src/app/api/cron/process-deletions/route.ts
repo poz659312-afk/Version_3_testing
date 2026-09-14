@@ -15,12 +15,12 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Verify the request is from Vercel Cron (optional but recommended)
+    // Verify the request is from Vercel Cron or authorized caller
     const authHeader = request.headers.get("authorization")
     const cronHeader = request.headers.get("x-cron-secret")
     const providedSecret = cronHeader || authHeader?.replace("Bearer ", "")
 
-    if (CRON_SECRET && providedSecret !== CRON_SECRET) {
+    if (!CRON_SECRET || providedSecret !== CRON_SECRET) {
       console.log("Unauthorized cron request attempt")
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
@@ -31,11 +31,11 @@ export async function GET(request: NextRequest) {
     console.log(`🗑️ Processing account deletions at ${now.toISOString()}`)
 
     // Find all accounts where deletion is due
-    const { data: accountsToDelete, error: fetchError } = await supabaseAdmin
+    const { data: accountsToDelete, error: fetchError } = (await (supabaseAdmin as any)
       .from("chameleons")
       .select("user_id, username, email")
       .not("deletion_scheduled_at", "is", null)
-      .lte("deletion_scheduled_at", now.toISOString())
+      .lte("deletion_scheduled_at", now.toISOString())) as any
 
     if (fetchError) {
       console.error("Error fetching accounts to delete:", fetchError)

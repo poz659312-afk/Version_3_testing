@@ -92,7 +92,7 @@ const extendedHandleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         ? `${extractedText}\n\nUSER PROMPT: ${input || ''}`
         : input || '';
 
-    sendMessage({
+    (sendMessage as any)({
         content: combinedContent,
         role: 'user'
     })
@@ -122,7 +122,7 @@ const extendedHandleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 <p>Hello! I am your AI assistant.<br/>Ask me to generate a quiz, or upload a document/image to analyze it.</p>
             </div>
         )}
-        {messages.map((m) => (
+        {messages.map((m: any) => (
           <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[90%] rounded-2xl px-5 py-4 shadow-sm ${
               m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted/50 border'
@@ -131,7 +131,7 @@ const extendedHandleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                 {m.role === 'user' ? 'You' : 'AI Assistant'}
               </div>
               <div className="prose prose-sm dark:prose-invert prose-p:leading-relaxed prose-pre:bg-zinc-900 prose-pre:text-zinc-50 max-w-none">
-                <ReactMarkdown>{(m.content || '').replace(/\[((?:FILE|DOCUMENT|IMAGE) CONTEXT: .*?)\].+USER PROMPT:/s, '(Sent attached file)\n\n')}</ReactMarkdown>
+                <ReactMarkdown>{(m.content || '').replace(/\[((?:FILE|DOCUMENT|IMAGE) CONTEXT: [\s\S]*?)\].+USER PROMPT:/, '(Sent attached file)\n\n')}</ReactMarkdown>
               </div>
             </div>
           </div>

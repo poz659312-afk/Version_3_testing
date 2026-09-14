@@ -17,14 +17,14 @@ async function handleResetAICredits(request: NextRequest) {
       )
     }
 
-    // 2. Verify request authorization (if CRON_SECRET is configured)
+    // 2. Verify request authorization
     const authHeader = request.headers.get("authorization")
     const cronHeader = request.headers.get("x-cron-secret")
     const urlSecret = request.nextUrl.searchParams.get("secret")
     const providedSecret = cronHeader || urlSecret || authHeader?.replace("Bearer ", "")
 
-    if (CRON_SECRET && providedSecret !== CRON_SECRET) {
-      return NextResponse.json({ error: "Unauthorized: Invalid cron secret" }, { status: 401 })
+    if (!CRON_SECRET || providedSecret !== CRON_SECRET) {
+      return NextResponse.json({ error: "Unauthorized: Invalid or missing cron secret" }, { status: 401 })
     }
 
     const supabaseAdmin = createAdminClient()

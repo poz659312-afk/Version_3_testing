@@ -575,11 +575,11 @@ export async function sendRoomMessage(roomId: string, content: string, isQuestio
   const membersList = (memberRows || []).map((m: any) => ({
     userId: m.user_id,
     username: m.user?.username
-  })).filter(m => m.username)
+  })).filter((m: any) => m.username)
 
   const escapedUsernames = membersList
-    .map(m => m.username.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-    .sort((a, b) => b.length - a.length)
+    .map((m: any) => m.username.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .sort((a: any, b: any) => b.length - a.length)
 
   const mentionedUsernames: string[] = []
   if (escapedUsernames.length > 0) {
@@ -591,12 +591,12 @@ export async function sendRoomMessage(roomId: string, content: string, isQuestio
   }
 
   if (mentionedUsernames.length > 0) {
-    const usersToNotify = membersList.filter(m => 
+    const usersToNotify = membersList.filter((m: any) => 
       mentionedUsernames.includes(m.username.toLowerCase()) && m.userId !== session.auth_id
     )
 
     if (usersToNotify.length > 0) {
-      const notificationsToInsert = usersToNotify.map(u => ({
+      const notificationsToInsert = usersToNotify.map((u: any) => ({
         auth_id: u.userId,
         title: 'New Mention',
         message_content: `you were mentioned by ${session.username || 'someone'} in space ${room.name}`,
@@ -987,8 +987,8 @@ export async function getRoomReportData(roomId: string) {
       .select('status')
       .eq('room_id', roomId)
 
-    const approvedCount = membersList?.filter(m => m.status === 'approved').length || 0
-    const pendingCount = membersList?.filter(m => m.status === 'pending').length || 0
+    const approvedCount = membersList?.filter((m: any) => m.status === 'approved').length || 0
+    const pendingCount = membersList?.filter((m: any) => m.status === 'pending').length || 0
 
     // 5. Activity log (last 5 messages/challenges)
     const { data: recentMsgs } = await supabase

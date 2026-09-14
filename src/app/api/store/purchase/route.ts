@@ -1,7 +1,9 @@
-import { createServerClient } from "@/lib/supabase/server"
+import { getServerStudentSession } from "@/lib/auth-server"
+import { createAdminClient } from "@/lib/supabase/admin"
+import { checkRateLimit, getRequestIdentifier, RateLimitTier } from "@/lib/rate-limit"
 import { NextRequest, NextResponse } from "next/server"
 
-// Hardcoded store items for now
+// Hardcoded store items
 const STORE_ITEMS = [
   { id: "badge-quiz-master", name: "Quiz Master Badge", price: 500, type: "badge" },
   { id: "badge-speed-demon", name: "Speed Demon Badge", price: 300, type: "badge" },
@@ -13,73 +15,108 @@ const STORE_ITEMS = [
   { id: "theme-nebula", name: "Nebula Theme", price: 1500, type: "theme" },
   { id: "theme-glacier", name: "Glacier Theme", price: 3000, type: "theme" },
   { id: "theme-solaris", name: "Solaris Supernova Theme", price: 10000, type: "theme" },
-  // Borders (Original price is discounted by 25% on store purchase)
+  // Borders
   { id: "border-gold-glow", name: "Gold Glow Border", price: 600, type: "border" },
   { id: "border-cosmic-aurora", name: "Cosmic Aurora Border", price: 900, type: "border" },
   { id: "border-neon-glitch", name: "Cyber Neon Border", price: 750, type: "border" },
-  // Cursors (Original price is discounted by 25% on store purchase)
+  // Cursors
   { id: "cursor-sparkles", name: "Cosmic Sparkles Cursor", price: 450, type: "cursor" },
   { id: "cursor-cyber-cross", name: "Cyber Cross Cursor", price: 600, type: "cursor" },
   { id: "cursor-bubbles", name: "Bouncing Bubbles Cursor", price: 750, type: "cursor" },
 ]
 
-
 export async function POST(request: NextRequest) {
   try {
-    const { authId, itemId } = await request.json()
+    const identifier = getRequestIdentifier(request)
+    const rateLimit = checkRateLimit(identifier, RateLimitTier.WRITE)
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { success: false, error: "Too many purchase attempts. Please slow down." },
+        { status: 429 }
+      )
+    }
 
-    if (!authId || !itemId) {
-      return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 })
+    // 1. Authenticate caller server-side
+    const session = await getServerStudentSession()
+    if (!session || !session.auth_id) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized. Please log in to make purchases." },
+        { status: 401 }
+      )
+    }
+
+    if (session.is_banned) {
+      return NextResponse.json(
+        { success: false, error: "Your account is restricted from making purchases." },
+        { status: 403 }
+      )
+    }
+
+    const { itemId } = await request.json()
+
+    if (!itemId || typeof itemId !== 'string') {
+      return NextResponse.json({ success: false, error: "Invalid item ID" }, { status: 400 })
     }
 
     const item = STORE_ITEMS.find((i) => i.id === itemId)
     if (!item) {
-      return NextResponse.json({ success: false, error: "Item not found" }, { status: 404 })
+      return NextResponse.json({ success: false, error: "Item not found in store" }, { status: 404 })
     }
 
-    const supabase = await createServerClient()
+    const supabase = createAdminClient()
 
-    // 1. Fetch user data (coins and inventory)
-    const { data: user, error: userError } = await supabase
-      .from("chameleons")
+    // 2. Fetch fresh user data using verified server session.auth_id
+    const { data: user, error: userError } = await (supabase
+      .from("chameleons") as any)
       .select("coins, inventory")
-      .eq("auth_id", authId)
+      .eq("auth_id", session.auth_id)
       .single()
 
     if (userError || !user) {
-      return NextResponse.json({ success: false, error: "User not found" }, { status: 404 })
+      return NextResponse.json({ success: false, error: "User account not found" }, { status: 404 })
     }
 
-    // 2. Check if user already owns the item
+    const currentCoins = Number(user.coins) || 0
     const inventory = Array.isArray(user.inventory) ? user.inventory : []
+
+    // 3. Verify item is not already owned
     if (inventory.includes(itemId)) {
-      return NextResponse.json({ success: false, error: "Item already owned" }, { status: 400 })
+      return NextResponse.json({ success: false, error: "Item already in your inventory" }, { status: 400 })
     }
 
-    // 3. Check balance
-    if (user.coins < item.price) {
-      return NextResponse.json({ success: false, error: "Insufficient coins" }, { status: 400 })
+    // 4. Verify balance
+    if (currentCoins < item.price) {
+      return NextResponse.json(
+        { success: false, error: `Insufficient Chameleon Coins. You need ${item.price} coins.` },
+        { status: 400 }
+      )
     }
 
-    // 4. Record purchase (Transaction)
-    // We update the user record by deducting coins and adding to inventory
-    // In a real database, this should be a transaction, but Supabase SDK handles atomic updates for simple cases
-    const { error: updateError } = await supabase
-      .from("chameleons")
+    const newCoins = currentCoins - item.price
+    const newInventory = [...inventory, itemId]
+
+    // 5. Atomic conditional update: only succeed if balance is still >= item.price
+    const { data: updateData, error: updateError } = await (supabase
+      .from("chameleons") as any)
       .update({
-        coins: user.coins - item.price,
-        inventory: [...inventory, itemId]
+        coins: newCoins,
+        inventory: newInventory
       })
-      .eq("auth_id", authId)
+      .eq("auth_id", session.auth_id)
+      .gte("coins", item.price)
+      .select("coins")
 
-    if (updateError) {
-      return NextResponse.json({ success: false, error: "Transaction failed: " + updateError.message }, { status: 500 })
+    if (updateError || !updateData || updateData.length === 0) {
+      return NextResponse.json(
+        { success: false, error: "Transaction could not be completed. Balance may have changed." },
+        { status: 400 }
+      )
     }
 
     return NextResponse.json({
       success: true,
       data: {
-        newBalance: user.coins - item.price,
+        newBalance: newCoins,
         itemId: itemId
       }
     })

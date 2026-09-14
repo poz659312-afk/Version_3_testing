@@ -451,7 +451,7 @@ export async function syncUserCustomFolderAccess(
     if (customSettings.departments && customSettings.departments.length > 0) {
       const traverseAndAddDept = (node: any) => {
         if (node.type === 'department' && customSettings.departments.includes(node.name.toLowerCase())) {
-          getAllChildFolderIds(node).forEach(id => selectedFolderIds.add(id))
+          getAllChildFolderIds(node).forEach((id: string) => selectedFolderIds.add(id))
         }
         if (node.children) {
           node.children.forEach(traverseAndAddDept)
@@ -592,8 +592,8 @@ export async function previewCustomFolderChanges(
   let oldFolderNames = new Map<string, string>()
 
   if (oldCustomRules && oldCustomRules.length > 0) {
-    oldFolderIds = oldCustomRules.map(r => r.folder_id)
-    oldCustomRules.forEach(r => oldFolderNames.set(r.folder_id, r.folder_name))
+    oldFolderIds = oldCustomRules.map((r: any) => r.folder_id)
+    oldCustomRules.forEach((r: any) => oldFolderNames.set(r.folder_id, r.folder_name))
   } else {
     oldFolderIds = getSuggestedFolderIds(user.current_level, user.specialization)
   }
@@ -625,7 +625,7 @@ export async function previewCustomFolderChanges(
     if (customSettings.departments && customSettings.departments.length > 0) {
       const traverseAndAddDept = (node: any) => {
         if (node.type === 'department' && customSettings.departments.includes(node.name.toLowerCase())) {
-          getAllChildFolderIds(node).forEach(id => selectedFolderIds.add(id))
+          getAllChildFolderIds(node).forEach((id: string) => selectedFolderIds.add(id))
         }
         if (node.children) {
           node.children.forEach(traverseAndAddDept)
@@ -897,7 +897,7 @@ export async function verifyQuizWithAI(params: {
 
   let lastCode = ''
   if (dbQuizzes && dbQuizzes.length > 0) {
-    const codes = dbQuizzes.map(q => q.code).filter(Boolean)
+    const codes = dbQuizzes.map((q: any) => q.code).filter(Boolean)
     lastCode = getMaxQuizCode(codes)
   }
 
@@ -1315,11 +1315,11 @@ export async function executeAcademicRollover(
 
       if (y4Err) throw y4Err
 
-      const year4Ids = year4Students?.map((s) => s.auth_id) || []
+      const year4Ids = year4Students?.map((s: any) => s.auth_id) || []
 
       // 2. Insert into graduates table (idempotent)
       if (year4Ids.length > 0) {
-        const gradRows = year4Ids.map((id) => ({
+        const gradRows = year4Ids.map((id: string) => ({
           student_id: id,
           graduation_year: targetYear,
           graduated_at: new Date().toISOString()
@@ -1396,3 +1396,50 @@ export async function executeAcademicRollover(
   }
 }
 
+/**
+ * Super Admin action to check Google Admin tokens status without exposing CRON_SECRET to client.
+ */
+export async function checkAdminTokensAction() {
+  await checkSuperAdmin()
+  const { checkAllAdminTokensStatus } = await import('@/lib/google-oauth')
+  const status = await checkAllAdminTokensStatus()
+  
+  let message = ''
+  if (status.totalCount === 0) {
+    message = 'No authorized admins exist.'
+  } else if (status.expiredCount === 0) {
+    message = 'All admin tokens in the database are currently valid.'
+  } else if (status.validCount === 0) {
+    message = 'All admin tokens in the database are expired.'
+  } else {
+    message = `${status.validCount} admin tokens are valid, but ${status.expiredCount} are expired and need attention.`
+  }
+
+  return {
+    isValid: status.isValid,
+    needsRefresh: status.expiredCount > 0,
+    lastChecked: new Date(),
+    totalCount: status.totalCount,
+    expiredCount: status.expiredCount,
+    validCount: status.validCount,
+    message
+  }
+}
+
+/**
+ * Super Admin action to refresh Google Admin tokens without exposing CRON_SECRET to client.
+ */
+export async function refreshAdminTokensAction() {
+  await checkSuperAdmin()
+  const { refreshAllAdminTokens } = await import('@/lib/google-oauth')
+  const result = await refreshAllAdminTokens()
+  
+  return {
+    success: true,
+    message: 'Token refresh completed successfully',
+    refreshedCount: result.refreshedCount,
+    failedCount: result.failedCount,
+    totalUsers: result.totalUsers,
+    timestamp: new Date().toISOString()
+  }
+}

@@ -1,18 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { refreshAllAdminTokens, checkAllAdminTokensStatus } from '@/lib/google-oauth';
 
-// Simple authentication using a secret key
-const CRON_SECRET = process.env.CRON_SECRET || 'your-secret-key-here';
+// Verify cron secret for security
+const CRON_SECRET = process.env.CRON_SECRET;
 
 export async function GET(request: NextRequest) {
   try {
-
-
     // Basic authentication check
     const authHeader = request.headers.get('authorization');
     const providedSecret = request.headers.get('x-cron-secret') || authHeader?.replace('Bearer ', '');
 
-    if (!providedSecret || providedSecret !== CRON_SECRET) {
+    if (!CRON_SECRET || providedSecret !== CRON_SECRET) {
       return NextResponse.json(
         {
           success: false,

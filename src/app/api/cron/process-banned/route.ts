@@ -14,12 +14,12 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Verify the request is from Vercel Cron (optional but recommended)
+    // Verify the request is from Vercel Cron or authorized caller
     const authHeader = request.headers.get("authorization")
     const cronHeader = request.headers.get("x-cron-secret")
     const providedSecret = cronHeader || authHeader?.replace("Bearer ", "")
 
-    if (CRON_SECRET && providedSecret !== CRON_SECRET) {
+    if (!CRON_SECRET || providedSecret !== CRON_SECRET) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 

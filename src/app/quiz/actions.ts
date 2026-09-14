@@ -3,6 +3,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getServerStudentSession } from '@/lib/auth-server'
 import { determineQuizLevel } from '@/lib/quiz-level'
+import { checkRateLimit, RateLimitTier } from '@/lib/rate-limit'
 
 export interface SubmitQuizResultInput {
   quizId: string
@@ -37,6 +38,12 @@ export async function recordQuizCompletionAction(
 
     if (session.is_banned) {
       return { success: false, earnedCoins: 0, error: 'User is banned' }
+    }
+
+    // Rate limit quiz completion submissions to prevent automated coin minting replays
+    const rateLimit = checkRateLimit(`quiz_complete:${session.auth_id}`, RateLimitTier.WRITE)
+    if (!rateLimit.success) {
+      return { success: false, earnedCoins: 0, error: 'Submitting quiz results too rapidly. Please wait a moment.' }
     }
 
     const {

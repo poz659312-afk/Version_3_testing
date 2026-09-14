@@ -1,14 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { google } from 'googleapis'
+import { checkRateLimit, getRequestIdentifier, RateLimitTier } from '@/lib/rate-limit'
+
+const ID_PATTERN = /^[a-zA-Z0-9_-]{5,100}$/
 
 export async function GET(request: NextRequest) {
   try {
+    const identifier = getRequestIdentifier(request)
+    const rateLimit = checkRateLimit(`drive_public:${identifier}`, RateLimitTier.READ)
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please slow down.' },
+        { status: 429 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
-    const pageSize = parseInt(searchParams.get('pageSize') || '20')
+    const rawPageSize = parseInt(searchParams.get('pageSize') || '20', 10)
+    const pageSize = Math.min(Math.max(1, isNaN(rawPageSize) ? 20 : rawPageSize), 100)
     const pageToken = searchParams.get('pageToken')
     const folderId = searchParams.get('folderId')
     const fileId = searchParams.get('fileId')
     const type = searchParams.get('type') // 'info' for single file info
+
+    if (folderId && !ID_PATTERN.test(folderId)) {
+      return NextResponse.json({ error: 'Invalid folder identifier format' }, { status: 400 })
+    }
+    if (fileId && !ID_PATTERN.test(fileId)) {
+      return NextResponse.json({ error: 'Invalid file identifier format' }, { status: 400 })
+    }
     
     // Use API key for public access (no authentication required)
     const drive = google.drive({ 

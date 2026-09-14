@@ -15,7 +15,7 @@ let adminClient: ReturnType<typeof createClient> | null = null
  * 
  * ⚠️ NEVER expose this to the client!
  */
-export function createAdminClient() {
+export function createAdminClient(): any {
   if (typeof window !== 'undefined') {
     throw new Error('createAdminClient cannot be used in browser!')
   }
