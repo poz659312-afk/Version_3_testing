@@ -22,7 +22,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { departmentData, type Department, type Subject } from "@/lib/department-data";
-import { findElectiveSubject } from "@/lib/electives-data";
+import { findElectiveSubject, FACULTY_ELECTIVE_COURSES, getProgramElectivesForDepartment } from "@/lib/electives-data";
 import { cn } from "@/lib/utils";
 import React, { Suspense, memo, useState, useEffect, useRef } from "react";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -712,9 +712,44 @@ async function SubjectContent({ params }: Props) {
     for (const level of Object.values(dept.levels)) {
       allSubjects.push(...level.subjects.term1, ...level.subjects.term2);
     }
-    return subject.prerequisites
-      .map((prereqId) => allSubjects.find((s) => s.id === prereqId || s.name.toLowerCase() === prereqId.toLowerCase()))
-      .filter((prereq): prereq is Subject => prereq !== undefined);
+    if (Array.isArray(FACULTY_ELECTIVE_COURSES)) {
+      allSubjects.push(...FACULTY_ELECTIVE_COURSES);
+    }
+    const prog = getProgramElectivesForDepartment(resolvedParams.department);
+    if (Array.isArray(prog)) {
+      allSubjects.push(...prog);
+    }
+
+    const list = subject.prerequisites.map((prereqId) => {
+      const clean = prereqId.trim();
+      const cleanLower = clean.toLowerCase();
+      let found = allSubjects.find((s) => 
+        s.id === clean || 
+        s.name.toLowerCase() === cleanLower ||
+        (s.code && s.code.toLowerCase() === cleanLower)
+      );
+
+      if (!found) {
+        if (cleanLower.includes('programming ii') || cleanLower === 'programming 2') {
+          found = allSubjects.find((s) => s.id === 'object-oriented-programming' || s.id === 'structured-programming');
+        } else if (cleanLower.includes('data structures')) {
+          found = allSubjects.find((s) => s.id === 'data-structures-and-algorithms');
+        }
+      }
+
+      if (found) return found;
+
+      return {
+        id: clean.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        name: clean,
+        code: 'PREREQ',
+        description: `Prerequisite required by academic regulations: ${clean}`,
+        creditHours: 3,
+        materials: { lectures: null, sections: null, summaries: null, videos: null, exams: null }
+      } as Subject;
+    });
+
+    return list.length > 0 ? list : null;
   };
 
   const prerequisiteSubjects = getPrerequisiteSubjects();
@@ -865,7 +900,7 @@ async function SubjectContent({ params }: Props) {
           </motion.div>
 
           {/* Prerequisites Action Card List */}
-          {prerequisiteSubjects && (
+          {prerequisiteSubjects && prerequisiteSubjects.length > 0 && (
             <motion.div
               custom={1}
               variants={fadeUpVariants}
@@ -937,6 +972,15 @@ function findSubjectLevel(dept: Department, subjectId: string): string {
     const allSubjects = [...level.subjects.term1, ...level.subjects.term2];
     if (allSubjects.some((s) => s.id === subjectId)) {
       return levelNum;
+    }
+  }
+  if (FACULTY_ELECTIVE_COURSES.some((s) => s.id === subjectId)) {
+    return "faculty-electives";
+  }
+  for (const key of Object.keys(departmentData)) {
+    const prog = getProgramElectivesForDepartment(key);
+    if (prog.some((s) => s.id === subjectId)) {
+      return "program-electives";
     }
   }
   return "1";

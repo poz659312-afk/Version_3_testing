@@ -138,6 +138,104 @@ export const FACULTY_ELECTIVE_COURSES: Omit<ElectiveSubject, 'departmentKey'>[] 
       exams: "https://drive.google.com/drive/folders/1EmLql15mCr8uA34-QXQ2Xi6iQJZKlttG",
       videos: [""]
     }
+  },
+  {
+    id: "first-aids",
+    name: "First Aids",
+    code: "02-0X-000XX",
+    description: "Basic first aid techniques, emergency response procedures, and life-saving interventions.",
+    creditHours: 2,
+    prerequisites: [],
+    category: "faculty",
+    materials: {
+      lectures: "https://drive.google.com/drive/folders/17Nw4Ek9RxMEAf1s2H1Kkqe37Yc7PwUqc",
+      summaries: "https://drive.google.com/drive/folders/1e4o5muXHUkxZ10e8idAEe8l546IRqQBh",
+      sections: "",
+      exams: "https://drive.google.com/drive/folders/1XURifRPnlFi7wOcminFvg6EVKxYsFOBS",
+      videos: [""]
+    }
+  },
+  {
+    id: "modern-tourism",
+    name: "Modern Tourism",
+    code: "ME_009",
+    description: "Study of modern tourism principles, sustainable travel, hospitality, and economic impact.",
+    creditHours: 2,
+    prerequisites: [],
+    category: "faculty",
+    materials: {
+      lectures: "https://drive.google.com/drive/folders/1luEP1w4OZmcg05AwcncvVo2ZOi3LIToY",
+      summaries: "https://drive.google.com/drive/folders/1oCwYJQD0kkOWrECJCFI0uXXv4lpLmklI",
+      sections: "https://drive.google.com/drive/folders/1vmVid1wxaYgp9cLalkWXA3pXzItuYvAa",
+      exams: "",
+      videos: [""]
+    }
+  },
+  {
+    id: "fitness-and-health",
+    name: "Fitness and Health",
+    code: "02-24-HS001",
+    description: "Physical fitness fundamentals, active healthy lifestyle promotion, exercise physiology, and wellness.",
+    creditHours: 2,
+    prerequisites: [],
+    category: "faculty",
+    materials: {
+      lectures: "https://drive.google.com/drive/folders/1aEW9G3GneVHEUPvCwKs2PiQ-kFEbvn5x",
+      summaries: "https://drive.google.com/drive/folders/13posL3y_6GC-0LnQakxkEVfbHnnSWur5",
+      sections: "",
+      exams: "https://drive.google.com/drive/folders/162Bx_kHSG2w1hsC-xEWGy3e2oMcGioh7",
+      videos: [""]
+    }
+  },
+  {
+    id: "economic-science",
+    name: "Economy Science",
+    code: "HE_005",
+    description: "Principles of micro and macro economics, market dynamics, and computational economic analysis.",
+    creditHours: 2,
+    prerequisites: [],
+    category: "faculty",
+    materials: {
+      lectures: "https://drive.google.com/drive/folders/1_Z4FSE1Dx0oJ9_nxbHoFvn1WP2wN-Iyd",
+      summaries: "https://drive.google.com/drive/folders/1qI0ElMk-nNfGv8hH9h3M51Mz9KvEKhIZ",
+      sections: "https://drive.google.com/drive/folders/1LuCRHkTxVc_uKOX7SdVEwcc0WrEL-n2D",
+      exams: "https://drive.google.com/drive/folders/1B_bMKIcqQ4t_PsxDR6-GMUWQOv67AvNK",
+      videos: [""]
+    }
+  },
+  {
+    id: "pet-handeling",
+    name: "Pet Handeling",
+    code: "PH_001",
+    description: "Veterinary principles, safe animal handling techniques, pet welfare, and behavioral management.",
+    creditHours: 2,
+    prerequisites: [],
+    category: "faculty",
+    materials: {
+      lectures: [
+        "https://drive.google.com/drive/folders/1XUbeT4ziAWio6R2Orj-FJogu2BAQKDDX",
+      ],
+      summaries: "https://drive.google.com/drive/folders/1mKEyk5nDDTEDJFzanmnswIKBZ4zOG2FT",
+      sections: "",
+      exams: "https://drive.google.com/drive/folders/1C_HB4TlRYX-EY03Bm0OnVXtysbx9Mj-q",
+      videos: [""]
+    }
+  },
+  {
+    id: "nutrition",
+    name: "Nutrition",
+    code: "02-0X-000XX",
+    description: "Human nutrition essentials, dietary planning, metabolic health, and nutritional wellness.",
+    creditHours: 2,
+    prerequisites: [],
+    category: "faculty",
+    materials: {
+      lectures: "https://drive.google.com/drive/folders/1NGdxbGGzU8U5OhAlZOQPHEc7a2J0b5VO",
+      summaries: "https://drive.google.com/drive/folders/1M8KKoO7JXWiyIW2ufLopc2q1OOnlRO2t",
+      sections: "",
+      exams: "",
+      videos: [""]
+    }
   }
 ]
 

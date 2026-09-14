@@ -121,9 +121,6 @@ function ProgramElectivesClient({ department }: { department: string }) {
               <Badge variant="outline" className="px-3.5 py-1.5 bg-secondary/10 text-secondary border-secondary/25 font-semibold text-xs rounded-full">
                 {programElectives.length} Department Electives
               </Badge>
-              <Badge variant="outline" className="px-3.5 py-1.5 bg-white/[0.03] border-white/10 text-muted-foreground text-xs rounded-full">
-                3 Credits Each
-              </Badge>
             </motion.div>
           </div>
 
@@ -193,14 +190,6 @@ function ProgramElectivesClient({ department }: { department: string }) {
                           >
                             4 Fixed Folders
                           </Badge>
-                          {subject.prerequisites && subject.prerequisites.length > 0 && (
-                            <Badge
-                              variant="outline"
-                              className="text-xs bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400"
-                            >
-                              Prereq: {subject.prerequisites.join(', ')}
-                            </Badge>
-                          )}
                         </div>
                       </CardContent>
                     </Card>

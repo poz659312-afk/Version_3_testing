@@ -820,23 +820,50 @@ export default function ProfilePage() {
         
         const dept = await accessor.getDepartment(key)
         if (dept) {
-          // Gather all subjects in department
+          // Gather all subjects in department (core + faculty electives + program electives)
           const allSubjects: any[] = []
           Object.entries(dept.levels).forEach(([levelNum, levelData]) => {
             const num = Number(levelNum)
             if (levelData.subjects) {
               if (levelData.subjects.term1) {
                 levelData.subjects.term1.forEach(s => {
-                  allSubjects.push({ ...s, level: num, term: 'term1' })
+                  allSubjects.push({ ...s, level: num, term: 'term1', category: 'compulsory' })
                 })
               }
               if (levelData.subjects.term2) {
                 levelData.subjects.term2.forEach(s => {
-                  allSubjects.push({ ...s, level: num, term: 'term2' })
+                  allSubjects.push({ ...s, level: num, term: 'term2', category: 'compulsory' })
                 })
               }
             }
           })
+
+          // Add Faculty Electives (متطلبات الكلية)
+          const { FACULTY_ELECTIVE_COURSES, getProgramElectivesForDepartment } = await import('@/lib/electives-data')
+          if (Array.isArray(FACULTY_ELECTIVE_COURSES)) {
+            FACULTY_ELECTIVE_COURSES.forEach(s => {
+              allSubjects.push({
+                ...s,
+                level: 'elective',
+                term: 'elective',
+                category: 'faculty'
+              })
+            })
+          }
+
+          // Add Program Electives (متطلبات القسم / البرنامج)
+          const progElectives = getProgramElectivesForDepartment(key)
+          if (Array.isArray(progElectives)) {
+            progElectives.forEach(s => {
+              allSubjects.push({
+                ...s,
+                level: 'elective',
+                term: 'elective',
+                category: 'program'
+              })
+            })
+          }
+
           setAllDepartmentSubjects(allSubjects)
 
           // Map user's registered courses in saved order
@@ -1609,7 +1636,16 @@ export default function ProfilePage() {
                             <div className="mb-4 relative z-10 border-b border-border pb-3">
                               <div className="flex justify-between items-start gap-2 mb-2">
                                 <h3 className="text-foreground font-outfit font-bold text-lg group-hover:text-primary transition-colors line-clamp-1 flex-1">
-                                  <Link href={`/specialization/${userDepartmentKey}/${subject.level}/${subject.id}`} className="hover:underline">
+                                  <Link 
+                                    href={
+                                      subject.category === 'faculty' 
+                                        ? `/specialization/${userDepartmentKey}/faculty-electives/${subject.id}` 
+                                        : subject.category === 'program' 
+                                        ? `/specialization/${userDepartmentKey}/program-electives/${subject.id}` 
+                                        : `/specialization/${userDepartmentKey}/${subject.level}/${subject.id}`
+                                    } 
+                                    className="hover:underline"
+                                  >
                                     {subject.name}
                                   </Link>
                                 </h3>
@@ -1654,7 +1690,11 @@ export default function ProfilePage() {
                                     {subject.creditHours} CR
                                   </span>
                                   <span className="text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-outfit font-bold border border-border/50">
-                                    Lvl {subject.level} • {subject.term === 'term1' ? 'T1' : 'T2'}
+                                    {subject.category === 'faculty'
+                                      ? 'Faculty Elective'
+                                      : subject.category === 'program'
+                                      ? 'Program Elective'
+                                      : `Lvl ${subject.level} • ${subject.term === 'term1' ? 'T1' : 'T2'}`}
                                   </span>
                                 </div>
                               </div>
@@ -1668,7 +1708,17 @@ export default function ProfilePage() {
                             {/* Material Links */}
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 relative z-10">
                               <Button asChild size="sm" variant="outline" className="h-9 rounded-md border text-primary font-outfit font-bold text-[11px] transition-all hover:bg-primary/10">
-                                <Link href={`/specialization/${userDepartmentKey}/${subject.level}/${subject.id}`}><GraduationCap className="w-3 h-3 mr-1" /> COURSE</Link>
+                                <Link 
+                                  href={
+                                    subject.category === 'faculty' 
+                                      ? `/specialization/${userDepartmentKey}/faculty-electives/${subject.id}` 
+                                      : subject.category === 'program' 
+                                      ? `/specialization/${userDepartmentKey}/program-electives/${subject.id}` 
+                                      : `/specialization/${userDepartmentKey}/${subject.level}/${subject.id}`
+                                  }
+                                >
+                                  <GraduationCap className="w-3 h-3 mr-1" /> COURSE
+                                </Link>
                               </Button>
                               {subject.materials.lectures && (Array.isArray(subject.materials.lectures) ? subject.materials.lectures.length > 0 : subject.materials.lectures.trim() !== '') && (
                                 <Button asChild size="sm" variant="default" className="h-9 rounded-md font-outfit font-bold text-[11px] transition-all">
@@ -1682,7 +1732,17 @@ export default function ProfilePage() {
                               )}
                               {(subjectsWithDbQuizzes.has(subject.id) || (subject.materials?.quizzes && subject.materials.quizzes.length > 0)) && (
                                 <Button asChild size="sm" variant="outline" className="h-9 rounded-md border text-primary font-outfit font-bold text-[11px] transition-all hover:bg-primary/10">
-                                  <Link href={`/specialization/${userDepartmentKey}/${subject.level}/${subject.id}?tab=quizzes`}><Trophy className="w-3 h-3 mr-1" /> QUIZZES</Link>
+                                  <Link 
+                                    href={
+                                      subject.category === 'faculty' 
+                                        ? `/specialization/${userDepartmentKey}/faculty-electives/${subject.id}?tab=quizzes` 
+                                        : subject.category === 'program' 
+                                        ? `/specialization/${userDepartmentKey}/program-electives/${subject.id}?tab=quizzes` 
+                                        : `/specialization/${userDepartmentKey}/${subject.level}/${subject.id}?tab=quizzes`
+                                    }
+                                  >
+                                    <Trophy className="w-3 h-3 mr-1" /> QUIZZES
+                                  </Link>
                                 </Button>
                               )}
                             </div>
@@ -1706,7 +1766,7 @@ export default function ProfilePage() {
                             Select <span className="text-primary">Department Subjects</span>
                           </DialogTitle>
                           <DialogDescription className="text-muted-foreground font-outfit">
-                            Select courses from the {userData.specialization} department. You can select up to 8 courses in total.
+                            Select courses from {userData.specialization} (including core courses, program electives, and faculty electives). You can select up to 8 courses in total.
                           </DialogDescription>
                         </DialogHeader>
  
@@ -1738,10 +1798,17 @@ export default function ProfilePage() {
                                 );
                               }
  
-                              // Group by level and term
+                              // Group by category, level, and term
                               const groups: { [key: string]: any[] } = {};
                               filtered.forEach(sub => {
-                                const groupKey = `Level ${sub.level} - ${sub.term === 'term1' ? 'Term 1' : 'Term 2'}`;
+                                let groupKey = '';
+                                if (sub.category === 'faculty') {
+                                  groupKey = '🏛️ Faculty Electives (متطلبات الكلية)';
+                                } else if (sub.category === 'program') {
+                                  groupKey = '🎯 Program Electives (متطلبات القسم / البرنامج)';
+                                } else {
+                                  groupKey = `📚 Level ${sub.level} - ${sub.term === 'term1' ? 'Term 1' : 'Term 2'}`;
+                                }
                                 if (!groups[groupKey]) groups[groupKey] = [];
                                 groups[groupKey].push(sub);
                               });
@@ -1797,7 +1864,13 @@ export default function ProfilePage() {
                                                 </span>
                                               </div>
                                               <a 
-                                                href={`/specialization/${userDepartmentKey}/${sub.level}/${sub.id}`}
+                                                href={
+                                                  sub.category === 'faculty' 
+                                                    ? `/specialization/${userDepartmentKey}/faculty-electives/${sub.id}` 
+                                                    : sub.category === 'program' 
+                                                    ? `/specialization/${userDepartmentKey}/program-electives/${sub.id}` 
+                                                    : `/specialization/${userDepartmentKey}/${sub.level}/${sub.id}`
+                                                }
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 onClick={(e) => e.stopPropagation()}
