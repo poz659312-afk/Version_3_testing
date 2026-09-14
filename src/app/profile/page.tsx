@@ -162,7 +162,7 @@ function ProgressDotPlot({ quizData }: { quizData: any[] }) {
 }
 
 // Helper function to extract Google Drive folder ID from URL and create internal drive link
-function createDriveLink(googleDriveUrl: string | string[] | undefined, driveId: string = 'ee201328c6b4'): string {
+function createDriveLink(googleDriveUrl: string | string[] | undefined, subjectName?: string): string {
   if (!googleDriveUrl) {
     return '#'
   }
@@ -174,7 +174,8 @@ function createDriveLink(googleDriveUrl: string | string[] | undefined, driveId:
   const folderIdMatch = url.match(/folders\/([a-zA-Z0-9_-]+)/)
   if (folderIdMatch && folderIdMatch[1]) {
     const folderId = folderIdMatch[1]
-    return `/drive/${driveId}/${folderId}`
+    const subjectParam = subjectName ? `?subject=${encodeURIComponent(subjectName)}` : ''
+    return `/drive/${folderId}${subjectParam}`
   }
   return url
 }
@@ -1722,12 +1723,12 @@ export default function ProfilePage() {
                               </Button>
                               {subject.materials.lectures && (Array.isArray(subject.materials.lectures) ? subject.materials.lectures.length > 0 : subject.materials.lectures.trim() !== '') && (
                                 <Button asChild size="sm" variant="default" className="h-9 rounded-md font-outfit font-bold text-[11px] transition-all">
-                                  <Link href={createDriveLink(subject.materials.lectures)}><BookOpen className="w-3 h-3 mr-1" /> LECTURES</Link>
+                                  <Link href={createDriveLink(subject.materials.lectures, subject.name)}><BookOpen className="w-3 h-3 mr-1" /> LECTURES</Link>
                                 </Button>
                               )}
                               {subject.materials.sections && (Array.isArray(subject.materials.sections) ? (subject.materials.sections as any).length > 0 : subject.materials.sections.trim() !== '') && (
                                 <Button asChild size="sm" variant="outline" className="h-9 rounded-md border text-primary font-outfit font-bold text-[11px] transition-all hover:bg-primary/10">
-                                  <Link href={createDriveLink(subject.materials.sections)}><FileText className="w-3 h-3 mr-1" /> SECTIONS</Link>
+                                  <Link href={createDriveLink(subject.materials.sections, subject.name)}><FileText className="w-3 h-3 mr-1" /> SECTIONS</Link>
                                 </Button>
                               )}
                               {(subjectsWithDbQuizzes.has(subject.id) || (subject.materials?.quizzes && subject.materials.quizzes.length > 0)) && (

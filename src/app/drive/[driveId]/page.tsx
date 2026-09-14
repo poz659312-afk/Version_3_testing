@@ -662,13 +662,14 @@ export default function DriveRootPage() {
 
   const handleFolderClick = (folder: DriveFile) => {
     if (folder.mimeType.includes("folder")) {
+      const subjectParam = detectedSubject ? `?subject=${encodeURIComponent(detectedSubject)}` : "";
       // Generate a secure URL for the subfolder navigation
       const secureUrl = createSecureDriveUrl(actualDriveId!, folder.id);
       if (secureUrl) {
-        router.push(secureUrl);
+        router.push(`${secureUrl}${subjectParam}`);
       } else {
         // Fallback to original method if secure URL generation fails
-        router.push(`/drive/${actualDriveId}/${folder.id}`);
+        router.push(`/drive/${actualDriveId}/${folder.id}${subjectParam}`);
       }
     }
   };

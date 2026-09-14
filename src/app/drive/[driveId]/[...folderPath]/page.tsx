@@ -266,9 +266,18 @@ export default function DrivePage() {
   const querySubject = searchParams?.get("subject") || searchParams?.get("name")
   const detectedSubject = useMemo(() => {
     if (querySubject) return querySubject
-    if (urlParam) return getSubjectNameByDriveId(urlParam)
+    if (urlParam) {
+      const byDrive = getSubjectNameByDriveId(urlParam)
+      if (byDrive) return byDrive
+    }
+    if (folderPath && folderPath.length > 0) {
+      for (let i = folderPath.length - 1; i >= 0; i--) {
+        const bySub = getSubjectNameByDriveId(folderPath[i])
+        if (bySub) return bySub
+      }
+    }
     return null
-  }, [querySubject, urlParam])
+  }, [querySubject, urlParam, folderPath])
 
   const [files, setFiles] = useState<DriveFile[]>([])
   const [loading, setLoading] = useState(true)
@@ -559,14 +568,16 @@ export default function DrivePage() {
     }
   }
 
+  const subjectParam = detectedSubject ? `?subject=${encodeURIComponent(detectedSubject)}` : ""
+
   const handleFolderClick = (folder: DriveFile) => {
     if (folder.mimeType.includes("folder")) {
       const newPath = [...folderPath, folder.id]
       const secureUrl = createSecureDriveUrl(actualDriveId!, newPath.join("/"))
       if (secureUrl) {
-        router.push(secureUrl)
+        router.push(`${secureUrl}${subjectParam}`)
       } else {
-        router.push(`/drive/${urlParam}/${newPath.join("/")}`)
+        router.push(`/drive/${urlParam}/${newPath.join("/")}${subjectParam}`)
       }
     }
   }
@@ -589,16 +600,16 @@ export default function DrivePage() {
     if (breadcrumb.path.length === 0) {
       const secureUrl = createSecureDriveUrl(actualDriveId!)
       if (secureUrl) {
-        router.push(secureUrl)
+        router.push(`${secureUrl}${subjectParam}`)
       } else {
-        router.push(`/drive/${urlParam}`)
+        router.push(`/drive/${urlParam}${subjectParam}`)
       }
     } else {
       const secureUrl = createSecureDriveUrl(actualDriveId!, breadcrumb.path.join("/"))
       if (secureUrl) {
-        router.push(secureUrl)
+        router.push(`${secureUrl}${subjectParam}`)
       } else {
-        router.push(`/drive/${urlParam}/${breadcrumb.path.join("/")}`)
+        router.push(`/drive/${urlParam}/${breadcrumb.path.join("/")}${subjectParam}`)
       }
     }
   }
@@ -628,16 +639,16 @@ export default function DrivePage() {
       if (newPath.length === 0) {
         const secureUrl = createSecureDriveUrl(actualDriveId!)
         if (secureUrl) {
-          router.push(secureUrl)
+          router.push(`${secureUrl}${subjectParam}`)
         } else {
-          router.push(`/drive/${urlParam}`)
+          router.push(`/drive/${urlParam}${subjectParam}`)
         }
       } else {
         const secureUrl = createSecureDriveUrl(actualDriveId!, newPath.join("/"))
         if (secureUrl) {
-          router.push(secureUrl)
+          router.push(`${secureUrl}${subjectParam}`)
         } else {
-          router.push(`/drive/${urlParam}/${newPath.join("/")}`)
+          router.push(`/drive/${urlParam}/${newPath.join("/")}${subjectParam}`)
         }
       }
     }
