@@ -486,21 +486,6 @@ export const departmentData: { [key: string]: Department } = {
                 exams: "https://drive.google.com/drive/folders/1g8MeUv89wUc5meya3zO5_DBIIVvc4xu7?usp=drive_link"
               }
             },
-            {
-              id: "Dist-Processing",
-              name: "Dist Processing",
-              code: "02-24-00302",
-              description: "Explore distributed systems and parallel computing concepts",
-              creditHours: 3,
-              prerequisites: [],
-              materials: {
-                lectures: "https://drive.google.com/drive/folders/12niCwNHhJywcK8A9M6RsiY8mI9C2nxyN?usp=drive_link",
-                sections: "https://drive.google.com/drive/folders/1SHTshE8VjDQvZXAjlOf3uVNr7ntMx-2p?usp=drive_link",
-                videos: "",
-                summaries: "https://drive.google.com/drive/folders/1YJKn5zhVSV0YiAzfudohb8tO0IKawpKl?usp=drive_link",
-                exams: "https://drive.google.com/drive/folders/1tdG9OjPWoXds9z1fcJUXO2scrR1ZA4M6?usp=drive_link"
-              }
-            }
           ],
           term2: [
             {
@@ -548,66 +533,6 @@ export const departmentData: { [key: string]: Department } = {
                 exams: "https://drive.google.com/drive/folders/1FVBJtarizr-5ZQbTRMZ3CQ5YaQlyusOV?usp=drive_link"
               }
             },
-            {
-              id: "advanced-database-systems",
-              name: "Advanced Database Systems",
-              code: "02-24-0X0XX",
-              description: "In-depth study of database architectures and management",
-              creditHours: 3,
-              prerequisites: ["intro-databases"],
-              materials: {
-                lectures: "https://drive.google.com/drive/folders/1YJH8ZbwFduRGbS07v6nx2R66pqMkumyP?usp=drive_link",
-                sections: "https://drive.google.com/drive/folders/1OyFp7CRNwfGf3vHNbp5ZOTaDcwkCPFA7?usp=drive_link",
-                videos: "",
-                summaries: "https://drive.google.com/drive/folders/1trcmqKcpKAGVRNmGBl2ROkGeoete6nkO?usp=drive_link",
-                exams: "https://drive.google.com/drive/folders/1HalJgXrhKyBuFRHGj0Z9WZiUQWr7GlmJ?usp=drive_link"
-              }
-            },
-            {
-              id: "operating-systems",
-              name: "Operating Systems",
-              code: "02-24-0X0XX",
-              description: "Fundamentals of operating system design and implementation",
-              creditHours: 3,
-              prerequisites: ["intro-computer-systems","programming-1"],
-              materials: {
-                lectures: "https://drive.google.com/drive/folders/1EpjZJ58zbMRasFyPNySKmYJuG7b-Bvua?usp=drive_link",
-                sections: "https://drive.google.com/drive/folders/1HYW5w49TuHYjjaQolerASZ58QYH7HH48?usp=drive_link",
-                videos: "",
-                summaries: "https://drive.google.com/drive/folders/12S1na5_w3TYn6AP1xGcz4-MVK4PwuSm_?usp=drive_link",
-                exams: "https://drive.google.com/drive/folders/1aS7ppq-ylQ6EAtYcndF_S5dijNKSqY25?usp=drive_link"
-              }
-            },
-            {
-              id: "software-engineering",
-              name: "Software Engineering",
-              code: "02-24-0X0XX",
-              description: "Fundamentals of software engineering principles and practices",
-              creditHours: 3,
-              prerequisites: ["programming-2"],
-              materials: {
-                lectures: "https://drive.google.com/drive/folders/14kAH4lk1B8-_gt_jwGIVlPYDXUMqh9Ot?usp=drive_link",
-                sections: "https://drive.google.com/drive/folders/1UAOG8RjkjYK5P5qCAKIhgp-YMCqkbzGc?usp=drive_link",
-                videos: "",
-                summaries: "https://drive.google.com/drive/folders/13C2VAFVwKFB2HHckl27f9dXfInsApJ_z?usp=drive_link",
-                exams: "https://drive.google.com/drive/folders/1gEr6m40AJJ1aawnhCMavO_2KCCKvAS8j?usp=drive_link"
-              }
-            },
-            {
-              id: "System-Analysis-Design",
-              name: "System Analysis and Design",
-              code: "02-24-00304",
-              description: "Explore system development life cycle and design methodologies",
-              creditHours: 3,
-              prerequisites: ["intro-computer-systems","data-structures-algorithms"],
-              materials: {
-                lectures: "https://drive.google.com/drive/folders/1XCk9YrAfo70uV9hfybNmvLvJn69lHFiZ?usp=drive_link",
-                sections: "https://drive.google.com/drive/folders/10ttM9_EA2sEAPEj6_fsyKEaxP2AItRcP?usp=drive_link",
-                videos: [""],
-                summaries: "https://drive.google.com/drive/folders/1-TUMlZnHgD5NSahx8Ab5v8tR4gBZ_bGy?usp=drive_link",
-                exams: "https://drive.google.com/drive/folders/1bYzfL7z6ce132wz5wAEYxWP29khFj81k?usp=drive_link"
-              }
-            }
           ]
         }
       },

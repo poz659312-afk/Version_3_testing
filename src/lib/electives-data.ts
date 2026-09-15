@@ -20,11 +20,11 @@ export const FACULTY_ELECTIVE_COURSES: Omit<ElectiveSubject, 'departmentKey'>[] 
     prerequisites: ["Programming II"],
     category: "faculty",
     materials: {
-      lectures: "https://drive.google.com/drive/folders/1GOdeH-HBvJ_ct_RCT4gMVoi4-PGpye8J",
-      summaries: "https://drive.google.com/drive/folders/1_lccRyAW8-sBOpM9vPj9XxCz_kAzjQ4J",
-      sections: "https://drive.google.com/drive/folders/1BG28sICVi_POn3i-1dMwLplsStImUnjh",
-      exams: "https://drive.google.com/drive/folders/1LNl1Cmkn9Bafw9fMJ8k29PfYhc_d0Vv3",
-      videos: [""]
+      lectures: "https://drive.google.com/drive/folders/14kAH4lk1B8-_gt_jwGIVlPYDXUMqh9Ot?usp=drive_link",
+      sections: "https://drive.google.com/drive/folders/1UAOG8RjkjYK5P5qCAKIhgp-YMCqkbzGc?usp=drive_link",
+      videos: "",
+      summaries: "https://drive.google.com/drive/folders/13C2VAFVwKFB2HHckl27f9dXfInsApJ_z?usp=drive_link",
+      exams: "https://drive.google.com/drive/folders/1gEr6m40AJJ1aawnhCMavO_2KCCKvAS8j?usp=drive_link"
     }
   },
   {
@@ -35,12 +35,12 @@ export const FACULTY_ELECTIVE_COURSES: Omit<ElectiveSubject, 'departmentKey'>[] 
     creditHours: 3,
     prerequisites: [],
     category: "faculty",
-    materials: {
-      lectures: "https://drive.google.com/drive/folders/12ogVgB4XNe-YzWvGl5ZKSkvkQTE_yg0o",
-      summaries: "https://drive.google.com/drive/folders/1PGhA60Wgx-C6wMydA46y3XUyq6i_0ueq",
-      sections: "https://drive.google.com/drive/folders/1PVlYVluCMDtHHDx-mCS48v7HTg4RPAcW",
-      exams: "https://drive.google.com/drive/folders/1ncNfgjQtqLMJiXdQhlo_cbPbOZDSzBRN",
-      videos: [""]
+      materials: {
+      lectures: "https://drive.google.com/drive/folders/1XCk9YrAfo70uV9hfybNmvLvJn69lHFiZ?usp=drive_link",
+      sections: "https://drive.google.com/drive/folders/10ttM9_EA2sEAPEj6_fsyKEaxP2AItRcP?usp=drive_link",
+      videos: [""],
+      summaries: "https://drive.google.com/drive/folders/1-TUMlZnHgD5NSahx8Ab5v8tR4gBZ_bGy?usp=drive_link",
+      exams: "https://drive.google.com/drive/folders/1bYzfL7z6ce132wz5wAEYxWP29khFj81k?usp=drive_link"
     }
   },
   {
@@ -68,11 +68,11 @@ export const FACULTY_ELECTIVE_COURSES: Omit<ElectiveSubject, 'departmentKey'>[] 
     prerequisites: ["Intro to Computer System", "Data Structures and Algorithms"],
     category: "faculty",
     materials: {
-      lectures: "https://drive.google.com/drive/folders/1i1wTyiuHhlNBsYI3pUjmVKUTQCb1BUKa",
-      summaries: "https://drive.google.com/drive/folders/1svZqZR_BVrhwqx4Fz9lfNH_Gbv_3Zx0R",
-      sections: "https://drive.google.com/drive/folders/1vQB0XI2iW7jHxwDY6Yz4UEKOIRvwEdl-",
-      exams: "https://drive.google.com/drive/folders/1cvM2PvXOIdy-LkxjdUN0iGzEXKMDBioM",
-      videos: [""]
+      lectures: "https://drive.google.com/drive/folders/12niCwNHhJywcK8A9M6RsiY8mI9C2nxyN?usp=drive_link",
+      sections: "https://drive.google.com/drive/folders/1SHTshE8VjDQvZXAjlOf3uVNr7ntMx-2p?usp=drive_link",
+      videos: "",
+      summaries: "https://drive.google.com/drive/folders/1YJKn5zhVSV0YiAzfudohb8tO0IKawpKl?usp=drive_link",
+      exams: "https://drive.google.com/drive/folders/1tdG9OjPWoXds9z1fcJUXO2scrR1ZA4M6?usp=drive_link"
     }
   },
   {
@@ -116,11 +116,11 @@ export const FACULTY_ELECTIVE_COURSES: Omit<ElectiveSubject, 'departmentKey'>[] 
     prerequisites: ["Intro to Computer System", "Programming I"],
     category: "faculty",
     materials: {
-      lectures: "https://drive.google.com/drive/folders/1prGZYVyW0IhNbwpk3YteCyU8U0tPdPUI",
-      summaries: "https://drive.google.com/drive/folders/104t-hBK8y_zdKkn4y81zliBFdVH4JkbR",
-      sections: "https://drive.google.com/drive/folders/1zwc_naH1LNxrQNlg2dk1G9NBpc49CsnO",
-      exams: "https://drive.google.com/drive/folders/1wHkM2YBUVyIgWxZHY3TRgjHvrQr2vNmm",
-      videos: [""]
+      lectures: "https://drive.google.com/drive/folders/1EpjZJ58zbMRasFyPNySKmYJuG7b-Bvua?usp=drive_link",
+      sections: "https://drive.google.com/drive/folders/1HYW5w49TuHYjjaQolerASZ58QYH7HH48?usp=drive_link",
+      videos: "",
+      summaries: "https://drive.google.com/drive/folders/12S1na5_w3TYn6AP1xGcz4-MVK4PwuSm_?usp=drive_link",
+      exams: "https://drive.google.com/drive/folders/1aS7ppq-ylQ6EAtYcndF_S5dijNKSqY25?usp=drive_link"
     }
   },
   {
@@ -357,11 +357,11 @@ export const DEPARTMENT_PROGRAM_ELECTIVES: Record<string, Omit<ElectiveSubject, 
       creditHours: 3,
       prerequisites: ["Introduction to Databases"],
       materials: {
-        lectures: "https://drive.google.com/drive/folders/17ze_MwFMFb2q6OaJ1bddqx9mmBy1MSqM",
-        summaries: "https://drive.google.com/drive/folders/10C_0cr4m-XcNoMuPyVF6OdDNQ0f73rq5",
-        sections: "https://drive.google.com/drive/folders/1Eyse8kVSNhnSDW8NqbGqZWwN_JrCiTnO",
-        exams: "https://drive.google.com/drive/folders/13JYyGQwvrn_KDG2_GeJiJ491FekT4Fvd",
-        videos: [""]
+        lectures: "https://drive.google.com/drive/folders/1YJH8ZbwFduRGbS07v6nx2R66pqMkumyP?usp=drive_link",
+        sections: "https://drive.google.com/drive/folders/1OyFp7CRNwfGf3vHNbp5ZOTaDcwkCPFA7?usp=drive_link",
+        videos: "",
+        summaries: "https://drive.google.com/drive/folders/1trcmqKcpKAGVRNmGBl2ROkGeoete6nkO?usp=drive_link",
+        exams: "https://drive.google.com/drive/folders/1HalJgXrhKyBuFRHGj0Z9WZiUQWr7GlmJ?usp=drive_link"
       }
     }
   ],
