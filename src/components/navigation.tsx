@@ -267,7 +267,7 @@ export default function Navigation() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768 && isOpen) {
+      if (window.innerWidth >= 1024 && isOpen) {
         setIsOpen(false)
       }
     }
@@ -314,12 +314,12 @@ export default function Navigation() {
                : "border-border/40"
            } ${mounted ? 'animate-nav-enter' : 'opacity-0'}`}
         >
-          <div className="container h-full mx-auto px-4 md:px-6 relative">
+          <div className="w-full h-full px-4 sm:px-6 relative">
             <div className="flex items-center justify-between h-full">
               {/* Logo */}
-              <div className="flex items-center gap-3">
-                <Link href="/" className="flex items-center gap-3">
-                  <div className="rounded-full bg-primary">
+              <div className="flex items-center gap-3 shrink-0">
+                <Link href="/" className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+                  <div className="rounded-full bg-primary shrink-0">
                     <div className="relative">
                       <Image
                         src="/images/chameleon.png"
@@ -330,36 +330,36 @@ export default function Navigation() {
                       />
                     </div>
                   </div>
-                  <span className="text-xl font-bold hidden sm:inline-block md:inline-block">Chameleon</span>
+                  <span className="text-lg xl:text-xl font-bold hidden sm:inline-block tracking-tight">Chameleon</span>
                 </Link>
-                <div className="hidden md:block">
+                <div className="hidden xl:block">
                   <NavClock />
                 </div>
               </div>
 
             {/* Mobile Clock (Centered) */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:hidden pointer-events-none">
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:hidden pointer-events-none">
               <NavClock />
             </div>
 
             {/* Desktop Navigation — pure CSS entrance */}
             <nav
-              className={`hidden md:flex items-center gap-8 ${mounted ? 'animate-nav-items' : 'opacity-0'}`}
+              className={`hidden lg:flex items-center gap-3 xl:gap-6 2xl:gap-8 ${mounted ? 'animate-nav-items' : 'opacity-0'}`}
             >
               {navItems.map((item) => (
-                <div key={item.name}>
+                <div key={item.name} className="shrink-0">
                   {item.name === "Specializations" ? (
                     <div className="relative">
                       <button
                         onClick={() => setIsSpecializationsOpen(!isSpecializationsOpen)}
-                        className="flex items-center gap-2 text-foreground/70 transition-colors duration-200 group specializations-trigger"
+                        className="flex items-center gap-1.5 xl:gap-2 text-foreground/70 hover:text-foreground transition-colors duration-200 group specializations-trigger whitespace-nowrap text-sm font-medium"
                       >
-                        <item.icon className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-                        <span className="relative">
+                        <item.icon className="w-4 h-4 shrink-0 group-hover:scale-110 transition-transform duration-300" />
+                        <span className="relative whitespace-nowrap">
                           {item.name}
                           <span className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-primary to-secondary rounded-full w-0 group-hover:w-full transition-all duration-300" />
                         </span>
-                        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isSpecializationsOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${isSpecializationsOpen ? 'rotate-180' : ''}`} />
                       </button>
 
                       {isSpecializationsOpen && (
@@ -384,14 +384,14 @@ export default function Navigation() {
                       )}
                     </div>
                   ) : item.name === "Explo" ? (
-                    <a href={item.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-foreground/70 transition-colors duration-200 group">
-                      <item.icon className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-                      <span className="relative">{item.name}</span>
+                    <a href={item.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 xl:gap-2 text-foreground/70 hover:text-foreground transition-colors duration-200 group whitespace-nowrap text-sm font-medium">
+                      <item.icon className="w-4 h-4 shrink-0 group-hover:scale-110 transition-transform duration-300" />
+                      <span className="relative whitespace-nowrap">{item.name}</span>
                     </a>
                   ) : (
-                    <Link href={item.href} onClick={(e) => handleNavigation(e, item)} className="flex items-center gap-2 text-foreground/70 transition-colors duration-200 group">
-                      <item.icon className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-                      <span className="relative">{item.name}</span>
+                    <Link href={item.href} onClick={(e) => handleNavigation(e, item)} className="flex items-center gap-1.5 xl:gap-2 text-foreground/70 hover:text-foreground transition-colors duration-200 group whitespace-nowrap text-sm font-medium">
+                      <item.icon className="w-4 h-4 shrink-0 group-hover:scale-110 transition-transform duration-300" />
+                      <span className="relative whitespace-nowrap">{item.name}</span>
                     </Link>
                   )}
                 </div>
@@ -399,12 +399,12 @@ export default function Navigation() {
             </nav>
 
             {/* Auth Buttons or User Profile */}
-            <div className={`hidden md:flex items-center gap-4 ${mounted ? 'animate-nav-auth' : 'opacity-0'}`}>
+            <div className={`hidden lg:flex items-center gap-2.5 xl:gap-4 shrink-0 ${mounted ? 'animate-nav-auth' : 'opacity-0'}`}>
               {user ? (
-                  <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2.5 xl:gap-4 shrink-0">
                   <NotificationBell />
-                  <Link href="/profile" className="relative group">
-                    <AvatarBorder isAdmin={user.is_admin} className="w-10 h-10 shadow-lg">
+                  <Link href="/profile" className="relative group shrink-0">
+                    <AvatarBorder isAdmin={user.is_admin} className="w-9 h-9 xl:w-10 xl:h-10 shadow-lg">
                       {user.profile_image ? (
                         <Image
                           src={user.profile_image}
@@ -425,7 +425,8 @@ export default function Navigation() {
                     variant="outline"
                     size="icon"
                     onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                    className="rounded-full shadow-sm"
+                    className="rounded-full shadow-sm w-9 h-9 shrink-0"
+                    aria-label="Toggle theme"
                   >
                     <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-primary" />
                     <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-primary" />
@@ -433,32 +434,48 @@ export default function Navigation() {
                   </Button>
                 </div>
               ) : (
-                <>
+                <div className="flex items-center gap-2 shrink-0">
                   <Link href="/auth/signin">
                     <Button
                       variant="ghost"
-                      className="text-foreground/70 hover: hover:bg-muted transition-all duration-300"
+                      size="sm"
+                      className="text-foreground/70 hover:text-foreground hover:bg-muted transition-all duration-300 text-sm whitespace-nowrap"
                     >
-                      <LogIn className="w-4 h-4 mr-2" />
+                      <LogIn className="w-4 h-4 mr-1.5 shrink-0" />
                       Login
                     </Button>
                   </Link>
                   <Link href="/auth/signup">
-                    <Button className="bg-primary text-primary-foreground hover:bg-primary/90 border-0 shadow-lg transition-all duration-300">
-                      <UserPlus className="w-4 h-4 mr-2" />
+                    <Button
+                      size="sm"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 border-0 shadow-lg transition-all duration-300 text-sm whitespace-nowrap"
+                    >
+                      <UserPlus className="w-4 h-4 mr-1.5 shrink-0" />
                       Sign Up
                     </Button>
                   </Link>
-                </>
+                </div>
               )}
             </div>
 
             {/* Mobile Actions */}
-            <div className="md:hidden flex items-center gap-1.5 z-50">
+            <div className="lg:hidden flex items-center gap-1.5 sm:gap-2 z-50 shrink-0">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="rounded-full shadow-sm w-8 h-8 sm:w-9 sm:h-9 shrink-0"
+                aria-label="Toggle theme"
+              >
+                <Sun className="h-3.5 w-3.5 sm:h-4 sm:w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-primary" />
+                <Moon className="absolute h-3.5 w-3.5 sm:h-4 sm:w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-primary" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
               {user && <NotificationBell />}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className=" p-1.5 hover:bg-muted rounded-lg transition-colors duration-300"
+                className="p-1.5 hover:bg-muted rounded-lg transition-colors duration-300"
+                aria-label="Toggle menu"
               >
                 <div className="w-6 h-6 flex items-center justify-center">
                   {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -473,7 +490,7 @@ export default function Navigation() {
         {isOpen && (
           <div
             ref={(el) => { mobileMenuRef.current = el }}
-            className="absolute pointer-events-auto mt-4 top-full left-0 right-0 md:hidden max-h-[calc(100vh-6rem)] overflow-y-auto custom-scrollbar overscroll-contain rounded-[2rem] border border-border/40 bg-background/95 shadow-2xl z-[100] animate-mobile-menu-enter"
+            className="absolute pointer-events-auto mt-4 top-full left-0 right-0 lg:hidden max-h-[calc(100vh-6rem)] overflow-y-auto custom-scrollbar overscroll-contain rounded-[2rem] border border-border/40 bg-background/95 shadow-2xl z-[100] animate-mobile-menu-enter"
             data-lenis-prevent="true"
           >
             <div className="container mx-auto px-4 py-6">
@@ -611,6 +628,28 @@ export default function Navigation() {
                       </Link>
                     </div>
                   )}
+
+                  {/* Mobile Drawer Theme Mode Toggle */}
+                  <div className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors mt-2 border-t border-border/40 pt-3">
+                    <span className="text-foreground/70 font-medium text-sm">Appearance</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                      className="rounded-full gap-2 text-xs"
+                      aria-label="Toggle theme"
+                    >
+                      {theme === 'dark' ? (
+                        <>
+                          <Moon className="w-3.5 h-3.5 text-primary" /> Dark
+                        </>
+                      ) : (
+                        <>
+                          <Sun className="w-3.5 h-3.5 text-primary" /> Light
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

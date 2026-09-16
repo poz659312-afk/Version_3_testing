@@ -612,8 +612,6 @@ export default function CertificationsPage() {
 
   return (
     <div className="min-h-screen  relative overflow-hidden">
-      <Navigation />
-
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 opacity-40 blur-xl md:blur-3xl bg-gradient-to-tr from-amber-500/10 via-primary/5 to-transparent" />

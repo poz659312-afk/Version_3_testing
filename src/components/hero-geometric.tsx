@@ -99,7 +99,7 @@ export default function HeroGeometric({
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,hsl(var(--background))_90%)] pointer-events-none z-0" />
 
       <div className="relative z-10 container mx-auto px-4 md:px-6">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center">
           <div
             className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8 md:mb-12 transition-all duration-700 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
@@ -122,10 +122,10 @@ export default function HeroGeometric({
             className={`transition-all duration-700 ease-out delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
           >
-            <h1 className="text-[65px] md:text-[120px] font-bold mb-6 md:mb-8 tracking-tight leading-tight" >
-              <span style={{ WebkitTextStroke: '1.2px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 dark:border-white/10 border-black/10">{title1}</span>
+            <h1 className="text-[clamp(2.5rem,8.5vw,7.5rem)] font-bold mb-6 md:mb-8 tracking-tight leading-tight">
+              <span style={{ WebkitTextStroke: '1.5px currentColor', WebkitTextFillColor: 'transparent' }} className="transition-all duration-1000 dark:border-white/10 border-black/10 whitespace-nowrap inline-block">{title1}</span>
               <br />
-              <span className="relative inline-block mt-2 md:mt-4 px-6 md:px-10 py-2 md:py-4">
+              <span className="relative inline-block mt-2 md:mt-4 px-4 sm:px-6 md:px-10 py-1.5 sm:py-2 md:py-4 max-w-full whitespace-nowrap">
                 {/* Glitchy Highlight Background */}
                 <span
                   className="absolute inset-0 bg-background shadow-2xl -rotate-2"
@@ -134,7 +134,7 @@ export default function HeroGeometric({
                   }}
                 />
                 <span className={cn(
-                  "relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-secondary drop-shadow-[0_0_30px_rgba(var(--primary),0.3)]",
+                  "relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-secondary drop-shadow-[0_0_30px_rgba(var(--primary),0.3)] whitespace-nowrap inline-block",
                   pacifico.className,
                 )}>
                   {title2}
