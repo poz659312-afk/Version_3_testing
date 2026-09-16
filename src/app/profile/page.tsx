@@ -31,6 +31,7 @@ import { useColorTheme } from "@/components/color-theme-provider"
 import AvatarBorder from "@/components/visual-effects/avatar-border"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { getInventoryItemMeta } from "@/lib/store-catalog"
 
 
 
@@ -1755,36 +1756,7 @@ export default function ProfilePage() {
                     ) : (
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                         {userData.inventory.map((itemId: string, index: number) => {
-                          // Dynamic mapping based on the items in store/page.tsx
-                          const badgeInfo: Record<string, any> = {
-                            "badge-quiz-master": { name: "Quiz Master", color: "text-yellow-500 bg-yellow-500/10", icon: Award },
-                            "badge-speed-demon": { name: "Speed Demon", color: "text-blue-500 bg-blue-500/10", icon: Zap },
-                            "badge-pro-solver": { name: "Pro Solver", color: "text-purple-500 bg-purple-500/10", icon: ShieldCheck },
-                            "theme-diamond": { name: "Diamond Theme", color: "text-cyan-500 bg-cyan-500/10", icon: Sparkles },
-                            "theme-luxury": { name: "Luxury Theme", color: "text-amber-500 bg-amber-500/10", icon: Palette },
-                            "theme-cyberpunk": { name: "Cyberpunk Theme", color: "text-pink-500 bg-pink-500/10", icon: Zap },
-                            "theme-matrix": { name: "Matrix Theme", color: "text-green-500 bg-green-500/10", icon: Shield },
-                            "theme-nebula": { name: "Nebula Theme", color: "text-purple-500 bg-purple-500/10", icon: Sparkles },
-                            "theme-glacier": { name: "Glacier Theme", color: "text-sky-400 bg-sky-400/10", icon: Star },
-                            "theme-solaris": { name: "Solaris Supernova Theme", color: "text-amber-400 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-rose-500/20 border border-amber-500/40", icon: Sun },
-                            // Custom Borders
-                            "border-gold-glow": { name: "Gold Glow Border", color: "text-amber-500 bg-amber-500/10", icon: Award },
-                            "border-cosmic-aurora": { name: "Cosmic Aurora Border", color: "text-emerald-400 bg-emerald-400/10", icon: Palette },
-                            "border-neon-glitch": { name: "Cyber Neon Border", color: "text-cyan-500 bg-cyan-500/10", icon: Zap },
-                            "border-infernal-flame": { name: "Infernal Flame Border", color: "text-orange-500 bg-orange-500/10", icon: Flame },
-                            "border-sakura-bloom": { name: "Sakura Blossom Border", color: "text-pink-500 bg-pink-500/10", icon: Flower2 },
-                            "border-arcane-portal": { name: "Arcane Void Portal", color: "text-purple-500 bg-purple-500/10", icon: Orbit },
-                            "border-electric-storm": { name: "Electric Storm Border", color: "text-cyan-500 bg-cyan-500/10", icon: Zap },
-                            // Custom Cursors
-                            "cursor-sparkles": { name: "Cosmic Sparkles Cursor", color: "text-blue-400 bg-blue-400/10", icon: Sparkles },
-                            "cursor-cyber-cross": { name: "Cyber Cross Cursor", color: "text-green-400 bg-green-400/10", icon: MousePointer },
-                            "cursor-bubbles": { name: "Bouncing Bubbles Cursor", color: "text-sky-400 bg-sky-400/10", icon: Sparkles },
-                            "cursor-inferno": { name: "Infernal Embers Trail", color: "text-orange-400 bg-orange-400/10", icon: Flame },
-                            "cursor-sakura": { name: "Sakura Drift Trail", color: "text-pink-400 bg-pink-400/10", icon: Flower2 },
-                            "cursor-lightning": { name: "Electric Arc Trail", color: "text-cyan-400 bg-cyan-400/10", icon: Zap },
-                            "cursor-matrix": { name: "Quantum Matrix Trail", color: "text-emerald-400 bg-emerald-400/10", icon: Terminal }
-                          }
-                          const info = badgeInfo[itemId] || { name: "Achievement", color: "text-muted-foreground bg-muted", icon: Trophy }
+                          const info = getInventoryItemMeta(itemId)
                           const Icon = info.icon
 
                           return (
