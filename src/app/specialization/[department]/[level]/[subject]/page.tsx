@@ -746,7 +746,7 @@ async function SubjectContent({ params }: Props) {
         description: `Prerequisite required by academic regulations: ${clean}`,
         creditHours: 3,
         materials: { lectures: null, sections: null, summaries: null, videos: null, exams: null }
-      } as Subject;
+      } as unknown as Subject;
     });
 
     return list.length > 0 ? list : null;

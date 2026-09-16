@@ -1,4 +1,5 @@
 import bylawData from "../../data/faculty_courses_bylaw.json";
+import programElectivesData from "../../data/program_electives.json";
 
 export interface MarlineUserSession {
   auth_id?: string;
@@ -119,6 +120,30 @@ export function formatLevelArabic(level?: number | null, status?: string): { lev
 }
 
 /**
+ * Returns formatted string of program electives for a specific department.
+ */
+export function getProgramElectivesForDepartment(deptSlug: string): string | null {
+  const deptData = (programElectivesData as any).by_department?.[deptSlug];
+  if (!deptData || !deptData.electives || deptData.electives.length === 0) return null;
+
+  const lines: string[] = [
+    `🎯 [المقررات الاختيارية التخصصية (Program Electives) المعتمدة لقسم ${deptData.department_name_ar} (${deptData.department_name_en})]:`,
+    `⚠️ تنبيه لائحي إلزامي: يدرس الطالب **4 مقررات تخصص اختيارية فقط بواقع 12 ساعة معتمدة** بالسنة الرابعة (مقررين بالترم السابع ومقررين بالترم الثامن)، بالإضافة إلى **4 مقررات كلية اختيارية فقط بواقع 12 ساعة معتمدة** بالسنة الثالثة. يُحظر تماماً القول بأن المطلوب 6 مقررات أو 18 ساعة.`
+  ];
+
+  for (const c of deptData.electives) {
+    const prereqs = c.prerequisites_details && c.prerequisites_details.length > 0
+      ? c.prerequisites_details.map((p: any) => `${p.name_ar || p.name_en} (${p.code})`).join(' و ')
+      : (c.prerequisites && c.prerequisites.length > 0 ? c.prerequisites.join(' و ') : 'لا يوجد متطلب سابق');
+
+    const alt = c.alternative_code ? ` / ${c.alternative_code}` : '';
+    lines.push(`  • ${c.name_ar || c.name_en} (${c.name_en}) [كود: ${c.code}${alt} | ${c.credit_hours} ساعات] - المتطلب: ${prereqs}`);
+  }
+
+  return lines.join('\n');
+}
+
+/**
  * Retrieves official curriculum courses for student's specific level and department.
  */
 export function getStudentCoursesForLevel(level: number | null | undefined, specialization: string): string | null {
@@ -172,6 +197,15 @@ export function getStudentCoursesForLevel(level: number | null | undefined, spec
     lines.push(`• الفصل الدراسي رقم ${semNum} (إجمالي ${semData.credits} ساعة):`);
     for (const c of semData.courses || []) {
       lines.push(formatCourseItem(c));
+    }
+  }
+
+  // If student is level 3 or 4, append the actual program electives catalog for their department
+  if (level >= 3) {
+    const electivesSnippet = getProgramElectivesForDepartment(dept.slug);
+    if (electivesSnippet) {
+      lines.push('');
+      lines.push(electivesSnippet);
     }
   }
 

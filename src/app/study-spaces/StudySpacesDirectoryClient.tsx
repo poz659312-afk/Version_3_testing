@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -21,13 +21,17 @@ import {
   Layers,
   Share2,
   Copy,
-  Check
+  Check,
+  Clock,
+  Filter,
+  ArrowUpDown,
+  RotateCcw,
+  CheckCircle2
 } from 'lucide-react'
 import { createStudyRoom, joinStudyRoom, getRoomsList } from './actions'
 import { cn } from '@/lib/utils'
 import { ShinyText } from '@/components/react-bits/shiny-text'
 import { createClient } from '@/lib/supabase/client'
-
 
 interface StudySpacesDirectoryClientProps {
   initialRooms: any[]
@@ -45,10 +49,33 @@ export default function StudySpacesDirectoryClient({
   const router = useRouter()
   const [rooms, setRooms] = useState<any[]>(initialRooms)
   const [searchQuery, setSearchQuery] = useState('')
+  const [tabFilter, setTabFilter] = useState<'all' | 'joined' | 'pending'>('all')
+  const [sortBy, setSortBy] = useState<'newest' | 'members' | 'name'>('newest')
+  const [selectedLevel, setSelectedLevel] = useState<string>('all')
   const [isPending, setIsPending] = useState(false)
   const [openCreate, setOpenCreate] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [copiedRoomId, setCopiedRoomId] = useState<string | null>(null)
+
+  const formatRelativeTime = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr)
+      const now = new Date()
+      const diffMs = Math.max(0, now.getTime() - d.getTime())
+      const diffMins = Math.floor(diffMs / 60000)
+      const diffHours = Math.floor(diffMins / 60)
+      const diffDays = Math.floor(diffHours / 24)
+
+      if (diffMins < 1) return 'Just now'
+      if (diffMins < 60) return `${diffMins}m ago`
+      if (diffHours < 24) return `${diffHours}h ago`
+      if (diffDays === 1) return 'Yesterday'
+      if (diffDays < 7) return `${diffDays}d ago`
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    } catch {
+      return ''
+    }
+  }
 
   const handleCopyRoomLink = (e: React.MouseEvent, roomId: string) => {
     e.stopPropagation()
@@ -143,13 +170,47 @@ export default function StudySpacesDirectoryClient({
   const [newRoomVisibility, setNewRoomVisibility] = useState('public')
   const [newRoomJoinApproval, setNewRoomJoinApproval] = useState('immediate')
 
-  // Filter rooms by search query
-  const filteredRooms = rooms.filter(room => 
-    (room.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (room.description && room.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  )
   const joinedRoomsCount = rooms.filter((room) => room.joinStatus === 'approved').length
   const pendingRoomsCount = rooms.filter((room) => room.joinStatus === 'pending').length
+
+  // Filter and sort rooms dynamically
+  const filteredRooms = useMemo(() => {
+    return rooms
+      .filter((room) => {
+        if (tabFilter === 'joined' && room.joinStatus !== 'approved') return false
+        if (tabFilter === 'pending' && room.joinStatus !== 'pending') return false
+
+        if (selectedLevel !== 'all' && String(room.level_num) !== selectedLevel) return false
+
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase()
+          const matchesName = (room.name || '').toLowerCase().includes(q)
+          const matchesDesc = (room.description || '').toLowerCase().includes(q)
+          const matchesSpec = (room.specialization || '').toLowerCase().includes(q)
+          if (!matchesName && !matchesDesc && !matchesSpec) return false
+        }
+
+        return true
+      })
+      .sort((a, b) => {
+        if (sortBy === 'members') {
+          return (b.memberCount || 0) - (a.memberCount || 0)
+        }
+        if (sortBy === 'name') {
+          return (a.name || '').localeCompare(b.name || '')
+        }
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+      })
+  }, [rooms, tabFilter, selectedLevel, searchQuery, sortBy])
+
+  const handleResetFilters = () => {
+    setSearchQuery('')
+    setTabFilter('all')
+    setSelectedLevel('all')
+    setSortBy('newest')
+  }
+
+  const isFiltered = searchQuery.trim() !== '' || tabFilter !== 'all' || selectedLevel !== 'all' || sortBy !== 'newest'
 
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -344,57 +405,134 @@ export default function StudySpacesDirectoryClient({
             )}
           </div>
 
+          {/* Interactive Metric Filter Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="relative overflow-hidden rounded-xl border border-border/60 dark:border-white/[0.05] bg-card/60 dark:bg-white/[0.02] backdrop-blur-md p-5 transition-all duration-300 hover:border-indigo-500/30 hover:bg-muted/50 dark:hover:bg-white/[0.04] hover:-translate-y-0.5 group shadow-sm">
+            <button
+              type="button"
+              onClick={() => setTabFilter('all')}
+              className={cn(
+                "relative overflow-hidden rounded-2xl border p-5 text-left transition-all duration-300 group shadow-sm cursor-pointer",
+                tabFilter === 'all'
+                  ? "border-indigo-500/60 bg-indigo-500/10 shadow-indigo-500/10 ring-2 ring-indigo-500/30 -translate-y-0.5"
+                  : "border-border/60 dark:border-white/[0.05] bg-card/60 dark:bg-white/[0.02] hover:border-indigo-500/30 hover:bg-muted/50 dark:hover:bg-white/[0.04] hover:-translate-y-0.5"
+              )}
+            >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Matched Spaces</p>
-                  <p className="text-3xl font-black text-foreground mt-1 tracking-tight">{filteredRooms.length}</p>
+                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
+                    <span>All Available</span>
+                    {tabFilter === 'all' && <Badge className="bg-indigo-500/20 text-indigo-400 text-[9px] py-0 px-1.5 h-4 border-none">Active</Badge>}
+                  </p>
+                  <p className="text-3xl font-black text-foreground mt-1 tracking-tight">{rooms.length}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/15 group-hover:scale-105 transition-transform duration-300">
                   <BookOpen className="w-5 h-5" />
                 </div>
               </div>
-            </div>
+            </button>
 
-            <div className="relative overflow-hidden rounded-xl border border-border/60 dark:border-white/[0.05] bg-card/60 dark:bg-white/[0.02] backdrop-blur-md p-5 transition-all duration-300 hover:border-purple-500/30 hover:bg-muted/50 dark:hover:bg-white/[0.04] hover:-translate-y-0.5 group shadow-sm">
+            <button
+              type="button"
+              onClick={() => setTabFilter('joined')}
+              className={cn(
+                "relative overflow-hidden rounded-2xl border p-5 text-left transition-all duration-300 group shadow-sm cursor-pointer",
+                tabFilter === 'joined'
+                  ? "border-purple-500/60 bg-purple-500/10 shadow-purple-500/10 ring-2 ring-purple-500/30 -translate-y-0.5"
+                  : "border-border/60 dark:border-white/[0.05] bg-card/60 dark:bg-white/[0.02] hover:border-purple-500/30 hover:bg-muted/50 dark:hover:bg-white/[0.04] hover:-translate-y-0.5"
+              )}
+            >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Joined by You</p>
+                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
+                    <span>Joined by You</span>
+                    {tabFilter === 'joined' && <Badge className="bg-purple-500/20 text-purple-400 text-[9px] py-0 px-1.5 h-4 border-none">Active</Badge>}
+                  </p>
                   <p className="text-3xl font-black text-foreground mt-1 tracking-tight">{joinedRoomsCount}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/15 group-hover:scale-105 transition-transform duration-300">
                   <Users className="w-5 h-5" />
                 </div>
               </div>
-            </div>
+            </button>
 
-            <div className="relative overflow-hidden rounded-xl border border-border/60 dark:border-white/[0.05] bg-card/60 dark:bg-white/[0.02] backdrop-blur-md p-5 transition-all duration-300 hover:border-blue-500/30 hover:bg-muted/50 dark:hover:bg-white/[0.04] hover:-translate-y-0.5 group shadow-sm">
+            <button
+              type="button"
+              onClick={() => setTabFilter('pending')}
+              className={cn(
+                "relative overflow-hidden rounded-2xl border p-5 text-left transition-all duration-300 group shadow-sm cursor-pointer",
+                tabFilter === 'pending'
+                  ? "border-amber-500/60 bg-amber-500/10 shadow-amber-500/10 ring-2 ring-amber-500/30 -translate-y-0.5"
+                  : "border-border/60 dark:border-white/[0.05] bg-card/60 dark:bg-white/[0.02] hover:border-amber-500/30 hover:bg-muted/50 dark:hover:bg-white/[0.04] hover:-translate-y-0.5"
+              )}
+            >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Pending Requests</p>
+                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1.5">
+                    <span>Pending Requests</span>
+                    {tabFilter === 'pending' && <Badge className="bg-amber-500/20 text-amber-400 text-[9px] py-0 px-1.5 h-4 border-none">Active</Badge>}
+                  </p>
                   <p className="text-3xl font-black text-foreground mt-1 tracking-tight">{pendingRoomsCount}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/15 group-hover:scale-105 transition-transform duration-300">
+                <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/15 group-hover:scale-105 transition-transform duration-300">
                   <Sparkles className="w-5 h-5" />
                 </div>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-border/80 dark:border-white/[0.06] bg-card/40 backdrop-blur-sm p-4">
-        <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-center">
-          <div className="relative flex-1 group">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-            <Input 
-              placeholder="Search study spaces by name or description..." 
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="pl-9 bg-background/80 border-border/80 focus-visible:ring-primary/50 text-sm h-10 transition-all duration-200"
-            />
+      {/* Filter and Search Bar Section */}
+      <section className="rounded-2xl border border-border/80 dark:border-white/[0.06] bg-card/40 backdrop-blur-sm p-4 sm:p-5 space-y-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          {/* Segmented Filter Pills */}
+          <div className="flex items-center gap-1.5 p-1 bg-muted/50 dark:bg-white/[0.03] rounded-xl border border-border/60 overflow-x-auto">
+            <button
+              type="button"
+              onClick={() => setTabFilter('all')}
+              className={cn(
+                "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none",
+                tabFilter === 'all'
+                  ? "bg-card text-foreground shadow-xs border border-border/60"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <BookOpen className="w-3.5 h-3.5 text-primary" />
+              All Spaces
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-muted text-muted-foreground font-bold">{rooms.length}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTabFilter('joined')}
+              className={cn(
+                "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none",
+                tabFilter === 'joined'
+                  ? "bg-card text-foreground shadow-xs border border-border/60"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              My Spaces
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/10 text-emerald-400 font-bold">{joinedRoomsCount}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTabFilter('pending')}
+              className={cn(
+                "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap select-none",
+                tabFilter === 'pending'
+                  ? "bg-card text-foreground shadow-xs border border-border/60"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Clock className="w-3.5 h-3.5 text-amber-400" />
+              Pending Approval
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/10 text-amber-400 font-bold">{pendingRoomsCount}</span>
+            </button>
           </div>
+
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline" className="text-[11px] h-7 px-2.5 border-border bg-muted/40 flex items-center gap-1.5 text-muted-foreground font-medium">
               <GraduationCap className="w-3.5 h-3.5 text-primary" />
@@ -406,15 +544,80 @@ export default function StudySpacesDirectoryClient({
             </Badge>
           </div>
         </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="relative flex-1 group">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Input 
+              placeholder="Search by space name, topic, or description..." 
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="pl-9 bg-background/80 border-border/80 focus-visible:ring-primary/50 text-xs sm:text-sm h-10 transition-all duration-200 rounded-xl"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Level Filter Dropdown */}
+            <select
+              value={selectedLevel}
+              onChange={e => setSelectedLevel(e.target.value)}
+              className="bg-card border border-border/80 rounded-xl px-3 py-2 text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-primary h-10 cursor-pointer"
+            >
+              <option value="all">All Levels</option>
+              <option value="1">Level 1</option>
+              <option value="2">Level 2</option>
+              <option value="3">Level 3</option>
+              <option value="4">Level 4</option>
+            </select>
+
+            {/* Sort Dropdown */}
+            <select
+              value={sortBy}
+              onChange={e => setSortBy(e.target.value as any)}
+              className="bg-card border border-border/80 rounded-xl px-3 py-2 text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-primary h-10 cursor-pointer"
+            >
+              <option value="newest">Newest First</option>
+              <option value="members">Most Members</option>
+              <option value="name">Alphabetical</option>
+            </select>
+
+            {isFiltered && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleResetFilters}
+                className="h-10 px-2.5 text-xs text-muted-foreground hover:text-foreground rounded-xl cursor-pointer"
+                title="Reset all filters"
+              >
+                <RotateCcw className="w-3.5 h-3.5 mr-1" />
+                Reset
+              </Button>
+            )}
+          </div>
+        </div>
       </section>
 
+      {/* Rooms Grid or Empty State */}
       {filteredRooms.length === 0 ? (
         <Card className="bg-card border-border shadow-md py-16 sm:py-20 flex flex-col items-center justify-center text-center rounded-2xl">
           <BookOpen className="w-12 h-12 text-muted-foreground/40 mb-4" />
           <CardTitle className="text-lg sm:text-xl font-bold text-foreground">No Study Spaces Found</CardTitle>
           <CardDescription className="text-xs sm:text-sm text-muted-foreground max-w-sm mt-1">
-            There are no active study spaces matching your search. Create the first space to study with your classmates!
+            {isFiltered
+              ? 'No study spaces match your active filters and search query.'
+              : 'There are no active study spaces right now. Check back soon or request your space!'}
           </CardDescription>
+          {isFiltered && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleResetFilters}
+              className="mt-4 text-xs font-semibold rounded-xl cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
+              Clear Filters
+            </Button>
+          )}
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
@@ -423,21 +626,13 @@ export default function StudySpacesDirectoryClient({
               key={room.id}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
+              transition={{ duration: 0.3, delay: index * 0.04 }}
               className="h-full"
             >
               <div
                 role="button"
                 tabIndex={0}
-                aria-label={`${room.name}. Specialization: ${room.specialization}. Level ${room.level_num}. Member count: ${room.memberCount}. Status: ${
-                  room.joinStatus === 'approved'
-                    ? 'Joined. Click to enter.'
-                    : room.joinStatus === 'pending'
-                      ? 'Pending approval.'
-                      : room.join_approval === 'requires_approval'
-                        ? 'Requires approval. Click to request access.'
-                        : 'Public group. Click to join.'
-                }`}
+                aria-label={`${room.name}. Specialization: ${room.specialization}. Level ${room.level_num}. Member count: ${room.memberCount}.`}
                 onClick={() => handleJoinRoom(room.id, room.name, room.isJoined, room.joinStatus)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -445,14 +640,37 @@ export default function StudySpacesDirectoryClient({
                     handleJoinRoom(room.id, room.name, room.isJoined, room.joinStatus);
                   }
                 }}
-                className="relative overflow-hidden rounded-2xl h-full flex flex-col justify-between group cursor-pointer border border-border/50 dark:border-white/[0.06] bg-card/45 dark:bg-[#0c0816]/50 backdrop-blur-xl hover:border-primary/50 hover:bg-muted/40 dark:hover:bg-[#0f0a1c]/60 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none hover:-translate-y-1 transition-all duration-300 ease-out shadow-md hover:shadow-2xl hover:shadow-primary/5"
+                className={cn(
+                  "relative overflow-hidden rounded-2xl h-full flex flex-col justify-between group cursor-pointer border backdrop-blur-xl transition-all duration-300 ease-out shadow-md hover:shadow-2xl hover:-translate-y-1 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none",
+                  room.joinStatus === 'approved'
+                    ? "border-emerald-500/20 hover:border-emerald-500/50 bg-card/50 dark:bg-[#0c0816]/60 hover:bg-muted/40"
+                    : room.joinStatus === 'pending'
+                      ? "border-amber-500/20 hover:border-amber-500/50 bg-card/50 dark:bg-[#0c0816]/60 hover:bg-muted/40"
+                      : "border-border/50 dark:border-white/[0.06] hover:border-primary/50 bg-card/45 dark:bg-[#0c0816]/50 hover:bg-muted/40"
+                )}
               >
                 <div className="flex flex-col h-full justify-between p-6 relative z-10">
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-base font-bold group-hover:text-primary transition-colors line-clamp-1 text-foreground">
-                        {room.name}
-                      </h3>
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <h3 className="text-base font-bold group-hover:text-primary transition-colors line-clamp-1 text-foreground">
+                            {room.name}
+                          </h3>
+                          {room.joinStatus === 'approved' && (
+                            <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[9px] py-0 px-1.5 h-4 font-bold flex items-center gap-1 shrink-0">
+                              <CheckCircle2 className="w-2.5 h-2.5" />
+                              Joined
+                            </Badge>
+                          )}
+                          {room.joinStatus === 'pending' && (
+                            <Badge className="bg-amber-500/15 text-amber-400 border-amber-500/30 text-[9px] py-0 px-1.5 h-4 font-bold flex items-center gap-1 shrink-0">
+                              <Clock className="w-2.5 h-2.5" />
+                              Pending
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
                       <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           type="button"
@@ -477,7 +695,7 @@ export default function StudySpacesDirectoryClient({
                     </p>
                   </div>
                   
-                  <div className="my-4 flex flex-wrap gap-1.5">
+                  <div className="my-3.5 flex flex-wrap gap-1.5">
                     <Badge variant="outline" className="text-[9px] py-0 h-4 border-indigo-500/20 bg-indigo-500/5 text-indigo-400 font-semibold">
                       {room.specialization}
                     </Badge>
@@ -501,15 +719,16 @@ export default function StudySpacesDirectoryClient({
                   <div className="w-full h-px bg-border/60 dark:bg-white/[0.06] my-2" />
 
                   <div className="pt-2 flex flex-row items-center justify-between gap-3">
-                    <span className="text-[10px] text-muted-foreground" suppressHydrationWarning>
-                      Created {new Date(room.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    <span className="text-[10px] text-muted-foreground flex items-center gap-1" suppressHydrationWarning>
+                      <Clock className="w-3 h-3 text-muted-foreground/60" />
+                      {formatRelativeTime(room.created_at)}
                     </span>
                     <div className={cn(
                       "inline-flex items-center justify-center rounded-lg text-xs font-semibold h-8 px-3 transition-all duration-300 border shadow-xs select-none",
                       room.joinStatus === 'approved'
-                        ? "border-border bg-muted/30 dark:border-white/[0.08] dark:bg-white/[0.02] text-foreground group-hover:bg-primary group-hover:text-white group-hover:border-primary"
+                        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500"
                         : room.joinStatus === 'pending'
-                          ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
+                          ? "border-amber-500/30 bg-amber-500/15 text-amber-400"
                           : "border-primary bg-primary text-primary-foreground group-hover:shadow-md group-hover:shadow-primary/20"
                     )}>
                       {room.joinStatus === 'approved' ? (
@@ -536,3 +755,4 @@ export default function StudySpacesDirectoryClient({
     </div>
   )
 }
+

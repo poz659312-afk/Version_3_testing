@@ -1,0 +1,2579 @@
+{
+  "metadata": {
+    "title": "FCDS Program & Faculty Electives Catalog",
+    "description": "Comprehensive, verified program electives for all 6 departments and faculty electives from FCDS bylaws and electives-data",
+    "total_departments": 6,
+    "updated_at": "2026-09-16T11:23:56.783Z"
+  },
+  "by_department": {
+    "computing-data-sciences": {
+      "department_slug": "computing-data-sciences",
+      "department_code": "01",
+      "department_name_ar": "الحوسبة وعلوم البيانات",
+      "department_name_en": "Computing and Data Sciences",
+      "electives_count": 8,
+      "electives": [
+        {
+          "code": "02-24-01409",
+          "alternative_code": "02-24-01401",
+          "id": "convex-optimization",
+          "name_en": "Convex Optimization",
+          "name_ar": "الأمثلية المحدبة",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Theory and applications of convex optimization in data science, machine learning, and signal processing.",
+          "prerequisites": [
+            "02-24-00101",
+            "02-24-00203",
+            "02-24-01201"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00101",
+              "name_en": "Linear Algebra",
+              "name_ar": "الجبر الخطي"
+            },
+            {
+              "code": "02-24-00203",
+              "name_en": "Numerical Computations",
+              "name_ar": "الحسابات العددية"
+            },
+            {
+              "code": "02-24-01201",
+              "name_en": "Advanced Calculus",
+              "name_ar": "تفاضل وتكامل متقدم"
+            }
+          ],
+          "department_slug": "computing-data-sciences",
+          "department_name_ar": "الحوسبة وعلوم البيانات",
+          "department_name_en": "Computing and Data Sciences",
+          "department_code": "01"
+        },
+        {
+          "code": "02-24-01410",
+          "alternative_code": "02-24-01402",
+          "id": "combinatorial-optimization",
+          "name_en": "Non-Linear and Combinatorial Optimization",
+          "name_ar": "الأمثلية غير الخطية والتوافقية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Techniques for discrete, integer, and non-linear optimization problems.",
+          "prerequisites": [
+            "02-24-00101",
+            "02-24-00108"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00101",
+              "name_en": "Linear Algebra",
+              "name_ar": "الجبر الخطي"
+            },
+            {
+              "code": "02-24-00108",
+              "name_en": "Data Structures and Algorithms",
+              "name_ar": "هياكل البيانات والخوارزميات"
+            }
+          ],
+          "department_slug": "computing-data-sciences",
+          "department_name_ar": "الحوسبة وعلوم البيانات",
+          "department_name_en": "Computing and Data Sciences",
+          "department_code": "01"
+        },
+        {
+          "code": "02-24-01411",
+          "alternative_code": "02-24-01403",
+          "id": "multivariate-statistical-analysis",
+          "name_en": "Multivariate Statistical Analysis",
+          "name_ar": "التحليل الإحصائي متعدد المتغيرات",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Statistical methods for analyzing multidimensional data sets, PCA, factor analysis, and MANOVA.",
+          "prerequisites": [
+            "02-24-00201"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00201",
+              "name_en": "Probability and Statistics II",
+              "name_ar": "الاحتمالات والإحصاء 2"
+            }
+          ],
+          "department_slug": "computing-data-sciences",
+          "department_name_ar": "الحوسبة وعلوم البيانات",
+          "department_name_en": "Computing and Data Sciences",
+          "department_code": "01"
+        },
+        {
+          "code": "02-24-01412",
+          "alternative_code": "02-24-01404",
+          "id": "bayesian-statistics",
+          "name_en": "Bayesian Statistics",
+          "name_ar": "الإحصاء البيزي",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Bayesian inference, Markov Chain Monte Carlo (MCMC), prior-posterior calculations, and Bayesian models.",
+          "prerequisites": [
+            "02-24-00201"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00201",
+              "name_en": "Probability and Statistics II",
+              "name_ar": "الاحتمالات والإحصاء 2"
+            }
+          ],
+          "department_slug": "computing-data-sciences",
+          "department_name_ar": "الحوسبة وعلوم البيانات",
+          "department_name_en": "Computing and Data Sciences",
+          "department_code": "01"
+        },
+        {
+          "code": "02-24-01413",
+          "alternative_code": "02-24-01405",
+          "id": "data-compression-techniques",
+          "name_en": "Data Compression Techniques",
+          "name_ar": "تقنيات ضغط البيانات",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Lossless and lossy data compression algorithms, entropy coding, Huffman, LZW, and transform coding.",
+          "prerequisites": [
+            "02-24-00108"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00108",
+              "name_en": "Data Structures and Algorithms",
+              "name_ar": "هياكل البيانات والخوارزميات"
+            }
+          ],
+          "department_slug": "computing-data-sciences",
+          "department_name_ar": "الحوسبة وعلوم البيانات",
+          "department_name_en": "Computing and Data Sciences",
+          "department_code": "01"
+        },
+        {
+          "code": "02-24-01414",
+          "alternative_code": "02-24-01406",
+          "id": "concurrent-algorithms",
+          "name_en": "Concurrent Algorithms and Data Structures",
+          "name_ar": "خوارزميات وهياكل بيانات متزامنة",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Multi-threaded and lock-free data structures, synchronization primitives, and memory models.",
+          "prerequisites": [
+            "02-24-00108"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00108",
+              "name_en": "Data Structures and Algorithms",
+              "name_ar": "هياكل البيانات والخوارزميات"
+            }
+          ],
+          "department_slug": "computing-data-sciences",
+          "department_name_ar": "الحوسبة وعلوم البيانات",
+          "department_name_en": "Computing and Data Sciences",
+          "department_code": "01"
+        },
+        {
+          "code": "02-24-01415",
+          "alternative_code": "02-24-01407",
+          "id": "distributed-database-systems",
+          "name_en": "Distributed Database Systems",
+          "name_ar": "نظم قواعد البيانات الموزعة",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Architecture, query optimization, concurrency control, and replication in distributed DBMS.",
+          "prerequisites": [
+            "02-24-00202"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00202",
+              "name_en": "Introduction to Databases",
+              "name_ar": "مقدمة إلى قواعد البيانات"
+            }
+          ],
+          "department_slug": "computing-data-sciences",
+          "department_name_ar": "الحوسبة وعلوم البيانات",
+          "department_name_en": "Computing and Data Sciences",
+          "department_code": "01"
+        },
+        {
+          "code": "02-24-01416",
+          "alternative_code": "02-24-01408",
+          "id": "advanced-database-systems",
+          "name_en": "Advanced Database Systems",
+          "name_ar": "نظم قواعد البيانات المتقدمة",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "NoSQL, graph databases, column-store engines, indexing, and high-performance transaction processing.",
+          "prerequisites": [
+            "02-24-00202"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00202",
+              "name_en": "Introduction to Databases",
+              "name_ar": "مقدمة إلى قواعد البيانات"
+            }
+          ],
+          "department_slug": "computing-data-sciences",
+          "department_name_ar": "الحوسبة وعلوم البيانات",
+          "department_name_en": "Computing and Data Sciences",
+          "department_code": "01"
+        }
+      ]
+    },
+    "business-analytics": {
+      "department_slug": "business-analytics",
+      "department_code": "02",
+      "department_name_ar": "تحليلات الأعمال",
+      "department_name_en": "Business Analytics",
+      "electives_count": 10,
+      "electives": [
+        {
+          "code": "02-24-02409",
+          "alternative_code": null,
+          "id": "human-computer-interaction",
+          "name_en": "Human Computer Interaction",
+          "name_ar": "التفاعل بين الإنسان والحاسوب",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Human Computer Interaction elective course for Business Analytics",
+          "prerequisites": [
+            "02-24-02203"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-02203",
+              "name_en": "System Analysis & Design",
+              "name_ar": "تحليل وتصميم النظم"
+            }
+          ],
+          "department_slug": "business-analytics",
+          "department_name_ar": "تحليلات الأعمال",
+          "department_name_en": "Business Analytics",
+          "department_code": "02"
+        },
+        {
+          "code": "02-24-02410",
+          "alternative_code": null,
+          "id": "gamification-and-games-development",
+          "name_en": "Gamification and Games Development",
+          "name_ar": "التلعيب وتطوير الألعاب",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Gamification and Games Development elective course for Business Analytics",
+          "prerequisites": [
+            "02-24-00110"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00110",
+              "name_en": "Programming II",
+              "name_ar": "برمجة 2"
+            }
+          ],
+          "department_slug": "business-analytics",
+          "department_name_ar": "تحليلات الأعمال",
+          "department_name_en": "Business Analytics",
+          "department_code": "02"
+        },
+        {
+          "code": "02-24-02411",
+          "alternative_code": "02-24-02403",
+          "id": "technology-trends-innovation",
+          "name_en": "Technology Trends and Innovation",
+          "name_ar": "اتجاهات التكنولوجيا والابتكار",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Emerging technological paradigms, disruptive innovations, and tech adoption in modern enterprises.",
+          "prerequisites": [],
+          "prerequisites_details": [],
+          "department_slug": "business-analytics",
+          "department_name_ar": "تحليلات الأعمال",
+          "department_name_en": "Business Analytics",
+          "department_code": "02"
+        },
+        {
+          "code": "02-24-02412",
+          "alternative_code": "02-24-02404",
+          "id": "gis-spatial-data-mining",
+          "name_en": "GIS and Spatial Data Mining",
+          "name_ar": "نظم المعلومات الجغرافية والتنقيب عن البيانات المكانية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Geographic Information Systems, spatial data analysis, geospatial clustering, and location intelligence.",
+          "prerequisites": [
+            "02-24-00206"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00206",
+              "name_en": "Data Mining and Analytics",
+              "name_ar": "تنقيب وتحليلات البيانات"
+            }
+          ],
+          "department_slug": "business-analytics",
+          "department_name_ar": "تحليلات الأعمال",
+          "department_name_en": "Business Analytics",
+          "department_code": "02"
+        },
+        {
+          "code": "02-24-02413",
+          "alternative_code": "02-24-02405",
+          "id": "managing-technology-projects",
+          "name_en": "Managing Technology Projects",
+          "name_ar": "إدارة مشروعات التكنولوجيا",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Project management methodologies (PMP, Agile/Scrum), resource allocation, risk and cost management.",
+          "prerequisites": [],
+          "prerequisites_details": [],
+          "department_slug": "business-analytics",
+          "department_name_ar": "تحليلات الأعمال",
+          "department_name_en": "Business Analytics",
+          "department_code": "02"
+        },
+        {
+          "code": "02-24-02414",
+          "alternative_code": "02-24-02406",
+          "id": "smart-cities-e-government",
+          "name_en": "Smart Cities and E-Government",
+          "name_ar": "المدن الذكية والحكومة الإلكترونية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Digital public services, urban IoT data ecosystems, citizen engagement, and smart infrastructure analytics.",
+          "prerequisites": [
+            "02-24-02402"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-02402",
+              "name_en": "Data and IT Governance",
+              "name_ar": "حوكمة تكنولوجيا المعلومات والبيانات"
+            }
+          ],
+          "department_slug": "business-analytics",
+          "department_name_ar": "تحليلات الأعمال",
+          "department_name_en": "Business Analytics",
+          "department_code": "02"
+        },
+        {
+          "code": "02-24-02415",
+          "alternative_code": "02-24-02407",
+          "id": "digital-transformation-economics",
+          "name_en": "Digital Transformation and Digital Economics",
+          "name_ar": "التحول الرقمي والاقتصاد الرقمي",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Economic models of digital platforms, network effects, marketplace dynamics, and business transformation.",
+          "prerequisites": [
+            "02-24-02402"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-02402",
+              "name_en": "Data and IT Governance",
+              "name_ar": "حوكمة تكنولوجيا المعلومات والبيانات"
+            }
+          ],
+          "department_slug": "business-analytics",
+          "department_name_ar": "تحليلات الأعمال",
+          "department_name_en": "Business Analytics",
+          "department_code": "02"
+        },
+        {
+          "code": "02-24-02416",
+          "alternative_code": "02-24-02408",
+          "id": "manufacturing-analytics",
+          "name_en": "Manufacturing Analytics",
+          "name_ar": "تحليلات التصنيع",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Industry 4.0, smart factory data analytics, quality control, and predictive maintenance.",
+          "prerequisites": [
+            "02-24-00206"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00206",
+              "name_en": "Data Mining and Analytics",
+              "name_ar": "تنقيب وتحليلات البيانات"
+            }
+          ],
+          "department_slug": "business-analytics",
+          "department_name_ar": "تحليلات الأعمال",
+          "department_name_en": "Business Analytics",
+          "department_code": "02"
+        },
+        {
+          "code": "02-24-02417",
+          "alternative_code": "02-24-02409",
+          "id": "predictive-analytics",
+          "name_en": "Predictive Analytics",
+          "name_ar": "التحليلات التنبؤية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Advanced forecasting, regression, decision trees, and customer lifetime value modeling.",
+          "prerequisites": [
+            "02-24-00206",
+            "02-24-02204"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00206",
+              "name_en": "Data Mining and Analytics",
+              "name_ar": "تنقيب وتحليلات البيانات"
+            },
+            {
+              "code": "02-24-02204",
+              "name_en": "Financial Planning and Analysis",
+              "name_ar": "التخطيط والتحليل المالي"
+            }
+          ],
+          "department_slug": "business-analytics",
+          "department_name_ar": "تحليلات الأعمال",
+          "department_name_en": "Business Analytics",
+          "department_code": "02"
+        },
+        {
+          "code": "02-24-02418",
+          "alternative_code": "02-24-02410",
+          "id": "nlp-semantic-analysis",
+          "name_en": "NLP and Semantic Analysis",
+          "name_ar": "معالجة اللغات الطبيعية والتحليل الدلالي",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Text mining, sentiment analysis, opinion mining, and topic modeling for market intelligence.",
+          "prerequisites": [
+            "02-24-02403"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-02403",
+              "name_en": "Information Retrieval",
+              "name_ar": "استرجاع المعلومات"
+            }
+          ],
+          "department_slug": "business-analytics",
+          "department_name_ar": "تحليلات الأعمال",
+          "department_name_en": "Business Analytics",
+          "department_code": "02"
+        }
+      ]
+    },
+    "artificial-intelligence": {
+      "department_slug": "artificial-intelligence",
+      "department_code": "03",
+      "department_name_ar": "النظم الذكية",
+      "department_name_en": "Intelligent Systems",
+      "electives_count": 8,
+      "electives": [
+        {
+          "code": "02-24-03409",
+          "alternative_code": "02-24-03401",
+          "id": "speech-recognition",
+          "name_en": "Speech Recognition",
+          "name_ar": "التعرف على الكلام",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Acoustic modeling, feature extraction (MFCCs), hidden Markov models, and deep neural speech synthesis.",
+          "prerequisites": [
+            "02-24-00204"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00204",
+              "name_en": "Cloud Computing",
+              "name_ar": "الحوسبة السحابية"
+            }
+          ],
+          "department_slug": "artificial-intelligence",
+          "department_name_ar": "النظم الذكية",
+          "department_name_en": "Intelligent Systems",
+          "department_code": "03"
+        },
+        {
+          "code": "02-24-03410",
+          "alternative_code": "02-24-03402",
+          "id": "natural-language-understanding",
+          "name_en": "Natural Language Understanding",
+          "name_ar": "فهم اللغات الطبيعية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Syntax parsing, semantic role labeling, transformer architectures, and generative language models.",
+          "prerequisites": [
+            "02-24-03403"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-03403",
+              "name_en": "Natural Language Processing",
+              "name_ar": "معالجة اللغات الطبيعية"
+            }
+          ],
+          "department_slug": "artificial-intelligence",
+          "department_name_ar": "النظم الذكية",
+          "department_name_en": "Intelligent Systems",
+          "department_code": "03"
+        },
+        {
+          "code": "02-24-03411",
+          "alternative_code": "02-24-03403",
+          "id": "embedded-machine-learning",
+          "name_en": "Embedded Machine Learning",
+          "name_ar": "تعلم الآلة المدمج",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "TinyML, edge computing, model quantization, pruning, and deploying neural networks to microcontrollers.",
+          "prerequisites": [
+            "02-24-00205",
+            "02-24-03304"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00205",
+              "name_en": "Machine Learning",
+              "name_ar": "تعلم الآلة"
+            },
+            {
+              "code": "02-24-03304",
+              "name_en": "Embedded Systems",
+              "name_ar": "النظم المدمجة"
+            }
+          ],
+          "department_slug": "artificial-intelligence",
+          "department_name_ar": "النظم الذكية",
+          "department_name_en": "Intelligent Systems",
+          "department_code": "03"
+        },
+        {
+          "code": "02-24-03412",
+          "alternative_code": "02-24-03404",
+          "id": "intelligence-technology-trends",
+          "name_en": "Intelligence Technology Trends",
+          "name_ar": "اتجاهات تكنولوجيا الذكاء",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Frontier AI research, neuro-symbolic AI, multimodal architectures, and autonomous agent systems.",
+          "prerequisites": [],
+          "prerequisites_details": [],
+          "department_slug": "artificial-intelligence",
+          "department_name_ar": "النظم الذكية",
+          "department_name_en": "Intelligent Systems",
+          "department_code": "03"
+        },
+        {
+          "code": "02-24-03413",
+          "alternative_code": "02-24-03405",
+          "id": "internet-of-things-ii",
+          "name_en": "Internet of Things II",
+          "name_ar": "إنترنت الأشياء 2",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Advanced IoT architectures, sensor networks, cloud-to-edge pipelines, and industrial IoT protocols.",
+          "prerequisites": [
+            "02-24-03402"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-03402",
+              "name_en": "Internet of Things I",
+              "name_ar": "إنترنت الأشياء 1"
+            }
+          ],
+          "department_slug": "artificial-intelligence",
+          "department_name_ar": "النظم الذكية",
+          "department_name_en": "Intelligent Systems",
+          "department_code": "03"
+        },
+        {
+          "code": "02-24-03414",
+          "alternative_code": "02-24-03406",
+          "id": "knowledge-base-ai",
+          "name_en": "Knowledge-Base AI",
+          "name_ar": "الذكاء الاصطناعي القائم على المعرفة",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Knowledge graphs, ontology engineering, reasoning engines, and expert system inference.",
+          "prerequisites": [
+            "02-24-00205"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00205",
+              "name_en": "Machine Learning",
+              "name_ar": "تعلم الآلة"
+            }
+          ],
+          "department_slug": "artificial-intelligence",
+          "department_name_ar": "النظم الذكية",
+          "department_name_en": "Intelligent Systems",
+          "department_code": "03"
+        },
+        {
+          "code": "02-24-03415",
+          "alternative_code": "02-24-03407",
+          "id": "virtual-reality-ai",
+          "name_en": "Virtual Reality",
+          "name_ar": "الواقع الافتراضي",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Immersion technologies, spatial tracking, 3D graphics pipelines, and AI-driven interactive environments.",
+          "prerequisites": [
+            "02-24-04401"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-04401",
+              "name_en": "Computer Graphics",
+              "name_ar": "رسومات الحاسب"
+            }
+          ],
+          "department_slug": "artificial-intelligence",
+          "department_name_ar": "النظم الذكية",
+          "department_name_en": "Intelligent Systems",
+          "department_code": "03"
+        },
+        {
+          "code": "02-24-03416",
+          "alternative_code": "02-24-03408",
+          "id": "game-theory",
+          "name_en": "Game Theory",
+          "name_ar": "نظرية الألعاب",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Strategic decision making, Nash equilibrium, multi-agent reinforcement learning, and mechanism design.",
+          "prerequisites": [
+            "02-24-03202"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-03202",
+              "name_en": "Operations Research",
+              "name_ar": "بحوث العمليات"
+            }
+          ],
+          "department_slug": "artificial-intelligence",
+          "department_name_ar": "النظم الذكية",
+          "department_name_en": "Intelligent Systems",
+          "department_code": "03"
+        }
+      ]
+    },
+    "media-analytics": {
+      "department_slug": "media-analytics",
+      "department_code": "04",
+      "department_name_ar": "تحليلات الوسائط الإعلامية",
+      "department_name_en": "Media Analytics",
+      "electives_count": 7,
+      "electives": [
+        {
+          "code": "02-24-04409",
+          "alternative_code": "02-24-04401",
+          "id": "interactive-media",
+          "name_en": "Interactive Media",
+          "name_ar": "الوسائط التفاعلية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Interactive narrative, user experience design, tangible interfaces, and multi-sensory computing.",
+          "prerequisites": [],
+          "prerequisites_details": [],
+          "department_slug": "media-analytics",
+          "department_name_ar": "تحليلات الوسائط الإعلامية",
+          "department_name_en": "Media Analytics",
+          "department_code": "04"
+        },
+        {
+          "code": "02-24-04410",
+          "alternative_code": "02-24-04402",
+          "id": "online-journalism",
+          "name_en": "Online Journalism",
+          "name_ar": "الصحافة الإلكترونية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Data-driven journalism, automated newsroom workflows, verification tools, and content analytics.",
+          "prerequisites": [],
+          "prerequisites_details": [],
+          "department_slug": "media-analytics",
+          "department_name_ar": "تحليلات الوسائط الإعلامية",
+          "department_name_en": "Media Analytics",
+          "department_code": "04"
+        },
+        {
+          "code": "02-24-04411",
+          "alternative_code": "02-24-04403",
+          "id": "computational-photography",
+          "name_en": "Computational Photography",
+          "name_ar": "التصوير الفوتوغرافي الحاسوبي",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Digital image formation, high dynamic range (HDR), depth estimation, and neural rendering.",
+          "prerequisites": [
+            "02-24-04203",
+            "02-24-04301"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-04203",
+              "name_en": "Digital Video Production",
+              "name_ar": "الإنتاج المرئي الرقمي"
+            },
+            {
+              "code": "02-24-04301",
+              "name_en": "Image Processing",
+              "name_ar": "معالجة الصور"
+            }
+          ],
+          "department_slug": "media-analytics",
+          "department_name_ar": "تحليلات الوسائط الإعلامية",
+          "department_name_en": "Media Analytics",
+          "department_code": "04"
+        },
+        {
+          "code": "02-24-04412",
+          "alternative_code": "02-24-04404",
+          "id": "computer-animations",
+          "name_en": "Computer Animations",
+          "name_ar": "الرسوم المتحركة بالحاسب",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Keyframing, kinematic rigging, motion capture processing, particle physics, and 3D simulation.",
+          "prerequisites": [
+            "02-24-04401"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-04401",
+              "name_en": "Computer Graphics",
+              "name_ar": "رسومات الحاسب"
+            }
+          ],
+          "department_slug": "media-analytics",
+          "department_name_ar": "تحليلات الوسائط الإعلامية",
+          "department_name_en": "Media Analytics",
+          "department_code": "04"
+        },
+        {
+          "code": "02-24-04413",
+          "alternative_code": null,
+          "id": "video-game-design-and-programming",
+          "name_en": "Video Game Design and Programming",
+          "name_ar": "تصميم وبرمجة ألعاب الفيديو",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Video Game Design and Programming elective course for Media Analytics",
+          "prerequisites": [
+            "02-24-00110",
+            "02-24-04401"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00110",
+              "name_en": "Programming II",
+              "name_ar": "برمجة 2"
+            },
+            {
+              "code": "02-24-04401",
+              "name_en": "Computer Graphics",
+              "name_ar": "رسومات الحاسب"
+            }
+          ],
+          "department_slug": "media-analytics",
+          "department_name_ar": "تحليلات الوسائط الإعلامية",
+          "department_name_en": "Media Analytics",
+          "department_code": "04"
+        },
+        {
+          "code": "02-24-04414",
+          "alternative_code": "02-24-04406",
+          "id": "virtual-reality-media",
+          "name_en": "Virtual Reality",
+          "name_ar": "الواقع الافتراضي",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Immersive media production, 360 video, spatial audio, and virtual cinematography.",
+          "prerequisites": [
+            "02-24-04401"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-04401",
+              "name_en": "Computer Graphics",
+              "name_ar": "رسومات الحاسب"
+            }
+          ],
+          "department_slug": "media-analytics",
+          "department_name_ar": "تحليلات الوسائط الإعلامية",
+          "department_name_en": "Media Analytics",
+          "department_code": "04"
+        },
+        {
+          "code": "02-24-04415",
+          "alternative_code": "02-24-04407",
+          "id": "digital-media-forensics",
+          "name_en": "Digital Media Forensics",
+          "name_ar": "الأدلة الجنائية للوسائط الرقمية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Deepfake detection, image and video tampering analysis, watermarking, and provenance verification.",
+          "prerequisites": [],
+          "prerequisites_details": [],
+          "department_slug": "media-analytics",
+          "department_name_ar": "تحليلات الوسائط الإعلامية",
+          "department_name_en": "Media Analytics",
+          "department_code": "04"
+        }
+      ]
+    },
+    "healthcare-informatics": {
+      "department_slug": "healthcare-informatics",
+      "department_code": "05",
+      "department_name_ar": "تحليلات ومعلوماتية الرعاية الصحية",
+      "department_name_en": "Healthcare Informatics and Data Analytics",
+      "electives_count": 5,
+      "electives": [
+        {
+          "code": "02-24-05409",
+          "alternative_code": "02-24-05401",
+          "id": "radiation-physics",
+          "name_en": "Radiation Physics",
+          "name_ar": "فيزياء الإشعاع",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Physical principles of diagnostic and therapeutic radiation, imaging physics, and dosimetry.",
+          "prerequisites": [],
+          "prerequisites_details": [],
+          "department_slug": "healthcare-informatics",
+          "department_name_ar": "تحليلات ومعلوماتية الرعاية الصحية",
+          "department_name_en": "Healthcare Informatics and Data Analytics",
+          "department_code": "05"
+        },
+        {
+          "code": "02-24-05410",
+          "alternative_code": "02-24-05402",
+          "id": "cellular-molecular-biology",
+          "name_en": "Cellular & Molecular Biology",
+          "name_ar": "البيولوجيا الخلوية والجزيئية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Cell architecture, genetics, genomic sequencing data, and molecular informatics.",
+          "prerequisites": [
+            "02-24-05202"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-05202",
+              "name_en": "Anatomy and Physiology",
+              "name_ar": "علم التشريح وعلم وظائف الأعضاء"
+            }
+          ],
+          "department_slug": "healthcare-informatics",
+          "department_name_ar": "تحليلات ومعلوماتية الرعاية الصحية",
+          "department_name_en": "Healthcare Informatics and Data Analytics",
+          "department_code": "05"
+        },
+        {
+          "code": "02-24-05411",
+          "alternative_code": "02-24-05403",
+          "id": "radiation-biology",
+          "name_en": "Radiation Biology",
+          "name_ar": "البيولوجيا الإشعاعية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Biological effects of ionizing radiation, radioprotection, and oncology informatics.",
+          "prerequisites": [
+            "02-24-05401",
+            "02-24-05402"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-05401",
+              "name_en": "E-health, Telehealth and Telemedicine",
+              "name_ar": "الصحة الإلكترونية والطب الاتصالي"
+            },
+            {
+              "code": "02-24-05402",
+              "name_en": "Mathematical Modelling for Health",
+              "name_ar": "النمذجة الرياضية للصحة"
+            }
+          ],
+          "department_slug": "healthcare-informatics",
+          "department_name_ar": "تحليلات ومعلوماتية الرعاية الصحية",
+          "department_name_en": "Healthcare Informatics and Data Analytics",
+          "department_code": "05"
+        },
+        {
+          "code": "02-24-05412",
+          "alternative_code": "02-24-05404",
+          "id": "pathophysiology-lab-data",
+          "name_en": "Pathophysiology & Lab Data",
+          "name_ar": "الفيسيولوجيا المرضية وبيانات المعامل",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Mechanisms of disease states and analytical interpretation of clinical laboratory informatics.",
+          "prerequisites": [
+            "02-24-05202"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-05202",
+              "name_en": "Anatomy and Physiology",
+              "name_ar": "علم التشريح وعلم وظائف الأعضاء"
+            }
+          ],
+          "department_slug": "healthcare-informatics",
+          "department_name_ar": "تحليلات ومعلوماتية الرعاية الصحية",
+          "department_name_en": "Healthcare Informatics and Data Analytics",
+          "department_code": "05"
+        },
+        {
+          "code": "02-24-05413",
+          "alternative_code": "02-24-05405",
+          "id": "principles-biochemistry",
+          "name_en": "Principles of Biochemistry",
+          "name_ar": "مبادئ الكيمياء الحيوية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Biomolecules, metabolic pathways, and biochemical data analysis in modern health informatics.",
+          "prerequisites": [
+            "02-24-05202"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-05202",
+              "name_en": "Anatomy and Physiology",
+              "name_ar": "علم التشريح وعلم وظائف الأعضاء"
+            }
+          ],
+          "department_slug": "healthcare-informatics",
+          "department_name_ar": "تحليلات ومعلوماتية الرعاية الصحية",
+          "department_name_en": "Healthcare Informatics and Data Analytics",
+          "department_code": "05"
+        }
+      ]
+    },
+    "cybersecurity": {
+      "department_slug": "cybersecurity",
+      "department_code": "06",
+      "department_name_ar": "الأمن السيبراني",
+      "department_name_en": "Cybersecurity",
+      "electives_count": 8,
+      "electives": [
+        {
+          "code": "02-24-06409",
+          "alternative_code": "02-24-06401",
+          "id": "ai-security-issues",
+          "name_en": "AI Security Issues",
+          "name_ar": "قضايا أمان الذكاء الاصطناعي",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Adversarial attacks on machine learning, data poisoning, model inversion, and defense techniques.",
+          "prerequisites": [
+            "02-24-00109"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00109",
+              "name_en": "Introduction to Artificial Intelligence",
+              "name_ar": "مقدمة إلى الذكاء الاصطناعي"
+            }
+          ],
+          "department_slug": "cybersecurity",
+          "department_name_ar": "الأمن السيبراني",
+          "department_name_en": "Cybersecurity",
+          "department_code": "06"
+        },
+        {
+          "code": "02-24-06410",
+          "alternative_code": "02-24-06402",
+          "id": "proactive-computer-security",
+          "name_en": "Proactive Computer Security",
+          "name_ar": "أمن الحاسوب الاستباقي",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Threat hunting, honeypots, automated defense, vulnerability assessment, and red/blue teaming.",
+          "prerequisites": [
+            "02-24-00110",
+            "02-24-06201"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00110",
+              "name_en": "Programming II",
+              "name_ar": "برمجة 2"
+            },
+            {
+              "code": "02-24-06201",
+              "name_en": "Introduction to Cybersecurity",
+              "name_ar": "مقدمة في الأمن السيبراني"
+            }
+          ],
+          "department_slug": "cybersecurity",
+          "department_name_ar": "الأمن السيبراني",
+          "department_name_en": "Cybersecurity",
+          "department_code": "06"
+        },
+        {
+          "code": "02-24-06411",
+          "alternative_code": "02-24-06403",
+          "id": "software-security-engineering",
+          "name_en": "Software Security Engineering",
+          "name_ar": "هندسة أمان البرمجيات",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Secure software development lifecycle (SSDLC), static/dynamic analysis, buffer overflows, and fuzzing.",
+          "prerequisites": [
+            "02-24-00301",
+            "02-24-06303"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00301",
+              "name_en": "Software Engineering",
+              "name_ar": "هندسة البرمجيات"
+            },
+            {
+              "code": "02-24-06303",
+              "name_en": "Secure Software Development",
+              "name_ar": "تطوير البرمجيات الآمنة"
+            }
+          ],
+          "department_slug": "cybersecurity",
+          "department_name_ar": "الأمن السيبراني",
+          "department_name_en": "Cybersecurity",
+          "department_code": "06"
+        },
+        {
+          "code": "02-24-06412",
+          "alternative_code": null,
+          "id": "blockchain-and-security-of-blockchain",
+          "name_en": "Blockchain and Security of Blockchain",
+          "name_ar": "البلوكشين وأمان البلوكشين",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Blockchain and Security of Blockchain elective course for Cybersecurity",
+          "prerequisites": [
+            "02-24-00202",
+            "02-24-00308"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00202",
+              "name_en": "Introduction to Databases",
+              "name_ar": "مقدمة إلى قواعد البيانات"
+            },
+            {
+              "code": "02-24-00308",
+              "name_en": "Computer Networks",
+              "name_ar": "شبكات الحاسب"
+            }
+          ],
+          "department_slug": "cybersecurity",
+          "department_name_ar": "الأمن السيبراني",
+          "department_name_en": "Cybersecurity",
+          "department_code": "06"
+        },
+        {
+          "code": "02-24-06413",
+          "alternative_code": "02-24-06405",
+          "id": "cloud-computing-security",
+          "name_en": "Cloud Computing Security",
+          "name_ar": "أمان الحوسبة السحابية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Cloud architecture security, IAM, serverless security, multi-tenancy isolation, and compliance.",
+          "prerequisites": [
+            "02-24-00204",
+            "02-24-06203"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00204",
+              "name_en": "Cloud Computing",
+              "name_ar": "الحوسبة السحابية"
+            },
+            {
+              "code": "02-24-06203",
+              "name_en": "Cryptography",
+              "name_ar": "علم التشفير"
+            }
+          ],
+          "department_slug": "cybersecurity",
+          "department_name_ar": "الأمن السيبراني",
+          "department_name_en": "Cybersecurity",
+          "department_code": "06"
+        },
+        {
+          "code": "02-24-06414",
+          "alternative_code": "02-24-06406",
+          "id": "social-networks-analytics-security",
+          "name_en": "Social Networks Analytics",
+          "name_ar": "تحليلات الشبكات الاجتماعية",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Graph mining, bot detection, misinformation spread analysis, and identity privacy.",
+          "prerequisites": [
+            "02-24-06205",
+            "02-24-00101",
+            "02-24-00201",
+            "02-24-06401"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-06205",
+              "name_en": "Field Training I",
+              "name_ar": "تدريب ميداني 1"
+            },
+            {
+              "code": "02-24-00101",
+              "name_en": "Linear Algebra",
+              "name_ar": "الجبر الخطي"
+            },
+            {
+              "code": "02-24-00201",
+              "name_en": "Probability and Statistics II",
+              "name_ar": "الاحتمالات والإحصاء 2"
+            },
+            {
+              "code": "02-24-06401",
+              "name_en": "Social Network Computing",
+              "name_ar": "حوسبة الشبكات الاجتماعية"
+            }
+          ],
+          "department_slug": "cybersecurity",
+          "department_name_ar": "الأمن السيبراني",
+          "department_name_en": "Cybersecurity",
+          "department_code": "06"
+        },
+        {
+          "code": "02-24-06415",
+          "alternative_code": "02-24-06407",
+          "id": "iot-security",
+          "name_en": "Internet of Things",
+          "name_ar": "إنترنت الأشياء",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "IoT firmware security, communication protocol vulnerabilities (Zigbee, MQTT), and hardware attacks.",
+          "prerequisites": [
+            "02-24-00308"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00308",
+              "name_en": "Computer Networks",
+              "name_ar": "شبكات الحاسب"
+            }
+          ],
+          "department_slug": "cybersecurity",
+          "department_name_ar": "الأمن السيبراني",
+          "department_name_en": "Cybersecurity",
+          "department_code": "06"
+        },
+        {
+          "code": "02-24-06416",
+          "alternative_code": "02-24-06408",
+          "id": "mobile-computing-security",
+          "name_en": "Mobile Computing",
+          "name_ar": "الحوسبة المتنقلة",
+          "credit_hours": 3,
+          "lecture_hours": 2,
+          "practical_hours": 1,
+          "description": "Mobile OS security architectures, sandboxing, app permissions, and mobile network security.",
+          "prerequisites": [
+            "02-24-00308"
+          ],
+          "prerequisites_details": [
+            {
+              "code": "02-24-00308",
+              "name_en": "Computer Networks",
+              "name_ar": "شبكات الحاسب"
+            }
+          ],
+          "department_slug": "cybersecurity",
+          "department_name_ar": "الأمن السيبراني",
+          "department_name_en": "Cybersecurity",
+          "department_code": "06"
+        }
+      ]
+    }
+  },
+  "all_program_electives": [
+    {
+      "code": "02-24-01409",
+      "alternative_code": "02-24-01401",
+      "id": "convex-optimization",
+      "name_en": "Convex Optimization",
+      "name_ar": "الأمثلية المحدبة",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Theory and applications of convex optimization in data science, machine learning, and signal processing.",
+      "prerequisites": [
+        "02-24-00101",
+        "02-24-00203",
+        "02-24-01201"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00101",
+          "name_en": "Linear Algebra",
+          "name_ar": "الجبر الخطي"
+        },
+        {
+          "code": "02-24-00203",
+          "name_en": "Numerical Computations",
+          "name_ar": "الحسابات العددية"
+        },
+        {
+          "code": "02-24-01201",
+          "name_en": "Advanced Calculus",
+          "name_ar": "تفاضل وتكامل متقدم"
+        }
+      ],
+      "department_slug": "computing-data-sciences",
+      "department_name_ar": "الحوسبة وعلوم البيانات",
+      "department_name_en": "Computing and Data Sciences",
+      "department_code": "01"
+    },
+    {
+      "code": "02-24-01410",
+      "alternative_code": "02-24-01402",
+      "id": "combinatorial-optimization",
+      "name_en": "Non-Linear and Combinatorial Optimization",
+      "name_ar": "الأمثلية غير الخطية والتوافقية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Techniques for discrete, integer, and non-linear optimization problems.",
+      "prerequisites": [
+        "02-24-00101",
+        "02-24-00108"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00101",
+          "name_en": "Linear Algebra",
+          "name_ar": "الجبر الخطي"
+        },
+        {
+          "code": "02-24-00108",
+          "name_en": "Data Structures and Algorithms",
+          "name_ar": "هياكل البيانات والخوارزميات"
+        }
+      ],
+      "department_slug": "computing-data-sciences",
+      "department_name_ar": "الحوسبة وعلوم البيانات",
+      "department_name_en": "Computing and Data Sciences",
+      "department_code": "01"
+    },
+    {
+      "code": "02-24-01411",
+      "alternative_code": "02-24-01403",
+      "id": "multivariate-statistical-analysis",
+      "name_en": "Multivariate Statistical Analysis",
+      "name_ar": "التحليل الإحصائي متعدد المتغيرات",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Statistical methods for analyzing multidimensional data sets, PCA, factor analysis, and MANOVA.",
+      "prerequisites": [
+        "02-24-00201"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00201",
+          "name_en": "Probability and Statistics II",
+          "name_ar": "الاحتمالات والإحصاء 2"
+        }
+      ],
+      "department_slug": "computing-data-sciences",
+      "department_name_ar": "الحوسبة وعلوم البيانات",
+      "department_name_en": "Computing and Data Sciences",
+      "department_code": "01"
+    },
+    {
+      "code": "02-24-01412",
+      "alternative_code": "02-24-01404",
+      "id": "bayesian-statistics",
+      "name_en": "Bayesian Statistics",
+      "name_ar": "الإحصاء البيزي",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Bayesian inference, Markov Chain Monte Carlo (MCMC), prior-posterior calculations, and Bayesian models.",
+      "prerequisites": [
+        "02-24-00201"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00201",
+          "name_en": "Probability and Statistics II",
+          "name_ar": "الاحتمالات والإحصاء 2"
+        }
+      ],
+      "department_slug": "computing-data-sciences",
+      "department_name_ar": "الحوسبة وعلوم البيانات",
+      "department_name_en": "Computing and Data Sciences",
+      "department_code": "01"
+    },
+    {
+      "code": "02-24-01413",
+      "alternative_code": "02-24-01405",
+      "id": "data-compression-techniques",
+      "name_en": "Data Compression Techniques",
+      "name_ar": "تقنيات ضغط البيانات",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Lossless and lossy data compression algorithms, entropy coding, Huffman, LZW, and transform coding.",
+      "prerequisites": [
+        "02-24-00108"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00108",
+          "name_en": "Data Structures and Algorithms",
+          "name_ar": "هياكل البيانات والخوارزميات"
+        }
+      ],
+      "department_slug": "computing-data-sciences",
+      "department_name_ar": "الحوسبة وعلوم البيانات",
+      "department_name_en": "Computing and Data Sciences",
+      "department_code": "01"
+    },
+    {
+      "code": "02-24-01414",
+      "alternative_code": "02-24-01406",
+      "id": "concurrent-algorithms",
+      "name_en": "Concurrent Algorithms and Data Structures",
+      "name_ar": "خوارزميات وهياكل بيانات متزامنة",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Multi-threaded and lock-free data structures, synchronization primitives, and memory models.",
+      "prerequisites": [
+        "02-24-00108"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00108",
+          "name_en": "Data Structures and Algorithms",
+          "name_ar": "هياكل البيانات والخوارزميات"
+        }
+      ],
+      "department_slug": "computing-data-sciences",
+      "department_name_ar": "الحوسبة وعلوم البيانات",
+      "department_name_en": "Computing and Data Sciences",
+      "department_code": "01"
+    },
+    {
+      "code": "02-24-01415",
+      "alternative_code": "02-24-01407",
+      "id": "distributed-database-systems",
+      "name_en": "Distributed Database Systems",
+      "name_ar": "نظم قواعد البيانات الموزعة",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Architecture, query optimization, concurrency control, and replication in distributed DBMS.",
+      "prerequisites": [
+        "02-24-00202"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00202",
+          "name_en": "Introduction to Databases",
+          "name_ar": "مقدمة إلى قواعد البيانات"
+        }
+      ],
+      "department_slug": "computing-data-sciences",
+      "department_name_ar": "الحوسبة وعلوم البيانات",
+      "department_name_en": "Computing and Data Sciences",
+      "department_code": "01"
+    },
+    {
+      "code": "02-24-01416",
+      "alternative_code": "02-24-01408",
+      "id": "advanced-database-systems",
+      "name_en": "Advanced Database Systems",
+      "name_ar": "نظم قواعد البيانات المتقدمة",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "NoSQL, graph databases, column-store engines, indexing, and high-performance transaction processing.",
+      "prerequisites": [
+        "02-24-00202"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00202",
+          "name_en": "Introduction to Databases",
+          "name_ar": "مقدمة إلى قواعد البيانات"
+        }
+      ],
+      "department_slug": "computing-data-sciences",
+      "department_name_ar": "الحوسبة وعلوم البيانات",
+      "department_name_en": "Computing and Data Sciences",
+      "department_code": "01"
+    },
+    {
+      "code": "02-24-02409",
+      "alternative_code": null,
+      "id": "human-computer-interaction",
+      "name_en": "Human Computer Interaction",
+      "name_ar": "التفاعل بين الإنسان والحاسوب",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Human Computer Interaction elective course for Business Analytics",
+      "prerequisites": [
+        "02-24-02203"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-02203",
+          "name_en": "System Analysis & Design",
+          "name_ar": "تحليل وتصميم النظم"
+        }
+      ],
+      "department_slug": "business-analytics",
+      "department_name_ar": "تحليلات الأعمال",
+      "department_name_en": "Business Analytics",
+      "department_code": "02"
+    },
+    {
+      "code": "02-24-02410",
+      "alternative_code": null,
+      "id": "gamification-and-games-development",
+      "name_en": "Gamification and Games Development",
+      "name_ar": "التلعيب وتطوير الألعاب",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Gamification and Games Development elective course for Business Analytics",
+      "prerequisites": [
+        "02-24-00110"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00110",
+          "name_en": "Programming II",
+          "name_ar": "برمجة 2"
+        }
+      ],
+      "department_slug": "business-analytics",
+      "department_name_ar": "تحليلات الأعمال",
+      "department_name_en": "Business Analytics",
+      "department_code": "02"
+    },
+    {
+      "code": "02-24-02411",
+      "alternative_code": "02-24-02403",
+      "id": "technology-trends-innovation",
+      "name_en": "Technology Trends and Innovation",
+      "name_ar": "اتجاهات التكنولوجيا والابتكار",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Emerging technological paradigms, disruptive innovations, and tech adoption in modern enterprises.",
+      "prerequisites": [],
+      "prerequisites_details": [],
+      "department_slug": "business-analytics",
+      "department_name_ar": "تحليلات الأعمال",
+      "department_name_en": "Business Analytics",
+      "department_code": "02"
+    },
+    {
+      "code": "02-24-02412",
+      "alternative_code": "02-24-02404",
+      "id": "gis-spatial-data-mining",
+      "name_en": "GIS and Spatial Data Mining",
+      "name_ar": "نظم المعلومات الجغرافية والتنقيب عن البيانات المكانية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Geographic Information Systems, spatial data analysis, geospatial clustering, and location intelligence.",
+      "prerequisites": [
+        "02-24-00206"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00206",
+          "name_en": "Data Mining and Analytics",
+          "name_ar": "تنقيب وتحليلات البيانات"
+        }
+      ],
+      "department_slug": "business-analytics",
+      "department_name_ar": "تحليلات الأعمال",
+      "department_name_en": "Business Analytics",
+      "department_code": "02"
+    },
+    {
+      "code": "02-24-02413",
+      "alternative_code": "02-24-02405",
+      "id": "managing-technology-projects",
+      "name_en": "Managing Technology Projects",
+      "name_ar": "إدارة مشروعات التكنولوجيا",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Project management methodologies (PMP, Agile/Scrum), resource allocation, risk and cost management.",
+      "prerequisites": [],
+      "prerequisites_details": [],
+      "department_slug": "business-analytics",
+      "department_name_ar": "تحليلات الأعمال",
+      "department_name_en": "Business Analytics",
+      "department_code": "02"
+    },
+    {
+      "code": "02-24-02414",
+      "alternative_code": "02-24-02406",
+      "id": "smart-cities-e-government",
+      "name_en": "Smart Cities and E-Government",
+      "name_ar": "المدن الذكية والحكومة الإلكترونية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Digital public services, urban IoT data ecosystems, citizen engagement, and smart infrastructure analytics.",
+      "prerequisites": [
+        "02-24-02402"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-02402",
+          "name_en": "Data and IT Governance",
+          "name_ar": "حوكمة تكنولوجيا المعلومات والبيانات"
+        }
+      ],
+      "department_slug": "business-analytics",
+      "department_name_ar": "تحليلات الأعمال",
+      "department_name_en": "Business Analytics",
+      "department_code": "02"
+    },
+    {
+      "code": "02-24-02415",
+      "alternative_code": "02-24-02407",
+      "id": "digital-transformation-economics",
+      "name_en": "Digital Transformation and Digital Economics",
+      "name_ar": "التحول الرقمي والاقتصاد الرقمي",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Economic models of digital platforms, network effects, marketplace dynamics, and business transformation.",
+      "prerequisites": [
+        "02-24-02402"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-02402",
+          "name_en": "Data and IT Governance",
+          "name_ar": "حوكمة تكنولوجيا المعلومات والبيانات"
+        }
+      ],
+      "department_slug": "business-analytics",
+      "department_name_ar": "تحليلات الأعمال",
+      "department_name_en": "Business Analytics",
+      "department_code": "02"
+    },
+    {
+      "code": "02-24-02416",
+      "alternative_code": "02-24-02408",
+      "id": "manufacturing-analytics",
+      "name_en": "Manufacturing Analytics",
+      "name_ar": "تحليلات التصنيع",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Industry 4.0, smart factory data analytics, quality control, and predictive maintenance.",
+      "prerequisites": [
+        "02-24-00206"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00206",
+          "name_en": "Data Mining and Analytics",
+          "name_ar": "تنقيب وتحليلات البيانات"
+        }
+      ],
+      "department_slug": "business-analytics",
+      "department_name_ar": "تحليلات الأعمال",
+      "department_name_en": "Business Analytics",
+      "department_code": "02"
+    },
+    {
+      "code": "02-24-02417",
+      "alternative_code": "02-24-02409",
+      "id": "predictive-analytics",
+      "name_en": "Predictive Analytics",
+      "name_ar": "التحليلات التنبؤية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Advanced forecasting, regression, decision trees, and customer lifetime value modeling.",
+      "prerequisites": [
+        "02-24-00206",
+        "02-24-02204"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00206",
+          "name_en": "Data Mining and Analytics",
+          "name_ar": "تنقيب وتحليلات البيانات"
+        },
+        {
+          "code": "02-24-02204",
+          "name_en": "Financial Planning and Analysis",
+          "name_ar": "التخطيط والتحليل المالي"
+        }
+      ],
+      "department_slug": "business-analytics",
+      "department_name_ar": "تحليلات الأعمال",
+      "department_name_en": "Business Analytics",
+      "department_code": "02"
+    },
+    {
+      "code": "02-24-02418",
+      "alternative_code": "02-24-02410",
+      "id": "nlp-semantic-analysis",
+      "name_en": "NLP and Semantic Analysis",
+      "name_ar": "معالجة اللغات الطبيعية والتحليل الدلالي",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Text mining, sentiment analysis, opinion mining, and topic modeling for market intelligence.",
+      "prerequisites": [
+        "02-24-02403"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-02403",
+          "name_en": "Information Retrieval",
+          "name_ar": "استرجاع المعلومات"
+        }
+      ],
+      "department_slug": "business-analytics",
+      "department_name_ar": "تحليلات الأعمال",
+      "department_name_en": "Business Analytics",
+      "department_code": "02"
+    },
+    {
+      "code": "02-24-03409",
+      "alternative_code": "02-24-03401",
+      "id": "speech-recognition",
+      "name_en": "Speech Recognition",
+      "name_ar": "التعرف على الكلام",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Acoustic modeling, feature extraction (MFCCs), hidden Markov models, and deep neural speech synthesis.",
+      "prerequisites": [
+        "02-24-00204"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00204",
+          "name_en": "Cloud Computing",
+          "name_ar": "الحوسبة السحابية"
+        }
+      ],
+      "department_slug": "artificial-intelligence",
+      "department_name_ar": "النظم الذكية",
+      "department_name_en": "Intelligent Systems",
+      "department_code": "03"
+    },
+    {
+      "code": "02-24-03410",
+      "alternative_code": "02-24-03402",
+      "id": "natural-language-understanding",
+      "name_en": "Natural Language Understanding",
+      "name_ar": "فهم اللغات الطبيعية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Syntax parsing, semantic role labeling, transformer architectures, and generative language models.",
+      "prerequisites": [
+        "02-24-03403"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-03403",
+          "name_en": "Natural Language Processing",
+          "name_ar": "معالجة اللغات الطبيعية"
+        }
+      ],
+      "department_slug": "artificial-intelligence",
+      "department_name_ar": "النظم الذكية",
+      "department_name_en": "Intelligent Systems",
+      "department_code": "03"
+    },
+    {
+      "code": "02-24-03411",
+      "alternative_code": "02-24-03403",
+      "id": "embedded-machine-learning",
+      "name_en": "Embedded Machine Learning",
+      "name_ar": "تعلم الآلة المدمج",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "TinyML, edge computing, model quantization, pruning, and deploying neural networks to microcontrollers.",
+      "prerequisites": [
+        "02-24-00205",
+        "02-24-03304"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00205",
+          "name_en": "Machine Learning",
+          "name_ar": "تعلم الآلة"
+        },
+        {
+          "code": "02-24-03304",
+          "name_en": "Embedded Systems",
+          "name_ar": "النظم المدمجة"
+        }
+      ],
+      "department_slug": "artificial-intelligence",
+      "department_name_ar": "النظم الذكية",
+      "department_name_en": "Intelligent Systems",
+      "department_code": "03"
+    },
+    {
+      "code": "02-24-03412",
+      "alternative_code": "02-24-03404",
+      "id": "intelligence-technology-trends",
+      "name_en": "Intelligence Technology Trends",
+      "name_ar": "اتجاهات تكنولوجيا الذكاء",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Frontier AI research, neuro-symbolic AI, multimodal architectures, and autonomous agent systems.",
+      "prerequisites": [],
+      "prerequisites_details": [],
+      "department_slug": "artificial-intelligence",
+      "department_name_ar": "النظم الذكية",
+      "department_name_en": "Intelligent Systems",
+      "department_code": "03"
+    },
+    {
+      "code": "02-24-03413",
+      "alternative_code": "02-24-03405",
+      "id": "internet-of-things-ii",
+      "name_en": "Internet of Things II",
+      "name_ar": "إنترنت الأشياء 2",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Advanced IoT architectures, sensor networks, cloud-to-edge pipelines, and industrial IoT protocols.",
+      "prerequisites": [
+        "02-24-03402"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-03402",
+          "name_en": "Internet of Things I",
+          "name_ar": "إنترنت الأشياء 1"
+        }
+      ],
+      "department_slug": "artificial-intelligence",
+      "department_name_ar": "النظم الذكية",
+      "department_name_en": "Intelligent Systems",
+      "department_code": "03"
+    },
+    {
+      "code": "02-24-03414",
+      "alternative_code": "02-24-03406",
+      "id": "knowledge-base-ai",
+      "name_en": "Knowledge-Base AI",
+      "name_ar": "الذكاء الاصطناعي القائم على المعرفة",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Knowledge graphs, ontology engineering, reasoning engines, and expert system inference.",
+      "prerequisites": [
+        "02-24-00205"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00205",
+          "name_en": "Machine Learning",
+          "name_ar": "تعلم الآلة"
+        }
+      ],
+      "department_slug": "artificial-intelligence",
+      "department_name_ar": "النظم الذكية",
+      "department_name_en": "Intelligent Systems",
+      "department_code": "03"
+    },
+    {
+      "code": "02-24-03415",
+      "alternative_code": "02-24-03407",
+      "id": "virtual-reality-ai",
+      "name_en": "Virtual Reality",
+      "name_ar": "الواقع الافتراضي",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Immersion technologies, spatial tracking, 3D graphics pipelines, and AI-driven interactive environments.",
+      "prerequisites": [
+        "02-24-04401"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-04401",
+          "name_en": "Computer Graphics",
+          "name_ar": "رسومات الحاسب"
+        }
+      ],
+      "department_slug": "artificial-intelligence",
+      "department_name_ar": "النظم الذكية",
+      "department_name_en": "Intelligent Systems",
+      "department_code": "03"
+    },
+    {
+      "code": "02-24-03416",
+      "alternative_code": "02-24-03408",
+      "id": "game-theory",
+      "name_en": "Game Theory",
+      "name_ar": "نظرية الألعاب",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Strategic decision making, Nash equilibrium, multi-agent reinforcement learning, and mechanism design.",
+      "prerequisites": [
+        "02-24-03202"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-03202",
+          "name_en": "Operations Research",
+          "name_ar": "بحوث العمليات"
+        }
+      ],
+      "department_slug": "artificial-intelligence",
+      "department_name_ar": "النظم الذكية",
+      "department_name_en": "Intelligent Systems",
+      "department_code": "03"
+    },
+    {
+      "code": "02-24-04409",
+      "alternative_code": "02-24-04401",
+      "id": "interactive-media",
+      "name_en": "Interactive Media",
+      "name_ar": "الوسائط التفاعلية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Interactive narrative, user experience design, tangible interfaces, and multi-sensory computing.",
+      "prerequisites": [],
+      "prerequisites_details": [],
+      "department_slug": "media-analytics",
+      "department_name_ar": "تحليلات الوسائط الإعلامية",
+      "department_name_en": "Media Analytics",
+      "department_code": "04"
+    },
+    {
+      "code": "02-24-04410",
+      "alternative_code": "02-24-04402",
+      "id": "online-journalism",
+      "name_en": "Online Journalism",
+      "name_ar": "الصحافة الإلكترونية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Data-driven journalism, automated newsroom workflows, verification tools, and content analytics.",
+      "prerequisites": [],
+      "prerequisites_details": [],
+      "department_slug": "media-analytics",
+      "department_name_ar": "تحليلات الوسائط الإعلامية",
+      "department_name_en": "Media Analytics",
+      "department_code": "04"
+    },
+    {
+      "code": "02-24-04411",
+      "alternative_code": "02-24-04403",
+      "id": "computational-photography",
+      "name_en": "Computational Photography",
+      "name_ar": "التصوير الفوتوغرافي الحاسوبي",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Digital image formation, high dynamic range (HDR), depth estimation, and neural rendering.",
+      "prerequisites": [
+        "02-24-04203",
+        "02-24-04301"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-04203",
+          "name_en": "Digital Video Production",
+          "name_ar": "الإنتاج المرئي الرقمي"
+        },
+        {
+          "code": "02-24-04301",
+          "name_en": "Image Processing",
+          "name_ar": "معالجة الصور"
+        }
+      ],
+      "department_slug": "media-analytics",
+      "department_name_ar": "تحليلات الوسائط الإعلامية",
+      "department_name_en": "Media Analytics",
+      "department_code": "04"
+    },
+    {
+      "code": "02-24-04412",
+      "alternative_code": "02-24-04404",
+      "id": "computer-animations",
+      "name_en": "Computer Animations",
+      "name_ar": "الرسوم المتحركة بالحاسب",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Keyframing, kinematic rigging, motion capture processing, particle physics, and 3D simulation.",
+      "prerequisites": [
+        "02-24-04401"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-04401",
+          "name_en": "Computer Graphics",
+          "name_ar": "رسومات الحاسب"
+        }
+      ],
+      "department_slug": "media-analytics",
+      "department_name_ar": "تحليلات الوسائط الإعلامية",
+      "department_name_en": "Media Analytics",
+      "department_code": "04"
+    },
+    {
+      "code": "02-24-04413",
+      "alternative_code": null,
+      "id": "video-game-design-and-programming",
+      "name_en": "Video Game Design and Programming",
+      "name_ar": "تصميم وبرمجة ألعاب الفيديو",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Video Game Design and Programming elective course for Media Analytics",
+      "prerequisites": [
+        "02-24-00110",
+        "02-24-04401"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00110",
+          "name_en": "Programming II",
+          "name_ar": "برمجة 2"
+        },
+        {
+          "code": "02-24-04401",
+          "name_en": "Computer Graphics",
+          "name_ar": "رسومات الحاسب"
+        }
+      ],
+      "department_slug": "media-analytics",
+      "department_name_ar": "تحليلات الوسائط الإعلامية",
+      "department_name_en": "Media Analytics",
+      "department_code": "04"
+    },
+    {
+      "code": "02-24-04414",
+      "alternative_code": "02-24-04406",
+      "id": "virtual-reality-media",
+      "name_en": "Virtual Reality",
+      "name_ar": "الواقع الافتراضي",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Immersive media production, 360 video, spatial audio, and virtual cinematography.",
+      "prerequisites": [
+        "02-24-04401"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-04401",
+          "name_en": "Computer Graphics",
+          "name_ar": "رسومات الحاسب"
+        }
+      ],
+      "department_slug": "media-analytics",
+      "department_name_ar": "تحليلات الوسائط الإعلامية",
+      "department_name_en": "Media Analytics",
+      "department_code": "04"
+    },
+    {
+      "code": "02-24-04415",
+      "alternative_code": "02-24-04407",
+      "id": "digital-media-forensics",
+      "name_en": "Digital Media Forensics",
+      "name_ar": "الأدلة الجنائية للوسائط الرقمية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Deepfake detection, image and video tampering analysis, watermarking, and provenance verification.",
+      "prerequisites": [],
+      "prerequisites_details": [],
+      "department_slug": "media-analytics",
+      "department_name_ar": "تحليلات الوسائط الإعلامية",
+      "department_name_en": "Media Analytics",
+      "department_code": "04"
+    },
+    {
+      "code": "02-24-05409",
+      "alternative_code": "02-24-05401",
+      "id": "radiation-physics",
+      "name_en": "Radiation Physics",
+      "name_ar": "فيزياء الإشعاع",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Physical principles of diagnostic and therapeutic radiation, imaging physics, and dosimetry.",
+      "prerequisites": [],
+      "prerequisites_details": [],
+      "department_slug": "healthcare-informatics",
+      "department_name_ar": "تحليلات ومعلوماتية الرعاية الصحية",
+      "department_name_en": "Healthcare Informatics and Data Analytics",
+      "department_code": "05"
+    },
+    {
+      "code": "02-24-05410",
+      "alternative_code": "02-24-05402",
+      "id": "cellular-molecular-biology",
+      "name_en": "Cellular & Molecular Biology",
+      "name_ar": "البيولوجيا الخلوية والجزيئية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Cell architecture, genetics, genomic sequencing data, and molecular informatics.",
+      "prerequisites": [
+        "02-24-05202"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-05202",
+          "name_en": "Anatomy and Physiology",
+          "name_ar": "علم التشريح وعلم وظائف الأعضاء"
+        }
+      ],
+      "department_slug": "healthcare-informatics",
+      "department_name_ar": "تحليلات ومعلوماتية الرعاية الصحية",
+      "department_name_en": "Healthcare Informatics and Data Analytics",
+      "department_code": "05"
+    },
+    {
+      "code": "02-24-05411",
+      "alternative_code": "02-24-05403",
+      "id": "radiation-biology",
+      "name_en": "Radiation Biology",
+      "name_ar": "البيولوجيا الإشعاعية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Biological effects of ionizing radiation, radioprotection, and oncology informatics.",
+      "prerequisites": [
+        "02-24-05401",
+        "02-24-05402"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-05401",
+          "name_en": "E-health, Telehealth and Telemedicine",
+          "name_ar": "الصحة الإلكترونية والطب الاتصالي"
+        },
+        {
+          "code": "02-24-05402",
+          "name_en": "Mathematical Modelling for Health",
+          "name_ar": "النمذجة الرياضية للصحة"
+        }
+      ],
+      "department_slug": "healthcare-informatics",
+      "department_name_ar": "تحليلات ومعلوماتية الرعاية الصحية",
+      "department_name_en": "Healthcare Informatics and Data Analytics",
+      "department_code": "05"
+    },
+    {
+      "code": "02-24-05412",
+      "alternative_code": "02-24-05404",
+      "id": "pathophysiology-lab-data",
+      "name_en": "Pathophysiology & Lab Data",
+      "name_ar": "الفيسيولوجيا المرضية وبيانات المعامل",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Mechanisms of disease states and analytical interpretation of clinical laboratory informatics.",
+      "prerequisites": [
+        "02-24-05202"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-05202",
+          "name_en": "Anatomy and Physiology",
+          "name_ar": "علم التشريح وعلم وظائف الأعضاء"
+        }
+      ],
+      "department_slug": "healthcare-informatics",
+      "department_name_ar": "تحليلات ومعلوماتية الرعاية الصحية",
+      "department_name_en": "Healthcare Informatics and Data Analytics",
+      "department_code": "05"
+    },
+    {
+      "code": "02-24-05413",
+      "alternative_code": "02-24-05405",
+      "id": "principles-biochemistry",
+      "name_en": "Principles of Biochemistry",
+      "name_ar": "مبادئ الكيمياء الحيوية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Biomolecules, metabolic pathways, and biochemical data analysis in modern health informatics.",
+      "prerequisites": [
+        "02-24-05202"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-05202",
+          "name_en": "Anatomy and Physiology",
+          "name_ar": "علم التشريح وعلم وظائف الأعضاء"
+        }
+      ],
+      "department_slug": "healthcare-informatics",
+      "department_name_ar": "تحليلات ومعلوماتية الرعاية الصحية",
+      "department_name_en": "Healthcare Informatics and Data Analytics",
+      "department_code": "05"
+    },
+    {
+      "code": "02-24-06409",
+      "alternative_code": "02-24-06401",
+      "id": "ai-security-issues",
+      "name_en": "AI Security Issues",
+      "name_ar": "قضايا أمان الذكاء الاصطناعي",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Adversarial attacks on machine learning, data poisoning, model inversion, and defense techniques.",
+      "prerequisites": [
+        "02-24-00109"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00109",
+          "name_en": "Introduction to Artificial Intelligence",
+          "name_ar": "مقدمة إلى الذكاء الاصطناعي"
+        }
+      ],
+      "department_slug": "cybersecurity",
+      "department_name_ar": "الأمن السيبراني",
+      "department_name_en": "Cybersecurity",
+      "department_code": "06"
+    },
+    {
+      "code": "02-24-06410",
+      "alternative_code": "02-24-06402",
+      "id": "proactive-computer-security",
+      "name_en": "Proactive Computer Security",
+      "name_ar": "أمن الحاسوب الاستباقي",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Threat hunting, honeypots, automated defense, vulnerability assessment, and red/blue teaming.",
+      "prerequisites": [
+        "02-24-00110",
+        "02-24-06201"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00110",
+          "name_en": "Programming II",
+          "name_ar": "برمجة 2"
+        },
+        {
+          "code": "02-24-06201",
+          "name_en": "Introduction to Cybersecurity",
+          "name_ar": "مقدمة في الأمن السيبراني"
+        }
+      ],
+      "department_slug": "cybersecurity",
+      "department_name_ar": "الأمن السيبراني",
+      "department_name_en": "Cybersecurity",
+      "department_code": "06"
+    },
+    {
+      "code": "02-24-06411",
+      "alternative_code": "02-24-06403",
+      "id": "software-security-engineering",
+      "name_en": "Software Security Engineering",
+      "name_ar": "هندسة أمان البرمجيات",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Secure software development lifecycle (SSDLC), static/dynamic analysis, buffer overflows, and fuzzing.",
+      "prerequisites": [
+        "02-24-00301",
+        "02-24-06303"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00301",
+          "name_en": "Software Engineering",
+          "name_ar": "هندسة البرمجيات"
+        },
+        {
+          "code": "02-24-06303",
+          "name_en": "Secure Software Development",
+          "name_ar": "تطوير البرمجيات الآمنة"
+        }
+      ],
+      "department_slug": "cybersecurity",
+      "department_name_ar": "الأمن السيبراني",
+      "department_name_en": "Cybersecurity",
+      "department_code": "06"
+    },
+    {
+      "code": "02-24-06412",
+      "alternative_code": null,
+      "id": "blockchain-and-security-of-blockchain",
+      "name_en": "Blockchain and Security of Blockchain",
+      "name_ar": "البلوكشين وأمان البلوكشين",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Blockchain and Security of Blockchain elective course for Cybersecurity",
+      "prerequisites": [
+        "02-24-00202",
+        "02-24-00308"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00202",
+          "name_en": "Introduction to Databases",
+          "name_ar": "مقدمة إلى قواعد البيانات"
+        },
+        {
+          "code": "02-24-00308",
+          "name_en": "Computer Networks",
+          "name_ar": "شبكات الحاسب"
+        }
+      ],
+      "department_slug": "cybersecurity",
+      "department_name_ar": "الأمن السيبراني",
+      "department_name_en": "Cybersecurity",
+      "department_code": "06"
+    },
+    {
+      "code": "02-24-06413",
+      "alternative_code": "02-24-06405",
+      "id": "cloud-computing-security",
+      "name_en": "Cloud Computing Security",
+      "name_ar": "أمان الحوسبة السحابية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Cloud architecture security, IAM, serverless security, multi-tenancy isolation, and compliance.",
+      "prerequisites": [
+        "02-24-00204",
+        "02-24-06203"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00204",
+          "name_en": "Cloud Computing",
+          "name_ar": "الحوسبة السحابية"
+        },
+        {
+          "code": "02-24-06203",
+          "name_en": "Cryptography",
+          "name_ar": "علم التشفير"
+        }
+      ],
+      "department_slug": "cybersecurity",
+      "department_name_ar": "الأمن السيبراني",
+      "department_name_en": "Cybersecurity",
+      "department_code": "06"
+    },
+    {
+      "code": "02-24-06414",
+      "alternative_code": "02-24-06406",
+      "id": "social-networks-analytics-security",
+      "name_en": "Social Networks Analytics",
+      "name_ar": "تحليلات الشبكات الاجتماعية",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Graph mining, bot detection, misinformation spread analysis, and identity privacy.",
+      "prerequisites": [
+        "02-24-06205",
+        "02-24-00101",
+        "02-24-00201",
+        "02-24-06401"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-06205",
+          "name_en": "Field Training I",
+          "name_ar": "تدريب ميداني 1"
+        },
+        {
+          "code": "02-24-00101",
+          "name_en": "Linear Algebra",
+          "name_ar": "الجبر الخطي"
+        },
+        {
+          "code": "02-24-00201",
+          "name_en": "Probability and Statistics II",
+          "name_ar": "الاحتمالات والإحصاء 2"
+        },
+        {
+          "code": "02-24-06401",
+          "name_en": "Social Network Computing",
+          "name_ar": "حوسبة الشبكات الاجتماعية"
+        }
+      ],
+      "department_slug": "cybersecurity",
+      "department_name_ar": "الأمن السيبراني",
+      "department_name_en": "Cybersecurity",
+      "department_code": "06"
+    },
+    {
+      "code": "02-24-06415",
+      "alternative_code": "02-24-06407",
+      "id": "iot-security",
+      "name_en": "Internet of Things",
+      "name_ar": "إنترنت الأشياء",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "IoT firmware security, communication protocol vulnerabilities (Zigbee, MQTT), and hardware attacks.",
+      "prerequisites": [
+        "02-24-00308"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00308",
+          "name_en": "Computer Networks",
+          "name_ar": "شبكات الحاسب"
+        }
+      ],
+      "department_slug": "cybersecurity",
+      "department_name_ar": "الأمن السيبراني",
+      "department_name_en": "Cybersecurity",
+      "department_code": "06"
+    },
+    {
+      "code": "02-24-06416",
+      "alternative_code": "02-24-06408",
+      "id": "mobile-computing-security",
+      "name_en": "Mobile Computing",
+      "name_ar": "الحوسبة المتنقلة",
+      "credit_hours": 3,
+      "lecture_hours": 2,
+      "practical_hours": 1,
+      "description": "Mobile OS security architectures, sandboxing, app permissions, and mobile network security.",
+      "prerequisites": [
+        "02-24-00308"
+      ],
+      "prerequisites_details": [
+        {
+          "code": "02-24-00308",
+          "name_en": "Computer Networks",
+          "name_ar": "شبكات الحاسب"
+        }
+      ],
+      "department_slug": "cybersecurity",
+      "department_name_ar": "الأمن السيبراني",
+      "department_name_en": "Cybersecurity",
+      "department_code": "06"
+    }
+  ],
+  "faculty_electives": [
+    {
+      "id": "software-engineering",
+      "code": "02-24-00301",
+      "name_en": "Software Engineering",
+      "credit_hours": 3,
+      "description": "Software lifecycle models, requirements engineering, architectural design, testing, and agile methodologies.",
+      "prerequisites": [
+        "Programming II"
+      ],
+      "category": "faculty"
+    },
+    {
+      "id": "systems-analysis-design",
+      "code": "02-24-00302",
+      "name_en": "Systems Analysis and Design",
+      "credit_hours": 3,
+      "description": "Methodologies for analyzing business requirements and designing robust information systems.",
+      "prerequisites": [],
+      "category": "faculty"
+    },
+    {
+      "id": "algorithm-design",
+      "code": "02-24-00303",
+      "name_en": "Algorithm Design",
+      "credit_hours": 3,
+      "description": "Advanced algorithmic techniques including greedy, divide-and-conquer, dynamic programming, and complexity analysis.",
+      "prerequisites": [
+        "Data Structures and Algorithms"
+      ],
+      "category": "faculty"
+    },
+    {
+      "id": "distributed-processing",
+      "code": "02-24-00304",
+      "name_en": "Distributed Processing",
+      "credit_hours": 3,
+      "description": "Concepts and architectures of distributed computing systems, synchronization, RPC, and fault tolerance.",
+      "prerequisites": [
+        "Intro to Computer System",
+        "Data Structures and Algorithms"
+      ],
+      "category": "faculty"
+    },
+    {
+      "id": "mobile-programming",
+      "code": "02-24-00305",
+      "name_en": "Mobile Programming",
+      "credit_hours": 3,
+      "description": "Development of modern mobile applications for smartphones and tablets across Android and iOS platforms.",
+      "prerequisites": [
+        "Programming I"
+      ],
+      "category": "faculty"
+    },
+    {
+      "id": "web-programming",
+      "code": "02-24-00306",
+      "name_en": "Web Programming",
+      "credit_hours": 3,
+      "description": "Full-stack web application development including client-side interactivity, server APIs, and database integration.",
+      "prerequisites": [
+        "Programming I"
+      ],
+      "category": "faculty"
+    },
+    {
+      "id": "operating-systems-faculty",
+      "code": "02-24-00307",
+      "name_en": "Operating Systems",
+      "credit_hours": 3,
+      "description": "Operating system principles, process scheduling, memory management, file systems, and concurrency.",
+      "prerequisites": [
+        "Intro to Computer System",
+        "Programming I"
+      ],
+      "category": "faculty"
+    },
+    {
+      "id": "computer-networks",
+      "code": "02-24-00308",
+      "name_en": "Computer Networks",
+      "credit_hours": 3,
+      "description": "Computer networking models (OSI and TCP/IP), network protocols, routing algorithms, and network security basics.",
+      "prerequisites": [
+        "Intro to Computer System",
+        "Programming I"
+      ],
+      "category": "faculty"
+    },
+    {
+      "id": "first-aids",
+      "code": "02-0X-000XX",
+      "name_en": "First Aids",
+      "credit_hours": 2,
+      "description": "Basic first aid techniques, emergency response procedures, and life-saving interventions.",
+      "prerequisites": [],
+      "category": "faculty"
+    },
+    {
+      "id": "modern-tourism",
+      "code": "ME_009",
+      "name_en": "Modern Tourism",
+      "credit_hours": 2,
+      "description": "Study of modern tourism principles, sustainable travel, hospitality, and economic impact.",
+      "prerequisites": [],
+      "category": "faculty"
+    },
+    {
+      "id": "fitness-and-health",
+      "code": "02-24-HS001",
+      "name_en": "Fitness and Health",
+      "credit_hours": 2,
+      "description": "Physical fitness fundamentals, active healthy lifestyle promotion, exercise physiology, and wellness.",
+      "prerequisites": [],
+      "category": "faculty"
+    },
+    {
+      "id": "economic-science",
+      "code": "HE_005",
+      "name_en": "Economy Science",
+      "credit_hours": 2,
+      "description": "Principles of micro and macro economics, market dynamics, and computational economic analysis.",
+      "prerequisites": [],
+      "category": "faculty"
+    },
+    {
+      "id": "pet-handeling",
+      "code": "PH_001",
+      "name_en": "Pet Handeling",
+      "credit_hours": 2,
+      "description": "Veterinary principles, safe animal handling techniques, pet welfare, and behavioral management.",
+      "prerequisites": [],
+      "category": "faculty"
+    },
+    {
+      "id": "nutrition",
+      "code": "02-0X-000XX",
+      "name_en": "Nutrition",
+      "credit_hours": 2,
+      "description": "Human nutrition essentials, dietary planning, metabolic health, and nutritional wellness.",
+      "prerequisites": [],
+      "category": "faculty"
+    }
+  ]
+}

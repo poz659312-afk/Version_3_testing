@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { decryptSpaceText, decryptSpaceArray } from '@/lib/space-encryption'
+import { cn } from '@/lib/utils'
 import { useLenis } from 'lenis/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -62,7 +63,21 @@ import {
   Medal,
   Target,
   Gift,
-  Zap
+  Zap,
+  CornerDownRight,
+  Reply,
+  X,
+  Maximize2,
+  Minimize2,
+  Columns,
+  Download,
+  Search,
+  CheckSquare,
+  Code,
+  Heading1,
+  Heading2,
+  Highlighter,
+  List
 } from 'lucide-react'
 import SummaryRenderer from '@/components/SummaryRenderer'
 import { 
@@ -195,11 +210,49 @@ export default function StudySpaceClient({
   const [studySecondsElapsed, setStudySecondsElapsed] = useState<number>(0)
   const lastEgressTimeRef = useRef<number>(Date.now())
 
-  // --- TAB NAVIGATION ---
-  const [activeTab, setActiveTab] = useState('notes') // 'notes' | 'quizzes' | 'polls' | 'daily' | 'resources' | 'members' | 'settings'
+  // --- TAB & VIEW LAYOUT NAVIGATION ---
+  const [activeTab, setActiveTab] = useState('notes') // 'notes' | 'quizzes' | 'polls' | 'daily' | 'resources' | 'settings'
   const [chatTab, setChatTab] = useState('all') // 'all' | 'questions'
   const [chatInput, setChatInput] = useState('')
   const [isQuestionInput, setIsQuestionInput] = useState(false)
+  const [viewLayout, setViewLayout] = useState<'split' | 'workspace' | 'chat'>('split')
+  const [mobileTab, setMobileTab] = useState<'chat' | 'workspace'>('workspace')
+
+  // --- LIVE PRESENCE ---
+  const [onlineUsers, setOnlineUsers] = useState<any[]>([])
+
+  // --- CHAT SEARCH & REPLY ---
+  const [isChatSearching, setIsChatSearching] = useState(false)
+  const [chatSearchQuery, setChatSearchQuery] = useState('')
+  const [soundEnabled, setSoundEnabled] = useState(true)
+  const [replyingTo, setReplyingTo] = useState<{ id: string; username: string; content: string } | null>(null)
+
+  // --- NOTES ZEN MODE ---
+  const [isZenNotes, setIsZenNotes] = useState(false)
+
+  // --- DAILY TASKS FILTER ---
+  const [taskFilter, setTaskFilter] = useState<'all' | 'in_progress' | 'completed'>('all')
+
+  // --- DRIVE SEARCH ---
+  const [resourceSearch, setResourceSearch] = useState('')
+
+  const filteredResources = useMemo(() => {
+    if (!resourceSearch.trim()) return resources
+    const q = resourceSearch.toLowerCase()
+    return resources.filter((file: any) => file.name?.toLowerCase().includes(q))
+  }, [resources, resourceSearch])
+
+  const filteredDailyChallenges = useMemo(() => {
+    if (taskFilter === 'all') return dailyChallenges
+    return dailyChallenges.filter((challenge: any) => {
+      const myProgress = challenge.progress?.find((p: any) => p.user_id === currentUserId)
+      const currentProgressVal = myProgress?.progress || 0
+      const isDone = currentProgressVal >= 100
+      if (taskFilter === 'completed') return isDone
+      if (taskFilter === 'in_progress') return !isDone
+      return true
+    })
+  }, [dailyChallenges, taskFilter, currentUserId])
 
   // --- MENTIONS STATE & HELPERS ---
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -507,8 +560,8 @@ export default function StudySpaceClient({
   }
 
   // Sound Synth Helper
-  const playSystemSound = (type: 'message' | 'focus-end' | 'success') => {
-    if (typeof window === 'undefined') return
+  const playSystemSound = (type: 'message' | 'focus-end' | 'success' | 'click') => {
+    if (typeof window === 'undefined' || !soundEnabled) return
     try {
       const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
       const osc = audioCtx.createOscillator()
@@ -521,6 +574,13 @@ export default function StudySpaceClient({
         gain.gain.setValueAtTime(0.05, audioCtx.currentTime)
         osc.start()
         osc.stop(audioCtx.currentTime + 0.08)
+      } else if (type === 'click') {
+        osc.type = 'sine'
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime)
+        gain.gain.setValueAtTime(0.02, audioCtx.currentTime)
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04)
+        osc.start()
+        osc.stop(audioCtx.currentTime + 0.04)
       } else if (type === 'focus-end') {
         osc.type = 'triangle'
         osc.frequency.setValueAtTime(440, audioCtx.currentTime) // A4
@@ -1075,7 +1135,37 @@ export default function StudySpaceClient({
           setChallenges((prev: any[]) => prev.filter(c => c.id !== deleted.id))
         }
       )
-      .subscribe()
+      // 9. Real-time Presence tracking (Studying Now)
+      .on('presence', { event: 'sync' }, () => {
+        try {
+          const presenceState = roomChannel.presenceState()
+          const users: any[] = []
+          Object.values(presenceState).forEach((presences: any) => {
+            presences.forEach((p: any) => {
+              if (p.userId && !users.some(u => u.userId === p.userId)) {
+                users.push(p)
+              }
+            })
+          })
+          setOnlineUsers(users)
+        } catch (e) {
+          console.warn('Presence sync failed:', e)
+        }
+      })
+      .subscribe(async (status: any) => {
+        if (status === 'SUBSCRIBED') {
+          try {
+            await roomChannel.track({
+              userId: currentUserId,
+              username: currentMember?.user?.username || 'Student',
+              profileImage: currentMember?.user?.profile_image || null,
+              onlineAt: new Date().toISOString()
+            })
+          } catch (e) {
+            console.warn('Presence track error:', e)
+          }
+        }
+      })
 
     typingChannelRef.current = roomChannel
 
@@ -1273,7 +1363,13 @@ export default function StudySpaceClient({
     e.preventDefault()
     if (!chatInput.trim()) return
 
-    const messageContent = chatInput
+    let messageContent = chatInput
+    if (replyingTo) {
+      const cleanSnippet = replyingTo.content.replace(/^\[REPLY:[^\]]+\]\s*/, '').slice(0, 60).replace(/\n/g, ' ')
+      messageContent = `[REPLY:${replyingTo.id}:${replyingTo.username}:${cleanSnippet}] ${chatInput}`
+      setReplyingTo(null)
+    }
+
     const isQuestion = isQuestionInput
     
     setShowSuggestions(false)
@@ -1748,9 +1844,21 @@ export default function StudySpaceClient({
   }, [members])
 
   // --- MESSAGES FILTERING ---
-  const displayedMessages = chatTab === 'all' 
-    ? messages 
-    : messages.filter((m: any) => m.is_question)
+  // --- MESSAGES FILTERING ---
+  const displayedMessages = useMemo(() => {
+    let list = messages
+    if (chatTab === 'questions') {
+      list = list.filter((m: any) => m.is_question)
+    }
+    if (chatSearchQuery.trim()) {
+      const q = chatSearchQuery.toLowerCase()
+      list = list.filter((m: any) => 
+        (m.content || '').toLowerCase().includes(q) ||
+        (m.user?.username || '').toLowerCase().includes(q)
+      )
+    }
+    return list
+  }, [messages, chatTab, chatSearchQuery])
 
   // --- PREVENT EXPIRING CHAT QUIZZES COUNTDOWN RENDER ---
   const isQuizExpired = (quiz: any) => {
@@ -1764,66 +1872,100 @@ export default function StudySpaceClient({
   return (
     <div className="space-y-6">
       
-      {/* 1. Header with Stats & Focus Mode */}
-      <div className="ss-mesh-hero relative overflow-hidden rounded-3xl border border-border/70 p-5 sm:p-6 bg-gradient-to-br from-primary/5 via-secondary/5 to-card backdrop-blur-md">
-        <div className="absolute -top-20 right-0 h-56 w-56 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+      {/* 1. Header with Stats, Live Presence & Focus Mode */}
+      <div className="ss-mesh-hero relative overflow-hidden rounded-3xl border border-border/70 p-4 sm:p-5 bg-gradient-to-br from-primary/5 via-secondary/5 to-card backdrop-blur-md space-y-3.5">
+        <div className="absolute -top-24 right-0 h-64 w-64 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
         
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex items-start gap-4">
+        {/* Top Row: Space Details (Left) + Actions Toolbar (Right) */}
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5 min-w-0">
             <Button 
               variant="outline" 
               size="icon" 
               onClick={() => router.push('/study-spaces')}
-              className="border-border/80 hover:bg-muted cursor-pointer shrink-0 h-9 w-9 rounded-xl"
+              className="border-border/80 hover:bg-muted cursor-pointer shrink-0 h-9 w-9 rounded-xl transition-transform active:scale-95"
+              title="Back to Study Spaces"
             >
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">{room.name}</h1>
-                <Badge variant="outline" className="text-[10px] py-0 h-5 border-primary/20 bg-primary/5 text-primary font-bold">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg sm:text-xl font-black tracking-tight text-foreground truncate">{room.name}</h1>
+                <Badge variant="outline" className="text-[10px] py-0 h-5 border-primary/20 bg-primary/5 text-primary font-bold shrink-0">
                   Level {room.level_num}
                 </Badge>
+                <Badge variant="outline" className={`text-[10px] py-0 h-5 font-bold shrink-0 ${
+                  room.visibility === 'private' ? 'border-yellow-500/30 bg-yellow-500/10 text-yellow-500' : 'border-blue-500/30 bg-blue-500/10 text-blue-400'
+                }`}>
+                  {room.visibility === 'private' ? 'Private' : 'Public'}
+                </Badge>
               </div>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-medium">{room.description || 'Collaborative study space.'}</p>
+              {room.description && (
+                <p className="text-xs text-muted-foreground mt-0.5 font-medium truncate max-w-lg">{room.description}</p>
+              )}
             </div>
           </div>
           
-          {/* Active study tracker / streaks */}
-          <div className="flex flex-wrap items-center gap-4">
-            
-            {/* Streak Indicator */}
-            <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-3.5 py-1.5 rounded-2xl shadow-sm">
-              <Flame className="w-4 h-4 text-amber-500 animate-pulse" />
-              <div>
-                <span className="text-[10px] text-muted-foreground block font-bold leading-tight">MY STREAK</span>
-                <span className="text-xs font-black text-amber-500">{currentMember?.current_streak || 0} Days</span>
-              </div>
+          {/* Actions & Controls Toolbar */}
+          <div className="flex items-center gap-2 flex-wrap shrink-0">
+            {/* Desktop View Layout Switcher with Smooth Sliding Spring Pill */}
+            <div className="hidden xl:flex items-center p-0.5 bg-muted/60 rounded-xl border border-border/80 relative">
+              {[
+                { id: 'split', label: 'Split', icon: Columns },
+                { id: 'workspace', label: 'Workspace', icon: BookOpen },
+                { id: 'chat', label: 'Discussion', icon: MessageSquare },
+              ].map((item) => {
+                const Icon = item.icon
+                const isActive = viewLayout === item.id
+                return (
+                  <motion.button
+                    key={item.id}
+                    type="button"
+                    whileTap={{ scale: 0.94 }}
+                    onClick={() => {
+                      setViewLayout(item.id as any)
+                      playSystemSound('click')
+                    }}
+                    className={cn(
+                      "relative h-7 px-3 text-xs font-bold rounded-lg cursor-pointer transition-colors flex items-center gap-1.5 z-10 select-none",
+                      isActive ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                    )}
+                    title={`Switch to ${item.label} view`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeLayoutPill"
+                        className="absolute inset-0 bg-primary rounded-lg shadow-md shadow-primary/25 -z-10"
+                        transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+                      />
+                    )}
+                    <motion.div
+                      animate={{ scale: isActive ? 1.15 : 1 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                    </motion.div>
+                    <span>{item.label}</span>
+                  </motion.button>
+                )
+              })}
             </div>
 
-            {/* Focus Session Stopwatch */}
-            <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1.5 rounded-2xl shadow-sm">
-              <Clock className="w-4 h-4 text-indigo-400" />
-              <div>
-                <span className="text-[10px] text-muted-foreground block font-bold leading-tight">ACTIVE SESSION</span>
-                <span className="text-xs font-black text-indigo-400">
-                  {Math.floor(studySecondsElapsed / 60)}m {studySecondsElapsed % 60}s
-                </span>
-              </div>
-            </div>
+            <div className="hidden xl:block h-4 w-px bg-border/40 mx-0.5" />
 
             {/* Focus Mode Trigger */}
             <Dialog>
               <DialogTrigger asChild>
                 <Button
-                  className={`cursor-pointer rounded-2xl h-10 px-4 text-xs font-bold transition-all shadow-lg flex items-center gap-2 ${
+                  size="sm"
+                  className={`cursor-pointer rounded-xl h-8 px-3 text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 ${
                     isFocusing 
                       ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/20' 
                       : 'bg-primary hover:bg-primary/95 text-primary-foreground shadow-primary/20'
                   }`}
                 >
-                  <BrainCircuit className="w-4 h-4" />
-                  {isFocusing ? 'Stop Focusing' : 'Focus Mode'}
+                  <BrainCircuit className="w-3.5 h-3.5" />
+                  <span>{isFocusing ? 'Stop Focus' : 'Focus Mode'}</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="bg-card border-border shadow-2xl max-w-sm">
@@ -1871,31 +2013,81 @@ export default function StudySpaceClient({
               variant="outline"
               size="sm"
               onClick={handleCopyLink}
-              className="border-border hover:bg-primary hover:text-white text-xs h-10 px-4 rounded-2xl cursor-pointer flex items-center gap-1.5 transition-all group"
+              className="border-border/80 hover:bg-primary hover:text-white text-xs h-8 px-3 rounded-xl cursor-pointer flex items-center gap-1.5 transition-all group"
               title="Copy share link for this study space"
             >
               {copiedLink ? (
                 <>
-                  <Check className="w-4 h-4 text-emerald-400 group-hover:text-white transition-colors" />
+                  <Check className="w-3.5 h-3.5 text-emerald-400 group-hover:text-white transition-colors" />
                   <span className="text-emerald-400 group-hover:text-white font-semibold">Copied!</span>
                 </>
               ) : (
                 <>
-                  <Share2 className="w-4 h-4 text-primary group-hover:text-white transition-colors" />
-                  <span>Share Space</span>
+                  <Share2 className="w-3.5 h-3.5 text-primary group-hover:text-white transition-colors" />
+                  <span>Share</span>
                 </>
               )}
             </Button>
 
+            {/* Report Button */}
             <Button
               variant="outline"
               size="sm"
               onClick={() => router.push(`/study-spaces/${roomId}/report`)}
-              className="border-border hover:bg-primary hover:text-white text-xs h-10 px-4 rounded-2xl cursor-pointer flex items-center gap-1.5 transition-colors group"
+              className="border-border/80 hover:bg-primary hover:text-white text-xs h-8 px-3 rounded-xl cursor-pointer flex items-center gap-1.5 transition-colors group"
+              title="View Study Space Report"
             >
-              <Award className="w-4 h-4 text-primary group-hover:text-white transition-colors" />
-              Report
+              <Award className="w-3.5 h-3.5 text-primary group-hover:text-white transition-colors" />
+              <span>Report</span>
             </Button>
+          </div>
+        </div>
+
+        {/* Bottom Row: Live Study HUD Bar (Presence, Streak, Session Timer) */}
+        <div className="relative z-10 pt-3 border-t border-border/40 flex items-center justify-between flex-wrap gap-2.5">
+          {/* Live Presence: Studying Now */}
+          <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-xl shadow-xs">
+            <div className="flex -space-x-1.5 overflow-hidden items-center">
+              {(onlineUsers.length > 0 ? onlineUsers : [{ username: currentMember?.user?.username || 'You', profileImage: currentMember?.user?.profile_image }]).slice(0, 3).map((u, i) => (
+                <div key={i} className="inline-block h-5 w-5 rounded-full ring-2 ring-card overflow-hidden bg-primary/20">
+                  {u.profileImage ? (
+                    <img src={u.profileImage} alt={u.username} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center text-[8px] font-bold text-primary">
+                      {(u.username || 'S')[0].toUpperCase()}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="text-[11px] font-bold text-emerald-400">
+                {Math.max(1, onlineUsers.length)} Studying Now
+              </span>
+            </div>
+          </div>
+
+          {/* Right Metrics: Streak & Active Session Timer */}
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            {/* Streak Indicator */}
+            <div className="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-xl shadow-xs">
+              <Flame className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+              <span className="text-[10px] text-muted-foreground font-semibold">Streak:</span>
+              <span className="text-xs font-black text-amber-400">{currentMember?.current_streak || 0}d</span>
+            </div>
+
+            {/* Focus Session Stopwatch */}
+            <div className="flex items-center gap-1.5 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1 rounded-xl shadow-xs">
+              <Clock className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="text-[10px] text-muted-foreground font-semibold">Session:</span>
+              <span className="text-xs font-mono font-black text-indigo-300">
+                {Math.floor(studySecondsElapsed / 60)}m {String(studySecondsElapsed % 60).padStart(2, '0')}s
+              </span>
+            </div>
           </div>
         </div>
 
@@ -1916,39 +2108,217 @@ export default function StudySpaceClient({
         )}
       </div>
 
+      {/* Mobile Segmented View Switcher */}
+      <div className="xl:hidden flex items-center justify-center p-1 bg-muted/60 rounded-2xl border border-border relative">
+        <button
+          type="button"
+          onClick={() => {
+            setMobileTab('chat')
+            playSystemSound('click')
+          }}
+          className={cn(
+            "relative flex-1 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 select-none z-10",
+            mobileTab === 'chat' ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          {mobileTab === 'chat' && (
+            <motion.div
+              layoutId="activeMobileTabPill"
+              className="absolute inset-0 bg-primary rounded-xl shadow-sm -z-10"
+              transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+            />
+          )}
+          <MessageSquare className="w-4 h-4" />
+          <span>Discussion</span>
+          {messages.length > 0 && (
+            <span className={cn(
+              "text-[9px] px-1.5 py-0.2 rounded-full font-bold",
+              mobileTab === 'chat' ? "bg-primary-foreground/20 text-primary-foreground" : "bg-primary/20 text-primary"
+            )}>
+              {messages.length}
+            </span>
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setMobileTab('workspace')
+            playSystemSound('click')
+          }}
+          className={cn(
+            "relative flex-1 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 select-none z-10",
+            mobileTab === 'workspace' ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          {mobileTab === 'workspace' && (
+            <motion.div
+              layoutId="activeMobileTabPill"
+              className="absolute inset-0 bg-primary rounded-xl shadow-sm -z-10"
+              transition={{ type: 'spring', stiffness: 450, damping: 32 }}
+            />
+          )}
+          <BookOpen className="w-4 h-4" />
+          <span>Workspace ({activeTab})</span>
+        </button>
+      </div>
+
       {/* 2. Main content Layout */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 sm:gap-6">
         
         {/* Left Column: Live Discussion */}
-        <Card className="xl:col-span-5 bg-card/40 border-border/60 backdrop-blur-md rounded-3xl flex flex-col justify-between overflow-hidden h-[500px] sm:h-[600px] xl:h-[75vh] max-h-[500px] sm:max-h-[600px] xl:max-h-[75vh]">
-          <CardHeader className="pb-2 border-b border-border flex flex-row items-center justify-between shrink-0">
-            <div>
-              <CardTitle className="text-sm font-bold flex items-center gap-1.5">
-                <MessageSquare className="w-4 h-4 text-primary" />
-                Live Discussion
-              </CardTitle>
-              <CardDescription className="text-[10px]">Discuss subjects and clear doubts.</CardDescription>
-            </div>
-            
-            <div className="flex gap-1 bg-muted/50 p-0.5 rounded-lg border border-border">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setChatTab('all')}
-                className={`text-[10px] h-6 px-2.5 rounded-md cursor-pointer ${chatTab === 'all' ? 'bg-card text-foreground font-semibold shadow-sm' : 'text-muted-foreground'}`}
-              >
-                Chat
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setChatTab('questions')}
-                className={`text-[10px] h-6 px-2.5 rounded-md cursor-pointer ${chatTab === 'questions' ? 'bg-card text-foreground font-semibold shadow-sm' : 'text-muted-foreground'}`}
-              >
-                Q&A
-              </Button>
-            </div>
-          </CardHeader>
+        <motion.div
+          layout
+          transition={{
+            layout: {
+              type: "spring",
+              stiffness: 320,
+              damping: 30,
+              mass: 0.8
+            }
+          }}
+          className={cn(
+            "min-w-0 flex-col",
+            mobileTab === 'chat' ? "flex" : "hidden",
+            viewLayout === 'split' && "xl:flex xl:col-span-5",
+            viewLayout === 'chat' && "xl:flex xl:col-span-12",
+            viewLayout === 'workspace' && "xl:hidden"
+          )}
+        >
+          <Card className={cn(
+            "relative bg-card/40 border-border/60 backdrop-blur-md rounded-3xl flex flex-col justify-between overflow-hidden h-[540px] sm:h-[620px] xl:h-[75vh] max-h-[540px] sm:max-h-[620px] xl:max-h-[75vh] transition-all duration-300 w-full",
+            viewLayout === 'chat' && "ring-1 ring-primary/40 shadow-2xl shadow-primary/10 border-primary/40"
+          )}>
+            {/* Creative Glowing Top Border Beam on Full-Width Mode */}
+            <AnimatePresence>
+              {viewLayout === 'chat' && (
+                <motion.div
+                  key="chat-top-beam"
+                  initial={{ scaleX: 0, opacity: 0 }}
+                  animate={{ scaleX: 1, opacity: 1 }}
+                  exit={{ scaleX: 0, opacity: 0 }}
+                  transition={{ duration: 0.45, ease: "easeOut" }}
+                  className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-primary to-transparent z-30 pointer-events-none"
+                />
+              )}
+            </AnimatePresence>
+
+            <CardHeader className="pb-2.5 pt-3.5 px-3 sm:px-4 border-b border-border flex flex-row items-center justify-between shrink-0 bg-card/20">
+              <div>
+                <CardTitle className="text-sm font-bold flex items-center gap-1.5">
+                  <MessageSquare className="w-4 h-4 text-primary" />
+                  Live Discussion
+                  {viewLayout === 'chat' && (
+                    <Badge variant="outline" className="hidden xl:inline-flex bg-primary/15 border-primary/30 text-primary text-[9px] font-black px-1.5 py-0 rounded-md">
+                      FULL VIEW
+                    </Badge>
+                  )}
+                </CardTitle>
+                <CardDescription className="text-[10px]">
+                  {chatSearchQuery.trim() ? `Found ${displayedMessages.length} matches` : 'Discuss subjects, ask questions, and share insights.'}
+                </CardDescription>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                {/* Message Search Toggle */}
+                {isChatSearching ? (
+                  <div className="flex items-center gap-1 bg-muted/60 rounded-xl px-2 py-1 border border-border/80">
+                    <Search className="w-3 h-3 text-muted-foreground" />
+                    <input
+                      type="text"
+                      placeholder="Search messages..."
+                      value={chatSearchQuery}
+                      onChange={(e) => setChatSearchQuery(e.target.value)}
+                      className="text-[10px] bg-transparent outline-none w-20 sm:w-28 text-foreground"
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsChatSearching(false)
+                        setChatSearchQuery('')
+                      }}
+                      className="text-muted-foreground hover:text-foreground cursor-pointer"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsChatSearching(true)}
+                    className="h-7 w-7 text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
+                    title="Search chat"
+                  >
+                    <Search className="w-3.5 h-3.5" />
+                  </Button>
+                )}
+
+                {/* Sound Toggle */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setSoundEnabled(!soundEnabled)
+                    toast.info(soundEnabled ? 'Chat sounds muted' : 'Chat sounds enabled')
+                  }}
+                  className="h-7 w-7 text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
+                  title={soundEnabled ? "Mute notification sounds" : "Unmute notification sounds"}
+                >
+                  {soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-primary" /> : <VolumeX className="w-3.5 h-3.5 text-muted-foreground" />}
+                </Button>
+
+                {/* Discussion Tab Switcher */}
+                <div className="flex gap-1 bg-muted/50 p-0.5 rounded-lg border border-border">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setChatTab('all')}
+                    className={`text-[10px] h-6 px-2.5 rounded-md cursor-pointer ${chatTab === 'all' ? 'bg-card text-foreground font-semibold shadow-xs' : 'text-muted-foreground'}`}
+                  >
+                    Chat
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setChatTab('questions')}
+                    className={`text-[10px] h-6 px-2.5 rounded-md cursor-pointer ${chatTab === 'questions' ? 'bg-card text-foreground font-semibold shadow-xs' : 'text-muted-foreground'}`}
+                  >
+                    Q&A
+                  </Button>
+                </div>
+
+                {/* 1-Click Maximize / Restore Chat Toggle */}
+                {viewLayout === 'chat' ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setViewLayout('split')
+                      playSystemSound('click')
+                    }}
+                    className="hidden xl:flex h-7 text-xs px-2.5 rounded-xl gap-1.5 border-primary/40 bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all cursor-pointer font-bold shadow-xs"
+                    title="Restore Split View"
+                  >
+                    <Minimize2 className="w-3.5 h-3.5" />
+                    <span>Restore Split</span>
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setViewLayout('chat')
+                      playSystemSound('click')
+                    }}
+                    className="hidden xl:flex h-7 w-7 text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
+                    title="Maximize Discussion (Full Width)"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
           
           <div className="flex-1 relative min-h-0">
             <div 
@@ -2126,6 +2496,31 @@ export default function StudySpaceClient({
                               )
                             }
                             
+                            const replyMatch = msg.content.match(/^\[REPLY:([^:]+):([^:]+):([^\]]+)\]\s*([\s\S]*)$/)
+                            if (replyMatch) {
+                              const quotedUser = replyMatch[2]
+                              const quotedSnippet = replyMatch[3]
+                              const actualBody = replyMatch[4]
+                              return (
+                                <>
+                                  <div className="mb-1.5 p-1.5 rounded-xl bg-black/10 dark:bg-white/10 border-l-2 border-primary text-[10px] flex flex-col gap-0.5 select-none">
+                                    <span className="font-bold text-primary flex items-center gap-1">
+                                      <CornerDownRight className="w-3 h-3 shrink-0" />
+                                      @{quotedUser}
+                                    </span>
+                                    <span className="text-muted-foreground line-clamp-1 italic">{quotedSnippet}</span>
+                                  </div>
+                                  {msg.is_question && (
+                                    <Badge className="bg-amber-500 text-white font-semibold text-[8px] h-4 py-0 px-1 mb-1.5 flex items-center gap-0.5 w-fit">
+                                      <HelpCircle className="w-2.5 h-2.5" />
+                                      QUESTION
+                                    </Badge>
+                                  )}
+                                  <p className="whitespace-pre-wrap">{renderMessageContent(actualBody)}</p>
+                                </>
+                              )
+                            }
+
                             return (
                               <>
                                 {msg.is_question && (
@@ -2139,13 +2534,27 @@ export default function StudySpaceClient({
                             )
                           })()}
 
-                          {/* Quiet reaction popover with spring rotation hover */}
-                          <div className="absolute top-[-14px] right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 bg-card border border-border/80 px-1.5 py-0.5 rounded-lg shadow-md">
+                          {/* Reaction popover with Reply button */}
+                          <div className="absolute top-[-14px] right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-card border border-border/80 px-1.5 py-0.5 rounded-lg shadow-md">
+                            <button
+                              type="button"
+                              onClick={() => setReplyingTo({
+                                id: msg.id,
+                                username: msg.user?.username || 'Student',
+                                content: msg.content.replace(/^\[REPLY:[^\]]+\]\s*/, '')
+                              })}
+                              className="text-[10px] font-semibold text-muted-foreground hover:text-primary flex items-center gap-0.5 px-1 py-0.5 rounded cursor-pointer transition-colors"
+                              title="Reply to this message"
+                            >
+                              <Reply className="w-3 h-3 mr-0.5" />
+                              <span>Reply</span>
+                            </button>
+                            <div className="w-px h-3 bg-border/80 mx-0.5" />
                             {['👍', '❤️', '🔥', '🚀', '🎉', '🦎', '👎'].map(emoji => (
                               <motion.button
                                 key={emoji}
                                 type="button"
-                                whileHover={{ scale: 1.35, rotate: [0, -8, 8, 0] }}
+                                whileHover={{ scale: 1.3, rotate: 8 }}
                                 whileTap={{ scale: 0.9 }}
                                 transition={{ type: 'spring', stiffness: 450, damping: 15 }}
                                 onClick={() => handleMessageReaction(msg.id, emoji)}
@@ -2236,6 +2645,25 @@ export default function StudySpaceClient({
           </div>
           
           <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-border bg-muted/20 shrink-0">
+            {/* Active Replying Banner */}
+            {replyingTo && (
+              <div className="flex items-center justify-between px-3 py-1.5 mb-2 bg-primary/10 border border-primary/20 rounded-xl text-xs">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <Reply className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span className="text-[11px] text-muted-foreground truncate">
+                    Replying to <strong className="text-primary">@{replyingTo.username}</strong>: <span className="italic">{replyingTo.content.slice(0, 50)}</span>
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setReplyingTo(null)}
+                  className="text-muted-foreground hover:text-foreground text-xs p-0.5 rounded-full cursor-pointer shrink-0 ml-1"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
             <div className="flex gap-2 items-center">
               <div className="relative flex-1">
                 {showSuggestions && filteredSuggestions.length > 0 && (
@@ -2335,9 +2763,45 @@ export default function StudySpaceClient({
             </div>
           </form>
         </Card>
+      </motion.div>
 
-        {/* Right Column: Workspace Tabs */}
-        <Card className="xl:col-span-7 bg-card/40 border-border/60 backdrop-blur-md rounded-3xl flex flex-col justify-between min-h-[500px] sm:min-h-[600px] xl:h-[75vh] max-h-[500px] sm:max-h-[600px] xl:max-h-[75vh] overflow-hidden">
+      {/* Right Column: Workspace Tabs */}
+      <motion.div
+        layout
+        transition={{
+          layout: {
+            type: "spring",
+            stiffness: 320,
+            damping: 30,
+            mass: 0.8
+          }
+        }}
+        className={cn(
+          "min-w-0 flex-col",
+          mobileTab === 'workspace' ? "flex" : "hidden",
+          viewLayout === 'split' && "xl:flex xl:col-span-7",
+          viewLayout === 'workspace' && "xl:flex xl:col-span-12",
+          viewLayout === 'chat' && "xl:hidden"
+        )}
+      >
+        <Card className={cn(
+          "relative bg-card/40 border-border/60 backdrop-blur-md rounded-3xl flex flex-col justify-between min-h-[540px] sm:min-h-[620px] xl:h-[75vh] max-h-[540px] sm:max-h-[620px] xl:max-h-[75vh] overflow-hidden transition-all duration-300 w-full",
+          viewLayout === 'workspace' && "ring-1 ring-primary/40 shadow-2xl shadow-primary/10 border-primary/40"
+        )}>
+          {/* Creative Glowing Top Border Beam on Full-Width Mode */}
+          <AnimatePresence>
+            {viewLayout === 'workspace' && (
+              <motion.div
+                key="workspace-top-beam"
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={{ scaleX: 1, opacity: 1 }}
+                exit={{ scaleX: 0, opacity: 0 }}
+                transition={{ duration: 0.45, ease: "easeOut" }}
+                className="absolute top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-transparent via-primary to-transparent z-30 pointer-events-none"
+              />
+            )}
+          </AnimatePresence>
+
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col min-h-0">
             <CardHeader className="pb-2.5 pt-3.5 px-3 sm:px-4 border-b border-border/70 shrink-0 bg-card/20">
               <div className="flex flex-col gap-2.5">
@@ -2346,45 +2810,77 @@ export default function StudySpaceClient({
                     <CardTitle className="text-sm font-bold flex items-center gap-1.5 text-foreground">
                       <BookOpen className="w-4 h-4 text-primary" />
                       Workspace
+                      {viewLayout === 'workspace' && (
+                        <Badge variant="outline" className="hidden xl:inline-flex bg-primary/15 border-primary/30 text-primary text-[9px] font-black px-1.5 py-0 rounded-md">
+                          FULL VIEW
+                        </Badge>
+                      )}
                     </CardTitle>
                     <CardDescription className="text-[10px] text-muted-foreground">Notes scratchpad, quiz battles, polls, daily tasks and drive files.</CardDescription>
                   </div>
-                  {activeTab === 'settings' && (
-                    <Badge variant="outline" className="text-[9px] py-0 h-5 border-primary/30 bg-primary/10 text-primary font-bold">
-                      Settings
-                    </Badge>
-                  )}
+                  
+                  <div className="flex items-center gap-2">
+                    {activeTab === 'settings' && (
+                      <Badge variant="outline" className="text-[9px] py-0 h-5 border-primary/30 bg-primary/10 text-primary font-bold">
+                        Settings
+                      </Badge>
+                    )}
+                    {viewLayout === 'workspace' ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setViewLayout('split')
+                          playSystemSound('click')
+                        }}
+                        className="hidden xl:flex h-7 text-xs px-2.5 rounded-xl gap-1.5 border-primary/40 bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all cursor-pointer font-bold shadow-xs"
+                        title="Restore Split View"
+                      >
+                        <Minimize2 className="w-3.5 h-3.5" />
+                        <span>Restore Split</span>
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setViewLayout('workspace')
+                          playSystemSound('click')
+                        }}
+                        className="hidden xl:flex h-7 w-7 text-muted-foreground hover:text-foreground cursor-pointer rounded-lg"
+                        title="Maximize Workspace (Full Width)"
+                      >
+                        <Maximize2 className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 
-                {/* 7 Clean Workspace Tabs */}
-                <TabsList className="grid grid-cols-4 sm:grid-cols-7 gap-1 bg-muted/40 border border-border/60 p-1 rounded-xl h-auto">
-                  <TabsTrigger value="notes" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                {/* 6 Clean Workspace Tabs (No leaderboard needed) */}
+                <TabsList className="grid grid-cols-3 sm:grid-cols-6 gap-1 bg-muted/40 border border-border/60 p-1 rounded-xl h-auto">
+                  <TabsTrigger value="notes" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
                     <FileText className="w-3 h-3 text-primary shrink-0" />
                     <span className="truncate">Notes</span>
                   </TabsTrigger>
-                  <TabsTrigger value="quizzes" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                  <TabsTrigger value="quizzes" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
                     <Swords className="w-3 h-3 text-rose-500 shrink-0" />
                     <span className="truncate">Quizzes</span>
                   </TabsTrigger>
-                  <TabsTrigger value="polls" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                  <TabsTrigger value="polls" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
                     <Pin className="w-3 h-3 text-indigo-400 shrink-0" />
                     <span className="truncate">Polls</span>
                     {polls.length > 0 && <span className="text-[8px] px-1 py-0.2 rounded-full bg-indigo-500/20 text-indigo-400 font-bold shrink-0">{polls.length}</span>}
                   </TabsTrigger>
-                  <TabsTrigger value="daily" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                  <TabsTrigger value="daily" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
                     <CheckCircle className="w-3 h-3 text-emerald-400 shrink-0" />
                     <span className="truncate">Tasks</span>
                   </TabsTrigger>
-                  <TabsTrigger value="resources" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                  <TabsTrigger value="resources" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
                     <FolderOpen className="w-3 h-3 text-amber-400 shrink-0" />
                     <span className="truncate">Drive</span>
                     {resources.length > 0 && <span className="text-[8px] px-1 py-0.2 rounded-full bg-amber-500/20 text-amber-400 font-bold shrink-0">{resources.length}</span>}
                   </TabsTrigger>
-                  <TabsTrigger value="members" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
-                    <Trophy className="w-3 h-3 text-yellow-500 shrink-0" />
-                    <span className="truncate">Ranks</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="settings" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
+                  <TabsTrigger value="settings" className="text-[10px] h-7 rounded-lg data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-xs px-1.5 cursor-pointer font-medium flex items-center justify-center gap-1">
                     <Settings className="w-3 h-3 text-muted-foreground shrink-0" />
                     <span className="truncate">Settings</span>
                     {members.filter((m: any) => m.status === 'pending').length > 0 && (
@@ -2399,12 +2895,157 @@ export default function StudySpaceClient({
               
               {/* Tab 1: Scratchpad */}
               <TabsContent value="notes" className="h-full mt-0 focus-visible:outline-none flex flex-col relative">
-                <div className="flex items-center justify-between pb-2 mb-2 border-b border-border shrink-0">
-                  <span className="text-[10px] text-muted-foreground font-bold flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5 text-primary" />
-                    Collaborative Notes
-                  </span>
+                {/* Zen Focus Mode Overlay */}
+                {isZenNotes && (
+                  <div className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-md flex flex-col p-3 sm:p-6 animate-in fade-in duration-200">
+                    <div className="max-w-5xl w-full mx-auto flex-1 flex flex-col min-h-0 bg-card border border-border/80 rounded-2xl shadow-2xl overflow-hidden">
+                      <div className="p-3 sm:p-4 border-b border-border flex items-center justify-between bg-muted/20 shrink-0 flex-wrap gap-2">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-primary" />
+                          <span className="text-xs sm:text-sm font-bold text-foreground">Zen Focus Notes</span>
+                          <Badge variant="outline" className="text-[10px] text-muted-foreground border-border">
+                            {scratchpad.trim() ? scratchpad.trim().split(/\s+/).filter(Boolean).length : 0} words
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              navigator.clipboard.writeText(scratchpad)
+                              toast.success('Notes copied to clipboard!')
+                            }}
+                            className="h-7 text-xs cursor-pointer"
+                          >
+                            <Copy className="w-3.5 h-3.5 mr-1" />
+                            Copy
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              const blob = new Blob([scratchpad], { type: 'text/markdown;charset=utf-8' })
+                              const url = URL.createObjectURL(blob)
+                              const a = document.createElement('a')
+                              a.href = url
+                              a.download = `${(room?.name || 'study_notes').replace(/[^a-zA-Z0-9_\u0600-\u06FF]/g, '_')}.md`
+                              a.click()
+                              URL.revokeObjectURL(url)
+                              toast.success('Downloaded notes as Markdown (.md)')
+                            }}
+                            className="h-7 text-xs cursor-pointer"
+                          >
+                            <Download className="w-3.5 h-3.5 mr-1" />
+                            Export .md
+                          </Button>
+                          {canManage && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setIsEditingNotes(!isEditingNotes)}
+                              className="h-7 text-xs cursor-pointer"
+                            >
+                              {isEditingNotes ? <Eye className="w-3.5 h-3.5 mr-1" /> : <Edit3 className="w-3.5 h-3.5 mr-1" />}
+                              {isEditingNotes ? 'View Preview' : 'Edit Notes'}
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="default"
+                            onClick={() => setIsZenNotes(false)}
+                            className="h-7 text-xs cursor-pointer bg-primary text-primary-foreground"
+                          >
+                            <Minimize2 className="w-3.5 h-3.5 mr-1" />
+                            Exit Zen
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 ss-chat-scrollbar">
+                        {!isEditingNotes ? (
+                          scratchpad.trim() ? (
+                            <SummaryRenderer content={scratchpad} className="text-sm leading-relaxed text-foreground select-text max-w-4xl mx-auto" />
+                          ) : (
+                            <p className="text-muted-foreground text-center py-20">No notes written yet.</p>
+                          )
+                        ) : (
+                          <Textarea
+                            placeholder="Write notes here in markdown..."
+                            value={scratchpad}
+                            onChange={handleScratchpadChange}
+                            onBlur={() => canManage && saveScratchpadContent(scratchpad)}
+                            className="w-full h-full min-h-[450px] border-none focus-visible:ring-0 resize-none bg-transparent text-sm leading-relaxed font-mono ss-chat-scrollbar"
+                            readOnly={!canManage}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between pb-2 mb-2 border-b border-border shrink-0 flex-wrap gap-2">
                   <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-muted-foreground font-bold flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5 text-primary" />
+                      Collaborative Notes
+                    </span>
+                    <span className="text-[9px] text-muted-foreground/70 hidden sm:inline">
+                      ({scratchpad.trim() ? scratchpad.trim().split(/\s+/).filter(Boolean).length : 0} words · {scratchpad.length} chars)
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1 sm:gap-1.5">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (!scratchpad) return
+                        navigator.clipboard.writeText(scratchpad)
+                        toast.success('Notes copied to clipboard!')
+                      }}
+                      className="h-6 text-[9px] px-1.5 text-muted-foreground hover:text-foreground rounded-lg cursor-pointer flex items-center gap-1"
+                      title="Copy Markdown"
+                    >
+                      <Copy className="w-3 h-3" />
+                      <span className="hidden md:inline">Copy</span>
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (!scratchpad) return
+                        const blob = new Blob([scratchpad], { type: 'text/markdown;charset=utf-8' })
+                        const url = URL.createObjectURL(blob)
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.download = `${(room?.name || 'study_notes').replace(/[^a-zA-Z0-9_\u0600-\u06FF]/g, '_')}.md`
+                        a.click()
+                        URL.revokeObjectURL(url)
+                        toast.success('Downloaded notes as Markdown (.md)')
+                      }}
+                      className="h-6 text-[9px] px-1.5 text-muted-foreground hover:text-foreground rounded-lg cursor-pointer flex items-center gap-1"
+                      title="Download Markdown"
+                    >
+                      <Download className="w-3 h-3" />
+                      <span className="hidden md:inline">Export .md</span>
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsZenNotes(true)}
+                      className="h-6 text-[9px] px-1.5 text-muted-foreground hover:text-primary rounded-lg cursor-pointer flex items-center gap-1"
+                      title="Distraction-Free Zen Mode"
+                    >
+                      <Maximize2 className="w-3 h-3" />
+                      <span className="hidden md:inline">Zen</span>
+                    </Button>
+
+                    <div className="h-3 w-px bg-border/40 mx-0.5" />
+
                     {!canManage ? (
                       <span className="text-[9px] text-muted-foreground flex items-center gap-0.5 font-bold">
                         Read Only
@@ -2487,8 +3128,38 @@ export default function StudySpaceClient({
                     </div>
                   ) : (
                     <div className="flex-1 flex flex-col min-h-0 relative bg-muted/15 border border-border/20 rounded-2xl overflow-hidden">
-                      {/* Primitive Formatting Toolbar */}
+                      {/* Rich Formatting Toolbar */}
                       <div className="flex flex-wrap items-center gap-1 p-2 border-b border-border/20 bg-muted/10">
+                        {/* Heading 1 & 2 */}
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('# ', '', 'Heading 1')
+                          }}
+                          className="h-7 px-1.5 text-[10px] font-bold text-muted-foreground hover:text-foreground rounded"
+                          title="Heading 1"
+                        >
+                          <Heading1 className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('## ', '', 'Heading 2')
+                          }}
+                          className="h-7 px-1.5 text-[10px] font-bold text-muted-foreground hover:text-foreground rounded"
+                          title="Heading 2"
+                        >
+                          <Heading2 className="w-3.5 h-3.5" />
+                        </Button>
+
+                        <div className="h-4 w-px bg-border/20 mx-0.5" />
+
                         {/* Basic formatting */}
                         <Button
                           type="button"
@@ -2517,7 +3188,50 @@ export default function StudySpaceClient({
                           I
                         </Button>
 
-                        <div className="h-4 w-px bg-border/20 mx-1" />
+                        <div className="h-4 w-px bg-border/20 mx-0.5" />
+
+                        {/* List, Checklist & Code */}
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('- ', '', 'List item')
+                          }}
+                          className="h-7 w-7 text-muted-foreground hover:text-foreground rounded px-0"
+                          title="Bullet List"
+                        >
+                          <List className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('- [ ] ', '', 'Checklist task')
+                          }}
+                          className="h-7 w-7 text-muted-foreground hover:text-foreground rounded px-0"
+                          title="Task Checklist"
+                        >
+                          <CheckSquare className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            insertText('\n```\n', '\n```\n', 'code snippet')
+                          }}
+                          className="h-7 w-7 text-muted-foreground hover:text-foreground rounded px-0"
+                          title="Code Block"
+                        >
+                          <Code className="w-3.5 h-3.5" />
+                        </Button>
+
+                        <div className="h-4 w-px bg-border/20 mx-0.5" />
 
                         {/* Colors */}
                         <Button
@@ -2580,37 +3294,7 @@ export default function StudySpaceClient({
                           Yellow
                         </Button>
 
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          onMouseDown={(e) => {
-                            e.preventDefault()
-                            insertText('[orange]', '[/orange]', 'Orange Text')
-                          }}
-                          className="h-7 text-[10px] text-orange-400 hover:text-orange-300 rounded px-1.5 flex items-center gap-1 hover:bg-orange-500/5 font-semibold"
-                          title="Orange Text"
-                        >
-                          <div className="w-2 h-2 rounded-full bg-orange-500" />
-                          Orange
-                        </Button>
-
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          onMouseDown={(e) => {
-                            e.preventDefault()
-                            insertText('[purple]', '[/purple]', 'Purple Text')
-                          }}
-                          className="h-7 text-[10px] text-purple-400 hover:text-purple-300 rounded px-1.5 flex items-center gap-1 hover:bg-purple-500/5 font-semibold"
-                          title="Purple Text"
-                        >
-                          <div className="w-2 h-2 rounded-full bg-purple-500" />
-                          Purple
-                        </Button>
-
-                        <div className="h-4 w-px bg-border/20 mx-1" />
+                        <div className="h-4 w-px bg-border/20 mx-0.5" />
 
                         {/* Highlight */}
                         <Button
@@ -2621,13 +3305,12 @@ export default function StudySpaceClient({
                             e.preventDefault()
                             insertText('[bg=yellow]', '[/bg]', 'Highlighted Text')
                           }}
-                          className="h-7 text-[10px] text-yellow-400 hover:text-yellow-300 rounded px-1.5 hover:bg-yellow-500/5 font-semibold"
+                          className="h-7 text-[10px] text-yellow-400 hover:text-yellow-300 rounded px-1.5 hover:bg-yellow-500/5 font-semibold flex items-center gap-1"
                           title="Highlight"
                         >
+                          <Highlighter className="w-3 h-3" />
                           Highlight
                         </Button>
-
-                        <div className="h-4 w-px bg-border/20 mx-1" />
 
                         {/* Math */}
                         <Button
@@ -2958,7 +3641,7 @@ export default function StudySpaceClient({
               {/* Tab 4: Interactive Space Tasks */}
               <TabsContent value="daily" className="h-full mt-0 focus-visible:outline-none flex flex-col">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between pb-2 border-b border-border">
+                  <div className="flex items-center justify-between pb-2 border-b border-border flex-wrap gap-2">
                     <div className="flex items-center gap-1.5">
                       <Target className="w-4 h-4 text-emerald-400" />
                       <span className="text-xs font-bold text-foreground">Interactive Space Tasks</span>
@@ -2966,26 +3649,80 @@ export default function StudySpaceClient({
                         {dailyChallenges.length} Goals
                       </Badge>
                     </div>
-                    {canManage && (
-                      <Button
-                        size="sm"
-                        onClick={() => setOpenDcCreator(true)}
-                        className="h-6 text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer rounded-lg shadow-sm"
-                      >
-                        <Plus className="w-3.5 h-3.5 mr-1" />
-                        Add Task
-                      </Button>
-                    )}
+
+                    <div className="flex items-center gap-2">
+                      {/* Filter Pills */}
+                      <div className="flex items-center gap-1 bg-muted/40 p-0.5 rounded-lg border border-border/50 text-[10px]">
+                        <button
+                          type="button"
+                          onClick={() => setTaskFilter('all')}
+                          className={`px-2 py-0.5 rounded-md font-medium transition-colors cursor-pointer ${
+                            taskFilter === 'all'
+                              ? 'bg-card text-foreground font-bold shadow-xs'
+                              : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          All ({dailyChallenges.length})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setTaskFilter('in_progress')}
+                          className={`px-2 py-0.5 rounded-md font-medium transition-colors cursor-pointer ${
+                            taskFilter === 'in_progress'
+                              ? 'bg-card text-foreground font-bold shadow-xs'
+                              : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          In Progress ({dailyChallenges.filter(c => (c.progress?.find((p: any) => p.user_id === currentUserId)?.progress || 0) < 100).length})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setTaskFilter('completed')}
+                          className={`px-2 py-0.5 rounded-md font-medium transition-colors cursor-pointer ${
+                            taskFilter === 'completed'
+                              ? 'bg-card text-foreground font-bold shadow-xs'
+                              : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          Completed ({dailyChallenges.filter(c => (c.progress?.find((p: any) => p.user_id === currentUserId)?.progress || 0) >= 100).length})
+                        </button>
+                      </div>
+
+                      {canManage && (
+                        <Button
+                          size="sm"
+                          onClick={() => setOpenDcCreator(true)}
+                          className="h-6 text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer rounded-lg shadow-sm"
+                        >
+                          <Plus className="w-3.5 h-3.5 mr-1" />
+                          Add Task
+                        </Button>
+                      )}
+                    </div>
                   </div>
 
-                  {dailyChallenges.length === 0 ? (
+                  {filteredDailyChallenges.length === 0 ? (
                     <div className="py-12 text-center text-muted-foreground flex flex-col items-center justify-center">
                       <Target className="w-8 h-8 text-muted-foreground/30 mb-2" />
-                      <p className="text-xs font-medium">No active daily tasks yet. Define goals to keep members focused!</p>
+                      <p className="text-xs font-medium">
+                        {dailyChallenges.length === 0
+                          ? 'No active daily tasks yet. Define goals to keep members focused!'
+                          : 'No tasks found matching this filter.'}
+                      </p>
+                      {dailyChallenges.length > 0 && (
+                        <Button
+                          variant="link"
+                          size="sm"
+                          onClick={() => setTaskFilter('all')}
+                          className="text-xs text-primary mt-1 cursor-pointer"
+                        >
+                          View all tasks
+                        </Button>
+                      )}
                     </div>
                   ) : (
                     <div className="space-y-3.5">
-                      {dailyChallenges.map((challenge: any) => {
+                      {filteredDailyChallenges.map((challenge: any) => {
                         const myProgress = challenge.progress?.find((p: any) => p.user_id === currentUserId)
                         const currentProgressVal = myProgress?.progress || 0
                         const isDone = currentProgressVal >= 100
@@ -3050,7 +3787,7 @@ export default function StudySpaceClient({
                               </div>
                             </div>
 
-                            {/* Milestone Click Buttons (Zero Request Flood) */}
+                            {/* Milestone Click Buttons */}
                             <div className="space-y-2 pt-1 border-t border-border/40">
                               <div className="flex items-center justify-between">
                                 <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider">Milestone Stages</span>
@@ -3079,9 +3816,20 @@ export default function StudySpaceClient({
                               </div>
                             </div>
 
-                            {/* Smart Auto-Sync Shortcuts & Claim Celebration */}
+                            {/* Smart Auto-Sync Shortcuts, Quick Complete & Claim Celebration */}
                             <div className="flex items-center justify-between gap-2 pt-1 border-t border-border/30 flex-wrap">
                               <div className="flex items-center gap-1.5 flex-wrap">
+                                {!isDone && (
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={() => handleUpdateTaskMilestone(challenge.id, 100)}
+                                    className="h-6 text-[9px] px-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg cursor-pointer flex items-center gap-1 shadow-xs"
+                                  >
+                                    <CheckCircle className="w-3 h-3" />
+                                    Mark 100% Done
+                                  </Button>
+                                )}
                                 <Button
                                   type="button"
                                   variant="ghost"
@@ -3138,27 +3886,70 @@ export default function StudySpaceClient({
               {/* Tab 5: Drive Resources Library */}
               <TabsContent value="resources" className="h-full mt-0 focus-visible:outline-none flex flex-col">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between pb-2 border-b border-border">
-                    <span className="text-xs font-bold text-muted-foreground">Google Drive Attachments</span>
-                    {canManage && (
-                      <Button
-                        size="sm"
-                        onClick={() => router.push('/drive')}
-                        className="h-6 text-[10px] bg-primary text-primary-foreground font-bold cursor-pointer rounded-lg"
-                      >
-                        Browse Chameleon Drive
-                      </Button>
-                    )}
+                  <div className="flex items-center justify-between pb-2 border-b border-border flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-muted-foreground">Google Drive Attachments</span>
+                      <Badge variant="outline" className="text-[9px] py-0 h-4 border-amber-500/30 bg-amber-500/10 text-amber-400 font-bold">
+                        {resources.length} Files
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {resources.length > 0 && (
+                        <div className="relative w-36 sm:w-48">
+                          <Search className="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                          <Input
+                            value={resourceSearch}
+                            onChange={(e) => setResourceSearch(e.target.value)}
+                            placeholder="Filter resources..."
+                            className="h-6 text-[10px] pl-7 pr-6 bg-muted/20 border-border/70 rounded-lg"
+                          />
+                          {resourceSearch && (
+                            <button
+                              type="button"
+                              onClick={() => setResourceSearch('')}
+                              className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                            >
+                              <X className="w-2.5 h-2.5" />
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      {canManage && (
+                        <Button
+                          size="sm"
+                          onClick={() => router.push('/drive')}
+                          className="h-6 text-[10px] bg-primary text-primary-foreground font-bold cursor-pointer rounded-lg"
+                        >
+                          Browse Chameleon Drive
+                        </Button>
+                      )}
+                    </div>
                   </div>
 
-                  {resources.length === 0 ? (
+                  {filteredResources.length === 0 ? (
                     <div className="py-12 text-center text-muted-foreground flex flex-col items-center justify-center">
                       <FolderOpen className="w-8 h-8 text-muted-foreground/30 mb-2" />
-                      <p className="text-xs">No Drive files attached. Open Chameleon Drive to link PDFs!</p>
+                      <p className="text-xs">
+                        {resources.length === 0
+                          ? 'No Drive files attached. Open Chameleon Drive to link PDFs!'
+                          : `No resources match "${resourceSearch}".`}
+                      </p>
+                      {resources.length > 0 && (
+                        <Button
+                          variant="link"
+                          size="sm"
+                          onClick={() => setResourceSearch('')}
+                          className="text-xs text-primary mt-1 cursor-pointer"
+                        >
+                          Clear search
+                        </Button>
+                      )}
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {resources.map((file: any) => (
+                      {filteredResources.map((file: any) => (
                         <div
                           key={file.id}
                           className="p-3 bg-muted/20 border border-border/80 rounded-2xl flex flex-col justify-between gap-3 relative group"
@@ -3213,80 +4004,6 @@ export default function StudySpaceClient({
                       ))}
                     </div>
                   )}
-                </div>
-              </TabsContent>
-
-              {/* Tab 6: Study Consistency Leaderboard */}
-              <TabsContent value="members" className="mt-0 focus-visible:outline-none space-y-4">
-                <div className="flex items-center justify-between pb-2 border-b border-border">
-                  <div className="flex items-center gap-1.5">
-                    <Trophy className="w-4 h-4 text-yellow-500" />
-                    <span className="text-xs font-bold text-foreground">
-                      Consistency Leaderboard
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-muted-foreground font-medium">
-                    {leaderboardMembers.length} Members Ranked
-                  </span>
-                </div>
-
-                <div className="space-y-2">
-                  {leaderboardMembers.map((member: any, index: number) => {
-                    const user = member.user
-                    if (!user) return null
-                    const totalMins = Math.round((member.total_study_time || 0) / 60)
-                    const isCreator = member.role === 'creator'
-                    const isAdminUser = member.role === 'admin'
-
-                    return (
-                      <div 
-                        key={user.auth_id || member.user_id}
-                        className="p-3 bg-muted/20 hover:bg-muted/30 border border-border/80 rounded-2xl flex items-center justify-between gap-4 transition-all cursor-pointer group"
-                        onClick={() => {
-                          setSelectedProfile(user)
-                          setShowProfileModal(true)
-                        }}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className={`w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm ${
-                            index === 0 ? 'bg-yellow-500 text-yellow-950 ring-2 ring-yellow-500/20' :
-                            index === 1 ? 'bg-slate-300 text-slate-900 ring-2 ring-slate-300/20' :
-                            index === 2 ? 'bg-amber-600 text-amber-50 ring-2 ring-amber-600/20' : 'bg-muted text-muted-foreground'
-                          }`}>
-                            {index + 1}
-                          </div>
-                          
-                          <div className="w-8 h-8 rounded-full bg-primary/10 border border-border flex items-center justify-center overflow-hidden shrink-0">
-                            {user.profile_image ? (
-                              <img src={user.profile_image} alt={user.username} className="w-full h-full object-cover" />
-                            ) : (
-                              <Users className="w-3.5 h-3.5 text-primary" />
-                            )}
-                          </div>
-
-                          <div className="min-w-0">
-                            <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 truncate">
-                              <span className="truncate">{user.username}</span>
-                              {isCreator && <span title="Space Owner"><Crown className="w-3 h-3 text-yellow-500 shrink-0" /></span>}
-                              {isAdminUser && !isCreator && <span title="Admin"><Shield className="w-3 h-3 text-blue-400 shrink-0" /></span>}
-                            </h4>
-                            <p className="text-[9px] text-muted-foreground truncate">{user.specialization || 'Student'}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-3 text-right shrink-0">
-                          <div className="flex items-center gap-1 text-[10px] text-amber-500 font-bold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
-                            <Flame className="w-3.5 h-3.5" />
-                            <span>{member.current_streak || 0}d</span>
-                          </div>
-                          <div className="min-w-[48px]">
-                            <span className="text-xs font-black text-foreground block">{totalMins}m</span>
-                            <span className="text-[8px] text-muted-foreground uppercase block font-bold tracking-wider">STUDIED</span>
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })}
                 </div>
               </TabsContent>
 
@@ -3690,7 +4407,8 @@ export default function StudySpaceClient({
             </CardContent>
           </Tabs>
         </Card>
-      </div>
+      </motion.div>
+    </div>
 
       {/* --- LIVE POLL CREATOR DIALOG --- */}
       <Dialog open={openPollCreator} onOpenChange={setOpenPollCreator}>

@@ -37,6 +37,15 @@ function buildMarlineSystemPrompt(): string {
   lines.push(`  • نظم التشغيل (00307) [متطلب: نظم حاسب (00103) وبرمجة 1 (00105)]`);
   lines.push(`  • شبكات الحاسب (00308) [متطلب: نظم حاسب (00103) وبرمجة 1 (00105)]`);
 
+  // Program Electives (Specialized per department - 4 courses / 12 Credit Hours in Level 4: 2 courses in Sem 7 & 2 courses in Sem 8)
+  lines.push(`\n🎯 **المقررات الاختيارية التخصصية لكل برنامج (Program Electives - 4 مقررات فقط بواقع 12 ساعة معتمدة في السنة الرابعة: مادتين بالترم السابع ومادتين بالترم الثامن)**:`);
+  lines.push(`  • الحوسبة وعلوم البيانات: Convex Optimization (01409/01401) • Non-Linear & Combinatorial Optimization (01410/01402) • Multivariate Statistical Analysis (01411/01403) • Bayesian Statistics (01412/01404) • Data Compression (01413/01405) • Concurrent Algorithms (01414/01406) • Distributed Databases (01415/01407) • Advanced Databases (01416/01408)`);
+  lines.push(`  • تحليلات الأعمال: Human Computer Interaction (02409/02401) • Gamification (02410/02402) • Tech Trends & Innovation (02411/02403) • GIS & Spatial Data Mining (02412/02404) • Managing Tech Projects (02413/02405) • Smart Cities & E-Government (02414/02406) • Digital Transformation (02415/02407) • Manufacturing Analytics (02416/02408) • Predictive Analytics (02417/02409) • NLP & Semantic Analysis (02418/02410)`);
+  lines.push(`  • الذكاء الاصطناعي: Speech Recognition (03409/03401) • Natural Language Understanding (03410/03402) • Embedded Machine Learning / TinyML (03411/03403) • Intelligence Technology Trends (03412/03404) • Internet of Things II (03413/03405) • Knowledge-Base AI (03414/03406) • Virtual Reality (03415/03407) • Game Theory (03416/03408)`);
+  lines.push(`  • تحليلات الوسائط: Interactive Media (04409/04401) • Online Journalism (04410/04402) • Computational Photography (04411/04403) • Computer Animations (04412/04404) • Video Game Design & Programming (04413/04405) • Virtual Reality (04414/04406) • Digital Media Forensics (04415/04407)`);
+  lines.push(`  • المعلوماتية والرعاية الصحية: Radiation Physics (05409/05401) • Cellular & Molecular Biology (05410/05402) • Radiation Biology (05411/05403) • Pathophysiology & Lab Data (05412/05404) • Principles of Biochemistry (05413/05405)`);
+  lines.push(`  • الأمن السيبراني: AI Security Issues (06409/06401) • Proactive Computer Security (06410/06402) • Software Security Engineering (06411/06403) • Blockchain & Security of Blockchain (06412/06404) • Cloud Computing Security (06413/06405) • Social Networks Analytics (06414/06406) • Internet of Things (06415/06407) • Mobile Computing (06416/06408)`);
+
   // All 6 Programs Levels 2 to 4
   const programs = (bylawData as any).programs || [];
   for (const prog of programs) {
@@ -68,7 +77,11 @@ function buildMarlineSystemPrompt(): string {
 🛑 قواعد المعرفة الصارمة:
 1. أنتِ تعرفين بالكامل مواد كل قسم وسنة. عند سؤال الطالب عن مواد أي سنة أو قسم (مثلاً "ايه مواد سنة ثالثة قسم عام؟" أو "مواد سنة تانية ذكاء اصطناعي")، أجيبي فوراً بسرد مواد الترم الأول والثاني من الكتالوج أدناه في جداول منسقة أو نقاط واضحة، ولا تقولي إطلاقاً أنكِ لا تعرفين مواد سنة تالتة أو رابعة لأنها متوفرة لديكِ بالكامل.
 2. الالتزام باللائحة وعبء الساعات: إجمالي الساعات 140، الـ CGPA الأدنى للتخرج 2.00، الساعات بالترم (12-19، استثنائي 21 لمن معدله >=3.333 أو خريج، المتعثر Probation حده 12 ساعة إذا CGPA < 1.666 بنهاية سنة أولى أو < 2.000 بأي ترم تالٍ).
-3. ⚠️ كشف الأسئلة المضللة والافتراضات المستحيلة (التخرج وعدد الفصول):
+3. ⚠️ قواعد المقررات الاختيارية الصارمة (لائحة الكلية الرسمية):
+   - **متطلبات الكلية الاختيارية (Faculty Electives)**: يدرس الطالب **4 مقررات فقط بواقع 12 ساعة معتمدة** (3 ساعات لكل مقرر)، يتم تسجيلها في السنة الثالثة (مقررين بالترم الخامس ومقررين بالترم السادس).
+   - **متطلبات التخصص الاختيارية (Program Electives)**: يدرس الطالب **4 مقررات فقط بواقع 12 ساعة معتمدة** (3 ساعات لكل مقرر)، يتم تسجيلها في السنة الرابعة (مقررين بالترم السابع ومقررين بالترم الثامن).
+   - 🚫 **يُمنع منعاً باتاً لغوياً أو لائحياً القول بأن الطالب يختار 6 مقررات أو 18 ساعة اختياري تخصص!** العدد الإلزامي لائحياً هو **4 مقررات فقط (12 ساعة)** لمواد التخصص الاختيارية، و **4 مقررات فقط (12 ساعة)** لمواد الكلية الاختيارية، بمجموع 8 مقررات (24 ساعة) لجميع المقررات الاختيارية طوال سنوات الدراسة.
+4. ⚠️ كشف الأسئلة المضللة والافتراضات المستحيلة (التخرج وعدد الفصول):
    - إذا سأل الطالب: "ازاي اتخرج في 5 تيرمات؟" أو "ينفع أخلص الكلية في سنتين أو 5 فصول؟" أو أي سؤال يفترض مدة تخرج أقل من 7 فصول:
      • 🚫 ارفضي الفرضية فوراً وبشكل قاطع وودود: وضحي له أن التخرج في 5 فصول **مستحيل لائحياً ورياضياً ومنطقياً**.
      • فندي الاستحالة بالحقائق اللائحية الثلاث التالية:

@@ -1,5 +1,6 @@
 import bylawData from "../../data/faculty_courses_bylaw.json";
-import { getStudentCoursesForLevel, MarlineUserSession } from "./user-session-context";
+import programElectivesData from "../../data/program_electives.json";
+import { getStudentCoursesForLevel, normalizeSpecialization, MarlineUserSession } from "./user-session-context";
 
 export interface CourseInfo {
   code: string;
@@ -16,10 +17,11 @@ export interface CourseInfo {
   notes?: string;
 }
 
-const allCourses: CourseInfo[] = (bylawData as any).all_unique_courses || [];
+const allBylawCourses: CourseInfo[] = (bylawData as any).all_unique_courses || [];
+const allProgramElectives: any[] = (programElectivesData as any).all_program_electives || [];
 const dependencyGraph = (bylawData as any).prerequisites_dependency_graph || {};
 
-// Common Arabic/English colloquial aliases for popular courses
+// Common Arabic/English colloquial aliases for popular courses & electives
 const courseSynonyms: Record<string, string[]> = {
   '02-24-00101': ['linear algebra', 'جبر', 'جبر خطي', 'الجبرا', 'algebra', '00101'],
   '02-24-00102': ['calculus', 'تفاضل', 'تكامل', 'تفاضل وتكامل', 'كالكولس', '00102'],
@@ -50,7 +52,35 @@ const courseSynonyms: Record<string, string[]> = {
   '02-24-03302': ['deep learning', 'ديب ليرنينج', 'تعلم عميق', '03302'],
   '02-24-03305': ['computer vision', 'كمبيوتر فيجن', 'رؤية بالحاسب', '03305'],
   '02-24-03403': ['natural language processing', 'معالجة لغات طبيعية', 'nlp', '03403'],
-  '02-24-01401': ['big data', 'بيج داتا', 'بيانات ضخمة', '01401']
+  '02-24-01401': ['big data', 'بيج داتا', 'بيانات ضخمة', '01401'],
+
+  // Program Electives aliases & alternative codes
+  '02-24-03409': ['speech recognition', 'تعرف على الكلام', 'معالجة الكلام', 'speech', '03409', '03401'],
+  '02-24-03410': ['natural language understanding', 'فهم لغات طبيعية', 'nlu', '03410', '03402'],
+  '02-24-03411': ['embedded machine learning', 'tinyml', 'تايني ام ال', 'تعلم الة مدمج', '03411', '03403'],
+  '02-24-03414': ['knowledge base ai', 'ذكاء اصطناعي قائم على المعرفة', 'نوليدج بيز', '03414', '03406'],
+  '02-24-03415': ['virtual reality', 'واقع افتراضي', 'vr', '03415', '03407'],
+  '02-24-03416': ['game theory', 'نظرية الألعاب', 'نظرية الالعاب', '03416', '03408'],
+  '02-24-06409': ['ai security', 'ai security issues', 'أمان الذكاء الاصطناعي', 'امن الذكاء الاصطناعي', '06409', '06401'],
+  '02-24-06410': ['proactive security', 'أمن حاسوب استباقي', 'امن استباقي', '06410', '06402'],
+  '02-24-06411': ['software security engineering', 'أمان برمجيات', 'هندسة أمان البرمجيات', '06411', '06403'],
+  '02-24-06412': ['blockchain', 'بلوك تشين', 'بلوكشين', 'blockchain and security', '06412', '06404'],
+  '02-24-06413': ['cloud security', 'أمان الحوسبة السحابية', 'أمن سحابي', '06413', '06405'],
+  '02-24-06414': ['social networks analytics', 'تحليلات الشبكات الاجتماعية', '06414', '06406'],
+  '02-24-01409': ['convex optimization', 'تحسين محدب', 'كونفكس', '01409', '01401'],
+  '02-24-01410': ['combinatorial optimization', 'تحسين غير خطي', '01410', '01402'],
+  '02-24-01411': ['multivariate', 'تحليل متعدد المتغيرات', '01411', '01403'],
+  '02-24-01412': ['bayesian', 'إحصاء بيزي', 'احصاء بايزي', '01412', '01404'],
+  '02-24-02409': ['hci', 'human computer interaction', 'تفاعل الانسان والحاسب', '02409', '02401'],
+  '02-24-02410': ['gamification', 'تلعيب', 'تطوير العاب', '02410', '02402'],
+  '02-24-02412': ['gis', 'spatial data mining', 'نظم معلومات جغرافية', '02412', '02404'],
+  '02-24-02417': ['predictive analytics', 'تحليلات تنبؤية', '02417', '02409'],
+  '02-24-04409': ['interactive media', 'وسائط تفاعلية', '04409', '04401'],
+  '02-24-04411': ['computational photography', 'تصوير حاسوبي', '04411', '04403'],
+  '02-24-04412': ['computer animations', 'رسوم متحركة', 'انيميشن', '04412', '04404'],
+  '02-24-04413': ['video game design', 'تصميم ألعاب', 'العاب فيديو', '04413', '04405'],
+  '02-24-05409': ['radiation physics', 'فيزياء إشعاع', 'فيزياء اشعاع', '05409', '05401'],
+  '02-24-05410': ['cellular biology', 'molecular biology', 'بيولوجيا خلوية', '05410', '05402'],
 };
 
 /**
@@ -62,12 +92,12 @@ export function getBylawContextForQuery(query: string, userMeta?: MarlineUserSes
 
   const normalized = query.toLowerCase().trim();
 
-  // Detect if query is asking about courses, prerequisites, departments, or graduation rules
+  // Detect if query is asking about courses, prerequisites, departments, electives, or graduation rules
   const triggerKeywords = [
     'متطلب', 'متطلبات', 'بريريكويست', 'prereq', 'prerequisite', 'مادة', 'مواد', 'مقرر', 'مقررات',
     'كود', 'تفتح', 'بيفتح', 'مسار', 'خطة', 'ترم', 'تيرم', 'تيرمات', 'فصل', 'فصول', 'سنة', 'سنتين', 'سنوات',
-    'مستوى', 'قسم', 'تخصص', 'لائحة', 'ساعات', 'اختياري', 'إجباري', 'اجباري', 'مشروع', 'تخرج', 'جدول', 'جدولي',
-    'موادي', 'مقرراتي', 'هدرس', 'عليا'
+    'مستوى', 'قسم', 'تخصص', 'لائحة', 'ساعات', 'اختياري', 'اختيارية', 'اختيارات', 'الكترف', 'الكتف', 'elective',
+    'electives', 'إجباري', 'اجباري', 'مشروع', 'تخرج', 'جدول', 'جدولي', 'موادي', 'مقرراتي', 'هدرس', 'عليا'
   ];
 
   const hasTrigger = triggerKeywords.some(kw => normalized.includes(kw));
@@ -94,10 +124,16 @@ export function getBylawContextForQuery(query: string, userMeta?: MarlineUserSes
     contextParts.push(gradContext);
   }
 
+  // 1. Check if the user is asking about department electives (Program Electives or Faculty Electives)
+  const deptElectiveMatch = checkDepartmentElectiveRequest(normalized, userMeta);
+  if (deptElectiveMatch) {
+    contextParts.push(deptElectiveMatch);
+  }
+
   const matchedCourseCodes = new Set<string>();
 
-  // 1. Direct code search (e.g. 02-24-00108 or 00108)
-  for (const c of allCourses) {
+  // 2. Direct code search in compulsory and electives
+  for (const c of allBylawCourses) {
     const fullCode = c.code.toLowerCase();
     const shortCode = fullCode.slice(-5);
     if (normalized.includes(fullCode) || normalized.includes(shortCode)) {
@@ -105,16 +141,31 @@ export function getBylawContextForQuery(query: string, userMeta?: MarlineUserSes
     }
   }
 
-  // 2. Synonyms and common colloquial names
+  for (const e of allProgramElectives) {
+    const fullCode = e.code.toLowerCase();
+    const shortCode = fullCode.slice(-5);
+    const altCode = (e.alternative_code || '').toLowerCase();
+    const altShort = altCode ? altCode.slice(-5) : '';
+    if (
+      normalized.includes(fullCode) ||
+      normalized.includes(shortCode) ||
+      (altCode && normalized.includes(altCode)) ||
+      (altShort && normalized.includes(altShort))
+    ) {
+      matchedCourseCodes.add(e.code);
+    }
+  }
+
+  // 3. Synonyms and common colloquial names
   for (const [code, synonyms] of Object.entries(courseSynonyms)) {
     if (synonyms.some(s => normalized.includes(s))) {
       matchedCourseCodes.add(code);
     }
   }
 
-  // 3. Exact Arabic and English titles
+  // 4. Exact Arabic and English titles
   if (matchedCourseCodes.size < 4) {
-    for (const c of allCourses) {
+    for (const c of allBylawCourses) {
       const nameEn = (c.name_en || '').toLowerCase();
       const nameAr = (c.name_ar || '').toLowerCase();
       if (nameEn && normalized.includes(nameEn)) {
@@ -126,20 +177,49 @@ export function getBylawContextForQuery(query: string, userMeta?: MarlineUserSes
     }
   }
 
-  // If specific courses were matched, format their official bylaw records concisely
+  if (matchedCourseCodes.size < 4) {
+    for (const e of allProgramElectives) {
+      const nameEn = (e.name_en || '').toLowerCase();
+      const nameAr = (e.name_ar || '').toLowerCase();
+      if (nameEn && normalized.includes(nameEn)) {
+        matchedCourseCodes.add(e.code);
+      } else if (nameAr && normalized.includes(nameAr)) {
+        matchedCourseCodes.add(e.code);
+      }
+      if (matchedCourseCodes.size >= 5) break;
+    }
+  }
+
+  // If specific courses were matched, format their official records concisely
   if (matchedCourseCodes.size > 0) {
     const lines: string[] = [
-      `📌 [بيانات موثقة من اللائحة الرسمية لكلية الحاسبات وعلوم البيانات - جامعة الإسكندرية بخصوص المقررات المطلوبة]:`
+      `📌 [بيانات موثقة من اللائحة الرسمية ومقررات الكلية بخصوص المقررات المطلوبة]:`
     ];
 
     for (const code of Array.from(matchedCourseCodes).slice(0, 4)) {
-      const course = allCourses.find(c => c.code === code);
+      // Check program electives first
+      const elective = allProgramElectives.find(e => e.code === code || e.alternative_code === code);
+      if (elective) {
+        const prereqNames = elective.prerequisites_details && elective.prerequisites_details.length > 0
+          ? elective.prerequisites_details.map((p: any) => `${p.name_ar || p.name_en} (${p.code})`).join(' و ')
+          : (elective.prerequisites && elective.prerequisites.length > 0 ? elective.prerequisites.join(' و ') : 'لا يوجد متطلب سابق (يمكن تسجيلها مباشرة)');
+
+        const alt = elective.alternative_code ? ` / \`${elective.alternative_code}\`` : '';
+        lines.push(
+          `- **${elective.name_ar || elective.name_en} (${elective.name_en})** [كود: \`${elective.code}\`${alt} | مقرر اختياري تخصصي بقسم ${elective.department_name_ar} | ${elective.credit_hours} ساعات معتمدة]:\n` +
+          `  * المتطلب السابق الإلزامي: ${prereqNames}\n` +
+          `  * نبذة عن المقرر: ${elective.description}`
+        );
+        continue;
+      }
+
+      const course = allBylawCourses.find(c => c.code === code);
       if (!course) continue;
 
       let prereqText = 'لا يوجد متطلب سابق (يمكن تسجيلها مباشرة)';
       if (course.prerequisites && course.prerequisites.length > 0) {
         const details = course.prerequisites.map(pCode => {
-          const p = allCourses.find(item => item.code === pCode);
+          const p = allBylawCourses.find(item => item.code === pCode) || allProgramElectives.find(item => item.code === pCode);
           return p ? `${p.name_ar || p.name_en} (${p.code})` : pCode;
         });
         prereqText = details.join(' و ');
@@ -163,12 +243,6 @@ export function getBylawContextForQuery(query: string, userMeta?: MarlineUserSes
     contextParts.push(lines.join('\n'));
   }
 
-  // 4. Check if the user is asking about a specific department's electives
-  const deptElectiveMatch = checkDepartmentElectiveRequest(normalized);
-  if (deptElectiveMatch) {
-    contextParts.push(deptElectiveMatch);
-  }
-
   return contextParts.length > 0 ? contextParts.join('\n\n') : null;
 }
 
@@ -182,40 +256,67 @@ function checkGraduationDurationRequest(normalized: string): string | null {
 • ⚠️ توجيه للذكاء الاصطناعي ضد الأسئلة المضللة: إذا سألك الطالب كيف يتخرج في 5 فصول دراسية أو أي مدة أقل من 7 فصول، ارفض الفرضية بحزم فوراً، واشرح الاستحالة اللائحية والرياضية (140 ساعة ÷ 5 تيرمات = 28 ساعة لكل ترم وهذا ممنوع لائحياً) وسلسلة المتطلبات السابقة التي تتطلب 7 مستويات تتابعية على الأقل، وقدم له خطة الـ 7 فصول كأسرع مسار مسموح به.`;
 }
 
-function checkDepartmentElectiveRequest(normalized: string): string | null {
-  if (!normalized.includes('اختياري')) return null;
+function checkDepartmentElectiveRequest(normalized: string, userMeta?: MarlineUserSession): string | null {
+  const isAskingElectives = /(?:اختياري|اختيارية|اختيارات|الكترف|الكتف|elective|electives)/.test(normalized);
+  if (!isAskingElectives) return null;
 
-  const programs = (bylawData as any).programs || [];
-
-  for (const prog of programs) {
-    const pNameAr = (prog.program_name_ar || '').toLowerCase();
-    const pNameEn = (prog.program_name_en || '').toLowerCase();
-
-    if (normalized.includes(pNameAr) || normalized.includes(pNameEn) ||
-        (prog.program_code === '01' && (normalized.includes('عام') || normalized.includes('حوسبة'))) ||
-        (prog.program_code === '02' && (normalized.includes('اعمال') || normalized.includes('أعمال') || normalized.includes('بيزنس'))) ||
-        (prog.program_code === '03' && (normalized.includes('ذكاء') || normalized.includes('نظم ذكية'))) ||
-        (prog.program_code === '04' && (normalized.includes('وسائط') || normalized.includes('ميديا'))) ||
-        (prog.program_code === '05' && (normalized.includes('صحي') || normalized.includes('رعاية'))) ||
-        (prog.program_code === '06' && (normalized.includes('سايبر') || normalized.includes('سيبراني') || normalized.includes('أمن')))) {
-
-      const elList = (prog.program_electives || []).map((e: any) => {
-        const pr = (e.prerequisites && e.prerequisites.length > 0) ? ` (متطلب: ${e.prerequisites.join(',')})` : ' (بدون متطلب)';
-        return `• ${e.name_ar || e.name_en} [\`${e.code}\`]${pr}`;
-      });
-
-      return `📌 [قائمة المقررات الاختيارية المعتمدة لبرنامج ${prog.program_name_ar} من مادة ${prog.program_code === '01' ? 33 : prog.program_code === '02' ? 35 : prog.program_code === '03' ? 37 : prog.program_code === '04' ? 39 : prog.program_code === '05' ? 41 : 43} باللائحة]:\n${elList.join('\n')}`;
-    }
+  // 1. Detect department from query keywords
+  let targetSlug: string | null = null;
+  if (normalized.includes('عام') || normalized.includes('حوسب') || normalized.includes('بيانات') || normalized.includes('computing') || normalized.includes('data science')) {
+    targetSlug = 'computing-data-sciences';
+  } else if (normalized.includes('اعمال') || normalized.includes('أعمال') || normalized.includes('بيزنس') || normalized.includes('business')) {
+    targetSlug = 'business-analytics';
+  } else if (normalized.includes('ذكاء') || normalized.includes('ai') || normalized.includes('نظم ذكية') || normalized.includes('intelligent')) {
+    targetSlug = 'artificial-intelligence';
+  } else if (normalized.includes('وسائط') || normalized.includes('ميديا') || normalized.includes('media')) {
+    targetSlug = 'media-analytics';
+  } else if (normalized.includes('صحي') || normalized.includes('رعاية') || normalized.includes('health')) {
+    targetSlug = 'healthcare-informatics';
+  } else if (normalized.includes('سايبر') || normalized.includes('سيبراني') || normalized.includes('cyber') || normalized.includes('أمن')) {
+    targetSlug = 'cybersecurity';
   }
 
-  // Faculty electives
-  if (normalized.includes('كلية') && normalized.includes('اختياري')) {
-    const facElectives = (bylawData as any).faculty_elective_courses || [];
+  // 2. If no department detected in query, fallback to user's current department session
+  if (!targetSlug && userMeta?.specialization) {
+    targetSlug = normalizeSpecialization(userMeta.specialization).slug;
+  }
+
+  // 3. If a target department is found, return its complete list of program electives
+  if (targetSlug && (programElectivesData as any).by_department?.[targetSlug]) {
+    const deptData = (programElectivesData as any).by_department[targetSlug];
+    const lines: string[] = [
+      `📌 [قائمة المقررات الاختيارية التخصصية المعتمدة (Program Electives) لقسم ${deptData.department_name_ar} (${deptData.department_name_en}) من اللائحة الرسمية]:`,
+      `⚠️ القاعدة اللائحية الصارمة للمقررات الاختيارية:`,
+      `• يختار الطالب **4 مقررات تخصص اختيارية فقط (بواقع 12 ساعة معتمدة إجمالياً)** من هذه القائمة طوال دراسته (مقرران بالفصل السابع ومقرران بالفصل الثامن في السنة الرابعة).`,
+      `• بالإضافة إلى **4 مقررات كلية اختيارية فقط (بواقع 12 ساعة معتمدة إجمالياً)** في السنة الثالثة.`,
+      `• 🚫 يُمنع منعاً باتاً لائحياً القول بأن المطلوب 6 مقررات أو 18 ساعة اختياري تخصص! العدد الإلزامي لائحياً هو 4 مقررات تخصص اختيارية (12 ساعة) و4 مقررات كلية اختيارية (12 ساعة).`
+    ];
+
+    for (const c of deptData.electives) {
+      const prereqNames = c.prerequisites_details && c.prerequisites_details.length > 0
+        ? c.prerequisites_details.map((p: any) => `${p.name_ar || p.name_en} (${p.code})`).join(' و ')
+        : (c.prerequisites && c.prerequisites.length > 0 ? c.prerequisites.join(' و ') : 'لا يوجد متطلب سابق (يمكن تسجيلها مباشرة)');
+
+      const altCodeStr = c.alternative_code ? ` / \`${c.alternative_code}\`` : '';
+      lines.push(
+        `- **${c.name_ar} (${c.name_en})** [كود: \`${c.code}\`${altCodeStr} | ${c.credit_hours} ساعات]:\n` +
+        `  * المتطلب السابق: ${prereqNames}\n` +
+        `  * نبذة عن المقرر: ${c.description}`
+      );
+    }
+
+    return lines.join('\n');
+  }
+
+  // 4. If asked about Faculty Electives or general electives
+  if (normalized.includes('كلية') || !targetSlug) {
+    const facElectives = (programElectivesData as any).faculty_electives || [];
     const list = facElectives.map((e: any) => {
       const pr = (e.prerequisites && e.prerequisites.length > 0) ? ` (متطلب: ${e.prerequisites.join(',')})` : ' (بدون متطلب)';
-      return `• ${e.name_ar || e.name_en} [\`${e.code}\`]${pr}`;
+      return `• ${e.name_en} [\`${e.code}\` | ${e.credit_hours} ساعات]${pr}`;
     });
-    return `📌 [قائمة متطلبات الكلية الاختيارية (مادة 31 باللائحة - 4 مقررات بواقع 12 ساعة)]:\n${list.join('\n')}`;
+
+    return `📌 [قائمة متطلبات الكلية الاختيارية المشتركة (Faculty Electives - مادة 31 باللائحة - 4 مقررات بواقع 12 ساعة)]:\n${list.join('\n')}\n\n💡 ملاحظة: لكل قسم أيضاً قائمة مقررات اختيارية تخصصية (Program Electives). يمكنك السؤال عن المواد الاختيارية لأي قسم محدد مثل الذكاء الاصطناعي، الأمن السيبراني، إلخ.`;
   }
 
   return null;
