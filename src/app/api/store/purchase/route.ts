@@ -19,10 +19,18 @@ const STORE_ITEMS = [
   { id: "border-gold-glow", name: "Gold Glow Border", price: 600, type: "border" },
   { id: "border-cosmic-aurora", name: "Cosmic Aurora Border", price: 900, type: "border" },
   { id: "border-neon-glitch", name: "Cyber Neon Border", price: 750, type: "border" },
+  { id: "border-infernal-flame", name: "Infernal Flame Border", price: 900, type: "border" },
+  { id: "border-sakura-bloom", name: "Sakura Blossom Border", price: 750, type: "border" },
+  { id: "border-arcane-portal", name: "Arcane Void Portal Border", price: 1050, type: "border" },
+  { id: "border-electric-storm", name: "Electric Storm Border", price: 825, type: "border" },
   // Cursors
   { id: "cursor-sparkles", name: "Cosmic Sparkles Cursor", price: 450, type: "cursor" },
   { id: "cursor-cyber-cross", name: "Cyber Cross Cursor", price: 600, type: "cursor" },
   { id: "cursor-bubbles", name: "Bouncing Bubbles Cursor", price: 750, type: "cursor" },
+  { id: "cursor-inferno", name: "Infernal Embers Trail", price: 600, type: "cursor" },
+  { id: "cursor-sakura", name: "Sakura Drift Trail", price: 525, type: "cursor" },
+  { id: "cursor-lightning", name: "Electric Arc Trail", price: 650, type: "cursor" },
+  { id: "cursor-matrix", name: "Quantum Matrix Trail", price: 550, type: "cursor" },
 ]
 
 export async function POST(request: NextRequest) {

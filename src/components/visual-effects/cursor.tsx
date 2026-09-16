@@ -14,6 +14,8 @@ interface Particle {
   maxLife: number
   angle?: number
   spin?: number
+  char?: string
+  points?: { x: number; y: number }[]
 }
 
 export default function Cursor() {
@@ -157,6 +159,89 @@ export default function Cursor() {
       }
     }
 
+    // Infernal Embers particle generator
+    const createEmber = (x: number, y: number) => {
+      const emberColors = ["#ef4444", "#f97316", "#f59e0b", "#fbbf24", "#dc2626", "#fed7aa"]
+      const color = emberColors[Math.floor(Math.random() * emberColors.length)]
+      return {
+        x: x + (Math.random() - 0.5) * 6,
+        y: y + (Math.random() - 0.5) * 6,
+        vx: (Math.random() - 0.5) * 1.8,
+        vy: -Math.random() * 2.2 - 0.8, // buoyant upward rise
+        size: Math.random() * 4 + 2,
+        alpha: 1,
+        color,
+        life: 0,
+        maxLife: Math.random() * 26 + 18
+      }
+    }
+
+    // Sakura Blossom Petal particle generator
+    const createSakuraPetal = (x: number, y: number) => {
+      const sakuraColors = ["#fda4af", "#f472b6", "#fbcfe8", "#ec4899", "#f43f5e"]
+      const color = sakuraColors[Math.floor(Math.random() * sakuraColors.length)]
+      return {
+        x: x + (Math.random() - 0.5) * 8,
+        y: y + (Math.random() - 0.5) * 8,
+        vx: (Math.random() - 0.5) * 1.6,
+        vy: Math.random() * 1.3 + 0.6, // gentle flutter fall
+        size: Math.random() * 3.5 + 3.5,
+        alpha: 0.95,
+        color,
+        life: 0,
+        maxLife: Math.random() * 45 + 30,
+        angle: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.08
+      }
+    }
+
+    // Lightning Arc spark generator
+    const createLightningSpark = (x: number, y: number) => {
+      const angle = Math.random() * Math.PI * 2
+      const dist = Math.random() * 22 + 10
+      const midDist = dist * 0.5
+      const midX = x + Math.cos(angle) * midDist + (Math.random() - 0.5) * 12
+      const midY = y + Math.sin(angle) * midDist + (Math.random() - 0.5) * 12
+      const endX = x + Math.cos(angle) * dist + (Math.random() - 0.5) * 8
+      const endY = y + Math.sin(angle) * dist + (Math.random() - 0.5) * 8
+      const boltColors = ["#00f0ff", "#38bdf8", "#67e8f9", "#ffffff"]
+      const color = boltColors[Math.floor(Math.random() * boltColors.length)]
+
+      return {
+        x,
+        y,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        size: Math.random() * 1.4 + 1.2,
+        alpha: 1,
+        color,
+        life: 0,
+        maxLife: Math.random() * 10 + 6, // fast discharge
+        points: [{ x, y }, { x: midX, y: midY }, { x: endX, y: endY }]
+      }
+    }
+
+    // Quantum Matrix Glyph generator
+    const createMatrixGlyph = (x: number, y: number) => {
+      const chars = ["0", "1", "7", "X", "Z", "9", "λ", "Ω", "Ψ", "✦", "0x", "10", "§"]
+      const char = chars[Math.floor(Math.random() * chars.length)]
+      const matrixColors = ["#4ade80", "#22c55e", "#86efac", "#a7f3d0", "#ffffff"]
+      const color = matrixColors[Math.floor(Math.random() * matrixColors.length)]
+
+      return {
+        x: x + (Math.random() - 0.5) * 14,
+        y: y + (Math.random() - 0.5) * 14,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: Math.random() * 1.6 + 0.8, // falls downward
+        size: Math.random() * 2 + 11, // font size
+        alpha: 1,
+        color,
+        life: 0,
+        maxLife: Math.random() * 32 + 20,
+        char
+      }
+    }
+
     // The optimized Canvas drawing and update function
     const renderLoop = () => {
       const ctx = canvas.getContext("2d")
@@ -186,23 +271,53 @@ export default function Cursor() {
           particles.push(createSparkle(mouse.targetX, mouse.targetY))
         } else if (activeCursor === "cursor-bubbles" && Math.random() < 0.4) {
           particles.push(createBubble(mouse.targetX, mouse.targetY))
+        } else if (activeCursor === "cursor-inferno" && Math.random() < 0.7) {
+          particles.push(createEmber(mouse.targetX, mouse.targetY))
+          if (Math.random() < 0.35) {
+            particles.push(createEmber(mouse.targetX, mouse.targetY))
+          }
+        } else if (activeCursor === "cursor-sakura" && Math.random() < 0.5) {
+          particles.push(createSakuraPetal(mouse.targetX, mouse.targetY))
+        } else if (activeCursor === "cursor-lightning" && Math.random() < 0.6) {
+          particles.push(createLightningSpark(mouse.targetX, mouse.targetY))
+        } else if (activeCursor === "cursor-matrix" && Math.random() < 0.6) {
+          particles.push(createMatrixGlyph(mouse.targetX, mouse.targetY))
         }
         mouse.moved = false
       }
 
-      // 1. Render Sparkles or Bubbles particles
-      if (activeCursor === "cursor-sparkles" || activeCursor === "cursor-bubbles") {
+      // 1. Render dynamic particle effects
+      const isParticleTrail = 
+        activeCursor === "cursor-sparkles" || 
+        activeCursor === "cursor-bubbles" ||
+        activeCursor === "cursor-inferno" ||
+        activeCursor === "cursor-sakura" ||
+        activeCursor === "cursor-lightning" ||
+        activeCursor === "cursor-matrix"
+
+      if (isParticleTrail) {
         for (let i = particles.length - 1; i >= 0; i--) {
           const p = particles[i]
           p.x += p.vx
           p.y += p.vy
-          
+
           if (activeCursor === "cursor-bubbles") {
-            // Add a gentle wavy movement to bubbles
             p.vx += Math.sin(p.life / 10) * 0.05
-            p.size += 0.02 // grow slightly as they rise
+            p.size += 0.02
+          } else if (activeCursor === "cursor-inferno") {
+            p.vy -= 0.03 // accelerating heat draft
+            p.vx += (Math.random() - 0.5) * 0.2
+            p.size = Math.max(0.4, p.size * 0.98)
+          } else if (activeCursor === "cursor-sakura") {
+            p.vx += Math.sin(p.life / 8) * 0.06
+            p.angle = (p.angle || 0) + (p.spin || 0.02)
+          } else if (activeCursor === "cursor-lightning") {
+            p.vx = (Math.random() - 0.5) * 0.6
+            p.vy = (Math.random() - 0.5) * 0.6
+          } else if (activeCursor === "cursor-matrix") {
+            p.vy += 0.02
           } else {
-            // Apply slight gravity to sparkles
+            // Sparkles gravity
             p.vy += 0.04
           }
 
@@ -229,7 +344,7 @@ export default function Cursor() {
             ctx.shadowColor = p.color
             ctx.globalAlpha = p.alpha
             ctx.fill()
-          } else {
+          } else if (activeCursor === "cursor-bubbles") {
             // Draw a glass-like bubble
             ctx.beginPath()
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
@@ -250,6 +365,66 @@ export default function Cursor() {
             ctx.arc(p.x - p.size * 0.3, p.y - p.size * 0.3, p.size * 0.18, 0, Math.PI * 2)
             ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha * 0.75})`
             ctx.fill()
+          } else if (activeCursor === "cursor-inferno") {
+            // Fiery molten ember particle with radiant heat center
+            ctx.beginPath()
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+            ctx.fillStyle = p.color
+            ctx.shadowBlur = 9
+            ctx.shadowColor = "#f97316"
+            ctx.globalAlpha = p.alpha
+            ctx.fill()
+
+            if (p.size > 2) {
+              ctx.beginPath()
+              ctx.arc(p.x, p.y, p.size * 0.45, 0, Math.PI * 2)
+              ctx.fillStyle = "#ffffff"
+              ctx.globalAlpha = p.alpha * 0.85
+              ctx.fill()
+            }
+          } else if (activeCursor === "cursor-sakura") {
+            // Delicate rotating cherry blossom petal
+            ctx.translate(p.x, p.y)
+            ctx.rotate(p.angle || 0)
+            ctx.beginPath()
+            ctx.moveTo(0, -p.size)
+            ctx.quadraticCurveTo(p.size * 0.75, -p.size * 0.3, p.size * 0.45, p.size * 0.65)
+            ctx.quadraticCurveTo(0, p.size, -p.size * 0.45, p.size * 0.65)
+            ctx.quadraticCurveTo(-p.size * 0.75, -p.size * 0.3, 0, -p.size)
+            ctx.closePath()
+            ctx.fillStyle = p.color
+            ctx.shadowBlur = 6
+            ctx.shadowColor = "rgba(244, 63, 94, 0.55)"
+            ctx.globalAlpha = p.alpha * 0.9
+            ctx.fill()
+          } else if (activeCursor === "cursor-lightning") {
+            // Electric jagged plasma bolt
+            if (p.points && p.points.length > 1) {
+              ctx.beginPath()
+              ctx.moveTo(p.points[0].x, p.points[0].y)
+              for (let pt = 1; pt < p.points.length; pt++) {
+                ctx.lineTo(p.points[pt].x, p.points[pt].y)
+              }
+              ctx.strokeStyle = p.color
+              ctx.lineWidth = p.size
+              ctx.shadowBlur = 10
+              ctx.shadowColor = "#00f0ff"
+              ctx.globalAlpha = p.alpha
+              ctx.stroke()
+
+              // White electric core
+              ctx.lineWidth = Math.max(0.6, p.size * 0.45)
+              ctx.strokeStyle = "#ffffff"
+              ctx.stroke()
+            }
+          } else if (activeCursor === "cursor-matrix") {
+            // Glowing digital matrix character
+            ctx.font = `bold ${Math.round(p.size)}px "Courier New", monospace`
+            ctx.fillStyle = p.color
+            ctx.shadowBlur = 7
+            ctx.shadowColor = "#22c55e"
+            ctx.globalAlpha = p.alpha
+            ctx.fillText(p.char || "1", p.x, p.y)
           }
           ctx.restore()
         }

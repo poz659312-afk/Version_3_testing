@@ -533,6 +533,23 @@ export const MarlineMarkdownRenderer = memo(function MarlineMarkdownRenderer({ c
 
           // Custom Links
           a({ href, children }: any) {
+            let label = children
+            const isRawUrl = (text: any): boolean => {
+              if (typeof text !== 'string') return false
+              return (
+                text.startsWith('http://') ||
+                text.startsWith('https://') ||
+                text.includes('drive.google.com') ||
+                text.includes('youtube.com')
+              )
+            }
+
+            if (isRawUrl(label)) {
+              label = 'اضغط هنا'
+            } else if (Array.isArray(label) && label.length === 1 && isRawUrl(label[0])) {
+              label = 'اضغط هنا'
+            }
+
             return (
               <a
                 href={href}
@@ -540,7 +557,7 @@ export const MarlineMarkdownRenderer = memo(function MarlineMarkdownRenderer({ c
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 font-semibold text-primary hover:underline underline-offset-4 transition-colors"
               >
-                <span>{children}</span>
+                <span>{label}</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             )

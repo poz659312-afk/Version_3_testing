@@ -16,7 +16,11 @@ import {
   Palette,
   Shield,
   Contrast,
-  Sun
+  Sun,
+  Flame,
+  Flower2,
+  Orbit,
+  Terminal
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
@@ -166,6 +170,54 @@ const STORE_ITEMS = [
     category: "border",
     isNew: true
   },
+  { 
+    id: "border-infernal-flame", 
+    name: "Infernal Flame Border", 
+    description: "Blazing halo of molten fire with dual reverse-spinning auras and radiant thermal flickers.",
+    price: 900, 
+    originalPrice: 1200,
+    icon: Flame, 
+    color: "from-red-500 via-orange-500 to-amber-400",
+    shadow: "shadow-orange-500/30",
+    category: "border",
+    isNew: true
+  },
+  { 
+    id: "border-sakura-bloom", 
+    name: "Sakura Blossom Border", 
+    description: "Gentle orbital halo of pastel cherry blossoms with harmonic breathing luminescence.",
+    price: 750, 
+    originalPrice: 1000,
+    icon: Flower2, 
+    color: "from-rose-400 via-pink-500 to-fuchsia-400",
+    shadow: "shadow-pink-500/30",
+    category: "border",
+    isNew: true
+  },
+  { 
+    id: "border-arcane-portal", 
+    name: "Arcane Void Portal", 
+    description: "Gravitational event horizon vortex with counter-rotating deep space accretion rings.",
+    price: 1050, 
+    originalPrice: 1400,
+    icon: Orbit, 
+    color: "from-violet-600 via-purple-500 to-cyan-400",
+    shadow: "shadow-purple-500/30",
+    category: "border",
+    isNew: true
+  },
+  { 
+    id: "border-electric-storm", 
+    name: "Electric Storm Border", 
+    description: "High-voltage plasma aura with rapid lightning strobe discharges and cyan ionized glow.",
+    price: 825, 
+    originalPrice: 1100,
+    icon: Zap, 
+    color: "from-sky-400 via-cyan-400 to-blue-600",
+    shadow: "shadow-cyan-500/30",
+    category: "border",
+    isNew: true
+  },
   // New Categories: Cursors (25% Discount)
   { 
     id: "cursor-sparkles", 
@@ -200,6 +252,54 @@ const STORE_ITEMS = [
     icon: Star, 
     color: "from-cyan-300 via-sky-400 to-blue-500",
     shadow: "shadow-cyan-500/20",
+    category: "cursor",
+    isNew: true
+  },
+  { 
+    id: "cursor-inferno", 
+    name: "Infernal Embers Trail", 
+    description: "Leaves a trail of drifting molten embers and rising fire sparks behind your cursor.",
+    price: 600, 
+    originalPrice: 800,
+    icon: Flame, 
+    color: "from-orange-500 via-red-500 to-amber-400",
+    shadow: "shadow-orange-500/30",
+    category: "cursor",
+    isNew: true
+  },
+  { 
+    id: "cursor-sakura", 
+    name: "Sakura Drift Trail", 
+    description: "Gracefully floats spinning cherry blossom petals that drift with cursor momentum.",
+    price: 525, 
+    originalPrice: 700,
+    icon: Flower2, 
+    color: "from-pink-400 via-rose-400 to-pink-300",
+    shadow: "shadow-pink-500/30",
+    category: "cursor",
+    isNew: true
+  },
+  { 
+    id: "cursor-lightning", 
+    name: "Electric Arc Trail", 
+    description: "Generates high-voltage crackling plasma arcs and ionized electric discharge bolts.",
+    price: 650, 
+    originalPrice: 850,
+    icon: Zap, 
+    color: "from-cyan-400 via-sky-400 to-blue-500",
+    shadow: "shadow-cyan-500/30",
+    category: "cursor",
+    isNew: true
+  },
+  { 
+    id: "cursor-matrix", 
+    name: "Quantum Matrix Trail", 
+    description: "Streams glowing green digital mainframe code glyphs that cascade in real time.",
+    price: 550, 
+    originalPrice: 750,
+    icon: Terminal, 
+    color: "from-emerald-400 via-green-500 to-teal-400",
+    shadow: "shadow-emerald-500/30",
     category: "cursor",
     isNew: true
   },

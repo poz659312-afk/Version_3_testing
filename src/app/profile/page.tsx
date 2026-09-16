@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles, MousePointer, Search, ChevronUp, ChevronDown, Trash2, Plus, ShieldAlert, Loader2, Contrast, Download, CheckCircle2 } from "lucide-react"
+import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles, MousePointer, MousePointer2, Search, ChevronUp, ChevronDown, Trash2, Plus, ShieldAlert, Loader2, Contrast, Download, CheckCircle2, ArrowUpRight, Crosshair, CircleDot, Flame, Flower2, Terminal, Orbit } from "lucide-react"
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -29,6 +29,8 @@ import { Separator } from "@/components/ui/separator"
 import { useTheme } from "@/components/theme-provider"
 import { useColorTheme } from "@/components/color-theme-provider"
 import AvatarBorder from "@/components/visual-effects/avatar-border"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 
 
 
@@ -365,7 +367,15 @@ function ThemeModeSelector() {
   )
 }
 
-function VisualEffectsSettings({ inventory = [] }: { inventory?: string[] }) {
+function VisualEffectsSettings({ 
+  inventory = [],
+  userAvatar,
+  username = "You"
+}: { 
+  inventory?: string[]
+  userAvatar?: string | null
+  username?: string
+}) {
   const [backgroundEnabled, setBackgroundEnabled] = useState(true)
   const [smoothScrollEnabled, setSmoothScrollEnabled] = useState(true)
   const [glassmorphismEnabled, setGlassmorphismEnabled] = useState(true)
@@ -386,6 +396,26 @@ function VisualEffectsSettings({ inventory = [] }: { inventory?: string[] }) {
     setEquippedBorder(localStorage.getItem('chameleon-equipped-border'))
     setEquippedCursor(localStorage.getItem('chameleon-equipped-cursor'))
   }, [])
+
+  const playEquipSound = () => {
+    if (typeof window === 'undefined') return
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const osc = audioCtx.createOscillator()
+      const gain = audioCtx.createGain()
+      osc.connect(gain)
+      gain.connect(audioCtx.destination)
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(523.25, audioCtx.currentTime) // C5
+      osc.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.08) // G5
+      gain.gain.setValueAtTime(0.04, audioCtx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12)
+      osc.start()
+      osc.stop(audioCtx.currentTime + 0.12)
+    } catch {
+      // Audio context might be restricted
+    }
+  }
 
   const handleBgToggle = () => {
     const newVal = !backgroundEnabled;
@@ -423,41 +453,209 @@ function VisualEffectsSettings({ inventory = [] }: { inventory?: string[] }) {
   }
 
   const handleEquipBorder = (borderId: string | null) => {
+    playEquipSound()
     if (borderId) {
       localStorage.setItem('chameleon-equipped-border', borderId)
       setEquippedBorder(borderId)
+      toast.success('Avatar border equipped!')
     } else {
       localStorage.removeItem('chameleon-equipped-border')
       setEquippedBorder(null)
+      toast.info('Default avatar border restored.')
     }
     window.dispatchEvent(new Event('chameleon_visual_settings_changed'))
   }
 
   const handleEquipCursor = (cursorId: string | null) => {
+    playEquipSound()
     if (cursorId) {
       localStorage.setItem('chameleon-equipped-cursor', cursorId)
       setEquippedCursor(cursorId)
+      toast.success('Cursor trail equipped!')
     } else {
       localStorage.removeItem('chameleon-equipped-cursor')
       setEquippedCursor(null)
+      toast.info('Default pointer restored.')
     }
     window.dispatchEvent(new Event('chameleon_visual_settings_changed'))
   }
 
   const ALL_BORDERS = [
-    { id: "border-gold-glow", name: "Gold Glow Border", desc: "Premium rotating golden aura.", color: "from-amber-400 to-yellow-500" },
-    { id: "border-cosmic-aurora", name: "Cosmic Aurora Border", desc: "A waving, ethereal gradient of emerald green, deep cyan, and violet purple.", color: "from-emerald-400 via-cyan-500 to-indigo-600" },
-    { id: "border-neon-glitch", name: "Cyber Neon Border", desc: "Cyberpunk glitching dual shadow effect.", color: "from-cyan-400 via-indigo-500 to-fuchsia-500" }
+    {
+      id: null,
+      name: "None / Default",
+      desc: "Standard minimalist border styling without special aura.",
+      badge: "Classic",
+      badgeColor: "bg-muted/80 text-muted-foreground border-border/60",
+      glowGradient: "from-muted/10 via-card to-card",
+      equippedRing: "ring-2 ring-primary/40 border-primary shadow-lg shadow-primary/10",
+      color: "from-slate-400 to-slate-600"
+    },
+    {
+      id: "border-gold-glow",
+      name: "Gold Glow Border",
+      desc: "Rotates with a royal golden radiance and warm amber aura.",
+      badge: "Legendary",
+      badgeColor: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+      glowGradient: "from-amber-500/15 via-yellow-500/5 to-card",
+      equippedRing: "ring-2 ring-amber-500/50 border-amber-500/60 shadow-lg shadow-amber-500/15",
+      color: "from-amber-400 to-yellow-500"
+    },
+    {
+      id: "border-cosmic-aurora",
+      name: "Cosmic Aurora Border",
+      desc: "Waving ethereal gradient of emerald green, deep cyan & violet.",
+      badge: "Mythic",
+      badgeColor: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
+      glowGradient: "from-cyan-500/15 via-emerald-500/5 to-card",
+      equippedRing: "ring-2 ring-cyan-500/50 border-cyan-500/60 shadow-lg shadow-cyan-500/15",
+      color: "from-emerald-400 via-cyan-500 to-indigo-600"
+    },
+    {
+      id: "border-neon-glitch",
+      name: "Cyber Neon Border",
+      desc: "High-frequency cyberpunk glitching dual-shadow aura.",
+      badge: "Cyberpunk",
+      badgeColor: "bg-fuchsia-500/15 text-fuchsia-400 border-fuchsia-500/30",
+      glowGradient: "from-fuchsia-500/15 via-cyan-500/5 to-card",
+      equippedRing: "ring-2 ring-fuchsia-500/50 border-fuchsia-500/60 shadow-lg shadow-fuchsia-500/15",
+      color: "from-cyan-400 via-indigo-500 to-fuchsia-500"
+    },
+    {
+      id: "border-infernal-flame",
+      name: "Infernal Flame",
+      desc: "Dual reverse-spinning molten fire auras with radiant heat flickers.",
+      badge: "Infernal",
+      badgeColor: "bg-orange-500/15 text-orange-400 border-orange-500/30",
+      glowGradient: "from-red-500/20 via-orange-500/10 to-card",
+      equippedRing: "ring-2 ring-orange-500/50 border-orange-500/60 shadow-lg shadow-orange-500/20",
+      color: "from-red-500 via-orange-500 to-amber-400"
+    },
+    {
+      id: "border-sakura-bloom",
+      name: "Sakura Blossom",
+      desc: "Harmonic orbital halo of pastel cherry blossoms with breathing pulse.",
+      badge: "Botanical",
+      badgeColor: "bg-pink-500/15 text-pink-400 border-pink-500/30",
+      glowGradient: "from-pink-500/20 via-rose-500/10 to-card",
+      equippedRing: "ring-2 ring-pink-500/50 border-pink-500/60 shadow-lg shadow-pink-500/20",
+      color: "from-rose-400 via-pink-500 to-fuchsia-400"
+    },
+    {
+      id: "border-arcane-portal",
+      name: "Arcane Void Portal",
+      desc: "Gravitational event horizon vortex with deep cosmic accretion rings.",
+      badge: "Void Portal",
+      badgeColor: "bg-purple-500/15 text-purple-400 border-purple-500/30",
+      glowGradient: "from-purple-500/20 via-violet-600/10 to-card",
+      equippedRing: "ring-2 ring-purple-500/50 border-purple-500/60 shadow-lg shadow-purple-500/20",
+      color: "from-violet-600 via-purple-500 to-cyan-400"
+    },
+    {
+      id: "border-electric-storm",
+      name: "Electric Storm",
+      desc: "High-voltage ionized aura with lightning strobes and electric arcs.",
+      badge: "Hyper-Volt",
+      badgeColor: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
+      glowGradient: "from-cyan-500/20 via-sky-500/10 to-card",
+      equippedRing: "ring-2 ring-cyan-500/50 border-cyan-500/60 shadow-lg shadow-cyan-500/20",
+      color: "from-sky-400 via-cyan-400 to-blue-600"
+    }
   ]
 
   const ALL_CURSORS = [
-    { id: "cursor-sparkles", name: "Cosmic Sparkles Cursor", desc: "Leaves a tail of glowing star dust.", color: "from-blue-400 to-purple-500" },
-    { id: "cursor-cyber-cross", name: "Cyber Cross Cursor", desc: "Futuristic tracking crosshair HUD.", color: "from-green-400 to-emerald-600" },
-    { id: "cursor-bubbles", name: "Bouncing Bubbles Cursor", desc: "Generate floating bubble trails.", color: "from-cyan-300 via-sky-400 to-blue-500" }
+    {
+      id: null,
+      name: "None / Default",
+      desc: "Standard clean pointer without trailing particle effects.",
+      badge: "Classic",
+      badgeColor: "bg-muted/80 text-muted-foreground border-border/60",
+      glowGradient: "from-muted/10 via-card to-card",
+      equippedRing: "ring-2 ring-primary/40 border-primary shadow-lg shadow-primary/10",
+      color: "from-slate-400 to-slate-600",
+      iconType: "default"
+    },
+    {
+      id: "cursor-sparkles",
+      name: "Cosmic Sparkles",
+      desc: "Leaves a glittering tail of glowing cosmic star dust.",
+      badge: "Enchanted",
+      badgeColor: "bg-purple-500/15 text-purple-400 border-purple-500/30",
+      glowGradient: "from-purple-500/15 via-blue-500/5 to-card",
+      equippedRing: "ring-2 ring-purple-500/50 border-purple-500/60 shadow-lg shadow-purple-500/15",
+      color: "from-blue-400 to-purple-500",
+      iconType: "sparkles"
+    },
+    {
+      id: "cursor-cyber-cross",
+      name: "Cyber Cross Cursor",
+      desc: "Futuristic tactical tracking crosshair HUD with radar ticks.",
+      badge: "Sci-Fi HUD",
+      badgeColor: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+      glowGradient: "from-emerald-500/15 via-green-500/5 to-card",
+      equippedRing: "ring-2 ring-emerald-500/50 border-emerald-500/60 shadow-lg shadow-emerald-500/15",
+      color: "from-green-400 to-emerald-600",
+      iconType: "crosshair"
+    },
+    {
+      id: "cursor-bubbles",
+      name: "Bouncing Bubbles",
+      desc: "Generates floating translucent bubble trails that bounce & pop.",
+      badge: "Playful FX",
+      badgeColor: "bg-sky-500/15 text-sky-400 border-sky-500/30",
+      glowGradient: "from-sky-500/15 via-cyan-500/5 to-card",
+      equippedRing: "ring-2 ring-sky-500/50 border-sky-500/60 shadow-lg shadow-sky-500/15",
+      color: "from-cyan-300 via-sky-400 to-blue-500",
+      iconType: "bubbles"
+    },
+    {
+      id: "cursor-inferno",
+      name: "Infernal Embers",
+      desc: "Leaves a trail of drifting molten embers and rising heat sparks.",
+      badge: "Elemental",
+      badgeColor: "bg-orange-500/15 text-orange-400 border-orange-500/30",
+      glowGradient: "from-orange-500/20 via-red-500/10 to-card",
+      equippedRing: "ring-2 ring-orange-500/50 border-orange-500/60 shadow-lg shadow-orange-500/20",
+      color: "from-orange-500 to-red-500",
+      iconType: "inferno"
+    },
+    {
+      id: "cursor-sakura",
+      name: "Sakura Drift",
+      desc: "Gently drifting cherry blossom petals that spin with cursor momentum.",
+      badge: "Spring Breeze",
+      badgeColor: "bg-pink-500/15 text-pink-400 border-pink-500/30",
+      glowGradient: "from-pink-500/20 via-rose-500/10 to-card",
+      equippedRing: "ring-2 ring-pink-500/50 border-pink-500/60 shadow-lg shadow-pink-500/20",
+      color: "from-pink-400 to-rose-400",
+      iconType: "sakura"
+    },
+    {
+      id: "cursor-lightning",
+      name: "Electric Arc",
+      desc: "High-voltage crackling plasma arcs and ionized electric bolts.",
+      badge: "Overclocked",
+      badgeColor: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
+      glowGradient: "from-cyan-500/20 via-blue-500/10 to-card",
+      equippedRing: "ring-2 ring-cyan-500/50 border-cyan-500/60 shadow-lg shadow-cyan-500/20",
+      color: "from-cyan-400 to-blue-500",
+      iconType: "lightning"
+    },
+    {
+      id: "cursor-matrix",
+      name: "Quantum Matrix",
+      desc: "Cascading digital mainframe glyphs that stream and dissolve.",
+      badge: "Cyber Matrix",
+      badgeColor: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+      glowGradient: "from-emerald-500/20 via-green-500/10 to-card",
+      equippedRing: "ring-2 ring-emerald-500/50 border-emerald-500/60 shadow-lg shadow-emerald-500/20",
+      color: "from-emerald-400 to-green-500",
+      iconType: "matrix"
+    }
   ]
 
-  const ownedBorders = ALL_BORDERS.filter(b => inventory.includes(b.id))
-  const ownedCursors = ALL_CURSORS.filter(c => inventory.includes(c.id))
+  const unlockedBordersCount = ALL_BORDERS.filter(b => b.id !== null && inventory.includes(b.id)).length
+  const unlockedCursorsCount = ALL_CURSORS.filter(c => c.id !== null && inventory.includes(c.id)).length
 
   return (
     <Card className="bg-card border-border shadow-xl">
@@ -530,116 +728,330 @@ function VisualEffectsSettings({ inventory = [] }: { inventory?: string[] }) {
           </div>
         </div>
 
-        {/* Owned Avatar Borders */}
+        {/* --- 1. EQUIPPED AVATAR BORDERS (REDESIGNED 4-COL SHOWCASE) --- */}
         <div className="space-y-4">
-          <div className="flex justify-between items-center border-b border-border/40 pb-2">
-            <h3 className="font-outfit font-extrabold text-lg text-foreground flex items-center gap-2">
-              <Award className="size-5 text-amber-500" /> Equipped Avatar Border
-            </h3>
-            <span className="text-xs text-muted-foreground font-outfit">{ownedBorders.length} unlocked</span>
-          </div>
-
-          {ownedBorders.length === 0 ? (
-            <div className="text-center p-6 border border-dashed border-border rounded-lg bg-muted/5">
-              <p className="text-sm text-muted-foreground font-outfit mb-3">You don't own any avatar borders yet.</p>
-              <Link href="/store">
-                <Button size="sm" variant="outline" className="rounded-full font-bold">
-                  Browse Store
-                </Button>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/40 pb-3">
+            <div>
+              <h3 className="font-outfit font-extrabold text-lg text-foreground flex items-center gap-2">
+                <Award className="size-5 text-amber-500" /> Equipped Avatar Border
+              </h3>
+              <p className="text-xs text-muted-foreground font-outfit mt-0.5">
+                Choose your active animated border frame shown on your profile and discussions
+              </p>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1.5 shadow-2xs">
+                <Sparkles className="size-3" />
+                {unlockedBordersCount} of {ALL_BORDERS.length - 1} unlocked
+              </span>
+              <Link 
+                href="/store"
+                className="text-[11px] font-bold text-primary hover:text-primary/80 flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 hover:bg-primary/15 transition-colors"
+              >
+                Browse Store <ArrowUpRight className="size-3" />
               </Link>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {/* Default Border option */}
-              <Card 
-                onClick={() => handleEquipBorder(null)}
-                className={`cursor-pointer p-4 border-2 flex items-center justify-between transition-all hover:border-primary/50 ${equippedBorder === null ? 'border-primary bg-primary/5' : 'border-border/50'}`}
-              >
-                <div>
-                  <h5 className="font-bold font-outfit text-sm">None / Default</h5>
-                  <p className="text-[11px] text-muted-foreground">Standard border styling</p>
-                </div>
-                {equippedBorder === null && <Check className="size-4 text-primary shrink-0" />}
-              </Card>
+          </div>
 
-              {ownedBorders.map((border) => (
-                <Card 
-                  key={border.id}
-                  onClick={() => handleEquipBorder(border.id)}
-                  className={`cursor-pointer p-4 border-2 flex items-center justify-between transition-all hover:border-primary/50 relative overflow-hidden ${equippedBorder === border.id ? 'border-primary bg-primary/5' : 'border-border/50'}`}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {ALL_BORDERS.map((border) => {
+              const isOwned = border.id === null || inventory.includes(border.id)
+              const isEquipped = equippedBorder === border.id
+
+              return (
+                <div
+                  key={border.id || 'default'}
+                  onClick={() => {
+                    if (isOwned) {
+                      handleEquipBorder(border.id)
+                    }
+                  }}
+                  className={cn(
+                    "group relative rounded-2xl border p-4 transition-all duration-300 flex flex-col justify-between overflow-hidden select-none",
+                    isOwned ? "cursor-pointer" : "cursor-default opacity-85",
+                    isEquipped
+                      ? cn("bg-card/90", border.equippedRing)
+                      : "bg-card/40 border-border/60 hover:border-primary/40 hover:bg-card/70 hover:shadow-md hover:-translate-y-0.5"
+                  )}
                 >
-                  <div className={`absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b ${border.color}`} />
-                  <div className="pl-2">
-                    <h5 className="font-bold font-outfit text-sm">{border.name}</h5>
-                    <p className="text-[11px] text-muted-foreground">{border.desc}</p>
+                  {/* Ambient Background Glow */}
+                  <div className={`absolute inset-0 bg-gradient-to-b ${border.glowGradient} opacity-50 pointer-events-none`} />
+
+                  {/* Top Bar: Tier Badge & Equipped Status */}
+                  <div className="relative z-10 flex items-center justify-between gap-2 mb-2">
+                    <span className={cn("text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs", border.badgeColor)}>
+                      {border.badge}
+                    </span>
+                    {isEquipped ? (
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary text-primary-foreground flex items-center gap-1 shadow-xs">
+                        <Check className="size-3" /> Equipped
+                      </span>
+                    ) : isOwned ? (
+                      <span className="text-[10px] text-muted-foreground group-hover:text-primary font-semibold transition-colors flex items-center gap-1">
+                        <CircleDot className="size-3 text-muted-foreground/40 group-hover:text-primary" />
+                        Equip
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-amber-500/90 font-bold flex items-center gap-1">
+                        <Lock className="size-3" /> Store
+                      </span>
+                    )}
                   </div>
-                  {equippedBorder === border.id && <Check className="size-4 text-primary shrink-0" />}
-                </Card>
-              ))}
-            </div>
-          )}
+
+                  {/* Center Stage: Live Animated Mini-Avatar Preview */}
+                  <div className="relative z-10 py-3 flex items-center justify-center">
+                    <div className="relative group-hover:scale-105 transition-transform duration-300">
+                      <AvatarBorder borderId={border.id} className="size-16 sm:size-18">
+                        <div className="size-16 sm:size-18 rounded-full overflow-hidden bg-muted/80 flex items-center justify-center select-none shadow-sm">
+                          {userAvatar ? (
+                            <img src={userAvatar} alt={username} className="size-full object-cover" />
+                          ) : (
+                            <div className="size-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center font-bold text-primary text-base">
+                              {(username || 'U')[0].toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                      </AvatarBorder>
+                    </div>
+                  </div>
+
+                  {/* Bottom Info: Title, Description & Action Button */}
+                  <div className="relative z-10 mt-2 pt-3 border-t border-border/40 flex flex-col gap-2.5">
+                    <div>
+                      <h5 className="font-outfit font-extrabold text-sm text-foreground flex items-center gap-1.5">
+                        {border.name}
+                      </h5>
+                      <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 mt-0.5">
+                        {border.desc}
+                      </p>
+                    </div>
+
+                    {/* Action Button */}
+                    {isEquipped ? (
+                      <div className="w-full py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm">
+                        <Check className="size-3.5" /> Active Frame
+                      </div>
+                    ) : isOwned ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleEquipBorder(border.id)
+                        }}
+                        className="w-full py-1.5 rounded-xl border border-border/80 bg-background/60 hover:bg-primary hover:text-primary-foreground hover:border-primary text-foreground text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+                      >
+                        Equip Frame
+                      </button>
+                    ) : (
+                      <Link
+                        href="/store"
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-full py-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                      >
+                        <Lock className="size-3" /> Unlock in Store
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
 
-        {/* Owned Cursors */}
+        {/* --- 2. EQUIPPED CURSOR TRAILS (REDESIGNED 4-COL SHOWCASE) --- */}
         <div className="space-y-4">
-          <div className="flex justify-between items-center border-b border-border/40 pb-2">
-            <h3 className="font-outfit font-extrabold text-lg text-foreground flex items-center gap-2">
-              <Sparkles className="size-5 text-indigo-500" /> Equipped Cursor Trail
-            </h3>
-            <span className="text-xs text-muted-foreground font-outfit">{ownedCursors.length} unlocked</span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/40 pb-3">
+            <div>
+              <h3 className="font-outfit font-extrabold text-lg text-foreground flex items-center gap-2">
+                <Sparkles className="size-5 text-indigo-400" /> Equipped Cursor Trail
+              </h3>
+              <p className="text-xs text-muted-foreground font-outfit mt-0.5">
+                Customize your pointer with dynamic interactive particle trails across Chameleon
+              </p>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center gap-1.5 shadow-2xs">
+                <Sparkles className="size-3" />
+                {unlockedCursorsCount} of {ALL_CURSORS.length - 1} unlocked
+              </span>
+              <Link 
+                href="/store"
+                className="text-[11px] font-bold text-primary hover:text-primary/80 flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 hover:bg-primary/15 transition-colors"
+              >
+                Browse Store <ArrowUpRight className="size-3" />
+              </Link>
+            </div>
           </div>
 
           {isPowerSave && (
-            <div className="p-3 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-lg text-xs font-outfit flex items-center gap-2">
+            <div className="p-3 bg-amber-500/10 border border-amber-500/20 text-amber-500 rounded-xl text-xs font-outfit flex items-center gap-2">
               <Laptop className="size-4 shrink-0" />
-              <span>Cursor trails are currently suspended to preserve battery because Power Save Mode is active.</span>
+              <span>Cursor trails are currently suspended to preserve battery life because Power Save Mode is active.</span>
             </div>
           )}
 
-          {ownedCursors.length === 0 ? (
-            <div className="text-center p-6 border border-dashed border-border rounded-lg bg-muted/5">
-              <p className="text-sm text-muted-foreground font-outfit mb-3">You don't own any custom cursor trails yet.</p>
-              <Link href="/store">
-                <Button size="sm" variant="outline" className="rounded-full font-bold">
-                  Browse Store
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {/* Default Cursor option */}
-              <Card 
-                onClick={() => handleEquipCursor(null)}
-                className={`cursor-pointer p-4 border-2 flex items-center justify-between transition-all hover:border-primary/50 ${equippedCursor === null ? 'border-primary bg-primary/5' : 'border-border/50'}`}
-              >
-                <div>
-                  <h5 className="font-bold font-outfit text-sm">None / Default</h5>
-                  <p className="text-[11px] text-muted-foreground">Standard pointer</p>
-                </div>
-                {equippedCursor === null && <Check className="size-4 text-primary shrink-0" />}
-              </Card>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {ALL_CURSORS.map((cursor) => {
+              const isOwned = cursor.id === null || inventory.includes(cursor.id)
+              const isEquipped = equippedCursor === cursor.id
 
-              {ownedCursors.map((cursor) => (
-                <Card 
-                  key={cursor.id}
-                  onClick={() => handleEquipCursor(cursor.id)}
-                  className={`cursor-pointer p-4 border-2 flex items-center justify-between transition-all hover:border-primary/50 relative overflow-hidden ${equippedCursor === cursor.id ? 'border-primary bg-primary/5' : 'border-border/50'}`}
+              return (
+                <div
+                  key={cursor.id || 'default'}
+                  onClick={() => {
+                    if (isOwned) {
+                      handleEquipCursor(cursor.id)
+                    }
+                  }}
+                  className={cn(
+                    "group relative rounded-2xl border p-4 transition-all duration-300 flex flex-col justify-between overflow-hidden select-none",
+                    isOwned ? "cursor-pointer" : "cursor-default opacity-85",
+                    isEquipped
+                      ? cn("bg-card/90", cursor.equippedRing)
+                      : "bg-card/40 border-border/60 hover:border-primary/40 hover:bg-card/70 hover:shadow-md hover:-translate-y-0.5"
+                  )}
                 >
-                  <div className={`absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b ${cursor.color}`} />
-                  <div className="pl-2">
-                    <h5 className="font-bold font-outfit text-sm">{cursor.name}</h5>
-                    <p className="text-[11px] text-muted-foreground">{cursor.desc}</p>
+                  {/* Ambient Background Glow */}
+                  <div className={`absolute inset-0 bg-gradient-to-b ${cursor.glowGradient} opacity-50 pointer-events-none`} />
+
+                  {/* Top Bar: Category Badge & Equipped Status */}
+                  <div className="relative z-10 flex items-center justify-between gap-2 mb-2">
+                    <span className={cn("text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs", cursor.badgeColor)}>
+                      {cursor.badge}
+                    </span>
+                    {isEquipped ? (
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary text-primary-foreground flex items-center gap-1 shadow-xs">
+                        <Check className="size-3" /> Equipped
+                      </span>
+                    ) : isOwned ? (
+                      <span className="text-[10px] text-muted-foreground group-hover:text-primary font-semibold transition-colors flex items-center gap-1">
+                        <CircleDot className="size-3 text-muted-foreground/40 group-hover:text-primary" />
+                        Equip
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-amber-500/90 font-bold flex items-center gap-1">
+                        <Lock className="size-3" /> Store
+                      </span>
+                    )}
                   </div>
-                  {equippedCursor === cursor.id && <Check className="size-4 text-primary shrink-0" />}
-                </Card>
-              ))}
-            </div>
-          )}
+
+                  {/* Center Stage: Interactive Animated Visualizer */}
+                  <div className="relative z-10 py-3 flex items-center justify-center">
+                    <div className="size-16 sm:size-18 rounded-2xl bg-muted/40 border border-border/60 flex items-center justify-center relative overflow-hidden shadow-inner group-hover:scale-105 transition-transform duration-300">
+                      <div className={`absolute inset-0 bg-gradient-to-br ${cursor.glowGradient} opacity-60`} />
+
+                      {cursor.iconType === 'default' && (
+                        <div className="relative flex items-center justify-center">
+                          <MousePointer2 className="size-7 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:-translate-x-0.5" />
+                        </div>
+                      )}
+
+                      {cursor.iconType === 'sparkles' && (
+                        <div className="relative flex items-center justify-center">
+                          <Sparkles className="size-7 text-purple-400 animate-pulse" />
+                          <span className="absolute -top-1.5 -right-1.5 size-2 rounded-full bg-blue-400 animate-ping opacity-75" />
+                          <span className="absolute -bottom-1 -left-1.5 size-1.5 rounded-full bg-purple-300 animate-pulse" />
+                        </div>
+                      )}
+
+                      {cursor.iconType === 'crosshair' && (
+                        <div className="relative flex items-center justify-center">
+                          <Crosshair className="size-7 text-emerald-400 group-hover:rotate-45 transition-transform duration-500" />
+                          <div className="absolute inset-1 rounded-full border border-emerald-500/30 animate-ping opacity-35 pointer-events-none" />
+                        </div>
+                      )}
+
+                      {cursor.iconType === 'bubbles' && (
+                        <div className="relative flex items-center justify-center size-full">
+                          <div className="absolute size-4 rounded-full bg-cyan-400/40 border border-cyan-300/80 top-2 left-2 animate-bounce" style={{ animationDuration: '2.4s' }} />
+                          <div className="absolute size-5 rounded-full bg-sky-400/40 border border-sky-300/80 bottom-2 right-2 animate-bounce" style={{ animationDuration: '3.1s' }} />
+                          <div className="absolute size-3 rounded-full bg-blue-300/40 border border-blue-200/80 top-2.5 right-3 animate-pulse" />
+                          <CircleDot className="size-5 text-sky-400 relative z-10" />
+                        </div>
+                      )}
+
+                      {cursor.iconType === 'inferno' && (
+                        <div className="relative flex items-center justify-center">
+                          <Flame className="size-7 text-orange-500 animate-pulse" />
+                          <span className="absolute -top-1.5 -right-1.5 size-1.5 rounded-full bg-yellow-400 animate-ping opacity-80" />
+                          <span className="absolute -bottom-1 -left-1 size-2 rounded-full bg-red-500 animate-pulse" />
+                        </div>
+                      )}
+
+                      {cursor.iconType === 'sakura' && (
+                        <div className="relative flex items-center justify-center">
+                          <Flower2 className="size-7 text-pink-400 animate-spin" style={{ animationDuration: '8s' }} />
+                          <span className="absolute -top-1.5 -right-1.5 size-1.5 rounded-full bg-rose-300 animate-ping opacity-75" />
+                          <span className="absolute -bottom-1 -left-1 size-2 rounded-full bg-pink-500/40 animate-pulse" />
+                        </div>
+                      )}
+
+                      {cursor.iconType === 'lightning' && (
+                        <div className="relative flex items-center justify-center">
+                          <Zap className="size-7 text-cyan-400 animate-bounce" style={{ animationDuration: '1.4s' }} />
+                          <div className="absolute inset-0 rounded-full border border-cyan-400/40 animate-ping opacity-40 pointer-events-none" />
+                        </div>
+                      )}
+
+                      {cursor.iconType === 'matrix' && (
+                        <div className="relative flex items-center justify-center font-mono font-black text-emerald-400">
+                          <Terminal className="size-7 text-emerald-400" />
+                          <span className="absolute -bottom-1.5 text-[9px] text-emerald-300 font-mono tracking-tighter animate-pulse">0101</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Bottom Info: Title, Description & Action Button */}
+                  <div className="relative z-10 mt-2 pt-3 border-t border-border/40 flex flex-col gap-2.5">
+                    <div>
+                      <h5 className="font-outfit font-extrabold text-sm text-foreground flex items-center gap-1.5">
+                        {cursor.name}
+                      </h5>
+                      <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2 mt-0.5">
+                        {cursor.desc}
+                      </p>
+                    </div>
+
+                    {/* Action Button */}
+                    {isEquipped ? (
+                      <div className="w-full py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm">
+                        <Check className="size-3.5" /> Active Trail
+                      </div>
+                    ) : isOwned ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleEquipCursor(cursor.id)
+                        }}
+                        className="w-full py-1.5 rounded-xl border border-border/80 bg-background/60 hover:bg-primary hover:text-primary-foreground hover:border-primary text-foreground text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+                      >
+                        Equip Trail
+                      </button>
+                    ) : (
+                      <Link
+                        href="/store"
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-full py-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                      >
+                        <Lock className="size-3" /> Unlock in Store
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </div>
         
-        <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-2 mt-4 font-outfit">
-          <Check className="size-3"/> Settings are applied instantly and saved locally
-        </p>
+        {/* Footer Synchronized Badge */}
+        <div className="pt-2 flex items-center justify-center">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-muted/30 border border-border/50 text-xs text-muted-foreground font-outfit shadow-2xs">
+            <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0" />
+            <span>Settings and equipped cosmetics are applied instantly and synchronized across your session</span>
+          </div>
+        </div>
       </CardContent>
     </Card>
   )
@@ -1359,10 +1771,18 @@ export default function ProfilePage() {
                             "border-gold-glow": { name: "Gold Glow Border", color: "text-amber-500 bg-amber-500/10", icon: Award },
                             "border-cosmic-aurora": { name: "Cosmic Aurora Border", color: "text-emerald-400 bg-emerald-400/10", icon: Palette },
                             "border-neon-glitch": { name: "Cyber Neon Border", color: "text-cyan-500 bg-cyan-500/10", icon: Zap },
+                            "border-infernal-flame": { name: "Infernal Flame Border", color: "text-orange-500 bg-orange-500/10", icon: Flame },
+                            "border-sakura-bloom": { name: "Sakura Blossom Border", color: "text-pink-500 bg-pink-500/10", icon: Flower2 },
+                            "border-arcane-portal": { name: "Arcane Void Portal", color: "text-purple-500 bg-purple-500/10", icon: Orbit },
+                            "border-electric-storm": { name: "Electric Storm Border", color: "text-cyan-500 bg-cyan-500/10", icon: Zap },
                             // Custom Cursors
                             "cursor-sparkles": { name: "Cosmic Sparkles Cursor", color: "text-blue-400 bg-blue-400/10", icon: Sparkles },
                             "cursor-cyber-cross": { name: "Cyber Cross Cursor", color: "text-green-400 bg-green-400/10", icon: MousePointer },
-                            "cursor-bubbles": { name: "Bouncing Bubbles Cursor", color: "text-sky-400 bg-sky-400/10", icon: Sparkles }
+                            "cursor-bubbles": { name: "Bouncing Bubbles Cursor", color: "text-sky-400 bg-sky-400/10", icon: Sparkles },
+                            "cursor-inferno": { name: "Infernal Embers Trail", color: "text-orange-400 bg-orange-400/10", icon: Flame },
+                            "cursor-sakura": { name: "Sakura Drift Trail", color: "text-pink-400 bg-pink-400/10", icon: Flower2 },
+                            "cursor-lightning": { name: "Electric Arc Trail", color: "text-cyan-400 bg-cyan-400/10", icon: Zap },
+                            "cursor-matrix": { name: "Quantum Matrix Trail", color: "text-emerald-400 bg-emerald-400/10", icon: Terminal }
                           }
                           const info = badgeInfo[itemId] || { name: "Achievement", color: "text-muted-foreground bg-muted", icon: Trophy }
                           const Icon = info.icon
@@ -2079,7 +2499,11 @@ export default function ProfilePage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <VisualEffectsSettings inventory={userData?.inventory || []} />
+                <VisualEffectsSettings 
+                  inventory={userData?.inventory || []} 
+                  userAvatar={userData?.profile_image}
+                  username={userData?.username || userData?.full_name || 'You'}
+                />
               </motion.div>
             </TabsContent>
 

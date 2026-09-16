@@ -126,6 +126,90 @@ export default function AvatarBorder({
         </>
       )}
 
+      {/* Infernal Flame border effect */}
+      {borderToRender === "border-infernal-flame" && (
+        <>
+          <div 
+            className={cn(
+              "absolute -inset-[4px] rounded-full -z-10",
+              isPowerSave ? "" : "animate-[flame-flicker_1.5s_ease-in-out_infinite_alternate,avatar-spin_3.5s_linear_infinite]"
+            )}
+            style={{
+              background: "conic-gradient(from 0deg, #dc2626, #ea580c, #f59e0b, #fef08a, #f97316, #dc2626)",
+              filter: isPowerSave ? "none" : "drop-shadow(0 0 8px #f97316) drop-shadow(0 0 16px rgba(220, 38, 38, 0.75))",
+              willChange: isPowerSave ? "auto" : "transform"
+            }}
+          />
+          <div 
+            className={cn(
+              "absolute -inset-[2px] rounded-full -z-10 opacity-75",
+              isPowerSave ? "" : "animate-[avatar-spin-reverse_2s_linear_infinite]"
+            )}
+            style={{
+              background: "conic-gradient(from 180deg, rgba(239, 68, 68, 0.6), rgba(245, 158, 11, 0.9), transparent)",
+              willChange: isPowerSave ? "auto" : "transform"
+            }}
+          />
+        </>
+      )}
+
+      {/* Sakura Bloom border effect */}
+      {borderToRender === "border-sakura-bloom" && (
+        <div 
+          className={cn(
+            "absolute -inset-[3.5px] rounded-full -z-10",
+            isPowerSave ? "" : "animate-[sakura-pulse_3s_ease-in-out_infinite,avatar-spin_8s_linear_infinite]"
+          )}
+          style={{
+            background: "conic-gradient(from 0deg, #f43f5e, #ec4899, #f472b6, #fbcfe8, #fda4af, #f43f5e)",
+            filter: isPowerSave ? "none" : "drop-shadow(0 0 8px rgba(244, 63, 94, 0.7)) drop-shadow(0 0 3px #fbcfe8)",
+            willChange: isPowerSave ? "auto" : "transform"
+          }}
+        />
+      )}
+
+      {/* Arcane Void Portal border effect */}
+      {borderToRender === "border-arcane-portal" && (
+        <>
+          <div 
+            className={cn(
+              "absolute -inset-[4px] rounded-full -z-10",
+              isPowerSave ? "" : "animate-[avatar-spin_2.2s_linear_infinite]"
+            )}
+            style={{
+              background: "conic-gradient(from 0deg, #09090b, #4c1d95, #7c3aed, #a855f7, #38bdf8, #8b5cf6, #09090b)",
+              filter: isPowerSave ? "none" : "drop-shadow(0 0 10px rgba(139, 92, 246, 0.9)) drop-shadow(0 0 4px #06b6d4)",
+              willChange: isPowerSave ? "auto" : "transform"
+            }}
+          />
+          <div 
+            className={cn(
+              "absolute -inset-[2px] rounded-full -z-10 opacity-70",
+              isPowerSave ? "" : "animate-[avatar-spin-reverse_4s_linear_infinite]"
+            )}
+            style={{
+              background: "conic-gradient(from 90deg, #38bdf8, transparent, #c084fc, transparent)",
+              willChange: isPowerSave ? "auto" : "transform"
+            }}
+          />
+        </>
+      )}
+
+      {/* Electric Storm border effect */}
+      {borderToRender === "border-electric-storm" && (
+        <div 
+          className={cn(
+            "absolute -inset-[3.5px] rounded-full -z-10",
+            isPowerSave ? "" : "animate-[electric-strobe_0.8s_steps(4)_infinite,avatar-spin_5s_linear_infinite]"
+          )}
+          style={{
+            background: "conic-gradient(from 0deg, #0284c7, #00f0ff, #38bdf8, #ffffff, #6366f1, #00f0ff)",
+            filter: isPowerSave ? "none" : "drop-shadow(0 0 9px #00f0ff) drop-shadow(0 0 3px #ffffff)",
+            willChange: isPowerSave ? "auto" : "transform"
+          }}
+        />
+      )}
+
       {/* Standard Admin spin border effect */}
       {borderToRender === "admin-border" && (
         <div 
@@ -153,6 +237,10 @@ const BORDER_STYLES = `
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
+  @keyframes avatar-spin-reverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+  }
   @keyframes avatar-pulse-scale {
     0%, 100% { transform: scale(1) rotate(0deg); }
     50% { transform: scale(1.05) rotate(180deg); }
@@ -160,6 +248,22 @@ const BORDER_STYLES = `
   @keyframes aurora-wave {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
+  }
+  @keyframes flame-flicker {
+    0% { transform: scale(0.98); filter: brightness(1) drop-shadow(0 0 7px #f97316); }
+    50% { transform: scale(1.03); filter: brightness(1.25) drop-shadow(0 0 13px #ef4444); }
+    100% { transform: scale(1.01); filter: brightness(1.1) drop-shadow(0 0 10px #f59e0b); }
+  }
+  @keyframes sakura-pulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.6)); }
+    50% { transform: scale(1.04); filter: drop-shadow(0 0 11px rgba(244, 63, 94, 0.9)) drop-shadow(0 0 4px #fbcfe8); }
+  }
+  @keyframes electric-strobe {
+    0% { opacity: 0.85; filter: drop-shadow(0 0 7px #00f0ff); }
+    25% { opacity: 1; filter: drop-shadow(0 0 14px #38bdf8) drop-shadow(0 0 4px #ffffff); }
+    50% { opacity: 0.9; filter: drop-shadow(0 0 8px #00f0ff); }
+    75% { opacity: 1; filter: drop-shadow(0 0 16px #00f0ff) drop-shadow(0 0 6px #ffffff); }
+    100% { opacity: 0.85; filter: drop-shadow(0 0 7px #00f0ff); }
   }
   @keyframes neon-glitch-cyan {
     0%, 100% { transform: translate(0, 0); opacity: 0.8; }
