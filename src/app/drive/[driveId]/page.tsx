@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo, useRef, useCallback, useDeferredValue } from "react";
+import { useState, useEffect, useMemo, useRef, useDeferredValue } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 
@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { createBrowserClient } from "@/lib/supabase/client";
 import {
   FileText,
   Folder,
@@ -190,44 +189,18 @@ function OwnershipBadge({ className = "absolute -top-2 -right-2 z-10" }: { class
   );
 }
 
-// Component to display owner information with username lookup
+// Component to display owner information
 function OwnerDisplay({
   owner,
-  getUsername,
 }: {
   owner: { displayName: string; emailAddress: string };
-  getUsername: (email: string) => Promise<string>;
 }) {
-  const [username, setUsername] = useState<string>("Loading...");
-
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchUsername = async () => {
-      try {
-        const result = await getUsername(owner.emailAddress);
-        if (mounted) {
-          setUsername(result);
-        }
-      } catch (error) {
-        console.error("Error fetching username for owner:", error);
-        if (mounted) {
-          setUsername(owner.displayName || "Unknown User");
-        }
-      }
-    };
-
-    fetchUsername();
-
-    return () => {
-      mounted = false;
-    };
-  }, [owner.emailAddress, getUsername, owner.displayName]);
+  const displayName = owner.displayName || "Unknown User";
 
   return (
     <div className="flex items-center gap-2">
       <User className="w-3 h-3 flex-shrink-0" />
-      <span className="truncate">Owner: {username}</span>
+      <span className="truncate">Owner: {displayName}</span>
     </div>
   );
 }
@@ -335,43 +308,6 @@ export default function DriveRootPage() {
 
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const fetchingPromisesRef = useRef<Map<string, Promise<DriveFile[]>>>(new Map());
-  const usernameCacheRef = useRef<Map<string, string>>(new Map());
-  const supabase = useMemo(() => createBrowserClient(), []);
-
-  const getUsername = useCallback(async (email: string): Promise<string> => {
-    // Check cache first
-    const cachedUsername = usernameCacheRef.current.get(email);
-    if (cachedUsername) {
-      return cachedUsername;
-    }
-
-    try {
-      const { data: userData, error } = await supabase
-        .from("chameleons")
-        .select("username")
-        .eq("email", email)
-        .single();
-
-      if (error || !userData) {
-        console.log(`No user found for email: ${email}`);
-        const fallback = "Unknown User";
-        usernameCacheRef.current.set(email, fallback);
-        return fallback;
-      }
-
-      const username = userData.username || "Unknown User";
-
-      // Cache the result
-      usernameCacheRef.current.set(email, username);
-
-      return username;
-    } catch (error) {
-      console.error("Error fetching username:", error);
-      const fallback = "Unknown User";
-      usernameCacheRef.current.set(email, fallback);
-      return fallback;
-    }
-  }, [supabase]);
 
   // Check if current user owns the file
   const isCurrentUserOwner = (file: DriveFile): boolean => {
@@ -550,34 +486,6 @@ export default function DriveRootPage() {
 
         const data: DriveResponse = await response.json();
         const files = data.files || [];
-
-        // Batch pre-fetch all owner usernames to eliminate N+1 queries
-        const ownerEmails = Array.from(new Set(
-          files.flatMap((f: any) => f.owners?.map((o: any) => o.emailAddress) || []).filter(Boolean)
-        )) as string[];
-
-        const uncashedEmails = ownerEmails.filter(email => !usernameCacheRef.current.has(email));
-        if (uncashedEmails.length > 0) {
-          try {
-            const { data: userData } = await supabase
-              .from("chameleons")
-              .select("email, username")
-              .in("email", uncashedEmails);
-
-            userData?.forEach((u: any) => {
-              if (u.email && u.username) {
-                usernameCacheRef.current.set(u.email, u.username);
-              }
-            });
-            uncashedEmails.forEach((email) => {
-              if (!usernameCacheRef.current.has(email)) {
-                usernameCacheRef.current.set(email, "Unknown User");
-              }
-            });
-          } catch (e) {
-            console.warn("Failed to batch fetch owner usernames:", e);
-          }
-        }
 
         setFiles(files);
 
@@ -1311,7 +1219,6 @@ export default function DriveRootPage() {
                                 {file.owners?.[0] && (
                                   <OwnerDisplay 
                                     owner={file.owners[0]} 
-                                    getUsername={getUsername}
                                   />
                                 )}
                               </div>

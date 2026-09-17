@@ -262,7 +262,7 @@ export default function SignUpPage() {
     if (signupData.password.length < 6) { setError("Password must be at least 6 characters"); setIsLoading(false); return }
     try {
       const supabase = createBrowserClient()
-      const { data: existingUser } = await supabase.from("chameleons").select("username").eq("username", signupData.username).single()
+      const { data: existingUser } = await supabase.from("chameleons").select("username").eq("username", signupData.username).maybeSingle()
       if (existingUser) { setError("Username already exists"); setIsLoading(false); return }
       let authUserId: string; const email = googleUserData?.email || `user_${Date.now()}@temp.local`
       if (googleUserData) { const { data: { user } } = await supabase.auth.getUser(); if (!user) { setError("Authentication error. Please try again."); setIsLoading(false); return }; authUserId = user.id }

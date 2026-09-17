@@ -6,7 +6,6 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { createBrowserClient } from "@/lib/supabase/client"
 import { Input } from "@/components/ui/input"
 import {
   FileText,
@@ -174,45 +173,19 @@ function formatDate(dateString: string) {
 
 type SortOption = "name" | "modified" | "size" | "type"
 
-// Component to display owner information with username lookup
+// Component to display owner information
 function OwnerDisplay({ 
-  owner, 
-  getUsername 
+  owner 
 }: { 
   owner: { displayName: string; emailAddress: string }
-  getUsername: (email: string) => Promise<string>
 }) {
-  const [username, setUsername] = useState<string>("Loading...")
-
-  useEffect(() => {
-    let mounted = true
-    
-    const fetchUsername = async () => {
-      try {
-        const result = await getUsername(owner.emailAddress)
-        if (mounted) {
-          setUsername(result)
-        }
-      } catch (error) {
-        console.error('Error fetching username for owner:', error)
-        if (mounted) {
-          setUsername(owner.displayName || "Unknown User")
-        }
-      }
-    }
-
-    fetchUsername()
-
-    return () => {
-      mounted = false
-    }
-  }, [owner.emailAddress, getUsername, owner.displayName])
+  const displayName = owner.displayName || "Unknown User"
 
   return (
     <div className="flex items-center gap-2">
       <User className="w-3 h-3" />
       <span className="truncate">
-        Owner: {username}
+        Owner: {displayName}
       </span>
     </div>
   )
@@ -370,8 +343,6 @@ export default function DrivePage() {
     breadcrumbs.length > 0 ? breadcrumbs[0]?.name : undefined))
 
   const deferredSearchQuery = useDeferredValue(searchQuery)
-  const usernameCacheRef = useRef<Map<string, string>>(new Map())
-  const supabase = useMemo(() => createBrowserClient(), [])
 
   // Resolve URL parameter to actual drive ID
   useEffect(() => {
@@ -734,40 +705,6 @@ export default function DrivePage() {
     )
   }
 
-  const getUsername = useCallback(async (email: string): Promise<string> => {
-    // Check cache first
-    const cachedUsername = usernameCacheRef.current.get(email)
-    if (cachedUsername) {
-      return cachedUsername
-    }
-
-    try {
-      const { data: userData, error } = await supabase
-        .from("chameleons")
-        .select("username")
-        .eq("email", email)
-        .single()
-
-      if (error || !userData) {
-        console.log(`No user found for email: ${email}`)
-        const fallback = "Unknown User"
-        usernameCacheRef.current.set(email, fallback)
-        return fallback
-      }
-
-      const username = userData.username || "Unknown User"
-      
-      // Cache the result
-      usernameCacheRef.current.set(email, username)
-      
-      return username
-    } catch (error) {
-      console.error('Error fetching username:', error)
-      const fallback = "Unknown User"
-      usernameCacheRef.current.set(email, fallback)
-      return fallback
-    }
-  }, [supabase])
   // Load folder contents and info when path changes
   useEffect(() => {
     if (actualDriveId && userSession && !notFound) {
@@ -1358,7 +1295,6 @@ export default function DrivePage() {
                             {file.owners?.[0] && (
                               <OwnerDisplay 
                                 owner={file.owners[0]} 
-                                getUsername={getUsername}
                               />
                             )}
                           </div>
