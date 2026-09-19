@@ -307,14 +307,12 @@ export default function MarlineOnboardingTour() {
 
     checkEligibility()
 
-    // Listen to custom auth state changes or window focus to re-check when user logs in
+    // Listen to custom auth state changes to re-check when user logs in
     const handleAuthChange = () => checkEligibility()
     window.addEventListener("chameleon_auth_change", handleAuthChange)
-    window.addEventListener("focus", handleAuthChange)
 
     return () => {
       window.removeEventListener("chameleon_auth_change", handleAuthChange)
-      window.removeEventListener("focus", handleAuthChange)
     }
   }, [])
 

@@ -26,15 +26,46 @@ const navItems = [
   { name: "Marline", href: "/marline", icon: BrainCircuit },
 ]
 
+// Shared time ticker: single background interval across all NavClock instances, pauses when tab is hidden
+let sharedTime: Date | null = null
+let sharedTimer: NodeJS.Timeout | null = null
+const timeSubscribers = new Set<(t: Date) => void>()
+
+function subscribeNavClock(callback: (t: Date) => void) {
+  timeSubscribers.add(callback)
+  if (sharedTime) callback(sharedTime)
+
+  if (!sharedTimer && typeof window !== "undefined") {
+    const tick = () => {
+      if (document.hidden) return
+      sharedTime = new Date()
+      timeSubscribers.forEach(cb => cb(sharedTime!))
+    }
+    tick()
+    sharedTimer = setInterval(tick, 1000)
+
+    const onVisibility = () => {
+      if (!document.hidden) tick()
+    }
+    document.addEventListener("visibilitychange", onVisibility)
+  }
+
+  return () => {
+    timeSubscribers.delete(callback)
+    if (timeSubscribers.size === 0 && sharedTimer) {
+      clearInterval(sharedTimer)
+      sharedTimer = null
+    }
+  }
+}
+
 function NavClock() {
-  const [time, setTime] = useState<Date | null>(null)
+  const [time, setTime] = useState<Date | null>(sharedTime)
   const [format, setFormat] = useState<'12h' | '24h'>('12h')
   const [showSeconds, setShowSeconds] = useState(true)
   const [showDate, setShowDate] = useState(false)
 
   useEffect(() => {
-    setTime(new Date())
-    
     // Load initial settings
     const savedFormat = localStorage.getItem('chameleon_time_format') as '12h' | '24h'
     if (savedFormat) setFormat(savedFormat)
@@ -65,10 +96,10 @@ function NavClock() {
     window.addEventListener('storage', handleStorageChange)
     window.addEventListener('chameleon_time_settings_changed', handleCustomChange)
 
-    const timer = setInterval(() => setTime(new Date()), 1000)
+    const unsubscribe = subscribeNavClock((newTime) => setTime(newTime))
 
     return () => {
-      clearInterval(timer)
+      unsubscribe()
       window.removeEventListener('storage', handleStorageChange)
       window.removeEventListener('chameleon_time_settings_changed', handleCustomChange)
     }
@@ -149,7 +180,8 @@ export default function Navigation() {
       if (!scrollThrottled.current) {
         scrollThrottled.current = true
         requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 50)
+          const isScrolled = window.scrollY > 50
+          setScrolled(prev => prev !== isScrolled ? isScrolled : prev)
           scrollThrottled.current = false
         })
       }

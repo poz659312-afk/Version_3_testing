@@ -273,7 +273,7 @@ const Grainient: React.FC<GrainientProps> = ({
     let isPageVisible = !document.hidden;
     const t0 = performance.now();
     let lastFrameTime = 0;
-    const minFrameDelta = isMobileDevice ? 20 : 10; // High performance smooth animation
+    const minFrameDelta = isMobileDevice ? 33 : 16; // 30fps on mobile to preserve GPU bandwidth for 60/120fps touch scrolling, 60fps on desktop
 
     const loop = (t: number) => {
       if (t - lastFrameTime < minFrameDelta) {

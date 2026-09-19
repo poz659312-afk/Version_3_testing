@@ -18,7 +18,7 @@ const pacifico = Pacifico({
 })
 
 export default function HeroGeometric({
-  badge = "Chameleon FCDS",
+  badge = "Top 1 Website in FCDS",
   title1 = "Master Your",
   title2 = "Future Skills",
   children,

@@ -107,7 +107,7 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
           scrollbar-width: none !important;
           -ms-overflow-style: none !important;
         }
-        html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
           display: none !important;
           width: 0 !important;
           height: 0 !important;
@@ -267,12 +267,12 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
                   Chameleon
                 </text>
 
-                {/* Layer 3: Signature Cursive Flourish Underline */}
+                {/* Layer 3: Signature Cursive Flourish Underline (Bold Single Tilde Curve ~) */}
                 <path
-                  d="M 180 270 C 350 310, 820 235, 1000 275 S 1100 290, 1060 255"
+                  d="M 180 270 C 400 235, 800 305, 1020 270"
                   fill="none"
                   stroke="url(#chameleon-theme-dynamic-grad)"
-                  strokeWidth="4.2"
+                  strokeWidth="7.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   style={{

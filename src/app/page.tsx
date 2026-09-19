@@ -272,7 +272,7 @@ export default function HomePage() {
               </div>
 
               <div className="rounded-2xl shadow-2xl border border-white/10 dark:border-white/5 backdrop-blur-sm md:backdrop-blur-3xl flex items-center justify-center relative p-2 md:p-4 bg-white/5 dark:bg-black/5 w-full transform hover:scale-[1.01] transition-transform duration-500">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-secondary/30 to-primary/30 rounded-3xl blur-md md:blur-xl opacity-50 -z-10 animate-pulse"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-secondary/30 to-primary/30 rounded-3xl blur-md md:blur-xl opacity-50 -z-10"></div>
                 <div className="inline-block rounded-xl overflow-hidden bg-gradient-to-r from-primary to-secondary w-full relative">
                   <Image src="/images/new_chameleom.png" alt="Chameleon" width={1200} height={720} className="block w-full h-auto object-cover rounded-xl dark:invert transition-all duration-300" priority />
                   <div className="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/10 rounded-xl pointer-events-none"></div>
@@ -286,8 +286,8 @@ export default function HomePage() {
         <section className="w-full py-24 md:py-40 bg-background dark:bg-black relative overflow-hidden transition-colors duration-500">
           {/* Cinematic Background Mesh */}
           <div className="absolute inset-0 -z-10 overflow-hidden">
-            <div className="absolute top-[10%] right-[10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full animate-pulse"></div>
-            <div className="absolute bottom-[10%] left-[10%] w-[40%] h-[40%] bg-secondary/15 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-[10%] right-[10%] w-[40%] h-[40%] bg-primary/20 blur-[120px] rounded-full"></div>
+            <div className="absolute bottom-[10%] left-[10%] w-[40%] h-[40%] bg-secondary/15 blur-[120px] rounded-full" style={{ animationDelay: '2s' }}></div>
             <div className="absolute inset-0 bg-[radial-gradient(#00000015_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] opacity-60"></div>
           </div>
 
@@ -333,32 +333,29 @@ export default function HomePage() {
 
               <div className="lg:col-span-6 relative order-1 lg:order-2 flex justify-center lg:justify-end mt-10 lg:mt-0">
                 <div className="relative w-full max-w-[550px] aspect-square flex items-center justify-center group">
-                  <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full -z-10 animate-pulse group-hover:bg-primary/30 transition-all duration-700"></div>
+                  <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full -z-10 group-hover:bg-primary/30 transition-all duration-700"></div>
 
-                  {/* Floating Decorative Elements */}
-                  <motion.div
-                    animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
-                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute top-10 right-0 z-20 bg-background/80 backdrop-blur-xl border border-border p-4 rounded-2xl shadow-xl flex items-center gap-4"
+                  {/* Floating Decorative Elements — Hardware Accelerated CSS Keyframes */}
+                  <div
+                    className="absolute top-10 right-0 z-20 bg-background/80 backdrop-blur-xl border border-border p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-[float_6s_ease-in-out_infinite] will-change-transform"
                   >
                     <div className="bg-green-500/20 p-3 rounded-full text-green-500"><Check className="w-5 h-5" /></div>
                     <div>
                       <p className="font-bold text-sm">Course Completed</p>
                       <p className="text-xs text-muted-foreground">Machine Learning 101</p>
                     </div>
-                  </motion.div>
+                  </div>
 
-                  <motion.div
-                    animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                    className="absolute bottom-10 left-0 z-20 bg-background/80 backdrop-blur-xl border border-border p-4 rounded-2xl shadow-xl flex items-center gap-4"
+                  <div
+                    className="absolute bottom-10 left-0 z-20 bg-background/80 backdrop-blur-xl border border-border p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-[float_5s_ease-in-out_infinite] will-change-transform"
+                    style={{ animationDelay: '1s' }}
                   >
                     <div className="bg-primary/20 p-3 rounded-full text-primary"><Star className="w-5 h-5" /></div>
                     <div>
                       <p className="font-bold text-sm">Achievement Unlocked</p>
                       <p className="text-xs text-muted-foreground">Top 5% Performer</p>
                     </div>
-                  </motion.div>
+                  </div>
 
                   <div className="w-full h-full flex items-center justify-center overflow-visible relative z-10">
                     <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-secondary/10 rounded-full blur-3xl -z-10"></div>
@@ -423,6 +420,7 @@ export default function HomePage() {
                     <div
                       className="group relative h-full transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-3"
                       onMouseMove={(e) => {
+                        if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) return;
                         const target = e.currentTarget;
                         requestAnimationFrame(() => {
                           const rect = target.getBoundingClientRect();
@@ -664,8 +662,8 @@ export default function HomePage() {
         <section className="w-full py-24 md:py-40 bg-background text-foreground relative overflow-hidden border-t border-border/40">
           {/* Animated Background Gradients for CTA */}
           <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/40 rounded-full blur-[120px] animate-pulse"></div>
-            <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-secondary/15 dark:bg-secondary/30 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/40 rounded-full blur-[120px]"></div>
+            <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-secondary/15 dark:bg-secondary/30 rounded-full blur-[120px]" style={{ animationDelay: '2s' }}></div>
             <div className="absolute inset-0 bg-[radial-gradient(#00000015_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:24px_24px] opacity-60"></div>
           </div>
 
