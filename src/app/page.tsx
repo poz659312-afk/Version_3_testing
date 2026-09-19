@@ -271,8 +271,8 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              <div className="rounded-2xl shadow-2xl border border-white/10 dark:border-white/5 backdrop-blur-xl md:backdrop-blur-3xl flex items-center justify-center relative p-2 md:p-4 bg-white/5 dark:bg-black/5 w-full transform hover:scale-[1.01] transition-transform duration-500">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-secondary/30 to-primary/30 rounded-3xl blur-xl opacity-50 -z-10 animate-pulse"></div>
+              <div className="rounded-2xl shadow-2xl border border-white/10 dark:border-white/5 backdrop-blur-sm md:backdrop-blur-3xl flex items-center justify-center relative p-2 md:p-4 bg-white/5 dark:bg-black/5 w-full transform hover:scale-[1.01] transition-transform duration-500">
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-secondary/30 to-primary/30 rounded-3xl blur-md md:blur-xl opacity-50 -z-10 animate-pulse"></div>
                 <div className="inline-block rounded-xl overflow-hidden bg-gradient-to-r from-primary to-secondary w-full relative">
                   <Image src="/images/new_chameleom.png" alt="Chameleon" width={1200} height={720} className="block w-full h-auto object-cover rounded-xl dark:invert transition-all duration-300" priority />
                   <div className="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/10 rounded-xl pointer-events-none"></div>

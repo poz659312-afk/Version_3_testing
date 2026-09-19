@@ -30,6 +30,8 @@ export default function HeroGeometric({
 }) {
   const [mounted, setMounted] = useState(false)
   const [bgEnabled, setBgEnabled] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
+  const [isReady, setIsReady] = useState(false)
   const { theme } = useTheme()
   const [colors, setColors] = useState({ c1: '#FF9FFC', c2: '#5227FF', c3: '#B497CF' })
 
@@ -38,7 +40,13 @@ export default function HeroGeometric({
     const checkSettings = () => {
       const isEnabled = localStorage.getItem('chameleon_bg_animation') !== 'false'
       const isPowerSave = localStorage.getItem('chameleon_perf_mode') === 'power-save'
+      const mobile = window.matchMedia('(max-width: 1024px)').matches || 
+                     window.matchMedia('(pointer: coarse)').matches || 
+                     window.matchMedia('(hover: none)').matches ||
+                     (typeof navigator !== 'undefined' && (navigator.maxTouchPoints > 0 || (navigator as any).msMaxTouchPoints > 0));
+      setIsMobile(mobile)
       setBgEnabled(isEnabled && !isPowerSave)
+      setIsReady(true)
     }
     checkSettings()
     window.addEventListener('chameleon_visual_settings_changed', checkSettings)
@@ -65,7 +73,7 @@ export default function HeroGeometric({
       className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center overflow-hidden pt-32 md:pt-40 pb-10"
     >
       {/* Grainient Interactive Background */}
-      {mounted && bgEnabled && (
+      {mounted && isReady && bgEnabled && (
         <div className="absolute inset-0 z-0 pointer-events-none opacity-100">
           <Grainient
             color1={colors.c1}
@@ -128,13 +136,13 @@ export default function HeroGeometric({
               <span className="relative inline-block mt-2 md:mt-4 px-4 sm:px-6 md:px-10 py-1.5 sm:py-2 md:py-4 max-w-full whitespace-nowrap">
                 {/* Glitchy Highlight Background */}
                 <span
-                  className="absolute inset-0 bg-background shadow-2xl -rotate-2"
+                  className="absolute inset-0 bg-background shadow-md sm:shadow-2xl -rotate-2"
                   style={{
                     borderRadius: "20px",
                   }}
                 />
                 <span className={cn(
-                  "relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-secondary drop-shadow-[0_0_30px_rgba(var(--primary),0.3)] whitespace-nowrap inline-block",
+                  "relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-secondary drop-shadow-none sm:drop-shadow-[0_0_25px_rgba(var(--primary),0.3)] whitespace-nowrap inline-block",
                   pacifico.className,
                 )}>
                   {title2}

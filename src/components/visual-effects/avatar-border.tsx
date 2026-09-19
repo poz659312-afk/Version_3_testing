@@ -18,10 +18,15 @@ export default function AvatarBorder({
 }: AvatarBorderProps) {
   const [activeBorder, setActiveBorder] = useState<string | null>(null)
   const [isPowerSave, setIsPowerSave] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
   const syncSettings = () => {
     if (typeof window === "undefined") return
+
+    // 0. Detect mobile/touch device
+    const mobile = window.matchMedia("(max-width: 768px)").matches || window.matchMedia("(pointer: coarse)").matches
+    setIsMobile(mobile)
 
     // 1. Read performance mode
     const perfMode = localStorage.getItem("chameleon_perf_mode")
@@ -39,6 +44,14 @@ export default function AvatarBorder({
   useEffect(() => {
     setIsMounted(true)
     syncSettings()
+
+    // Inject styles once in head if not already present
+    if (typeof document !== "undefined" && !document.getElementById("chameleon-border-styles")) {
+      const styleEl = document.createElement("style")
+      styleEl.id = "chameleon-border-styles"
+      styleEl.innerHTML = BORDER_STYLES
+      document.head.appendChild(styleEl)
+    }
 
     window.addEventListener("chameleon_visual_settings_changed", syncSettings)
     window.addEventListener("storage", syncSettings)
@@ -61,21 +74,23 @@ export default function AvatarBorder({
     return <div className={cn("relative rounded-full overflow-hidden", className)}>{children}</div>
   }
 
+  // On mobile or power-save, use static zero-overhead hardware rendering without continuous repaints
+  const isStaticMode = isPowerSave || isMobile
+
   return (
     <div className={cn("relative p-[3px] rounded-full inline-block", className)}>
-      <style dangerouslySetInnerHTML={{ __html: BORDER_STYLES }} />
-      
       {/* Gold Glow border effect */}
       {borderToRender === "border-gold-glow" && (
         <div 
           className={cn(
             "absolute -inset-[3px] rounded-full -z-10",
-            isPowerSave ? "" : "animate-[avatar-spin_4s_linear_infinite]"
+            isStaticMode ? "" : "animate-[avatar-spin_4s_linear_infinite]"
           )}
           style={{
             background: "conic-gradient(from 0deg, #d97706, #f59e0b, #fbbf24, #fffbeb, #fbbf24, #f59e0b, #d97706)",
-            filter: isPowerSave ? "none" : "drop-shadow(0 0 5px rgba(245, 158, 11, 0.75))",
-            willChange: isPowerSave ? "auto" : "transform"
+            filter: isStaticMode ? "none" : "drop-shadow(0 0 5px rgba(245, 158, 11, 0.75))",
+            boxShadow: isStaticMode ? "0 0 8px rgba(245, 158, 11, 0.65)" : undefined,
+            willChange: isStaticMode ? "auto" : "transform"
           }}
         />
       )}
@@ -85,13 +100,14 @@ export default function AvatarBorder({
         <div 
           className={cn(
             "absolute -inset-[3px] rounded-full -z-10",
-            isPowerSave ? "" : "animate-[aurora-wave_6s_ease_infinite,avatar-spin_12s_linear_infinite]"
+            isStaticMode ? "" : "animate-[aurora-wave_6s_ease_infinite,avatar-spin_12s_linear_infinite]"
           )}
           style={{
             background: "linear-gradient(135deg, #10b981, #06b6d4, #6366f1, #10b981)",
-            backgroundSize: "200% 200%",
-            filter: isPowerSave ? "none" : "drop-shadow(0 0 6px rgba(6, 182, 212, 0.65))",
-            willChange: isPowerSave ? "auto" : "transform"
+            backgroundSize: isStaticMode ? "100% 100%" : "200% 200%",
+            filter: isStaticMode ? "none" : "drop-shadow(0 0 6px rgba(6, 182, 212, 0.65))",
+            boxShadow: isStaticMode ? "0 0 8px rgba(6, 182, 212, 0.6)" : undefined,
+            willChange: isStaticMode ? "auto" : "transform"
           }}
         />
       )}
@@ -103,26 +119,26 @@ export default function AvatarBorder({
           <div 
             className={cn(
               "absolute -inset-[3px] rounded-full -z-10",
-              isPowerSave ? "" : "animate-[neon-glitch-cyan_1.5s_steps(2)_infinite]"
+              isStaticMode ? "" : "animate-[neon-glitch-cyan_1.5s_steps(2)_infinite]"
             )}
             style={{
               border: "3px solid #06b6d4",
-              filter: isPowerSave ? "none" : "drop-shadow(0 0 3px rgba(6, 182, 212, 0.6))",
-              willChange: isPowerSave ? "auto" : "transform"
+              filter: isStaticMode ? "none" : "drop-shadow(0 0 3px rgba(6, 182, 212, 0.6))",
+              boxShadow: isStaticMode ? "0 0 6px rgba(6, 182, 212, 0.55)" : undefined,
+              willChange: isStaticMode ? "auto" : "transform"
             }}
           />
-          {/* Magenta glitch layer */}
-          <div 
-            className={cn(
-              "absolute -inset-[3px] rounded-full -z-10",
-              isPowerSave ? "" : "animate-[neon-glitch-magenta_1.5s_steps(2)_infinite]"
-            )}
-            style={{
-              border: "3px solid #d946ef",
-              filter: isPowerSave ? "none" : "drop-shadow(0 0 3px rgba(217, 70, 239, 0.6))",
-              willChange: isPowerSave ? "auto" : "transform"
-            }}
-          />
+          {/* Magenta glitch layer - omitted on mobile to save composite layer */}
+          {!isStaticMode && (
+            <div 
+              className="absolute -inset-[3px] rounded-full -z-10 animate-[neon-glitch-magenta_1.5s_steps(2)_infinite]"
+              style={{
+                border: "3px solid #d946ef",
+                filter: "drop-shadow(0 0 3px rgba(217, 70, 239, 0.6))",
+                willChange: "transform"
+              }}
+            />
+          )}
         </>
       )}
 
@@ -132,24 +148,24 @@ export default function AvatarBorder({
           <div 
             className={cn(
               "absolute -inset-[4px] rounded-full -z-10",
-              isPowerSave ? "" : "animate-[flame-flicker_1.5s_ease-in-out_infinite_alternate,avatar-spin_3.5s_linear_infinite]"
+              isStaticMode ? "" : "animate-[flame-flicker_1.5s_ease-in-out_infinite_alternate,avatar-spin_3.5s_linear_infinite]"
             )}
             style={{
               background: "conic-gradient(from 0deg, #dc2626, #ea580c, #f59e0b, #fef08a, #f97316, #dc2626)",
-              filter: isPowerSave ? "none" : "drop-shadow(0 0 8px #f97316) drop-shadow(0 0 16px rgba(220, 38, 38, 0.75))",
-              willChange: isPowerSave ? "auto" : "transform"
+              filter: isStaticMode ? "none" : "drop-shadow(0 0 8px #f97316) drop-shadow(0 0 16px rgba(220, 38, 38, 0.75))",
+              boxShadow: isStaticMode ? "0 0 10px rgba(249, 115, 22, 0.65)" : undefined,
+              willChange: isStaticMode ? "auto" : "transform"
             }}
           />
-          <div 
-            className={cn(
-              "absolute -inset-[2px] rounded-full -z-10 opacity-75",
-              isPowerSave ? "" : "animate-[avatar-spin-reverse_2s_linear_infinite]"
-            )}
-            style={{
-              background: "conic-gradient(from 180deg, rgba(239, 68, 68, 0.6), rgba(245, 158, 11, 0.9), transparent)",
-              willChange: isPowerSave ? "auto" : "transform"
-            }}
-          />
+          {!isStaticMode && (
+            <div 
+              className="absolute -inset-[2px] rounded-full -z-10 opacity-75 animate-[avatar-spin-reverse_2s_linear_infinite]"
+              style={{
+                background: "conic-gradient(from 180deg, rgba(239, 68, 68, 0.6), rgba(245, 158, 11, 0.9), transparent)",
+                willChange: "transform"
+              }}
+            />
+          )}
         </>
       )}
 
@@ -158,12 +174,13 @@ export default function AvatarBorder({
         <div 
           className={cn(
             "absolute -inset-[3.5px] rounded-full -z-10",
-            isPowerSave ? "" : "animate-[sakura-pulse_3s_ease-in-out_infinite,avatar-spin_8s_linear_infinite]"
+            isStaticMode ? "" : "animate-[sakura-pulse_3s_ease-in-out_infinite,avatar-spin_8s_linear_infinite]"
           )}
           style={{
             background: "conic-gradient(from 0deg, #f43f5e, #ec4899, #f472b6, #fbcfe8, #fda4af, #f43f5e)",
-            filter: isPowerSave ? "none" : "drop-shadow(0 0 8px rgba(244, 63, 94, 0.7)) drop-shadow(0 0 3px #fbcfe8)",
-            willChange: isPowerSave ? "auto" : "transform"
+            filter: isStaticMode ? "none" : "drop-shadow(0 0 8px rgba(244, 63, 94, 0.7)) drop-shadow(0 0 3px #fbcfe8)",
+            boxShadow: isStaticMode ? "0 0 8px rgba(244, 63, 94, 0.6)" : undefined,
+            willChange: isStaticMode ? "auto" : "transform"
           }}
         />
       )}
@@ -174,24 +191,24 @@ export default function AvatarBorder({
           <div 
             className={cn(
               "absolute -inset-[4px] rounded-full -z-10",
-              isPowerSave ? "" : "animate-[avatar-spin_2.2s_linear_infinite]"
+              isStaticMode ? "" : "animate-[avatar-spin_2.2s_linear_infinite]"
             )}
             style={{
               background: "conic-gradient(from 0deg, #09090b, #4c1d95, #7c3aed, #a855f7, #38bdf8, #8b5cf6, #09090b)",
-              filter: isPowerSave ? "none" : "drop-shadow(0 0 10px rgba(139, 92, 246, 0.9)) drop-shadow(0 0 4px #06b6d4)",
-              willChange: isPowerSave ? "auto" : "transform"
+              filter: isStaticMode ? "none" : "drop-shadow(0 0 10px rgba(139, 92, 246, 0.9)) drop-shadow(0 0 4px #06b6d4)",
+              boxShadow: isStaticMode ? "0 0 10px rgba(139, 92, 246, 0.65)" : undefined,
+              willChange: isStaticMode ? "auto" : "transform"
             }}
           />
-          <div 
-            className={cn(
-              "absolute -inset-[2px] rounded-full -z-10 opacity-70",
-              isPowerSave ? "" : "animate-[avatar-spin-reverse_4s_linear_infinite]"
-            )}
-            style={{
-              background: "conic-gradient(from 90deg, #38bdf8, transparent, #c084fc, transparent)",
-              willChange: isPowerSave ? "auto" : "transform"
-            }}
-          />
+          {!isStaticMode && (
+            <div 
+              className="absolute -inset-[2px] rounded-full -z-10 opacity-70 animate-[avatar-spin-reverse_4s_linear_infinite]"
+              style={{
+                background: "conic-gradient(from 90deg, #38bdf8, transparent, #c084fc, transparent)",
+                willChange: "transform"
+              }}
+            />
+          )}
         </>
       )}
 
@@ -200,12 +217,13 @@ export default function AvatarBorder({
         <div 
           className={cn(
             "absolute -inset-[3.5px] rounded-full -z-10",
-            isPowerSave ? "" : "animate-[electric-strobe_0.8s_steps(4)_infinite,avatar-spin_5s_linear_infinite]"
+            isStaticMode ? "" : "animate-[electric-strobe_0.8s_steps(4)_infinite,avatar-spin_5s_linear_infinite]"
           )}
           style={{
             background: "conic-gradient(from 0deg, #0284c7, #00f0ff, #38bdf8, #ffffff, #6366f1, #00f0ff)",
-            filter: isPowerSave ? "none" : "drop-shadow(0 0 9px #00f0ff) drop-shadow(0 0 3px #ffffff)",
-            willChange: isPowerSave ? "auto" : "transform"
+            filter: isStaticMode ? "none" : "drop-shadow(0 0 9px #00f0ff) drop-shadow(0 0 3px #ffffff)",
+            boxShadow: isStaticMode ? "0 0 8px rgba(0, 240, 255, 0.6)" : undefined,
+            willChange: isStaticMode ? "auto" : "transform"
           }}
         />
       )}
@@ -215,11 +233,12 @@ export default function AvatarBorder({
         <div 
           className={cn(
             "absolute -inset-[3px] rounded-full -z-10",
-            isPowerSave ? "" : "animate-[avatar-spin_3s_linear_infinite]"
+            isStaticMode ? "" : "animate-[avatar-spin_3s_linear_infinite]"
           )}
           style={{
             background: "conic-gradient(from 0deg, #ef4444, #eab308, #22c55e, #3b82f6, #ef4444)",
-            willChange: isPowerSave ? "auto" : "transform"
+            boxShadow: isStaticMode ? "0 0 6px rgba(59, 130, 246, 0.45)" : undefined,
+            willChange: isStaticMode ? "auto" : "transform"
           }}
         />
       )}

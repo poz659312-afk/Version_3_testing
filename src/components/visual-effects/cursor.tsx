@@ -23,6 +23,8 @@ export default function Cursor() {
   const [activeCursor, setActiveCursor] = useState<string | null>(null)
   const [isPowerSave, setIsPowerSave] = useState(false)
   
+  const [isTouchDevice, setIsTouchDevice] = useState(false)
+  
   // Coordinates and physics variables kept in refs to avoid React re-renders on mouse movement
   const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0, moved: false })
   const particlesRef = useRef<Particle[]>([])
@@ -32,6 +34,11 @@ export default function Cursor() {
 
   const syncSettings = () => {
     if (typeof window === "undefined") return
+
+    // 0. Detect touch/mobile device (no hardware mouse cursor)
+    const isCoarse = window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(max-width: 768px)").matches
+    setIsTouchDevice(isCoarse)
+    if (isCoarse) return
 
     // 1. Read performance mode
     const perfMode = localStorage.getItem("chameleon_perf_mode")
@@ -61,7 +68,7 @@ export default function Cursor() {
 
   // Manage cursor events and animation loop
   useEffect(() => {
-    if (typeof window === "undefined" || isPowerSave || !activeCursor) {
+    if (typeof window === "undefined" || isTouchDevice || isPowerSave || !activeCursor) {
       // Clear canvas and cancel frame if disabled
       const canvas = canvasRef.current
       if (canvas) {
@@ -514,9 +521,9 @@ export default function Cursor() {
         cancelAnimationFrame(animationFrameIdRef.current)
       }
     }
-  }, [activeCursor, isPowerSave])
+  }, [activeCursor, isPowerSave, isTouchDevice])
 
-  if (isPowerSave || !activeCursor) return null
+  if (isTouchDevice || isPowerSave || !activeCursor) return null
 
   return (
     <canvas

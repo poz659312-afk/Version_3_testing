@@ -31,14 +31,17 @@ export default function SmoothScrollProvider({ children }: { children: ReactNode
         root.classList.remove('no-glassmorphism');
       }
 
-      // Hardware heuristics
-      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      // Comprehensive mobile / touch heuristics: Lenis must never hijack native touch scrolling
+      const isTouch = window.matchMedia("(pointer: coarse)").matches ||
+                      window.matchMedia("(hover: none)").matches ||
+                      window.matchMedia("(max-width: 1024px)").matches ||
+                      (typeof navigator !== 'undefined' && (navigator.maxTouchPoints > 0 || (navigator as any).msMaxTouchPoints > 0));
       const hardwareConcurrency = navigator.hardwareConcurrency || 4;
       const isLowPower = hardwareConcurrency < 4;
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
       // Disable if the user explicitly turned it off, is in power-save mode, or if hardware constraints apply
-      setIsLowEnd(!isEnabled || isPowerSave || isMobile || isLowPower || prefersReducedMotion);
+      setIsLowEnd(!isEnabled || isPowerSave || isTouch || isLowPower || prefersReducedMotion);
     }
     
     checkSettings()

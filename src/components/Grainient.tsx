@@ -60,7 +60,7 @@ void main() {
 `;
 
 const fragment = `#version 300 es
-precision highp float;
+precision mediump float;
 uniform vec2 iResolution;
 uniform float iTime;
 uniform float uTimeSpeed;
@@ -185,11 +185,19 @@ const Grainient: React.FC<GrainientProps> = ({
     const container = containerRef.current;
     if (!container) return;
 
+    const isMobileDevice = typeof window !== 'undefined' && (
+      window.matchMedia("(pointer: coarse)").matches ||
+      window.matchMedia("(hover: none)").matches ||
+      window.matchMedia("(max-width: 1024px)").matches ||
+      (typeof navigator !== 'undefined' && (navigator.maxTouchPoints > 0 || (navigator as any).msMaxTouchPoints > 0))
+    );
+
     const renderer = new Renderer({
       webgl: 2,
-      alpha: true,
+      alpha: false,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2)
+      powerPreference: "high-performance",
+      dpr: isMobileDevice ? 1 : Math.min(window.devicePixelRatio || 1, 1.5)
     });
 
     const gl = renderer.gl;
@@ -197,6 +205,8 @@ const Grainient: React.FC<GrainientProps> = ({
     canvas.style.width = '100%';
     canvas.style.height = '100%';
     canvas.style.display = 'block';
+    canvas.style.transform = 'translateZ(0)';
+    canvas.style.willChange = 'transform';
     container.appendChild(canvas);
 
     const geometry = new Triangle(gl);
@@ -233,10 +243,20 @@ const Grainient: React.FC<GrainientProps> = ({
     const mesh = new Mesh(gl, { geometry, program });
     ctxMap.set(container, { renderer, program, mesh });
 
+    let lastW = 0;
+    let lastH = 0;
     const setSize = () => {
       const rect = container.getBoundingClientRect();
       const w = Math.max(1, Math.floor(rect.width));
       const h = Math.max(1, Math.floor(rect.height));
+
+      // Suppress address bar jitter during mobile scrolling (URL bar collapse/expand is typically < 120px)
+      if (lastW !== 0 && Math.abs(w - lastW) < 2 && Math.abs(h - lastH) < 120) {
+        return;
+      }
+      lastW = w;
+      lastH = h;
+
       renderer.setSize(w, h);
       const res = (program.uniforms.iResolution as { value: Float32Array }).value;
       res[0] = gl.drawingBufferWidth;
@@ -252,22 +272,37 @@ const Grainient: React.FC<GrainientProps> = ({
     let isVisible = true;
     let isPageVisible = !document.hidden;
     const t0 = performance.now();
+    let lastFrameTime = 0;
+    const minFrameDelta = isMobileDevice ? 20 : 10; // High performance smooth animation
 
     const loop = (t: number) => {
+      if (t - lastFrameTime < minFrameDelta) {
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+      lastFrameTime = t;
       (program.uniforms.iTime as { value: number }).value = (t - t0) * 0.001;
       renderer.render({ scene: mesh });
       raf = requestAnimationFrame(loop);
     };
 
     const tryStart = () => {
-      if (isVisible && isPageVisible && raf === 0) raf = requestAnimationFrame(loop);
+      if (isVisible && isPageVisible && raf === 0) {
+        raf = requestAnimationFrame(loop);
+      }
     };
     const tryStop = () => {
-      if (raf !== 0) { cancelAnimationFrame(raf); raf = 0; }
+      if (raf !== 0) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
     };
 
     const io = new IntersectionObserver(
-      ([entry]) => { isVisible = entry.isIntersecting; isVisible ? tryStart() : tryStop(); },
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        isVisible ? tryStart() : tryStop();
+      },
       { threshold: 0 }
     );
     io.observe(container);
@@ -286,7 +321,10 @@ const Grainient: React.FC<GrainientProps> = ({
       io.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);
       ctxMap.delete(container);
-      try { container.removeChild(canvas); } catch { /* ignore */ }
+      try {
+        gl.getExtension('WEBGL_lose_context')?.loseContext();
+        container.removeChild(canvas);
+      } catch { /* ignore */ }
     };
   }, []); // renderer created once
 
