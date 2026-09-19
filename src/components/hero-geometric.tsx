@@ -109,7 +109,7 @@ export default function HeroGeometric({
       <div className="relative z-10 container mx-auto px-4 md:px-6">
         <div className="max-w-4xl mx-auto text-center">
           <div
-            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] mb-8 md:mb-12 transition-all duration-700 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/[0.03] dark:bg-white/[0.03] border border-black/[0.08] dark:border-white/[0.08] mb-8 md:mb-12 transition-all duration-700 ease-out ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
           >
             <div className="rounded-full bg-primary flex items-center justify-center">
@@ -120,10 +120,10 @@ export default function HeroGeometric({
                 height={20}
                 priority
                 loading="eager"
-                className="object-cover rounded-full"
+                className="object-cover rounded-full invert dark:invert-0"
               />
             </div>
-            <span className="text-sm text-muted-foreground tracking-wide">{badge}</span>
+            <span className="text-sm text-black dark:text-white tracking-wide">{badge}</span>
           </div>
 
           <div
@@ -155,7 +155,7 @@ export default function HeroGeometric({
             className={`transition-all duration-700 ease-out delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
           >
-            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-4 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
+            <p className="text-base sm:text-lg md:text-xl text-black dark:text-white mb-4 leading-relaxed font-light tracking-wide max-w-xl mx-auto px-4">
               Transforming ideas into vibrant digital experiences, adapting seamlessly like a chameleon to every challenge and vision.
             </p>
           </div>
