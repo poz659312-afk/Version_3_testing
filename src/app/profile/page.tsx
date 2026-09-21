@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { getStudentSession } from "@/lib/auth"
 import { createBrowserClient } from "@/lib/supabase/client"
 import { motion, AnimatePresence } from "framer-motion"
@@ -1058,6 +1058,66 @@ function VisualEffectsSettings({
   )
 }
 
+function GlobalClockWidget({
+  timeFormat,
+  showSeconds,
+  showDate,
+  toggleTimeFormat,
+}: {
+  timeFormat: '12h' | '24h'
+  showSeconds: boolean
+  showDate: boolean
+  toggleTimeFormat: () => void
+}) {
+  const [currentTime, setCurrentTime] = useState<Date | null>(null)
+
+  useEffect(() => {
+    setCurrentTime(new Date())
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const formattedTime = useMemo(() => {
+    if (!currentTime) return '--:--'
+    const timeString = currentTime.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      second: showSeconds ? '2-digit' : undefined,
+      hour12: timeFormat === '12h'
+    })
+    
+    if (showDate) {
+      const dateString = currentTime.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric'
+      })
+      return `${dateString} • ${timeString}`
+    }
+    
+    return timeString
+  }, [currentTime, showSeconds, showDate, timeFormat])
+
+  return (
+    <div className="hidden md:flex items-center gap-4 bg-muted/40 p-2 rounded-2xl border border-border/50">
+      <div className="px-4 text-center border-r border-border/50">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold mb-0.5">Global Clock</p>
+        <p className="text-lg font-bold font-mono text-primary tabular-nums" suppressHydrationWarning>
+          {formattedTime}
+        </p>
+      </div>
+      <Button 
+        onClick={toggleTimeFormat}
+        variant="ghost" 
+        size="sm" 
+        className="rounded-xl font-bold font-outfit text-xs px-3 hover:bg-primary/10 hover:text-primary transition-all"
+      >
+        Switch to {timeFormat === '12h' ? '24h' : '12h'}
+      </Button>
+    </div>
+  )
+}
+
 export default function ProfilePage() {
   const { colorTheme } = useColorTheme()
   const [userSubjects, setUserSubjects] = useState<any[]>([])
@@ -1094,7 +1154,6 @@ export default function ProfilePage() {
   const [timeFormat, setTimeFormat] = useState<'12h' | '24h'>('12h')
   const [showSeconds, setShowSeconds] = useState<boolean>(true)
   const [showDate, setShowDate] = useState<boolean>(true)
-  const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
     // Sync time format and settings with storage
@@ -1106,8 +1165,6 @@ export default function ProfilePage() {
     
     const savedDate = localStorage.getItem('chameleon_show_date')
     if (savedDate !== null) setShowDate(savedDate === 'true')
-
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
     
     // Listen for storage changes from other tabs
     const handleStorageChange = (e: StorageEvent) => {
@@ -1118,7 +1175,6 @@ export default function ProfilePage() {
     window.addEventListener('storage', handleStorageChange)
 
     return () => {
-      clearInterval(timer)
       window.removeEventListener('storage', handleStorageChange)
     }
   }, [])
@@ -1160,26 +1216,6 @@ export default function ProfilePage() {
     localStorage.setItem('chameleon_show_date', String(newValue))
     window.dispatchEvent(new Event('chameleon_time_settings_changed'))
     addToast(`Date display ${newValue ? 'enabled' : 'disabled'}`, "success")
-  }
-
-  const formatCurrentTime = (date: Date) => {
-    const timeString = date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      second: showSeconds ? '2-digit' : undefined,
-      hour12: timeFormat === '12h'
-    })
-    
-    if (showDate) {
-      const dateString = date.toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric'
-      })
-      return `${dateString} • ${timeString}`
-    }
-    
-    return timeString
   }
 
   useEffect(() => {
@@ -1618,22 +1654,12 @@ export default function ProfilePage() {
               </p>
             </div>
             
-            <div className="hidden md:flex items-center gap-4 bg-muted/40 p-2 rounded-2xl border border-border/50">
-              <div className="px-4 text-center border-r border-border/50">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-bold mb-0.5">Global Clock</p>
-                <p className="text-lg font-bold font-mono text-primary tabular-nums" suppressHydrationWarning>
-                  {formatCurrentTime(currentTime)}
-                </p>
-              </div>
-              <Button 
-                onClick={toggleTimeFormat}
-                variant="ghost" 
-                size="sm" 
-                className="rounded-xl font-bold font-outfit text-xs px-3 hover:bg-primary/10 hover:text-primary transition-all"
-              >
-                Switch to {timeFormat === '12h' ? '24h' : '12h'}
-              </Button>
-            </div>
+            <GlobalClockWidget
+              timeFormat={timeFormat}
+              showSeconds={showSeconds}
+              showDate={showDate}
+              toggleTimeFormat={toggleTimeFormat}
+            />
           </motion.div>
 
           <Tabs defaultValue="profile" className="space-y-6">

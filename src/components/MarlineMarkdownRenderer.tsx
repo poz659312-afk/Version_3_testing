@@ -238,7 +238,7 @@ export const MarlineMarkdownRenderer = memo(function MarlineMarkdownRenderer({ c
   const displayContent = useMemo(() => preprocessMarlineContent(content) || content, [content])
 
   return (
-    <div className={`prose dark:prose-invert max-w-none text-foreground leading-relaxed text-sm md:text-base space-y-3 ${className}`}>
+    <div className={`prose dark:prose-invert max-w-none font-rubik text-foreground leading-relaxed text-sm md:text-base space-y-3 ${className}`}>
       {/* Scoped KaTeX styles guaranteeing 100% horizontal centering inside RTL layout */}
       <style>{`
         .katex-display:empty,

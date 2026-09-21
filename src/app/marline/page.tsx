@@ -159,7 +159,7 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
           className={`p-4 sm:p-5 shadow-sm ${
             message.role === "user"
               ? "bg-primary text-primary-foreground rounded-3xl rounded-tr-md font-medium text-xs sm:text-sm md:text-[15px] leading-relaxed shadow-sm"
-              : "bg-white dark:bg-white/[0.025] border border-border/70 dark:border-white/[0.08] rounded-3xl rounded-tl-md text-foreground backdrop-blur-xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:shadow-none"
+              : "bg-white dark:bg-white/[0.025] border border-border/70 dark:border-white/[0.08] rounded-3xl rounded-tl-md text-foreground sm:backdrop-blur-xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] dark:shadow-none"
           }`}
         >
           {message.role === "user" ? (
@@ -327,12 +327,12 @@ export default function MarlineAssistantPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const isUserScrolledUpRef = useRef<boolean>(false)
 
-  // Keep root page container locked to scrollTop 0 (prevent any scroll leakage to layout wrapper)
+  // Keep root page container locked to scrollTop 0 on mount
   useEffect(() => {
     if (rootContainerRef.current && rootContainerRef.current.scrollTop !== 0) {
       rootContainerRef.current.scrollTop = 0
     }
-  })
+  }, [])
 
   // Auth Guard & Daily Question Limit Check
   useEffect(() => {

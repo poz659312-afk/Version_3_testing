@@ -23,7 +23,13 @@ export default function Cursor() {
   const [activeCursor, setActiveCursor] = useState<string | null>(null)
   const [isPowerSave, setIsPowerSave] = useState(false)
   
-  const [isTouchDevice, setIsTouchDevice] = useState(false)
+  const [isTouchDevice, setIsTouchDevice] = useState(() => {
+    if (typeof window === "undefined") return false
+    return window.matchMedia("(pointer: coarse)").matches || 
+           window.matchMedia("(hover: none)").matches || 
+           window.matchMedia("(max-width: 1024px)").matches || 
+           (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0)
+  })
   
   // Coordinates and physics variables kept in refs to avoid React re-renders on mouse movement
   const mouseRef = useRef({ x: 0, y: 0, targetX: 0, targetY: 0, moved: false })
@@ -36,7 +42,10 @@ export default function Cursor() {
     if (typeof window === "undefined") return
 
     // 0. Detect touch/mobile device (no hardware mouse cursor)
-    const isCoarse = window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(max-width: 768px)").matches
+    const isCoarse = window.matchMedia("(pointer: coarse)").matches || 
+                     window.matchMedia("(hover: none)").matches || 
+                     window.matchMedia("(max-width: 1024px)").matches || 
+                     (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0)
     setIsTouchDevice(isCoarse)
     if (isCoarse) return
 

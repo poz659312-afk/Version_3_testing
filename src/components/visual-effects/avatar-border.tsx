@@ -25,7 +25,7 @@ export default function AvatarBorder({
     if (typeof window === "undefined") return
 
     // 0. Detect mobile/touch device
-    const mobile = window.matchMedia("(max-width: 768px)").matches || window.matchMedia("(pointer: coarse)").matches
+    const mobile = window.matchMedia("(max-width: 1024px)").matches || window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(hover: none)").matches
     setIsMobile(mobile)
 
     // 1. Read performance mode

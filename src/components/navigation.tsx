@@ -108,7 +108,7 @@ function NavClock() {
   if (!time) return null
 
   return (
-    <div className="flex flex-row items-center gap-1.5 justify-center text-[10.5px] font-mono font-bold text-foreground border border-border/40 bg-foreground/5 px-2.5 py-0.5 rounded-full select-none flex-shrink-0 min-w-max shadow-sm backdrop-blur-sm">
+    <div className="flex flex-row items-center gap-1.5 justify-center text-[10.5px] font-mono font-bold text-foreground border border-border/40 bg-foreground/5 px-2.5 py-0.5 rounded-full select-none flex-shrink-0 min-w-max shadow-sm">
       {showDate && (
         <span className="md:hidden text-[9.5px] text-foreground/90 uppercase tracking-tight self-end relative top-[0.5px]">
           {time.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -338,9 +338,9 @@ export default function Navigation() {
 
   return (
     <>
-      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-7xl pointer-events-none">
+      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-7xl pointer-events-none transform-gpu will-change-transform">
         <div
-           className={`pointer-events-auto h-16 md:h-16 rounded-full border transition-all duration-300 bg-background/90 ${
+           className={`pointer-events-auto h-16 md:h-16 rounded-full border transition-[border-color,background-color,box-shadow,transform] duration-300 bg-background/90 ${
              scrolled 
                ? "shadow-lg border-primary/20 scale-[0.98]" 
                : "border-border/40"

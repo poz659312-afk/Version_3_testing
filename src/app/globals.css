@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 @import "katex/dist/katex.min.css";
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -405,16 +406,27 @@ body::-webkit-scrollbar {
     @apply border-border outline-ring/50;
   }
 
+  html {
+    scroll-behavior: auto;
+    scrollbar-gutter: stable;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: pan-y pinch-zoom;
+  }
+
+  /* Keep smooth programmatic scrolling exclusively on desktop pointer devices */
+  @media (min-width: 1025px) and (pointer: fine) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'Rubik', system-ui, sans-serif;
-    /* Prevent layout shifts */
-    overflow-x: hidden;
-  }
-
-  html {
-    scroll-behavior: smooth;
-    scrollbar-gutter: stable;
+    /* Prevent layout shifts without breaking GPU compositor scrolling */
+    overflow-x: clip;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -428,9 +440,15 @@ body::-webkit-scrollbar {
   font-family: 'Rubik', var(--font-rubik), system-ui, sans-serif !important;
 }
 
-/* Marline page — clean, blazing fast font inheritance without recursive :not() checks */
-.marline-page {
-  font-family: 'Rubik', var(--font-rubik), 'Cairo', system-ui, -apple-system, sans-serif !important;
+/* Marline page — force Rubik font for chat, inputs, and controls while preserving authentic KaTeX math & code fonts */
+.marline-page,
+.marline-page .prose,
+.marline-page p,
+.marline-page span,
+.marline-page textarea,
+.marline-page input,
+.marline-page button {
+  font-family: 'Rubik', var(--font-rubik), system-ui, -apple-system, sans-serif !important;
 }
 .marline-page .katex,
 .marline-page .katex * {
@@ -443,27 +461,12 @@ body::-webkit-scrollbar {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
 }
 
-/* About page specific font */
-.about-page {
-  font-family: 'Rubik', sans-serif !important;
-}
-
-.about-page * {
-  font-family: 'Rubik', sans-serif !important;
-}
-
-/* Drive and Specialization pages — force Rubik for Arabic support */
+/* About, Drive, Specialization, and Arabic pages — standard CSS font inheritance */
+.about-page,
 .drive-page,
-.drive-page *,
 .specialization-page,
-.specialization-page * {
-  font-family: 'Rubik', sans-serif !important;
-}
-
-/* Arabic survey — force Rubik everywhere */
-[lang="ar"],
-[lang="ar"] * {
-  font-family: 'Rubik', sans-serif !important;
+[lang="ar"] {
+  font-family: 'Rubik', var(--font-rubik), system-ui, sans-serif !important;
 }
 
 /* Notification dropdown improvements */
@@ -1460,8 +1463,6 @@ html.quiz-active {
               0 0 40px rgba(0, 0, 0, 0.1);
 }
 
-html { scroll-behavior: smooth; }
-
 /* Lenis Stop Scrolling */
 html.lenis-stopped,
 html.lenis-stopped body {
@@ -1627,7 +1628,7 @@ html.lenis-stopped body {
    backdrop-blur creates a compositing layer per element,
    causing jank, dropped frames, and battery drain.
    ═══════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
+@media (max-width: 1024px), (pointer: coarse), (hover: none) {
   .backdrop-blur-xl,
   .backdrop-blur-2xl,
   .backdrop-blur-3xl,
