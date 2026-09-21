@@ -37,27 +37,41 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
   const [isLifting, setIsLifting] = useState(false)
   const [isDismissed, setIsDismissed] = useState(false)
 
+  const isLiftingRef = useRef(false)
+  const isDismissedRef = useRef(false)
+
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const finishTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const safetyTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Fast skip helper
+  // Fast skip helper — stable reference with zero re-creations
   const handleFastSkip = useCallback(() => {
-    if (isDismissed) return
+    if (isDismissedRef.current || isLiftingRef.current) return
+    isLiftingRef.current = true
     setIsLifting(true)
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = ""
+      document.documentElement.style.overflow = ""
+    }
     if (timerRef.current) clearTimeout(timerRef.current)
     if (finishTimerRef.current) clearTimeout(finishTimerRef.current)
 
     finishTimerRef.current = setTimeout(() => {
+      isDismissedRef.current = true
       setIsDismissed(true)
-      document.body.style.overflow = ""
-    }, 550)
-  }, [isDismissed])
+      if (typeof document !== "undefined") {
+        document.body.style.overflow = ""
+        document.documentElement.style.overflow = ""
+      }
+    }, 400)
+  }, [])
 
   useEffect(() => {
     if (typeof window === "undefined") return
 
-    // Lock body scroll briefly for the intro
+    // 1. Lock body and root scroll briefly for the intro
     document.body.style.overflow = "hidden"
+    document.documentElement.style.overflow = "hidden"
 
     // Skip on Escape / Enter / Space
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -67,9 +81,19 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
     }
     window.addEventListener("keydown", handleKeyDown)
 
-    // Verify font is ready before starting CSS stroke animation to prevent reflow stutter
+    // Unconditional safety timer to ensure scrolling is NEVER locked past 4.0s
+    safetyTimerRef.current = setTimeout(() => {
+      if (typeof document !== "undefined") {
+        document.body.style.overflow = ""
+        document.documentElement.style.overflow = ""
+      }
+    }, 4000)
+
+    // Verify font is ready before starting CSS stroke animation with safety timeout race
     const fontCheck = document.fonts ? document.fonts.ready : Promise.resolve()
-    fontCheck.then(() => {
+    const fontTimeout = new Promise((resolve) => setTimeout(resolve, 800))
+
+    Promise.race([fontCheck, fontTimeout]).then(() => {
       setIsReady(true)
 
       // Timeline sequence:
@@ -78,23 +102,36 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
       // 1.4s - 2.6s: Flourish underline swooshes underneath (~1.2s)
       // 2.2s - 2.8s: Luminous gradient ink floods into letters (~0.6s)
       // 2.8s - 3.1s: Elegant hold to appreciate the glowing signature (~0.3s)
-      // 3.1s - 3.8s: Smooth luxury curtain lift revealing Hero section (~0.7s)
-      // 3.85s: Intro complete, scroll unlocked
+      // 3.1s: Smooth luxury curtain lift begins -> unlock scroll IMMEDIATELY
+      // 3.85s: Intro complete, unmounted
       timerRef.current = setTimeout(() => {
+        isLiftingRef.current = true
         setIsLifting(true)
+        if (typeof document !== "undefined") {
+          document.body.style.overflow = ""
+          document.documentElement.style.overflow = ""
+        }
       }, 3100)
 
       finishTimerRef.current = setTimeout(() => {
+        isDismissedRef.current = true
         setIsDismissed(true)
-        document.body.style.overflow = ""
+        if (typeof document !== "undefined") {
+          document.body.style.overflow = ""
+          document.documentElement.style.overflow = ""
+        }
       }, 3850)
     })
 
     return () => {
-      document.body.style.overflow = ""
+      if (typeof document !== "undefined") {
+        document.body.style.overflow = ""
+        document.documentElement.style.overflow = ""
+      }
       window.removeEventListener("keydown", handleKeyDown)
       if (timerRef.current) clearTimeout(timerRef.current)
       if (finishTimerRef.current) clearTimeout(finishTimerRef.current)
+      if (safetyTimerRef.current) clearTimeout(safetyTimerRef.current)
     }
   }, [handleFastSkip])
 
@@ -157,12 +194,16 @@ export default function ChameleonIntroWrapper({ children }: ChameleonIntroWrappe
       {!isDismissed && (
         <div
           onClick={handleFastSkip}
-          className="fixed inset-0 w-full h-[100dvh] z-[150] overflow-hidden select-none bg-background dark:bg-[#06070b] text-foreground flex flex-col items-center justify-center cursor-pointer rounded-b-[2rem] sm:rounded-b-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.35)] border-b border-border/40"
+          onTouchStart={handleFastSkip}
+          className={`fixed inset-0 w-full h-[100dvh] z-[150] overflow-hidden select-none bg-background dark:bg-[#06070b] text-foreground flex flex-col items-center justify-center rounded-b-[2rem] sm:rounded-b-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.35)] border-b border-border/40 ${
+            isLifting ? "pointer-events-none" : "cursor-pointer"
+          }`}
           style={{
             height: "100dvh",
             transform: isLifting ? "translateY(-100%)" : "translateY(0%)",
             transition: "transform 0.75s cubic-bezier(0.76, 0, 0.24, 1)",
             willChange: "transform",
+            touchAction: isLifting ? "auto" : "pan-y",
           }}
         >
           {/* Static, High-Performance GPU Ambient Lighting Aura */}

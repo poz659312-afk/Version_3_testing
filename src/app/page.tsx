@@ -222,7 +222,7 @@ export default function HomePage() {
 
   return (
     <ChameleonIntroWrapper>
-      <div className="flex min-h-[100dvh] flex-col overflow-hidden w-full relative">
+      <div className="flex min-h-[100dvh] flex-col overflow-x-clip w-full relative">
       <main className="flex-1">
 
         {/* Hero Section */}
