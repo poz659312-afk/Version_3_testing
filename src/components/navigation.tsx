@@ -180,7 +180,7 @@ export default function Navigation() {
       if (!scrollThrottled.current) {
         scrollThrottled.current = true
         requestAnimationFrame(() => {
-          const isScrolled = window.scrollY > 50
+          const isScrolled = window.scrollY > 20
           setScrolled(prev => prev !== isScrolled ? isScrolled : prev)
           scrollThrottled.current = false
         })
@@ -338,13 +338,18 @@ export default function Navigation() {
 
   return (
     <>
-      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-7xl pointer-events-none transform-gpu will-change-transform">
+      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-7xl pointer-events-none">
         <div
-           className={`pointer-events-auto h-16 md:h-16 rounded-full border transition-[border-color,background-color,box-shadow,transform] duration-300 bg-background/90 ${
+           className={`pointer-events-auto h-16 md:h-16 rounded-full border transition-all duration-300 bg-background/90 ${
              scrolled 
-               ? "shadow-lg border-primary/20 scale-[0.98]" 
-               : "border-border/40"
-           } ${mounted ? 'animate-nav-enter' : 'opacity-0'}`}
+               ? "shadow-lg shadow-black/10 dark:shadow-black/50 border-primary/30 scale-[0.97] -translate-y-0.5" 
+               : "border-border/40 scale-100 translate-y-0"
+           } ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'}`}
+           style={{
+             transformOrigin: "center top",
+             willChange: "transform",
+             transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+           }}
         >
           <div className="w-full h-full px-4 sm:px-6 relative">
             <div className="flex items-center justify-between h-full">
