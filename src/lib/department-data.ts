@@ -3235,10 +3235,10 @@ export const departmentData: { [key: string]: Department } = {
               prerequisites: ["operating-systems-cs","intro-cybersecurity"],
               materials: {
                 lectures: "https://drive.google.com/drive/folders/1EpjZJ58zbMRasFyPNySKmYJuG7b-Bvua",
+                summaries: "https://drive.google.com/drive/folders/1u-HEHsbiN4PAdVcDFOBFTgnQHn44jPnf?usp=drive_link",
                 sections: "https://drive.google.com/drive/folders/1HYW5w49TuHYjjaQolerASZ58QYH7HH48",
-                videos: "https://youtube.com/playlist?list=operating-systems-security-videos",
-                summaries: "",
-                exams: ""
+                exams: "https://drive.google.com/drive/folders/1lHq64i6cpKtmkbtcSWem4dW-omr_8ym5?usp=drive_link",
+                videos: [""]
               }
             },
             {
@@ -3249,11 +3249,11 @@ export const departmentData: { [key: string]: Department } = {
               creditHours: 3,
               prerequisites: ["programming-2-cs","intro-cybersecurity"],
               materials: {
-                lectures: "",
-                sections: "",
-                videos: "https://youtube.com/playlist?list=secure-software-development-videos",
-                summaries: "",
-                exams: ""
+                lectures: "https://drive.google.com/drive/folders/1zUSHUBZupOjlwvE_KCFqhdW2t3Pzk20i?usp=drive_link",
+                sections: "https://drive.google.com/drive/folders/15yc8h1iMNeWA31S8qc_8oh1G2VNjEjgL?usp=drive_link",
+                videos: "",
+                summaries: "https://drive.google.com/drive/folders/1U6DYbL1b_JpRHTdhnTgjEsbhODz3RyXd?usp=drive_link",
+                exams: "https://drive.google.com/drive/folders/1rzobuoCQHGA-hL0h7P8lg0bM45TiDS8M?usp=drive_link"
               }
             }
           ],
@@ -3266,11 +3266,11 @@ export const departmentData: { [key: string]: Department } = {
               creditHours: 3,
               prerequisites: ["computer-networks-cs","cryptography"],
               materials: {
-                lectures: "",
-                sections: "",
-                videos: "https://youtube.com/playlist?list=computer-network-security-videos",
-                summaries: "",
-                exams: ""
+                lectures: "https://drive.google.com/drive/folders/1zZkxuRrSiwUcyah0SzYL9pOrLMAOj7lX?usp=drive_link",
+                sections: "https://drive.google.com/drive/folders/1GvYmaPClTFrLDGnxWqHuWyDEYpGpAtse?usp=drive_link",
+                videos: "",
+                summaries: "https://drive.google.com/drive/folders/1lPbVzxxd96mzmbqFnCadbP3S73OSb0-a?usp=drive_link",
+                exams: "https://drive.google.com/drive/folders/1JE_BHfYyfgQwTyYGzcHMJzitEDBpfVet?usp=drive_link"
               }
             },
             {
@@ -3281,11 +3281,11 @@ export const departmentData: { [key: string]: Department } = {
               creditHours: 3,
               prerequisites: ["intro-databases-cs","cryptography"],
               materials: {
-                lectures: "",
-                sections: "",
-                videos: "https://youtube.com/playlist?list=data-integrity-authentication-videos",
-                summaries: "",
-                exams: ""
+                lectures: "https://drive.google.com/drive/folders/1PRyg7O0y22ewE9wEuldES_akzO4bxAnj?usp=drive_link",
+                sections: "https://drive.google.com/drive/folders/1ye0miPFcioqPt3nLeoMmwldz2TNsY1qI?usp=drive_link",
+                videos: "",
+                summaries: "https://drive.google.com/drive/folders/1NSJzW02IAXHKbwnSRQMJ14WolxII3uy9?usp=drive_link",
+                exams: "https://drive.google.com/drive/folders/1QyMKu0-TLesS34uQXc1CN1UMkwyonHlz?usp=drive_link"
               }
             },
             {
@@ -3296,11 +3296,11 @@ export const departmentData: { [key: string]: Department } = {
               creditHours: 3,
               prerequisites: ["intro-databases-cs","intro-cybersecurity"],
               materials: {
-                lectures: "",
-                sections: "",
-                videos: "https://youtube.com/playlist?list=information-security-management-videos",
-                summaries: "",
-                exams: ""
+                lectures: "https://drive.google.com/drive/folders/1pwWtnBq7kkngjn2i48_z4kQ8inpLbuXo?usp=drive_link",
+                sections: "https://drive.google.com/drive/folders/1MhPvAQytYrLxveNNQN1-InMVSjYvHC6P?usp=drive_link",
+                videos: "",
+                summaries: "https://drive.google.com/drive/folders/1GdvINIP845dFO2y5_3wXyQPhkz4BgTQR?usp=drive_link",
+                exams: "https://drive.google.com/drive/folders/1PkF2et6oXpDMB7qB2mflTXK2bM7sIcI2?usp=drive_link"
               }
             }
           ]
