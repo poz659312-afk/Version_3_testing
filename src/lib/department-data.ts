@@ -1575,11 +1575,11 @@ export const departmentData: { [key: string]: Department } = {
               creditHours: 3,
               prerequisites: ["programming-1-is"],
               materials: {
-                lectures: "",
-                sections: "",
-                videos: "https://youtube.com/playlist?list=intelligent-programming-videos",
-                summaries: "",
-                exams: ""
+                lectures: "https://drive.google.com/drive/folders/1jr5l8P0E6iULgZVcOqiwQetxXopaLrME?usp=drive_link",
+                sections: "https://drive.google.com/drive/folders/1bANHv6gcHgm4f51TkUSiXmG_eTNLt5zJ?usp=drive_link",
+                videos: " ",
+                summaries: "https://drive.google.com/drive/folders/1F7YebzSHQd3U5TzYReO1kPVQBr5aqKXC?usp=drive_link",
+                exams: "https://drive.google.com/drive/folders/1nhB_a03JgomTdYPFWWwFLPWEUv8ncP2P?usp=drive_link"
               }
             },
             {
@@ -1590,11 +1590,11 @@ export const departmentData: { [key: string]: Department } = {
               creditHours: 3,
               prerequisites: ["neural-networks"],
               materials: {
-                lectures: "",
-                sections: "",
-                videos: "https://youtube.com/playlist?list=deep-learning-videos",
-                summaries: "",
-                exams: ""
+                lectures: "https://drive.google.com/drive/folders/1wke3w5wOrUsQtVSHiB5ibpGFmTf5oAAv?usp=drive_link",
+                sections: "https://drive.google.com/drive/folders/110IM34UPUSNQQN-qdSkYJUZMGkUz9Kkm?usp=drive_link",
+                videos: " ",
+                summaries: "https://drive.google.com/drive/folders/1UXs19jz91QGeNvDZUHMAg5XkNo7TTVR3?usp=drive_link",
+                exams: "https://drive.google.com/drive/folders/1iLUUKObWrKW_rkpG7kJNppWuiuSqzS7c?usp=drive_link"
               }
             },
             {
@@ -1605,11 +1605,11 @@ export const departmentData: { [key: string]: Department } = {
               creditHours: 3,
               prerequisites: ["linear-algebra-is"],
               materials: {
-                lectures: "",
-                sections: "",
-                videos: "https://youtube.com/playlist?list=modern-control-systems-videos",
-                summaries: "",
-                exams: ""
+                lectures: "https://drive.google.com/drive/folders/1YVrY1GM4Mg7ahL9-QAjTx_1vqc4kEFY5?usp=drive_link",
+                sections: "https://drive.google.com/drive/folders/1Y_4tGflLujOoslv3fPI_YNiNG60qNY9p?usp=drive_link",
+                videos: " ",
+                summaries: "https://drive.google.com/drive/folders/15dA7hVl1EFDpG9TaEaTpafvxLPGGavk2?usp=drive_link",
+                exams: "https://drive.google.com/drive/folders/1ZmEqZK-28yCI9WPQP-9JPMFRmKVh1KAZ?usp=drive_link"
               }
             }
           ],
@@ -1622,11 +1622,11 @@ export const departmentData: { [key: string]: Department } = {
               creditHours: 3,
               prerequisites: ["modern-control-systems"],
               materials: {
-                lectures: "",
-                sections: "",
-                videos: "https://youtube.com/playlist?list=embedded-systems-videos",
-                summaries: "",
-                exams: ""
+                lectures: "https://drive.google.com/drive/folders/1eoTn1-NzvMTmByyvGHPtxCV0B33y2RZL?usp=drive_link",
+                sections: "https://drive.google.com/drive/folders/1Pyx0DsplhF2U4HxeFhRIkgf6u-rymMXe?usp=drive_link",
+                videos: " ",
+                summaries: "https://drive.google.com/drive/folders/15P-NYHOnK6jTtSurnz-buC0YW7bKWDBj?usp=drive_link",
+                exams: "https://drive.google.com/drive/folders/1SAdC9kvheYQ3l9LSO1rOGzSPcZC_gE-J?usp=drive_link"
               }
             },
             {
@@ -1637,11 +1637,11 @@ export const departmentData: { [key: string]: Department } = {
               creditHours: 3,
               prerequisites: ["intro-artificial-intelligence-is"],
               materials: {
-                lectures: "",
-                sections: "",
-                videos: "https://youtube.com/playlist?list=computer-vision-videos",
-                summaries: "",
-                exams: ""
+                lectures: "https://drive.google.com/drive/folders/16KRpAyT5IZ5CuzNc37iQzb6RYaj7rRuZ?usp=drive_link",
+                sections: "https://drive.google.com/drive/folders/1Qo0TVkFEVeXipz0gTHaS-qATiV4fooAz?usp=drive_link",
+                videos: " ",
+                summaries: "https://drive.google.com/drive/folders/1sMOQFBVqB9q45vqlZ8YHih6Q6R6SC5SI?usp=drive_link",
+                exams: "https://drive.google.com/drive/folders/1jQCEN7eyR7DtoreogCL4d91hTrSIJRyF?usp=drive_link"
               }
             },
             {
@@ -1652,11 +1652,11 @@ export const departmentData: { [key: string]: Department } = {
               creditHours: 3,
               prerequisites: ["intro-artificial-intelligence-is"],
               materials: {
-                lectures: "https://drive.google.com/drive/folders/1Ra565nm7IwPvgvYbMMRtuDs0fGwVHoxK",
-                sections: "https://drive.google.com/drive/folders/19rzicu7FCEefjwqoVCOiF-ntfM-kzEjO",
-                videos: "https://youtube.com/playlist?list=ai-security-issues-videos",
-                summaries: "https://drive.google.com/drive/folders/1oe1yRuvfCDAdOJzdh0Uj6Y6FIDpz9pA8",
-                exams: "https://drive.google.com/drive/folders/119esT_F4aseG3fH8uClOSt7hQJ0DwTMY"
+                lectures: "https://drive.google.com/drive/folders/1w2fGjixxW3pf31TDFFFODVcvQFqMSOLU?usp=drive_link",
+                sections: "https://drive.google.com/drive/folders/14wlXdHPW5SkS6v552R92BRubnO_EK_gc?usp=drive_link",
+                videos: " ",
+                summaries: "https://drive.google.com/drive/folders/1B3TPNsj8fUQ4hSVjWE5Z255AZ00Kqxlv?usp=drive_link",
+                exams: "https://drive.google.com/drive/folders/1xPeJ_Ctp2T8s669QPzgBgAuzR3EN-evg?usp=drive_link"
               }
             }
           ]
