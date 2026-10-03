@@ -33,7 +33,7 @@ export default function FacultyElectivesPage({ params }: Props) {
     <ErrorBoundary>
       <Suspense fallback={
         <div className="min-h-screen bg-background flex justify-center items-center">
-          <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin"/>
+          <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
         </div>
       }>
         <FacultyElectivesContent params={params} />

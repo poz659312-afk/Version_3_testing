@@ -19,6 +19,8 @@ import {
   Share2,
   Check,
   ChevronRight,
+  ChevronLeft,
+  ArrowUpRight,
   Sparkles
 } from "lucide-react";
 import { departmentData, type Department, type Subject } from "@/lib/department-data";
@@ -46,8 +48,8 @@ interface SectionType {
 
 const fadeUpVariants = {
   hidden: { opacity: 0, y: 15 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { type: "spring" as const, bounce: 0.3 }
   },
@@ -55,7 +57,7 @@ const fadeUpVariants = {
 
 const tabVariants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { 
+  visible: {
     opacity: 1,
     y: 0,
     transition: { type: "spring" as const, bounce: 0.3 }
@@ -67,7 +69,7 @@ export default function SubjectPage({ params }: Props) {
     <ErrorBoundary>
       <Suspense fallback={
         <div className="min-h-screen bg-background flex justify-center items-center">
-          <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin"/>
+          <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
         </div>
       }>
         <SubjectContent params={params} />
@@ -77,17 +79,17 @@ export default function SubjectPage({ params }: Props) {
 }
 
 // Custom animated Segmented Controller Tab Button
-const TabButton = memo(({ 
-  section, 
-  isActive, 
-  onSelect 
-}: { 
-  section: SectionType; 
+const TabButton = memo(({
+  section,
+  isActive,
+  onSelect
+}: {
+  section: SectionType;
   isActive: boolean;
   onSelect: (tab: string) => void;
 }) => {
   const IconComponent = section.icon;
-  
+
   return (
     <button
       id={`tab-btn-${section.id}`}
@@ -109,15 +111,15 @@ const TabButton = memo(({
           transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
         />
       )}
-      <IconComponent 
+      <IconComponent
         className={cn(
-          "w-3.5 h-3.5 sm:w-4 sm:h-4 z-10 transition-transform duration-300 group-hover:scale-110", 
+          "w-3.5 h-3.5 sm:w-4 sm:h-4 z-10 transition-transform duration-300 group-hover:scale-110",
           isActive ? section.iconColor : "text-muted-foreground group-hover:text-foreground"
-        )} 
+        )}
       />
-      <span 
+      <span
         className={cn(
-          "text-[8.5px] sm:text-[10px] md:text-xs font-outfit tracking-tighter sm:tracking-tight z-10 leading-tight select-none", 
+          "text-[8.5px] sm:text-[10px] md:text-xs font-outfit tracking-tighter sm:tracking-tight z-10 leading-tight select-none",
           isActive ? "text-foreground font-bold" : "text-muted-foreground/75 group-hover:text-foreground"
         )}
       >
@@ -164,13 +166,13 @@ const CopyLinkButton = memo(({ tabId }: { tabId: string }) => {
 
 CopyLinkButton.displayName = "CopyLinkButton";
 
-function TabsWrapper({ 
-  sections, 
-  subject, 
-  resolvedParams 
-}: { 
-  sections: SectionType[]; 
-  subject: Subject; 
+function TabsWrapper({
+  sections,
+  subject,
+  resolvedParams
+}: {
+  sections: SectionType[];
+  subject: Subject;
   resolvedParams: { department: string; level: string; subject: string };
 }) {
   const [currentTab, setCurrentTab] = useState("lectures");
@@ -270,15 +272,15 @@ function TabsWrapper({
 
   const handleTouchEnd = () => {
     if (
-      touchStartX.current === null || 
-      touchEndX.current === null || 
-      touchStartY.current === null || 
+      touchStartX.current === null ||
+      touchEndX.current === null ||
+      touchStartY.current === null ||
       touchEndY.current === null
     ) return;
 
     const distanceX = touchStartX.current - touchEndX.current;
     const distanceY = touchStartY.current - touchEndY.current;
-    
+
     // Trigger swipe only if horizontal movement is significant and larger than vertical scrolling
     if (Math.abs(distanceX) > 60 && Math.abs(distanceX) > Math.abs(distanceY) * 1.5) {
       const currentIndex = dynamicSections.findIndex(s => s.id === currentTab);
@@ -292,7 +294,7 @@ function TabsWrapper({
         }
       }
     }
-    
+
     touchStartX.current = null;
     touchEndX.current = null;
     touchStartY.current = null;
@@ -310,9 +312,9 @@ function TabsWrapper({
       <div className="flex justify-center w-full mb-8 overflow-x-auto pb-4 scrollbar-hide px-4">
         <div className="flex bg-muted/30 p-1.5 rounded-full border border-border/50 backdrop-blur-md mx-auto">
           {dynamicSections.map((section) => (
-            <TabButton 
-              key={section.id} 
-              section={section} 
+            <TabButton
+              key={section.id}
+              section={section}
               isActive={currentTab === section.id}
               onSelect={handleTabChange}
             />
@@ -329,14 +331,14 @@ function TabsWrapper({
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
         >
-          <Card 
+          <Card
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             className="bg-card/40 border-border shadow-2xl backdrop-blur-lg md:backdrop-blur-3xl overflow-hidden rounded-[2rem] relative touch-pan-y"
           >
             <div className={`absolute top-0 right-0 w-64 h-64 opacity-5 bg-gradient-to-br ${activeSection.color} blur-xl md:blur-3xl pointer-events-none rounded-full -mt-20 -mr-20`} />
-            
+
             <CardHeader className="border-b border-border/50 bg-muted/20 pb-6 pt-8 px-6 sm:px-8">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-4">
@@ -361,7 +363,7 @@ function TabsWrapper({
             </CardHeader>
 
             <CardContent className="pt-8 px-6 sm:px-8 pb-10">
-              <TabContentRenderer 
+              <TabContentRenderer
                 section={activeSection}
                 subject={subject}
                 resolvedParams={resolvedParams}
@@ -377,15 +379,15 @@ function TabsWrapper({
 }
 
 // Beautiful Hover Action Content Renderer
-const TabContentRenderer = memo(({ 
-  section, 
-  subject, 
+const TabContentRenderer = memo(({
+  section,
+  subject,
   resolvedParams,
   dbQuizzes,
   quizzesLoading,
-}: { 
-  section: SectionType; 
-  subject: Subject; 
+}: {
+  section: SectionType;
+  subject: Subject;
   resolvedParams: { department: string; level: string; subject: string };
   dbQuizzes: any[] | null;
   quizzesLoading: boolean;
@@ -514,12 +516,12 @@ const TabContentRenderer = memo(({
 
     const quizzesToDisplay = (dbQuizzes && dbQuizzes.length > 0)
       ? dbQuizzes.map(q => ({
-          id: q.code,
-          name: q.name,
-          code: q.code,
-          duration: q.duration,
-          questions: q.questions_count
-        }))
+        id: q.code,
+        name: q.name,
+        code: q.code,
+        duration: q.duration,
+        questions: q.questions_count
+      }))
       : (subject.materials?.quizzes || []);
 
     if (!quizzesToDisplay || quizzesToDisplay.length === 0) {
@@ -556,7 +558,7 @@ const TabContentRenderer = memo(({
             >
               {/* Neon Glow Overlay */}
               <div className={cn("absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none", style.gradient.replace('to-secondary/10', 'to-secondary/5').replace('to-primary/10', 'to-primary/5'))} />
-              
+
               <div className="relative z-10 flex flex-col h-full justify-between">
                 <div>
                   <h4 className={cn("font-bold font-outfit text-lg leading-tight mb-2 transition-colors", style.text)}>
@@ -568,7 +570,7 @@ const TabContentRenderer = memo(({
                     <span className={cn("px-2 py-0.5 rounded-md border text-xs font-medium", style.bgLight, style.textStatic, style.borderLight)}>{quiz.questions} Q</span>
                   </div>
                 </div>
-                
+
                 <div className="flex justify-end mt-4">
                   <div className={cn("flex items-center text-sm font-bold transition-colors", style.text)}>
                     Start Protocol <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
@@ -584,12 +586,12 @@ const TabContentRenderer = memo(({
 
   if (section.redirectToDrive) {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <Link 
+        <Link
           href={`/drive/${extractDriveId(typeof section.content === 'string' ? section.content : (Array.isArray(section.content) ? section.content[0] : ''))}?subject=${encodeURIComponent(subject.name)}`}
         >
           <div className={cn(
@@ -598,7 +600,7 @@ const TabContentRenderer = memo(({
             style.hoverShadow
           )}>
             <div className={cn("absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none", style.gradient)} />
-            
+
             <div className="flex items-center gap-5 relative z-10">
               <div className="w-14 h-14 bg-muted border border-border/50 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
                 <ExternalLink className={cn("w-7 h-7 text-muted-foreground transition-colors", style.text)} />
@@ -627,7 +629,7 @@ const TabContentRenderer = memo(({
         const renderVideoButton = (url: string, index?: number) => {
           const playlistId = extractPlaylistId(url);
           const isMultiple = Array.isArray(videoContent) && videoContent.length > 1;
-          
+
           return (
             <Link key={index || 0} href={playlistId ? `/youtube/${playlistId}` : '#'}>
               <motion.div
@@ -641,11 +643,11 @@ const TabContentRenderer = memo(({
                 )}
               >
                 <div className={cn("absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none", style.gradient)} />
-                
+
                 <div className={cn("w-12 h-12 border rounded-full flex items-center justify-center mr-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_0_rgba(var(--primary),0.2)]", style.bgLight, style.borderLight)}>
                   <Play className={cn("w-5 h-5 ml-1", style.textStatic)} />
                 </div>
-                
+
                 <div className="flex-1 flex flex-col">
                   <h4 className={cn("font-outfit font-bold text-foreground transition-colors", style.text)}>
                     {isMultiple ? `Video Playlist Sequence ${index! + 1}` : section.buttonText}
@@ -668,6 +670,213 @@ const TabContentRenderer = memo(({
 });
 
 TabContentRenderer.displayName = "TabContentRenderer";
+
+interface PrerequisiteBookCompanionProps {
+  prerequisites: Subject[] | null;
+  department: string;
+  dept: Department;
+}
+
+const PrerequisiteBookCompanion = memo(({
+  prerequisites,
+  department,
+  dept,
+}: PrerequisiteBookCompanionProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hasPrereqs = Boolean(prerequisites && prerequisites.length > 0);
+
+  // Close when clicking anywhere outside or pressing Escape
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  return (
+    <div
+      ref={containerRef}
+      className={cn(
+        "hidden lg:flex relative flex-shrink-0 transition-all duration-300 ease-out",
+        isOpen ? "w-80 h-64" : "w-48 h-48"
+      )}
+    >
+      <div
+        onClick={() => {
+          if (!isOpen && hasPrereqs) setIsOpen(true);
+        }}
+        className={cn(
+          "w-full h-full rounded-[2.5rem] border shadow-inner backdrop-blur-xl relative overflow-hidden transition-all duration-300",
+          isOpen
+            ? "bg-card/90 dark:bg-card/95 border-primary/30 p-4 flex flex-col justify-between shadow-2xl"
+            : cn(
+                "bg-gradient-to-br from-primary/10 to-primary/5 rotate-3 hover:rotate-6 hover:scale-105 border-primary/20",
+                hasPrereqs && "border-primary/40 shadow-[0_0_25px_-5px_rgba(var(--primary),0.25)] cursor-pointer"
+              )
+        )}
+      >
+        {/* Decorative dots grid */}
+        <div
+          className="absolute inset-0 opacity-[0.05] pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)",
+            backgroundSize: "16px 16px",
+          }}
+        />
+
+        <AnimatePresence initial={false}>
+          {!isOpen ? (
+            /* Closed State: Book Icon + Eye-Catching Prereq Badge + Glowing Small Arrow */
+            <motion.div
+              key="book-state"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.85 }}
+              transition={{ duration: 0.18 }}
+              className="w-full h-full flex items-center justify-center relative select-none"
+            >
+              <BookOpen className="w-22 h-22 text-primary relative z-10 drop-shadow-2xl transition-transform duration-300 group-hover:scale-105" />
+
+              {/* Innovative Eye-Catching Prerequisite Floating Badge */}
+              {hasPrereqs && (
+                <>
+                  <div
+                    className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 px-3 py-1 rounded-full bg-card/90 dark:bg-black/80 border border-primary/40 shadow-lg shadow-primary/15 flex items-center gap-1.5 backdrop-blur-md transition-all duration-300 hover:border-primary/70 hover:scale-105"
+                  >
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                    </span>
+                    <span className="text-[10.5px] font-outfit font-bold text-foreground tracking-tight whitespace-nowrap">
+                      {prerequisites?.length}{" "}
+                      {prerequisites?.length === 1 ? "Prerequisite" : "Prerequisites"}
+                    </span>
+                    <ChevronLeft className="w-3 h-3 text-primary animate-pulse" />
+                  </div>
+
+                  {/* Eye-catching Small Arrow on the Right Edge with subtle pulse aura */}
+                  <button
+                    type="button"
+                    id="prereq-arrow-toggle"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsOpen(true);
+                    }}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 size-8 rounded-full bg-primary/25 hover:bg-primary/40 border border-primary/50 text-primary flex items-center justify-center transition-all duration-200 cursor-pointer shadow-lg shadow-primary/20 hover:scale-110 active:scale-95 group/arrow"
+                    title={`View ${prerequisites?.length} Course Prerequisites`}
+                  >
+                    <span className="absolute -inset-1 rounded-full bg-primary/20 animate-pulse pointer-events-none" />
+                    <ChevronLeft className="w-4 h-4 transition-transform group-hover/arrow:-translate-x-0.5" />
+                  </button>
+                </>
+              )}
+            </motion.div>
+          ) : (
+            /* Open State: Prerequisite Menu in place of the Book Icon */
+            <motion.div
+              key="prereq-menu-state"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="w-full h-full flex flex-col justify-between relative z-10"
+            >
+              {/* Menu Header with Title & Small Arrow on the Right to close */}
+              <div className="flex items-center justify-between pb-2 border-b border-border/40">
+                <div className="flex items-center gap-1.5">
+                  <div className="size-6 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center text-primary">
+                    <Layers className="size-3.5" />
+                  </div>
+                  <span className="text-xs font-bold font-outfit uppercase tracking-wider text-primary">
+                    Prerequisites ({prerequisites?.length || 0})
+                  </span>
+                </div>
+
+                {/* Small Arrow on the right to collapse / hide */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsOpen(false);
+                  }}
+                  className="size-7 rounded-full bg-primary/15 hover:bg-primary/25 border border-primary/30 text-primary flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95"
+                  title="Close Prerequisites"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Prerequisite List — Completely Hidden Scrollbar */}
+              <div className="my-2 space-y-1.5 overflow-y-auto max-h-[140px] pr-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                {prerequisites?.map((prereq) => (
+                  <Link
+                    key={prereq.id}
+                    href={`/specialization/${department}/${findSubjectLevel(dept, prereq.id)}/${prereq.id}`}
+                    className="group/item block rounded-xl border border-border/60 bg-card/80 hover:bg-card hover:border-primary/40 p-2 transition-all duration-200 shadow-sm"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-muted/80 text-muted-foreground border border-border/40">
+                            {prereq.code || "PREREQ"}
+                          </span>
+                        </div>
+                        <h4 className="font-bold text-xs font-outfit text-foreground group-hover/item:text-primary transition-colors truncate">
+                          {prereq.name}
+                        </h4>
+                      </div>
+                      <div className="size-6 rounded-lg bg-primary/10 group-hover/item:bg-primary group-hover/item:text-primary-foreground text-primary flex items-center justify-center transition-colors shrink-0">
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Minimal Footer */}
+              <div className="pt-1.5 border-t border-border/30 flex items-center justify-between text-[10px] text-muted-foreground font-outfit">
+                <span>Click outside to close</span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsOpen(false);
+                  }}
+                  className="text-primary hover:underline font-semibold cursor-pointer"
+                >
+                  Hide
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+});
+
+PrerequisiteBookCompanion.displayName = "PrerequisiteBookCompanion";
 
 async function SubjectContent({ params }: Props) {
   const resolvedParams = await params;
@@ -723,8 +932,8 @@ async function SubjectContent({ params }: Props) {
     const list = subject.prerequisites.map((prereqId) => {
       const clean = prereqId.trim();
       const cleanLower = clean.toLowerCase();
-      let found = allSubjects.find((s) => 
-        s.id === clean || 
+      let found = allSubjects.find((s) =>
+        s.id === clean ||
         s.name.toLowerCase() === cleanLower ||
         (s.code && s.code.toLowerCase() === cleanLower)
       );
@@ -826,10 +1035,10 @@ async function SubjectContent({ params }: Props) {
   return (
     <div className="relative min-h-screen w-full overflow-auto bg-background text-foreground font-sans">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10 blur-xl md:blur-3xl pointer-events-none" />
-      
+
       <div className="relative z-10 py-12 px-4 sm:px-6 min-h-screen">
         <div className="max-w-5xl mx-auto pb-20">
-          
+
           {/* Back Navigation Header */}
           <motion.div
             initial={{ opacity: 0, x: -10 }}
@@ -860,7 +1069,7 @@ async function SubjectContent({ params }: Props) {
             {/* Ambient Background Shaders inside Hero */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-primary/20 via-transparent to-transparent opacity-60 rounded-full blur-xl md:blur-3xl -mt-40 -mr-40 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-secondary/10 via-transparent to-transparent rounded-full blur-xl md:blur-3xl -mb-40 -ml-40 pointer-events-none" />
-            
+
             <div className="relative p-8 sm:p-12 z-10 flex flex-col md:flex-row gap-10 items-center md:items-start justify-between">
               <div className="flex-1 space-y-6 text-center md:text-left">
                 {/* Meta Badges */}
@@ -876,7 +1085,7 @@ async function SubjectContent({ params }: Props) {
                     {subject.creditHours} Credits
                   </Badge>
                 </div>
-                
+
                 {/* Title and Description */}
                 <div>
                   <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight font-outfit mb-4 leading-tight">
@@ -890,72 +1099,23 @@ async function SubjectContent({ params }: Props) {
                 </div>
               </div>
 
-              {/* Huge Icon Visual */}
-              <div className="hidden lg:flex w-48 h-48 bg-gradient-to-br from-primary/10 to-primary/5 rounded-[3rem] border border-primary/20 shadow-inner flex-shrink-0 items-center justify-center rotate-3 hover:rotate-6 hover:scale-105 transition-all duration-500 relative">
-                {/* Decorative dots grid behind icon */}
-                <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)', backgroundSize: '16px 16px' }} />
-                <BookOpen className="w-24 h-24 text-primary relative z-10 drop-shadow-2xl" />
-              </div>
+              {/* Separate Prerequisite & Book Companion Visual */}
+              <PrerequisiteBookCompanion
+                prerequisites={prerequisiteSubjects}
+                department={resolvedParams.department}
+                dept={dept}
+              />
             </div>
           </motion.div>
 
-          {/* Prerequisites Action Card List */}
-          {prerequisiteSubjects && prerequisiteSubjects.length > 0 && (
-            <motion.div
-              custom={1}
-              variants={fadeUpVariants}
-              initial="hidden"
-              animate="visible"
-              className="mb-10"
-            >
-              <div className="flex items-center gap-3 mb-6 ml-2">
-                <Layers className="w-5 h-5 text-secondary" />
-                <h3 className="font-outfit font-bold text-xl text-foreground">Required Prerequisites</h3>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {prerequisiteSubjects.map((prereq, index) => (
-                  <motion.div
-                    key={prereq.id}
-                    custom={index}
-                    variants={tabVariants}
-                    initial="hidden"
-                    animate="visible"
-                  >
-                    <Link
-                      href={`/specialization/${resolvedParams.department}/${findSubjectLevel(dept, prereq.id)}/${prereq.id}`}
-                    >
-                      <div className="group relative overflow-hidden flex items-center justify-between p-5 rounded-2xl border border-border bg-card hover:border-secondary/40 transition-all cursor-pointer shadow-sm hover:shadow-lg hover:shadow-secondary/5">
-                        <div className="absolute inset-0 bg-gradient-to-r from-secondary/0 via-secondary/5 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                        
-                        <div className="relative z-10">
-                          <h4 className="font-bold font-outfit text-foreground group-hover:text-secondary transition-colors mb-1">
-                            {prereq.name}
-                          </h4>
-                          <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border/50">
-                            {prereq.code}
-                          </span>
-                        </div>
-                        
-                        <div className="relative z-10 w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center scale-90 group-hover:scale-100 transition-transform">
-                          <ChevronRight className="w-5 h-5 text-secondary" />
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
           {/* Modern Interactive Dashboard Controller */}
           <motion.div
-            custom={2}
+            custom={1}
             variants={fadeUpVariants}
             initial="hidden"
             animate="visible"
           >
-            <TabsWrapper 
+            <TabsWrapper
               sections={sections}
               subject={subject}
               resolvedParams={resolvedParams}
