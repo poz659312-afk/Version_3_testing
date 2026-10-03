@@ -119,9 +119,12 @@ export default function SignUpPage() {
     }
   }, [searchParams])
 
+  // Automatically bypass OTP if ever reached
   useEffect(() => {
-    if (resendTimer > 0) { const interval = setInterval(() => setResendTimer((prev) => prev - 1), 1000); return () => clearInterval(interval) }
-  }, [resendTimer])
+    if (authStep === "otp") {
+      setAuthStep("name")
+    }
+  }, [authStep])
 
   // Handle OAuth callback flow
   useEffect(() => {
@@ -145,39 +148,7 @@ export default function SignUpPage() {
             sub: session.user.id,
           })
 
-          // Send OTP verification code via Resend
-          if (userEmail) {
-            const otpKey = `otp_code_${userEmail}`
-            const storageKey = 'last_otp_sent_time'
-            const lastSentStr = sessionStorage.getItem(storageKey)
-            const lastSent = lastSentStr ? parseInt(lastSentStr, 10) : 0
-            const now = Date.now()
-
-            let newOtp = sessionStorage.getItem(otpKey)
-            if (!newOtp || now - lastSent >= 10000) {
-              newOtp = Math.floor(100000 + Math.random() * 900000).toString()
-              sessionStorage.setItem(otpKey, newOtp)
-              sessionStorage.setItem(storageKey, now.toString())
-              try {
-                const response = await fetch('/api/send-otp', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ email: userEmail, otp: newOtp, name: userName || 'User' })
-                })
-                const data = await response.json()
-                if (response.ok && data.success) {
-                  addToast(`Verification code sent to ${userEmail}!`, 'success')
-                } else {
-                  addToast('Verification code sent!', 'success')
-                }
-              } catch (err) {
-                console.error('Failed to send OTP:', err)
-              }
-            }
-            setGeneratedOtp(newOtp)
-            setResendTimer(600)
-          }
-
+          // OTP disabled - proceed directly to welcome step
           setAuthStep("welcome")
           setStep(1)
         }
@@ -238,7 +209,7 @@ export default function SignUpPage() {
   const handleStepBack = () => {
     if (authStep === "welcome") { setAuthStep("choice"); setGoogleUserData(null); setOtpCode(""); setGeneratedOtp(""); otpSentRef.current = false }
     else if (authStep === "otp") { setAuthStep("welcome") }
-    else if (authStep === "name") { setAuthStep("otp") }
+    else if (authStep === "name") { setAuthStep("welcome") }
     else if (authStep === "specialization") setAuthStep("name")
     else if (authStep === "password") setAuthStep("specialization")
   }
@@ -581,7 +552,7 @@ export default function SignUpPage() {
                     <div className="space-y-4 lg:space-y-5 text-center">
                       <button 
                         type="button"
-                        onClick={() => setAuthStep("otp")}
+                        onClick={() => setAuthStep("name")}
                         className="flex items-center justify-center gap-3 w-full p-4 lg:p-5 rounded-[24px] lg:rounded-[32px] bg-foreground text-background hover:scale-[1.02] transition-all font-black italic tracking-tighter text-lg lg:text-xl mt-6"
                       >
                         Continue <ArrowRight className="size-5" />

@@ -7,6 +7,13 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export async function POST(request: Request) {
+  // OTP sending feature is disabled
+  return NextResponse.json({
+    success: true,
+    message: 'OTP sending feature is disabled.',
+    disabled: true
+  })
+
   try {
     // Rate limit OTP requests to prevent spamming Resend quota
     const identifier = getRequestIdentifier(request)
