@@ -8,10 +8,13 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles, MousePointer, MousePointer2, Search, ChevronUp, ChevronDown, Trash2, Plus, ShieldAlert, Loader2, Contrast, Download, CheckCircle2, ArrowUpRight, Crosshair, CircleDot, Flame, Flower2, Terminal, Orbit } from "lucide-react"
+import { ArrowLeft, User, BookOpen, Star, Award, Calendar, GraduationCap, Shield, Edit3, LogOut, Save, X, TrendingUp, Mail, Phone, Video, FileText, Trophy, Palette, Check, Sun, Moon, Laptop, Coins, ShoppingBag, Zap, ShieldCheck, Lock, Sparkles, MousePointer, MousePointer2, Search, ChevronUp, ChevronDown, Trash2, Plus, ShieldAlert, Loader2, Contrast, Download, CheckCircle2, ArrowUpRight, Crosshair, CircleDot, Flame, Flower2, Terminal, Orbit, LifeBuoy, Bug, RefreshCw, MessageSquareWarning, Clock } from "lucide-react"
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { ReportModal } from "@/components/reports/ReportModal"
+import { getUserReports } from "@/lib/actions/report-actions"
+import { UserReport } from "@/lib/types"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/components/ToastProvider"
@@ -273,7 +276,7 @@ function ColorThemeSelector({ inventory }: { inventory: string[] }) {
                 key={theme.value}
                 onClick={() => {
                   if (!isOwned) {
-                    toast.error("هذا الثيم متميز! يجب شراؤه من المتجر أولاً لاستخدامه.")
+                    toast.error("This theme is premium! You must purchase it from the store first.")
                     return
                   }
                   setColorTheme(theme.value as any)
@@ -1154,6 +1157,24 @@ export default function ProfilePage() {
   const [timeFormat, setTimeFormat] = useState<'12h' | '24h'>('12h')
   const [showSeconds, setShowSeconds] = useState<boolean>(true)
   const [showDate, setShowDate] = useState<boolean>(true)
+  const [userReports, setUserReports] = useState<UserReport[]>([])
+  const [loadingReports, setLoadingReports] = useState(false)
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false)
+
+  const refreshUserReports = async (authId?: string) => {
+    const id = authId || userData?.auth_id
+    if (!id) return
+    setLoadingReports(true)
+    try {
+      const reports = await getUserReports(id)
+      setUserReports(reports)
+    } catch (err) {
+      console.error("Error refreshing reports:", err)
+    } finally {
+      setLoadingReports(false)
+    }
+  }
+
 
   useEffect(() => {
     // Sync time format and settings with storage
@@ -1228,6 +1249,7 @@ export default function ProfilePage() {
       }
 
       setUserData(session)
+      refreshUserReports(session.auth_id)
       // Initialize edit form with current data
       setEditForm({
         username: session.username || "",
@@ -1288,7 +1310,7 @@ export default function ProfilePage() {
             }
           })
 
-          // Add Faculty Electives (متطلبات الكلية)
+          // Add Faculty Electives
           const { FACULTY_ELECTIVE_COURSES, getProgramElectivesForDepartment } = await import('@/lib/electives-data')
           if (Array.isArray(FACULTY_ELECTIVE_COURSES)) {
             FACULTY_ELECTIVE_COURSES.forEach(s => {
@@ -1301,7 +1323,7 @@ export default function ProfilePage() {
             })
           }
 
-          // Add Program Electives (متطلبات القسم / البرنامج)
+          // Add Program Electives
           const progElectives = getProgramElectivesForDepartment(key)
           if (Array.isArray(progElectives)) {
             progElectives.forEach(s => {
@@ -1663,7 +1685,7 @@ export default function ProfilePage() {
           </motion.div>
 
           <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 lg:w-auto lg:inline-grid bg-muted border border-border h-auto p-1 gap-1">
+            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 lg:w-auto lg:inline-grid bg-muted border border-border h-auto p-1 gap-1">
               <TabsTrigger value="profile" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm py-2 md:py-1.5">
                 <User className="size-5 md:size-4" />
                 <span className="hidden md:inline">Profile</span>
@@ -1679,6 +1701,15 @@ export default function ProfilePage() {
               <TabsTrigger value="visuals" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm py-2 md:py-1.5">
                 <Zap className="size-5 md:size-4" />
                 <span className="hidden md:inline">Visual Effects</span>
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm text-primary data-[state=active]:text-primary py-2 md:py-1.5 relative">
+                <LifeBuoy className="size-5 md:size-4" />
+                <span className="hidden md:inline">Reports & Issues</span>
+                {userReports.filter(r => r.status === 'open' || r.status === 'in_progress').length > 0 && (
+                  <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-500 border border-amber-500/30">
+                    {userReports.filter(r => r.status === 'open' || r.status === 'in_progress').length}
+                  </span>
+                )}
               </TabsTrigger>
               <TabsTrigger value="professional" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm text-red-500 data-[state=active]:text-red-500 py-2 md:py-1.5">
                 <Shield className="size-5 md:size-4" />
@@ -2222,9 +2253,9 @@ export default function ProfilePage() {
                               filtered.forEach(sub => {
                                 let groupKey = '';
                                 if (sub.category === 'faculty') {
-                                  groupKey = '🏛️ Faculty Electives (متطلبات الكلية)';
+                                  groupKey = '🏛️ Faculty Electives';
                                 } else if (sub.category === 'program') {
-                                  groupKey = '🎯 Program Electives (متطلبات القسم / البرنامج)';
+                                  groupKey = '🎯 Program Electives';
                                 } else {
                                   groupKey = `📚 Level ${sub.level} - ${sub.term === 'term1' ? 'Term 1' : 'Term 2'}`;
                                 }
@@ -2501,6 +2532,255 @@ export default function ProfilePage() {
                   inventory={userData?.inventory || []} 
                   userAvatar={userData?.profile_image}
                   username={userData?.username || userData?.full_name || 'You'}
+                />
+              </motion.div>
+            </TabsContent>
+
+            {/* TAB: Reports & Complaints */}
+            <TabsContent value="reports" className="space-y-6 outline-none">
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="space-y-6 font-rubik"
+                dir="ltr"
+              >
+                {/* Reports Header & Actions Card */}
+                <Card className="bg-card border-border shadow-xl overflow-hidden relative">
+                  <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+                  <CardHeader className="pb-4 border-b border-border/50">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shadow-sm shrink-0">
+                          <LifeBuoy className="w-6 h-6 animate-pulse" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-xl md:text-2xl font-bold font-rubik text-foreground flex items-center gap-2">
+                            <span>Reports &amp; Feedback Center</span>
+                            <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
+                              Support Portal
+                            </Badge>
+                          </CardTitle>
+                          <CardDescription className="text-muted-foreground text-xs md:text-sm mt-0.5 font-rubik">
+                            Track the status of your submitted reports and check official responses from the admin team.
+                          </CardDescription>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2.5">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => refreshUserReports(userData?.auth_id)}
+                          disabled={loadingReports}
+                          className="rounded-full text-xs font-bold border-border"
+                        >
+                          <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${loadingReports ? "animate-spin" : ""}`} />
+                          Refresh
+                        </Button>
+
+                        <Button
+                          asChild
+                          className="rounded-full text-xs font-bold bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-md hover:brightness-105 active:scale-95 transition-all"
+                        >
+                          <Link href="/report">
+                            <Plus className="w-4 h-4 mr-1.5" />
+                            Submit New Report
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="pt-6">
+                    {/* Stats counters */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                      <div className="p-4 rounded-xl bg-muted/40 border border-border/50 text-center">
+                        <div className="text-xs text-muted-foreground font-medium mb-1">Total Reports</div>
+                        <div className="text-2xl font-extrabold text-foreground">{userReports.length}</div>
+                      </div>
+                      <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+                        <div className="text-xs text-amber-500 font-medium mb-1">Under Review (Open)</div>
+                        <div className="text-2xl font-extrabold text-amber-500">
+                          {userReports.filter(r => r.status === 'open').length}
+                        </div>
+                      </div>
+                      <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-center">
+                        <div className="text-xs text-blue-500 font-medium mb-1">In Progress</div>
+                        <div className="text-2xl font-extrabold text-blue-500">
+                          {userReports.filter(r => r.status === 'in_progress').length}
+                        </div>
+                      </div>
+                      <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+                        <div className="text-xs text-emerald-500 font-medium mb-1">Resolved</div>
+                        <div className="text-2xl font-extrabold text-emerald-500">
+                          {userReports.filter(r => r.status === 'resolved').length}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Reports List */}
+                    {loadingReports ? (
+                      <div className="py-16 flex flex-col items-center justify-center text-center text-muted-foreground space-y-3">
+                        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                        <p className="text-sm font-medium">Fetching your reports...</p>
+                      </div>
+                    ) : userReports.length === 0 ? (
+                      <div className="py-14 text-center border border-dashed border-border rounded-2xl p-8 space-y-3">
+                        <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mx-auto">
+                          <LifeBuoy className="w-7 h-7" />
+                        </div>
+                        <h4 className="text-base font-bold text-foreground">No reports recorded on your account</h4>
+                        <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                          If you encounter any bug, course content issue, or have a suggestion, we&apos;re here to help!
+                        </p>
+                        <div className="pt-2">
+                          <Button
+                            asChild
+                            className="rounded-full text-xs font-bold bg-primary text-primary-foreground shadow-md hover:brightness-105 active:scale-95 transition-all"
+                          >
+                            <Link href="/report">
+                              <Plus className="w-4 h-4 mr-1.5" />
+                              Submit Your First Report
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {userReports.map((report) => {
+                          const getCategoryBadge = () => {
+                            switch (report.category) {
+                              case "bug":
+                                return <Badge variant="outline" className="border-red-500/30 text-red-500 bg-red-500/10 gap-1 text-[11px]"><Bug className="w-3 h-3" /> Technical Bug</Badge>
+                              case "content":
+                                return <Badge variant="outline" className="border-blue-500/30 text-blue-500 bg-blue-500/10 gap-1 text-[11px]"><BookOpen className="w-3 h-3" /> Course Content</Badge>
+                              case "account":
+                                return <Badge variant="outline" className="border-amber-500/30 text-amber-500 bg-amber-500/10 gap-1 text-[11px]"><User className="w-3 h-3" /> Account Issue</Badge>
+                              case "feature_request":
+                                return <Badge variant="outline" className="border-purple-500/30 text-purple-500 bg-purple-500/10 gap-1 text-[11px]"><Sparkles className="w-3 h-3" /> Feature Request</Badge>
+                              default:
+                                return <Badge variant="outline" className="border-emerald-500/30 text-emerald-500 bg-emerald-500/10 gap-1 text-[11px]"><MessageSquareWarning className="w-3 h-3" /> General</Badge>
+                            }
+                          }
+
+                          const getStatusPill = () => {
+                            switch (report.status) {
+                              case "open":
+                                return (
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-500 border border-amber-500/30 shadow-sm shadow-amber-500/10">
+                                    <Clock className="w-3.5 h-3.5" />
+                                    Under Review (Open)
+                                  </span>
+                                )
+                              case "in_progress":
+                                return (
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/15 text-blue-500 border border-blue-500/30 shadow-sm shadow-blue-500/10">
+                                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                    In Progress
+                                  </span>
+                                )
+                              case "resolved":
+                                return (
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 shadow-sm shadow-emerald-500/10">
+                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                    Resolved
+                                  </span>
+                                )
+                              case "closed":
+                                return (
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border">
+                                    Closed
+                                  </span>
+                                )
+                              default:
+                                return null
+                            }
+                          }
+
+                          return (
+                            <Card
+                              key={report.id}
+                              className="bg-card/70 border-border shadow-sm hover:border-primary/40 transition-all rounded-2xl overflow-hidden"
+                            >
+                              <CardHeader className="p-5 pb-3">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    {getCategoryBadge()}
+                                    <span className="text-xs text-muted-foreground font-medium">
+                                      Priority:{" "}
+                                      <strong className={report.priority === "urgent" ? "text-red-500 capitalize" : "text-foreground capitalize"}>
+                                        {report.priority}
+                                      </strong>
+                                    </span>
+                                    <span className="text-muted-foreground text-xs">•</span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {new Date(report.created_at).toLocaleDateString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        year: "numeric"
+                                      })}
+                                    </span>
+                                  </div>
+
+                                  <div>{getStatusPill()}</div>
+                                </div>
+
+                                <CardTitle className="text-base font-bold mt-2 text-foreground">
+                                  {report.title}
+                                </CardTitle>
+                              </CardHeader>
+
+                              <CardContent className="px-5 py-2 space-y-3">
+                                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                                  {report.description}
+                                </p>
+
+                                {/* Admin response block */}
+                                {report.admin_reply && (
+                                  <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 space-y-2 mt-3 shadow-inner">
+                                    <div className="flex items-center justify-between text-xs font-bold text-primary">
+                                      <span className="flex items-center gap-1.5">
+                                        <ShieldCheck className="w-4 h-4 text-primary" />
+                                        Admin Response ({report.admin_name || "Support Team"}):
+                                      </span>
+                                      {report.resolved_at && (
+                                        <span className="text-[11px] text-muted-foreground font-normal">
+                                          {new Date(report.resolved_at).toLocaleDateString("en-US")}
+                                        </span>
+                                      )}
+                                    </div>
+                                    <p className="text-xs sm:text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                                      {report.admin_reply}
+                                    </p>
+                                  </div>
+                                )}
+                              </CardContent>
+
+                              <CardFooter className="px-5 py-2.5 bg-muted/20 border-t border-border/40 text-[11px] text-muted-foreground flex items-center justify-between">
+                                <span className="font-mono text-[10px] text-muted-foreground">
+                                  ID: {report.id.slice(0, 8)}...
+                                </span>
+                                {report.page_url && (
+                                  <span className="font-mono text-xs text-primary underline">
+                                    {report.page_url}
+                                  </span>
+                                )}
+                              </CardFooter>
+                            </Card>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Report submission modal */}
+                <ReportModal
+                  open={isReportModalOpen}
+                  onOpenChange={setIsReportModalOpen}
+                  onReportSubmitted={() => refreshUserReports(userData?.auth_id)}
                 />
               </motion.div>
             </TabsContent>

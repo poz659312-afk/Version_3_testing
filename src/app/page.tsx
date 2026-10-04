@@ -27,7 +27,8 @@ import {
   Globe,
   TrendingUp,
   Sun,
-  Moon
+  Moon,
+  LifeBuoy
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -131,6 +132,7 @@ export default function HomePage() {
                 <div>
                   <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Connect</h4>
                   <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li><Link href="/report" className="hover:text-foreground transition-colors flex items-center gap-1.5 text-primary font-medium"><LifeBuoy className="w-3.5 h-3.5" />Report an Issue</Link></li>
                     <li><a href="mailto:tokyo9900777@gmail.com" className="hover:text-foreground transition-colors">Contact Us</a></li>
                     <li><a href="https://youtube.com/@ChameleonFCDS" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">YouTube Channel</a></li>
                   </ul>
@@ -745,6 +747,7 @@ export default function HomePage() {
               <div>
                 <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground/70 mb-3">Connect</h4>
                 <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li><Link href="/report" className="hover:text-foreground transition-colors flex items-center gap-1.5 text-primary font-medium"><LifeBuoy className="w-3.5 h-3.5" />Report an Issue</Link></li>
                   <li><a href="mailto:tokyo9900777@gmail.com" className="hover:text-foreground transition-colors">Contact Us</a></li>
                   <li><a href="https://youtube.com/@ChameleonFCDS" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">YouTube Channel</a></li>
                 </ul>

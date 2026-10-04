@@ -110,3 +110,29 @@ export interface NotificationContextType {
   refreshNotifications: () => Promise<void>
   fetchNotificationsOnLogin: (authId: string) => Promise<void>
 }
+
+export type ReportCategory = 'bug' | 'content' | 'account' | 'feature_request' | 'other'
+export type ReportPriority = 'low' | 'normal' | 'urgent'
+export type ReportStatus = 'open' | 'in_progress' | 'resolved' | 'closed'
+
+export interface UserReport {
+  id: string
+  user_id: string | null
+  username: string
+  user_email?: string | null
+  user_phone?: string | null
+  category: ReportCategory
+  title: string
+  description: string
+  priority: ReportPriority
+  page_url?: string | null
+  screenshot_url?: string | null
+  status: ReportStatus
+  admin_reply?: string | null
+  admin_id?: string | null
+  admin_name?: string | null
+  resolved_at?: string | null
+  created_at: string
+  updated_at: string
+}
+

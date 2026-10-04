@@ -3,6 +3,7 @@
 import AdBanner from "@/components/AdBanner";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export default function CoursesPage() {
   return (
@@ -46,6 +47,11 @@ export default function CoursesPage() {
             <p className="text-muted-foreground text-sm max-w-md mx-auto">
                 Empowering learners worldwide.
             </p>
+            <div className="pt-2">
+              <Link href="/report" className="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1">
+                إبلاغ عن مشكلة أو مقترح (Report Issue)
+              </Link>
+            </div>
         </div>
       </footer>
     </div>

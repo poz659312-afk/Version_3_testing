@@ -12,6 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { 
@@ -28,6 +30,7 @@ import {
   AlertTriangle,
   Loader2,
   FileCode,
+  FileText,
   CheckCircle,
   HelpCircle,
   ExternalLink,
@@ -47,7 +50,17 @@ import {
   Fingerprint,
   Monitor,
   Lock,
-  ShieldAlert
+  ShieldAlert,
+  LifeBuoy,
+  Send,
+  MessageSquare,
+  Flame,
+  Bug,
+  BookOpen,
+  User,
+  Lightbulb,
+  MessageSquareWarning,
+  CheckCheck
 } from 'lucide-react'
 import { 
   updateUserProfile, 
@@ -61,11 +74,16 @@ import {
   previewCustomFolderChanges,
   verifyQuizWithAI,
   insertQuizToDb,
-  getUserAnalytics,
-  getAcademicRolloverPreview,
-  executeAcademicRollover,
-  OwnerSecurityAuth
+  getUserAnalytics
 } from './actions'
+import ExecutiveReportView from '@/components/admin/ExecutiveReportView'
+import { 
+  getAllReports, 
+  updateReportStatusAndReply, 
+  getUnresolvedReportsCount, 
+  deleteReport 
+} from '@/lib/actions/report-actions'
+import { UserReport, ReportCategory, ReportPriority, ReportStatus } from '@/lib/types'
 import {
   ResponsiveContainer,
   AreaChart,
@@ -130,6 +148,126 @@ export default function AdminDashboardClient({
   const [isRulesLoading, setIsRulesLoading] = useState(false)
   const [logsLoaded, setLogsLoaded] = useState(initialLogs.length > 0)
   const [isLogsLoading, setIsLogsLoading] = useState(false)
+
+  // Reports Management States
+  const [unresolvedReportsCount, setUnresolvedReportsCount] = useState<number>(0)
+  const [reportsList, setReportsList] = useState<UserReport[]>([])
+  const [reportsLoading, setReportsLoading] = useState<boolean>(false)
+  const [reportsTotalFiltered, setReportsTotalFiltered] = useState<number>(0)
+  const [reportsPage, setReportsPage] = useState<number>(1)
+  const [reportsStatusFilter, setReportsStatusFilter] = useState<string>('all')
+  const [reportsCategoryFilter, setReportsCategoryFilter] = useState<string>('all')
+  const [reportsPriorityFilter, setReportsPriorityFilter] = useState<string>('all')
+  const [reportsSearch, setReportsSearch] = useState<string>('')
+  const [reportsStats, setReportsStats] = useState<{
+    total: number
+    open: number
+    inProgress: number
+    resolved: number
+    closed: number
+    unresolved: number
+  }>({ total: 0, open: 0, inProgress: 0, resolved: 0, closed: 0, unresolved: 0 })
+
+  // Reply & Status Dialog state
+  const [selectedReport, setSelectedReport] = useState<UserReport | null>(null)
+  const [adminReplyText, setAdminReplyText] = useState<string>('')
+  const [adminSelectedStatus, setAdminSelectedStatus] = useState<ReportStatus>('open')
+  const [isUpdatingReport, setIsUpdatingReport] = useState<boolean>(false)
+
+  const fetchUnresolvedCount = async () => {
+    try {
+      const count = await getUnresolvedReportsCount()
+      setUnresolvedReportsCount(count)
+    } catch (e) {
+      console.error('Error fetching unresolved count:', e)
+    }
+  }
+
+  const fetchReportsList = async (page = 1) => {
+    setReportsLoading(true)
+    try {
+      const res = await getAllReports({
+        page,
+        pageSize: 15,
+        status: reportsStatusFilter,
+        category: reportsCategoryFilter,
+        priority: reportsPriorityFilter,
+        search: reportsSearch
+      })
+      setReportsList(res.reports)
+      setReportsTotalFiltered(res.totalFiltered)
+      setReportsStats(res.stats)
+      setUnresolvedReportsCount(res.stats.unresolved)
+      setReportsPage(page)
+    } catch (err: any) {
+      console.error('Error fetching reports:', err)
+      toast.error(err.message || 'Failed to fetch reports')
+    } finally {
+      setReportsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchUnresolvedCount()
+    const timer = setInterval(fetchUnresolvedCount, 30000)
+    return () => clearInterval(timer)
+  }, [])
+
+  useEffect(() => {
+    if (activeTab === 'reports') {
+      fetchReportsList(reportsPage)
+    }
+  }, [activeTab, reportsStatusFilter, reportsCategoryFilter, reportsPriorityFilter])
+
+  const handleOpenReplyDialog = (report: UserReport) => {
+    setSelectedReport(report)
+    setAdminReplyText(report.admin_reply || '')
+    setAdminSelectedStatus(report.status)
+  }
+
+  const handleSaveReportStatusAndReply = async () => {
+    if (!selectedReport) return
+    setIsUpdatingReport(true)
+    try {
+      const res = await updateReportStatusAndReply({
+        reportId: selectedReport.id,
+        status: adminSelectedStatus,
+        adminReply: adminReplyText.trim() || undefined,
+        adminAuthId,
+        adminName: 'Super Admin'
+      })
+
+      if (res.success && res.report) {
+        toast.success('Report status updated and student notified successfully!')
+        setSelectedReport(null)
+        fetchReportsList(reportsPage)
+        fetchUnresolvedCount()
+      } else {
+        toast.error(res.error || 'Failed to save update')
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update report status')
+    } finally {
+      setIsUpdatingReport(false)
+    }
+  }
+
+  const handleDeleteReport = async (reportId: string) => {
+    if (!confirm('Are you sure you want to permanently delete this report?')) return
+    try {
+      const res = await deleteReport(reportId)
+      if (res.success) {
+        toast.success('Report deleted successfully')
+        fetchReportsList(reportsPage)
+        fetchUnresolvedCount()
+      } else {
+        toast.error(res.error || 'Failed to delete report')
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Error occurred while deleting report')
+    }
+  }
+
 
   useEffect(() => {
     if (activeTab === 'analytics' && !analyticsData) {
@@ -286,109 +424,6 @@ export default function AdminDashboardClient({
       fix?: string
     }>
   } | null>(null)
-  // Academic Rollover States & 3-Factor Owner Security Authentication
-  const [rolloverCounts, setRolloverCounts] = useState<{
-    year1: number
-    year2: number
-    year3: number
-    year4: number
-    graduated: number
-    totalStudents: number
-  } | null>(null)
-  const [isRolloverLoading, setIsRolloverLoading] = useState(false)
-  const [isExecutingRollover, setIsExecutingRollover] = useState(false)
-  const [rolloverYear, setRolloverYear] = useState<number>(new Date().getFullYear())
-  const [rolloverConfirmation, setRolloverConfirmation] = useState('')
-  const [ownerNationalId, setOwnerNationalId] = useState('')
-  const [ownerBirthDate, setOwnerBirthDate] = useState('')
-  const [ownerMonitorType, setOwnerMonitorType] = useState('')
-  const [securityError, setSecurityError] = useState<string | null>(null)
-  const [isRolloverDialogOpen, setIsRolloverDialogOpen] = useState(false)
-  const [rolloverResult, setRolloverResult] = useState<any | null>(null)
-
-  const loadRolloverPreview = async () => {
-    setIsRolloverLoading(true)
-    try {
-      const res = await getAcademicRolloverPreview()
-      if (res.success && res.counts) {
-        setRolloverCounts(res.counts)
-      } else {
-        toast.error(res.error || 'Failed to load rollover preview')
-      }
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to load rollover preview')
-    } finally {
-      setIsRolloverLoading(false)
-    }
-  }
-
-  const handleExecuteRollover = async () => {
-    setSecurityError(null)
-
-    // 1. Client-Side Pre-Validation for Super Admin Questions
-    const cleanId = ownerNationalId.replace(/\D/g, '')
-    if (!cleanId) {
-      setSecurityError('Please enter your 14-digit Owner National ID.')
-      toast.error('Owner National ID is required.')
-      return
-    }
-
-    if (!ownerBirthDate.trim()) {
-      setSecurityError('Please enter your Date of Birth.')
-      toast.error('Date of Birth is required.')
-      return
-    }
-
-    if (!ownerMonitorType.trim()) {
-      setSecurityError('Please enter your Computer Monitor Brand / Type.')
-      toast.error('Computer Monitor Brand is required.')
-      return
-    }
-
-    if (rolloverConfirmation !== 'ROLLOVER') {
-      setSecurityError('Please type ROLLOVER to confirm this critical operation.')
-      toast.error('Please type ROLLOVER in uppercase.')
-      return
-    }
-
-    setIsExecutingRollover(true)
-    try {
-      const res = await executeAcademicRollover(rolloverYear, {
-        nationalId: ownerNationalId,
-        birthDate: ownerBirthDate,
-        monitorType: ownerMonitorType
-      })
-      const anyRes = res as any
-      if (anyRes?.success && anyRes?.result) {
-        setRolloverResult(anyRes.result)
-        toast.success(`Academic Rollover for Class of ${rolloverYear} completed successfully!`)
-        setIsRolloverDialogOpen(false)
-        setRolloverConfirmation('')
-        setOwnerNationalId('')
-        setOwnerBirthDate('')
-        setOwnerMonitorType('')
-        setSecurityError(null)
-        loadRolloverPreview()
-        router.refresh()
-      } else {
-        const errMsg = anyRes?.error || 'Security verification failed or rollover aborted.'
-        setSecurityError(errMsg)
-        toast.error(errMsg)
-      }
-    } catch (err: any) {
-      setSecurityError(err.message || 'Security verification failed.')
-      toast.error(err.message || 'Failed to execute academic rollover.')
-    } finally {
-      setIsExecutingRollover(false)
-    }
-  }
-
-  useEffect(() => {
-    if (activeTab === 'rollover') {
-      loadRolloverPreview()
-    }
-  }, [activeTab])
-
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const gutterRef = useRef<HTMLDivElement>(null)
 
@@ -1139,7 +1174,7 @@ export default function AdminDashboardClient({
 
       {/* Tabs System */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="relative grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 h-auto bg-black/5 dark:bg-white/5 backdrop-blur-md p-1.5 rounded-xl border border-black/10 dark:border-white/10 max-w-6xl mb-8">
+        <TabsList className="relative grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 h-auto bg-black/5 dark:bg-white/5 backdrop-blur-md p-1.5 rounded-xl border border-black/10 dark:border-white/10 max-w-6xl mb-8">
           <TabsTrigger 
             value="users" 
             className="relative flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground data-[state=active]:text-white focus-visible:outline-none select-none cursor-pointer bg-transparent data-[state=active]:!bg-transparent data-[state=active]:!shadow-none"
@@ -1230,19 +1265,41 @@ export default function AdminDashboardClient({
             <span>Quizzes</span>
           </TabsTrigger>
 
+          
+
           <TabsTrigger 
-            value="rollover" 
-            className="relative flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground data-[state=active]:text-white focus-visible:outline-none select-none cursor-pointer bg-transparent data-[state=active]:!bg-transparent data-[state=active]:!shadow-none"
+            value="reports" 
+            className="relative flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground data-[state=active]:text-white focus-visible:outline-none select-none cursor-pointer bg-transparent data-[state=active]:!bg-transparent data-[state=active]:!shadow-none"
           >
-            {activeTab === 'rollover' && (
+            {activeTab === 'reports' && (
               <motion.div
                 layoutId="active-admin-tab"
-                className="absolute inset-0 bg-gradient-to-r from-amber-500 to-primary rounded-lg -z-10 shadow-lg shadow-amber-500/30"
+                className="absolute inset-0 bg-gradient-to-r from-red-500 via-primary to-secondary rounded-lg -z-10 shadow-lg shadow-primary/30"
                 transition={{ type: 'spring', stiffness: 350, damping: 30 }}
               />
             )}
-            <GraduationCap className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'rollover' ? 'scale-110 rotate-6' : 'hover:scale-110'}`} />
-            <span>Academic Rollover</span>
+            <LifeBuoy className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'reports' ? 'scale-110 rotate-12' : 'hover:scale-110'}`} />
+            <span>Reports</span>
+            {unresolvedReportsCount > 0 && (
+              <span className="relative flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[10px] font-extrabold bg-red-500 text-white shadow-md shadow-red-500/50 animate-pulse ml-0.5">
+                {unresolvedReportsCount}
+              </span>
+            )}
+          </TabsTrigger>
+
+          <TabsTrigger 
+            value="executive_report" 
+            className="relative flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-medium transition-all duration-300 text-muted-foreground hover:text-foreground data-[state=active]:text-white focus-visible:outline-none select-none cursor-pointer bg-transparent data-[state=active]:!bg-transparent data-[state=active]:!shadow-none font-rubik"
+          >
+            {activeTab === 'executive_report' && (
+              <motion.div
+                layoutId="active-admin-tab"
+                className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-primary to-secondary rounded-lg -z-10 shadow-lg shadow-primary/30"
+                transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+              />
+            )}
+            <FileText className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'executive_report' ? 'scale-110 rotate-6' : 'hover:scale-110'}`} />
+            <span>Exe-Repo</span>
           </TabsTrigger>
         </TabsList>
 
@@ -2717,161 +2774,544 @@ export default function AdminDashboardClient({
           </motion.div>
         </TabsContent>
 
-        {/* Tab 7: Academic Rollover & Graduation System */}
-        <TabsContent value="rollover" className="mt-0 focus-visible:outline-none">
+        
+
+        {/* Tab 8: Reports & Complaints */}
+        <TabsContent value="reports" className="mt-0 focus-visible:outline-none font-rubik">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
             className="space-y-6"
           >
-            {/* Header Card */}
+            {/* Stats Overview */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              <Card className="bg-card border-border shadow-sm">
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Total Reports</p>
+                    <p className="text-2xl font-black text-foreground mt-0.5">{reportsStats.total}</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
+                    <LifeBuoy className="w-5 h-5" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-amber-500/5 border-amber-500/20 shadow-sm">
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-amber-500 font-medium">Open (Pending)</p>
+                    <p className="text-2xl font-black text-amber-500 mt-0.5">{reportsStats.open}</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500">
+                    <Clock className="w-5 h-5 animate-pulse" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-blue-500/5 border-blue-500/20 shadow-sm">
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-blue-500 font-medium">In Progress</p>
+                    <p className="text-2xl font-black text-blue-500 mt-0.5">{reportsStats.inProgress}</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-500">
+                    <RefreshCw className="w-5 h-5" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-emerald-500/5 border-emerald-500/20 shadow-sm">
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-emerald-500 font-medium">Resolved</p>
+                    <p className="text-2xl font-black text-emerald-500 mt-0.5">{reportsStats.resolved}</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500">
+                    <CheckCircle className="w-5 h-5" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-muted/40 border-border shadow-sm col-span-2 sm:col-span-1">
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Unresolved Total</p>
+                    <p className="text-2xl font-black text-red-500 mt-0.5">{reportsStats.unresolved}</p>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-red-500/10 text-red-500">
+                    <Flame className="w-5 h-5 animate-bounce" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Filter and Table Card */}
             <Card className="bg-card border-border shadow-md">
               <CardHeader className="pb-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
-                    <CardTitle className="text-2xl font-bold font-outfit flex items-center gap-2">
-                      <GraduationCap className="w-6 h-6 text-amber-500" />
-                      Academic Rollover &amp; Graduation Console
+                    <CardTitle className="text-xl font-bold flex items-center gap-2">
+                      <LifeBuoy className="w-5 h-5 text-primary" />
+                      <span>Student Reports &amp; Complaints Center</span>
+                      {unresolvedReportsCount > 0 && (
+                        <Badge variant="destructive" className="animate-pulse">
+                          {unresolvedReportsCount} New / Open
+                        </Badge>
+                      )}
                     </CardTitle>
-                    <CardDescription className="text-sm mt-1">
-                      Promote students atomically across academic years (Year 1 &rarr; 2 &rarr; 3 &rarr; 4) and graduate Year 4 students into Chameleon Alumni.
+                    <CardDescription className="text-xs mt-1">
+                      Review student issues, update resolution status (Open / In Progress / Resolved / Closed), and dispatch official responses.
                     </CardDescription>
                   </div>
+
                   <Button
-                    onClick={loadRolloverPreview}
-                    disabled={isRolloverLoading}
                     variant="outline"
-                    className="border-border text-sm"
+                    size="sm"
+                    onClick={() => fetchReportsList(reportsPage)}
+                    disabled={reportsLoading}
+                    className="rounded-full text-xs font-bold shrink-0"
                   >
-                    <RefreshCw className={`w-4 h-4 mr-2 ${isRolloverLoading ? 'animate-spin' : ''}`} />
-                    Refresh Counts
+                    <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${reportsLoading ? 'animate-spin' : ''}`} />
+                    Refresh Feed
                   </Button>
+                </div>
+
+                {/* Filters */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-4">
+                  <div className="sm:col-span-4 relative">
+                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      placeholder="Search title, description, or username..."
+                      value={reportsSearch}
+                      onChange={(e) => setReportsSearch(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && fetchReportsList(1)}
+                      className="pl-9 h-9 text-xs"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <Select value={reportsStatusFilter} onValueChange={(val) => { setReportsStatusFilter(val); setReportsPage(1); }}>
+                      <SelectTrigger className="h-9 text-xs">
+                        <SelectValue placeholder="Status Filter" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="open">Open (Under Review)</SelectItem>
+                        <SelectItem value="in_progress">In Progress</SelectItem>
+                        <SelectItem value="resolved">Resolved</SelectItem>
+                        <SelectItem value="closed">Closed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <Select value={reportsCategoryFilter} onValueChange={(val) => { setReportsCategoryFilter(val); setReportsPage(1); }}>
+                      <SelectTrigger className="h-9 text-xs">
+                        <SelectValue placeholder="Category Filter" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Categories</SelectItem>
+                        <SelectItem value="bug">Technical Bugs</SelectItem>
+                        <SelectItem value="content">Course Content</SelectItem>
+                        <SelectItem value="account">Account Issues</SelectItem>
+                        <SelectItem value="feature_request">Feature Requests</SelectItem>
+                        <SelectItem value="other">General / Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <Button 
+                      onClick={() => fetchReportsList(1)}
+                      className="w-full h-9 text-xs font-bold rounded-lg"
+                      variant="secondary"
+                    >
+                      <Filter className="w-3.5 h-3.5 mr-1.5" />
+                      Apply
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-8">
-                {/* 1. Student Cohort Distribution */}
-                <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-                    Current Student Distribution by Level
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                    <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-center">
-                      <p className="text-xs font-semibold text-blue-400 uppercase">Year 1</p>
-                      <p className="text-2xl font-extrabold font-outfit text-foreground mt-1">
-                        {isRolloverLoading ? '...' : (rolloverCounts?.year1 ?? 0)}
-                      </p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">&rarr; Promotes to Year 2</p>
-                    </div>
-
-                    <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-center">
-                      <p className="text-xs font-semibold text-indigo-400 uppercase">Year 2</p>
-                      <p className="text-2xl font-extrabold font-outfit text-foreground mt-1">
-                        {isRolloverLoading ? '...' : (rolloverCounts?.year2 ?? 0)}
-                      </p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">&rarr; Promotes to Year 3</p>
-                    </div>
-
-                    <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 text-center">
-                      <p className="text-xs font-semibold text-purple-400 uppercase">Year 3</p>
-                      <p className="text-2xl font-extrabold font-outfit text-foreground mt-1">
-                        {isRolloverLoading ? '...' : (rolloverCounts?.year3 ?? 0)}
-                      </p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">&rarr; Promotes to Year 4</p>
-                    </div>
-
-                    <div className="p-4 rounded-xl bg-amber-500/15 border border-amber-500/30 text-center">
-                      <p className="text-xs font-bold text-amber-500 uppercase">Year 4 (Senior)</p>
-                      <p className="text-2xl font-extrabold font-outfit text-foreground mt-1">
-                        {isRolloverLoading ? '...' : (rolloverCounts?.year4 ?? 0)}
-                      </p>
-                      <p className="text-[11px] text-amber-400 font-semibold mt-0.5">&rarr; Graduating to Alumni</p>
-                    </div>
-
-                    <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
-                      <p className="text-xs font-semibold text-emerald-400 uppercase">Existing Alumni</p>
-                      <p className="text-2xl font-extrabold font-outfit text-foreground mt-1">
-                        {isRolloverLoading ? '...' : (rolloverCounts?.graduated ?? 0)}
-                      </p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">Historical records</p>
-                    </div>
+              <CardContent>
+                {reportsLoading ? (
+                  <div className="py-20 flex flex-col items-center justify-center text-center space-y-3">
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                    <p className="text-sm text-muted-foreground">Loading reports data...</p>
                   </div>
-                </div>
-
-                {/* 2. Rollover Action Configuration Card */}
-                <div className="p-5 rounded-2xl bg-muted/20 border border-border/80 space-y-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <h4 className="font-bold text-foreground font-outfit text-lg">
-                        Execute Annual Rollover Batch
-                      </h4>
-                      <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
-                        Specify the graduating class year. When executed, Year 4 students will be transitioned to graduated status with a dedicated graduate record, and Years 1-3 will be promoted simultaneously.
-                      </p>
+                ) : reportsList.length === 0 ? (
+                  <div className="py-16 text-center border border-dashed border-border rounded-xl p-8 space-y-2">
+                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground mx-auto mb-2">
+                      <LifeBuoy className="w-6 h-6" />
                     </div>
+                    <p className="text-base font-bold text-foreground">No reports match the current criteria</p>
+                    <p className="text-xs text-muted-foreground">Try clearing filters or search query.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto rounded-lg border border-border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/50 text-xs">
+                          <TableHead className="w-[180px]">Student</TableHead>
+                          <TableHead className="w-[130px]">Category</TableHead>
+                          <TableHead>Issue / Complaint</TableHead>
+                          <TableHead className="w-[100px]">Priority</TableHead>
+                          <TableHead className="w-[140px]">Status</TableHead>
+                          <TableHead className="w-[120px]">Date</TableHead>
+                          <TableHead className="text-right w-[140px]">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {reportsList.map((rep) => {
+                          const getCategoryBadge = () => {
+                            switch (rep.category) {
+                              case 'bug':
+                                return <Badge variant="outline" className="border-red-500/30 text-red-500 bg-red-500/10 gap-1 text-[11px]"><Bug className="w-3 h-3" /> Bug</Badge>
+                              case 'content':
+                                return <Badge variant="outline" className="border-blue-500/30 text-blue-500 bg-blue-500/10 gap-1 text-[11px]"><BookOpen className="w-3 h-3" /> Content</Badge>
+                              case 'account':
+                                return <Badge variant="outline" className="border-amber-500/30 text-amber-500 bg-amber-500/10 gap-1 text-[11px]"><User className="w-3 h-3" /> Account</Badge>
+                              case 'feature_request':
+                                return <Badge variant="outline" className="border-purple-500/30 text-purple-500 bg-purple-500/10 gap-1 text-[11px]"><Lightbulb className="w-3 h-3" /> Idea</Badge>
+                              default:
+                                return <Badge variant="outline" className="border-emerald-500/30 text-emerald-500 bg-emerald-500/10 gap-1 text-[11px]"><LifeBuoy className="w-3 h-3" /> Other</Badge>
+                            }
+                          }
 
-                    <div className="flex items-center gap-3 shrink-0">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
-                          Graduation Year
-                        </label>
-                        <Input
-                          type="number"
-                          value={rolloverYear}
-                          onChange={(e) => setRolloverYear(Number(e.target.value))}
-                          min={2000}
-                          max={2100}
-                          className="w-32 bg-background border-border text-center font-bold text-sm h-10"
-                        />
-                      </div>
+                          const getStatusBadge = () => {
+                            switch (rep.status) {
+                              case 'open':
+                                return (
+                                  <Badge className="bg-amber-500/15 text-amber-500 border-amber-500/30 text-[11px] font-bold gap-1 shadow-sm shadow-amber-500/10">
+                                    <Clock className="w-3 h-3 animate-pulse" />
+                                    Open
+                                  </Badge>
+                                )
+                              case 'in_progress':
+                                return (
+                                  <Badge className="bg-blue-500/15 text-blue-500 border-blue-500/30 text-[11px] font-bold gap-1">
+                                    <RefreshCw className="w-3 h-3 animate-spin" />
+                                    In Progress
+                                  </Badge>
+                                )
+                              case 'resolved':
+                                return (
+                                  <Badge className="bg-emerald-500/15 text-emerald-500 border-emerald-500/30 text-[11px] font-bold gap-1">
+                                    <CheckCircle className="w-3 h-3" />
+                                    Resolved
+                                  </Badge>
+                                )
+                              case 'closed':
+                                return (
+                                  <Badge variant="outline" className="text-muted-foreground text-[11px]">
+                                    Closed
+                                  </Badge>
+                                )
+                              default:
+                                return null
+                            }
+                          }
 
+                          return (
+                            <TableRow key={rep.id} className="hover:bg-muted/40 transition-colors">
+                              <TableCell className="py-3">
+                                <div className="space-y-0.5">
+                                  <div className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                                    <span>{rep.username}</span>
+                                    {rep.user_id && (
+                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Registered Student" />
+                                    )}
+                                  </div>
+                                  <div className="text-[11px] text-muted-foreground font-mono truncate max-w-[150px]">
+                                    {rep.user_email || 'No email'}
+                                  </div>
+                                </div>
+                              </TableCell>
+
+                              <TableCell>{getCategoryBadge()}</TableCell>
+
+                              <TableCell>
+                                <div className="space-y-1 max-w-md">
+                                  <div className="font-bold text-xs text-foreground line-clamp-1">
+                                    {rep.title}
+                                  </div>
+                                  <div className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
+                                    {rep.description}
+                                  </div>
+                                  {rep.admin_reply && (
+                                    <div className="text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20 line-clamp-1 inline-flex items-center gap-1 mt-1">
+                                      <CheckCheck className="w-3 h-3" />
+                                      Admin reply: {rep.admin_reply}
+                                    </div>
+                                  )}
+                                </div>
+                              </TableCell>
+
+                              <TableCell>
+                                <Badge variant="outline" className={`text-[10px] font-bold ${
+                                  rep.priority === 'urgent'
+                                    ? 'border-red-500/30 text-red-500 bg-red-500/10'
+                                    : rep.priority === 'low'
+                                    ? 'border-emerald-500/30 text-emerald-500 bg-emerald-500/10'
+                                    : 'border-blue-500/30 text-blue-500 bg-blue-500/10'
+                                }`}>
+                                  {rep.priority === 'urgent' ? '🔥 Urgent' : rep.priority === 'low' ? 'Low' : 'Normal'}
+                                </Badge>
+                              </TableCell>
+
+                              <TableCell>{getStatusBadge()}</TableCell>
+
+                              <TableCell className="text-xs text-muted-foreground">
+                                {new Date(rep.created_at).toLocaleDateString('en-US', {
+                                  day: 'numeric',
+                                  month: 'short',
+                                  year: 'numeric'
+                                })}
+                              </TableCell>
+
+                              <TableCell className="text-right space-x-1">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleOpenReplyDialog(rep)}
+                                  className="h-8 px-2.5 text-xs font-bold text-primary border-primary/30 hover:bg-primary/10 rounded-lg"
+                                >
+                                  <MessageSquare className="w-3.5 h-3.5 mr-1" />
+                                  Reply & Status
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleDeleteReport(rep.id)}
+                                  className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500 rounded-lg"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+
+                {/* Pagination */}
+                {reportsTotalFiltered > 15 && (
+                  <div className="flex items-center justify-between pt-4 text-xs text-muted-foreground">
+                    <div>
+                      Showing {((reportsPage - 1) * 15) + 1} - {Math.min(reportsPage * 15, reportsTotalFiltered)} of {reportsTotalFiltered} reports
+                    </div>
+                    <div className="flex gap-2">
                       <Button
-                        onClick={() => {
-                          setRolloverConfirmation('')
-                          setIsRolloverDialogOpen(true)
-                        }}
-                        disabled={isRolloverLoading || isExecutingRollover}
-                        className="mt-5 bg-gradient-to-r from-amber-500 to-primary hover:from-amber-600 hover:to-primary/90 text-white font-bold px-6 h-10 rounded-xl shadow-lg shadow-amber-500/20 cursor-pointer"
+                        size="sm"
+                        variant="outline"
+                        disabled={reportsPage <= 1 || reportsLoading}
+                        onClick={() => fetchReportsList(reportsPage - 1)}
+                        className="h-8 text-xs"
                       >
-                        <GraduationCap className="w-4 h-4 mr-2" />
-                        Run Academic Rollover
+                        Previous
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={reportsPage * 15 >= reportsTotalFiltered || reportsLoading}
+                        onClick={() => fetchReportsList(reportsPage + 1)}
+                        className="h-8 text-xs"
+                      >
+                        Next
                       </Button>
                     </div>
                   </div>
-
-                  {/* Safety Guarantees Notice */}
-                  <div className="p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-border/60 text-xs text-muted-foreground space-y-1.5">
-                    <p className="font-bold text-foreground flex items-center gap-1.5">
-                      <Shield className="w-4 h-4 text-primary" />
-                      Atomic Execution &amp; Idempotency Guarantees
-                    </p>
-                    <ul className="list-disc list-inside space-y-1 pl-1">
-                      <li>Promotions occur simultaneously via database-level atomic transitions (no duplicate promotion bug).</li>
-                      <li>Year 4 students have their <code className="text-primary">status</code> set to <code className="text-primary">&apos;graduated&apos;</code> and <code className="text-primary">current_level</code> set to <code className="text-primary">NULL</code>.</li>
-                      <li>Existing student records, authentication IDs, quiz history, achievements, and coins are 100% preserved.</li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Rollover Result Alert */}
-                {rolloverResult && (
-                  <Alert className="bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
-                    <CheckCircle className="w-5 h-5 text-emerald-500" />
-                    <AlertTitle className="font-bold text-base">Rollover Batch Successfully Completed!</AlertTitle>
-                    <AlertDescription className="text-xs space-y-1 mt-1 text-foreground/80">
-                      <p>&bull; Graduated Year 4 Students: <strong className="text-foreground">{rolloverResult.graduated_count}</strong> (Class of {rolloverResult.graduation_year})</p>
-                      <p>&bull; Promoted Year 3 &rarr; Year 4: <strong className="text-foreground">{rolloverResult.promoted_to_year4}</strong></p>
-                      <p>&bull; Promoted Year 2 &rarr; Year 3: <strong className="text-foreground">{rolloverResult.promoted_to_year3}</strong></p>
-                      <p>&bull; Promoted Year 1 &rarr; Year 2: <strong className="text-foreground">{rolloverResult.promoted_to_year2}</strong></p>
-                    </AlertDescription>
-                  </Alert>
                 )}
               </CardContent>
             </Card>
           </motion.div>
         </TabsContent>
+
+        {/* Tab 8: Executive Platform Analytics & PDF Report */}
+        <TabsContent value="executive_report" className="mt-0 focus-visible:outline-none font-rubik">
+          <ExecutiveReportView />
+        </TabsContent>
       </Tabs>
+
+      {/* Admin Reply & Status Dialog */}
+      <Dialog open={selectedReport !== null} onOpenChange={(open) => !open && setSelectedReport(null)}>
+        <DialogContent className="bg-background/95 border-border max-w-4xl w-[94vw] shadow-2xl p-0 overflow-hidden rounded-2xl font-rubik [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden" dir="ltr">
+          <div className="p-6 pb-4 border-b border-border bg-gradient-to-br from-primary/10 via-background to-background">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary">
+                  <LifeBuoy className="w-5 h-5" />
+                </div>
+                <div>
+                  <DialogTitle className="text-lg md:text-xl font-bold font-rubik text-foreground">
+                    Manage Report & Update Status
+                  </DialogTitle>
+                  <DialogDescription className="text-xs text-muted-foreground mt-0.5 font-rubik">
+                    Directly respond to the issue and select appropriate status (Open / In Progress / Resolved / Closed)
+                  </DialogDescription>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {selectedReport && (
+            <div className="p-6 space-y-5 max-h-[82vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden font-rubik">
+              {/* Student Metadata Card */}
+              <div className="p-3.5 rounded-xl bg-muted/40 border border-border flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div>
+                  <span className="text-muted-foreground">Student: </span>
+                  <strong className="text-foreground">{selectedReport.username}</strong>
+                  {selectedReport.user_email && (
+                    <span className="text-muted-foreground ml-1">({selectedReport.user_email})</span>
+                  )}
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Date: </span>
+                  <strong className="text-foreground">
+                    {new Date(selectedReport.created_at).toLocaleString('en-US')}
+                  </strong>
+                </div>
+              </div>
+
+              {/* Problem Details */}
+              <div className="space-y-2 p-4 rounded-xl border border-border/80 bg-card/60">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground">Issue Title:</span>
+                  <Badge variant="outline" className="text-xs font-bold border-primary/30 text-primary">
+                    {selectedReport.category}
+                  </Badge>
+                </div>
+                <h4 className="font-extrabold text-sm text-foreground">{selectedReport.title}</h4>
+                <div className="pt-1">
+                  <span className="text-xs font-bold text-muted-foreground">Full Description:</span>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1 whitespace-pre-wrap bg-muted/30 p-3 rounded-lg border border-border/40 leading-relaxed font-rubik">
+                    {selectedReport.description}
+                  </p>
+                </div>
+
+                {selectedReport.page_url && (
+                  <div className="text-xs flex items-center gap-2 pt-1 font-mono" dir="ltr">
+                    <span className="text-muted-foreground">Page:</span>
+                    <a href={selectedReport.page_url} target="_blank" rel="noreferrer" className="text-primary hover:underline truncate">
+                      {selectedReport.page_url}
+                    </a>
+                  </div>
+                )}
+
+                {selectedReport.screenshot_url && (
+                  <div className="text-xs flex items-center gap-2 pt-1" dir="ltr">
+                    <span className="text-muted-foreground">Screenshot:</span>
+                    <a href={selectedReport.screenshot_url} target="_blank" rel="noreferrer" className="text-primary hover:underline truncate flex items-center gap-1">
+                      <ExternalLink className="w-3 h-3" /> View Attachment
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Status Selector */}
+              <div className="space-y-2">
+                <Label className="text-xs font-bold text-foreground">
+                  Update Status <span className="text-red-500">*</span>
+                </Label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { id: 'open', label: 'Open', color: 'border-amber-500/40 bg-amber-500/10 text-amber-500' },
+                    { id: 'in_progress', label: 'In Progress', color: 'border-blue-500/40 bg-blue-500/10 text-blue-500' },
+                    { id: 'resolved', label: 'Resolved', color: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-500' },
+                    { id: 'closed', label: 'Closed', color: 'border-muted text-muted-foreground' }
+                  ].map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setAdminSelectedStatus(s.id as ReportStatus)}
+                      className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-center ${
+                        adminSelectedStatus === s.id
+                          ? `${s.color} ring-2 ring-primary/40 shadow-sm font-extrabold`
+                          : 'border-border/60 hover:border-border text-muted-foreground hover:bg-muted/40'
+                      }`}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Quick Template Responses */}
+              <div className="space-y-1.5">
+                <span className="text-[11px] font-bold text-muted-foreground">Quick Response Templates:</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    'The issue has been resolved and deployed. Thank you for your feedback! 🎉',
+                    'We are currently investigating this with the technical team and will update you shortly.',
+                    'Thank you for the report. Could you please provide additional details or a screenshot?',
+                    'Thank you for this wonderful suggestion! We have added it to our roadmap.'
+                  ].map((tmpl, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setAdminReplyText(tmpl)}
+                      className="text-[10px] px-2.5 py-1 rounded-full bg-muted/60 hover:bg-muted border border-border/60 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      + {tmpl.slice(0, 36)}...
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Admin Reply Input */}
+              <div className="space-y-1.5">
+                <Label htmlFor="admin-reply-text" className="text-xs font-bold text-foreground">
+                  Admin Response to Student:
+                </Label>
+                <Textarea
+                  id="admin-reply-text"
+                  placeholder="Type your official reply here... The student will see this on their profile and receive a notification."
+                  value={adminReplyText}
+                  onChange={(e) => setAdminReplyText(e.target.value)}
+                  rows={4}
+                  className="text-xs sm:text-sm resize-none bg-background leading-relaxed font-rubik"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex items-center justify-end gap-2.5 border-t border-border">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedReport(null)}
+                  disabled={isUpdatingReport}
+                  className="rounded-full text-xs"
+                >
+                  Cancel
+                </Button>
+
+                <Button
+                  size="sm"
+                  onClick={handleSaveReportStatusAndReply}
+                  disabled={isUpdatingReport}
+                  className="rounded-full px-5 text-xs font-bold bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-md hover:brightness-105 active:scale-95 transition-all"
+                >
+                  {isUpdatingReport ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 ml-1.5 animate-spin" />
+                      Saving & Notifying...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5 ml-1.5" />
+                      Save & Notify Student
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Edit User Dialog */}
       <Dialog open={editingUser !== null} onOpenChange={(open) => !open && setEditingUser(null)}>
@@ -3127,158 +3567,7 @@ export default function AdminDashboardClient({
         </DialogContent>
       </Dialog>
 
-      {/* Academic Rollover 3-Factor Owner Security Verification Dialog */}
-      <Dialog 
-        open={isRolloverDialogOpen} 
-        onOpenChange={(open) => {
-          if (!open && !isExecutingRollover) {
-            setIsRolloverDialogOpen(false)
-            setSecurityError(null)
-          }
-        }}
-      >
-        <DialogContent className="bg-background/95 border-border max-w-lg shadow-2xl overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-500 via-amber-500 to-primary animate-pulse" />
-
-          <DialogHeader className="pt-2">
-            <div className="flex items-center gap-2.5 text-amber-500 font-outfit text-xl font-bold">
-              <div className="p-2 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-500">
-                <ShieldAlert className="w-6 h-6" />
-              </div>
-              <div>
-                <DialogTitle className="text-lg font-bold text-foreground">
-                  Super Admin Security Challenge
-                </DialogTitle>
-                <p className="text-xs text-amber-500 font-semibold font-mono">
-                  Owner Identity Protocol &bull; 3-Factor Verification
-                </p>
-              </div>
-            </div>
-            <DialogDescription className="text-xs text-muted-foreground pt-1.5 leading-relaxed">
-              Executing the Academic Rollover batch for Class of <strong className="text-primary">{rolloverYear}</strong> is a critical, irreversible operation. To proceed, please provide your 3 Super Admin identity credentials below.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 py-2">
-            {/* Impact Summary Badge */}
-            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-semibold">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>Total Impacted Students:</span>
-              </div>
-              <span className="font-bold text-foreground font-mono bg-background px-2 py-0.5 rounded border border-border">
-                {rolloverCounts?.totalStudents ?? 0} Active &bull; {rolloverCounts?.year4 ?? 0} Graduates
-              </span>
-            </div>
-
-            {/* Error Message if security verification fails */}
-            {securityError && (
-              <Alert variant="destructive" className="py-2 text-xs">
-                <AlertCircle className="w-4 h-4" />
-                <AlertDescription className="font-semibold">
-                  {securityError}
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {/* 3-Factor Security Questions Form */}
-            <div className="space-y-3.5 p-3.5 rounded-xl bg-muted/30 border border-border/70 text-xs">
-              {/* Question 1: National ID */}
-              <div className="space-y-1">
-                <label className="font-bold text-foreground flex items-center gap-1.5">
-                  <KeyRound className="w-3.5 h-3.5 text-primary" />
-                  <span>1. Owner National ID</span>
-                </label>
-                <Input
-                  type="password"
-                  value={ownerNationalId}
-                  onChange={(e) => setOwnerNationalId(e.target.value)}
-                  className="font-mono text-xs bg-background h-9"
-                  autoComplete="off"
-                />
-              </div>
-
-              {/* Question 2: Birth Date */}
-              <div className="space-y-1">
-                <label className="font-bold text-foreground flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5 text-amber-500" />
-                  <span>2. Owner Date of Birth</span>
-                </label>
-                <Input
-                  type="text"
-                  value={ownerBirthDate}
-                  onChange={(e) => setOwnerBirthDate(e.target.value)}
-                  className="text-xs bg-background h-9"
-                  autoComplete="off"
-                />
-              </div>
-
-              {/* Question 3: Monitor Screen Brand */}
-              <div className="space-y-1">
-                <label className="font-bold text-foreground flex items-center gap-1.5">
-                  <Monitor className="w-3.5 h-3.5 text-purple-500" />
-                  <span>3. Owner Computer Monitor Brand / Model</span>
-                </label>
-                <Input
-                  type="text"
-                  value={ownerMonitorType}
-                  onChange={(e) => setOwnerMonitorType(e.target.value)}
-                  className="font-mono uppercase text-xs bg-background h-9"
-                  autoComplete="off"
-                />
-              </div>
-            </div>
-
-            {/* Final Confirmation Word */}
-            <div className="space-y-1.5 pt-1">
-              <label className="text-xs font-bold text-foreground flex items-center justify-between">
-                <span>Type <span className="font-mono font-black text-primary">ROLLOVER</span> to confirm:</span>
-                <Lock className="w-3 h-3 text-muted-foreground" />
-              </label>
-              <Input
-                value={rolloverConfirmation}
-                onChange={(e) => setRolloverConfirmation(e.target.value)}
-                className="font-mono text-center uppercase tracking-widest text-sm font-bold bg-background h-9 border-amber-500/40 focus-visible:border-amber-500"
-                autoComplete="off"
-              />
-            </div>
-          </div>
-
-          <DialogFooter className="gap-2 pt-2 border-t border-border/60">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsRolloverDialogOpen(false)
-                setSecurityError(null)
-              }}
-              disabled={isExecutingRollover}
-              className="border-border text-xs cursor-pointer"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleExecuteRollover}
-              disabled={
-                !ownerNationalId.trim() ||
-                !ownerBirthDate.trim() ||
-                !ownerMonitorType.trim() ||
-                rolloverConfirmation !== 'ROLLOVER' ||
-                isExecutingRollover
-              }
-              className="bg-gradient-to-r from-red-600 via-amber-600 to-amber-500 hover:from-red-700 hover:to-amber-600 text-white font-bold text-xs shadow-md cursor-pointer"
-            >
-              {isExecutingRollover ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Verifying Security &amp; Executing...
-                </>
-              ) : (
-                'Verify Identity &amp; Execute Rollover'
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      
     </div>
   )
 }
