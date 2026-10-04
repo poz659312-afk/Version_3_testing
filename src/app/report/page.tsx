@@ -49,6 +49,7 @@ export default function ReportPortalPage() {
   const [user, setUser] = useState<StudentUser | null>(null)
   const [userReports, setUserReports] = useState<UserReport[]>([])
   const [loadingReports, setLoadingReports] = useState(false)
+  const [reportsFetched, setReportsFetched] = useState(false)
   const [activeTab, setActiveTab] = useState("new")
 
   // Form states
@@ -67,7 +68,6 @@ export default function ReportPortalPage() {
     if (session) {
       setUser(session)
       if (session.email) setContactEmail(session.email)
-      fetchUserReports(session.auth_id)
     }
   }
 
@@ -76,6 +76,7 @@ export default function ReportPortalPage() {
     try {
       const reports = await getUserReports(authId)
       setUserReports(reports)
+      setReportsFetched(true)
     } catch (err) {
       console.error("Error loading user reports:", err)
     } finally {
@@ -236,7 +237,16 @@ export default function ReportPortalPage() {
         </div>
 
         {/* Main Tabs Container */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={(tab) => {
+            setActiveTab(tab)
+            if (tab === "history" && user?.auth_id && !reportsFetched) {
+              fetchUserReports(user.auth_id)
+            }
+          }}
+          className="w-full space-y-6"
+        >
           <div className="flex justify-center">
             <TabsList className="bg-muted/60 border border-border/60 p-1 rounded-2xl h-auto">
               <TabsTrigger
@@ -250,10 +260,15 @@ export default function ReportPortalPage() {
               {user && (
                 <TabsTrigger
                   value="history"
+                  onClick={() => {
+                    if (user?.auth_id && !reportsFetched) {
+                      fetchUserReports(user.auth_id)
+                    }
+                  }}
                   className="rounded-xl px-5 py-2.5 text-xs sm:text-sm font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm relative"
                 >
                   <Clock className="w-4 h-4 mr-2" />
-                  My Reports History ({userReports.length})
+                  My Reports History {reportsFetched ? `(${userReports.length})` : ''}
                 </TabsTrigger>
               )}
             </TabsList>

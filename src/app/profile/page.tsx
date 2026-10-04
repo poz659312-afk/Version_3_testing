@@ -1159,6 +1159,7 @@ export default function ProfilePage() {
   const [showDate, setShowDate] = useState<boolean>(true)
   const [userReports, setUserReports] = useState<UserReport[]>([])
   const [loadingReports, setLoadingReports] = useState(false)
+  const [reportsFetched, setReportsFetched] = useState(false)
   const [isReportModalOpen, setIsReportModalOpen] = useState(false)
 
   const refreshUserReports = async (authId?: string) => {
@@ -1168,6 +1169,7 @@ export default function ProfilePage() {
     try {
       const reports = await getUserReports(id)
       setUserReports(reports)
+      setReportsFetched(true)
     } catch (err) {
       console.error("Error refreshing reports:", err)
     } finally {
@@ -1249,7 +1251,6 @@ export default function ProfilePage() {
       }
 
       setUserData(session)
-      refreshUserReports(session.auth_id)
       // Initialize edit form with current data
       setEditForm({
         username: session.username || "",
@@ -1684,7 +1685,15 @@ export default function ProfilePage() {
             />
           </motion.div>
 
-          <Tabs defaultValue="profile" className="space-y-6">
+          <Tabs
+            defaultValue="profile"
+            className="space-y-6"
+            onValueChange={(tab) => {
+              if (tab === 'reports' && !reportsFetched && userData?.auth_id) {
+                refreshUserReports(userData.auth_id)
+              }
+            }}
+          >
             <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 lg:w-auto lg:inline-grid bg-muted border border-border h-auto p-1 gap-1">
               <TabsTrigger value="profile" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm py-2 md:py-1.5">
                 <User className="size-5 md:size-4" />
@@ -1702,10 +1711,18 @@ export default function ProfilePage() {
                 <Zap className="size-5 md:size-4" />
                 <span className="hidden md:inline">Visual Effects</span>
               </TabsTrigger>
-              <TabsTrigger value="reports" className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm text-primary data-[state=active]:text-primary py-2 md:py-1.5 relative">
+              <TabsTrigger
+                value="reports"
+                onClick={() => {
+                  if (!reportsFetched && userData?.auth_id) {
+                    refreshUserReports(userData.auth_id)
+                  }
+                }}
+                className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 font-outfit data-[state=active]:bg-background data-[state=active]:shadow-sm text-primary data-[state=active]:text-primary py-2 md:py-1.5 relative"
+              >
                 <LifeBuoy className="size-5 md:size-4" />
                 <span className="hidden md:inline">Reports & Issues</span>
-                {userReports.filter(r => r.status === 'open' || r.status === 'in_progress').length > 0 && (
+                {reportsFetched && userReports.filter(r => r.status === 'open' || r.status === 'in_progress').length > 0 && (
                   <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-500 border border-amber-500/30">
                     {userReports.filter(r => r.status === 'open' || r.status === 'in_progress').length}
                   </span>
