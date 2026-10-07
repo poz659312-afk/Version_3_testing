@@ -281,7 +281,7 @@ export async function updateReportStatusAndReply(input: {
         message_content: messageContent,
         type: 'report_update',
         provider: 'chameleon_support',
-        seen: null,
+        seen: 'false',
         created_at: new Date().toISOString()
       })
     } catch (notifErr) {

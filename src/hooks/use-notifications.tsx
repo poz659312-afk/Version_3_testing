@@ -87,7 +87,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         .from('Notifications')
         .update({ seen: 'true' })
         .eq('auth_id', user.auth_id)
-        .eq('seen', 'false')
+        .or('seen.eq.false,seen.is.null')
 
       if (error) {
         console.error('Error marking all notifications as read:', error)

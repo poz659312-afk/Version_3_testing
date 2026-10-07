@@ -41,7 +41,7 @@ interface NotificationDropdownProps {
 }
 
 export function NotificationDropdown({ isOpen, onClose }: NotificationDropdownProps) {
-  const { notifications, markAllAsRead, isLoading, deleteNotification } = useNotifications()
+  const { notifications, markAsRead, markAllAsRead, isLoading, deleteNotification } = useNotifications()
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Memoize expensive calculations
@@ -223,13 +223,18 @@ export function NotificationDropdown({ isOpen, onClose }: NotificationDropdownPr
                     return (
                       <div
                         key={notification.id}
+                        onClick={() => {
+                          if (isUnread) {
+                            markAsRead(notification.id)
+                          }
+                        }}
                         style={{ 
                           borderRadius: '1.5rem',
                           animationDelay: `${index * 0.05 + 0.2}s`,
                         }}
-                        className={`group/item relative p-5 transition-all duration-300 border animate-notif-item-enter ${
+                        className={`group/item relative p-5 transition-all duration-300 border animate-notif-item-enter cursor-pointer ${
                           isUnread 
-                          ? 'bg-white/[0.08] border-primary/30 shadow-xl shadow-primary/5' 
+                          ? 'bg-white/[0.08] border-primary/30 shadow-xl shadow-primary/5 hover:border-primary/50' 
                           : 'bg-white/[0.03] border-white/5 hover:bg-white/[0.05]'
                         }`}
                       >
