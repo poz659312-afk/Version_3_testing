@@ -1522,9 +1522,96 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         }
       }
 
-      // 2. Measure block heights using hidden DOM sandbox to partition into clean non-splitting pages
+      // Helper to extract table info if a block contains a table with rows
+      const getTableInfo = (blockHtml: string) => {
+        if (!/<table[\s>]/i.test(blockHtml)) return null;
+
+        const temp = document.createElement('div');
+        temp.innerHTML = blockHtml;
+        const table = temp.querySelector('table');
+        if (!table) return null;
+
+        // Check if table is wrapped in a container div (e.g. overflow-x-auto)
+        let wrapperHtmlOpen = '';
+        let wrapperHtmlClose = '';
+        const firstChild = temp.firstElementChild;
+        if (firstChild && firstChild !== table && firstChild.contains(table)) {
+          const cloneWrapper = firstChild.cloneNode(false) as HTMLElement;
+          const outer = cloneWrapper.outerHTML;
+          const tagMatch = outer.match(/^<[^>]+>/);
+          if (tagMatch) {
+            wrapperHtmlOpen = tagMatch[0];
+            const closeTagMatch = outer.match(/<\/[a-zA-Z0-9_-]+>$/);
+            wrapperHtmlClose = closeTagMatch ? closeTagMatch[0] : '</div>';
+          }
+        }
+
+        // Table opening tag and closing tag
+        const tableClone = table.cloneNode(false) as HTMLTableElement;
+        const tableOuter = tableClone.outerHTML;
+        const tableOpenMatch = tableOuter.match(/^<[^>]+>/);
+        const tableHtmlOpen = tableOpenMatch ? tableOpenMatch[0] : '<table>';
+        const tableHtmlClose = '</table>';
+
+        // Colgroup if present
+        const colgroup = table.querySelector('colgroup');
+        const colgroupHtml = colgroup ? colgroup.outerHTML : '';
+
+        // Header thead or first tr with th
+        const thead = table.querySelector('thead');
+        const firstTr = table.querySelector('tr');
+        let headerHtml = '';
+        if (thead) {
+          headerHtml = thead.outerHTML;
+        } else if (firstTr && firstTr.querySelector('th')) {
+          headerHtml = `<thead>${firstTr.outerHTML}</thead>`;
+        }
+
+        // Body rows
+        let rowElements: HTMLTableRowElement[] = [];
+        const tbody = table.querySelector('tbody');
+        if (tbody) {
+          rowElements = Array.from(tbody.querySelectorAll('tr'));
+        } else {
+          const allTrs = Array.from(table.querySelectorAll('tr'));
+          if (thead) {
+            rowElements = allTrs.filter(tr => !thead.contains(tr));
+          } else if (firstTr && firstTr.querySelector('th')) {
+            rowElements = allTrs.slice(1);
+          } else {
+            rowElements = allTrs;
+          }
+        }
+
+        if (rowElements.length === 0) return null;
+
+        return {
+          wrapperHtmlOpen,
+          wrapperHtmlClose,
+          tableHtmlOpen,
+          tableHtmlClose,
+          colgroupHtml,
+          headerHtml,
+          rowHtmls: rowElements.map(r => r.outerHTML)
+        };
+      };
+
+      // Helper to assemble table HTML from a subset of rows
+      const buildTableChunkHtml = (
+        info: NonNullable<ReturnType<typeof getTableInfo>>,
+        rowSubset: string[]
+      ): string => {
+        const tableContent = `${info.colgroupHtml}${info.headerHtml}<tbody>${rowSubset.join('')}</tbody>`;
+        const tableHtml = `${info.tableHtmlOpen}${tableContent}${info.tableHtmlClose}`;
+        if (info.wrapperHtmlOpen && info.wrapperHtmlClose) {
+          return `${info.wrapperHtmlOpen}${tableHtml}${info.wrapperHtmlClose}`;
+        }
+        return tableHtml;
+      };
+
+      // 2. Measure block heights using hidden DOM sandbox to partition into continuous pages
       const measureBox = document.createElement('div');
-      measureBox.style.width = '750px';
+      measureBox.style.width = '760px';
       measureBox.style.position = 'fixed';
       measureBox.style.left = '-9999px';
       measureBox.style.top = '0';
@@ -1533,30 +1620,143 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
       measureBox.style.lineHeight = '1.7';
       measureBox.style.boxSizing = 'border-box';
       measureBox.className = 'font-rubik';
+
+      // Attach exact styling to sandbox so table/heading measurements are 100% accurate
+      const measureStyle = document.createElement('style');
+      measureStyle.textContent = `
+        .measure-content table { width: 100% !important; border-collapse: separate !important; border-spacing: 0 !important; border: 1.5px solid #cbd5e1 !important; border-radius: 12px !important; overflow: hidden !important; margin: 14px 0 !important; background: #ffffff !important; }
+        .measure-content th { background: #f1f5f9 !important; color: #0f172a !important; font-weight: 800 !important; padding: 9px 12px !important; border-bottom: 2px solid ${activeThemeColor} !important; border-right: 1px solid #e2e8f0 !important; text-align: left !important; }
+        .measure-content td { padding: 8px 12px !important; border-bottom: 1px solid #e2e8f0 !important; border-right: 1px solid #f8fafc !important; color: #334155 !important; font-size: 13px !important; }
+        .measure-content h1 { font-size: 22px !important; font-weight: 800 !important; margin: 18px 0 10px !important; }
+        .measure-content h2 { font-size: 17.5px !important; font-weight: 800 !important; margin: 16px 0 8px !important; padding-bottom: 4px !important; }
+        .measure-content h3 { font-size: 14.5px !important; font-weight: 700 !important; margin: 14px 0 6px !important; }
+        .measure-content p { margin: 8px 0 !important; line-height: 1.65 !important; }
+      `;
+      measureBox.appendChild(measureStyle);
+
+      const measureContent = document.createElement('div');
+      measureContent.className = 'measure-content';
+      measureContent.style.display = 'flex';
+      measureContent.style.flexDirection = 'column';
+      measureContent.style.width = '100%';
+      measureContent.style.boxSizing = 'border-box';
+      measureBox.appendChild(measureContent);
+
       document.body.appendChild(measureBox);
       containersToClean.push(measureBox);
+
+      const measureBlock = (htmlStr: string): number => {
+        measureContent.innerHTML = htmlStr;
+        return (measureContent.offsetHeight || 50) + 14;
+      };
 
       const pages: string[][] = [[]];
       let currentPageIndex = 0;
       let currentHeight = 0;
 
-      blocks.forEach(block => {
-        measureBox.innerHTML = block;
-        const blockHeight = (measureBox.offsetHeight || 60) + 16;
-        // Page 1 has full header (~160px), Page 2+ has compact header (~55px)
-        const maxH = currentPageIndex === 0 ? 820 : 960;
+      for (let bIdx = 0; bIdx < blocks.length; bIdx++) {
+        const block = blocks[bIdx];
+        const tableInfo = getTableInfo(block);
 
-        if (currentHeight + blockHeight > maxH && pages[currentPageIndex].length > 0) {
-          currentPageIndex++;
-          pages[currentPageIndex] = [block];
-          currentHeight = blockHeight;
+        if (tableInfo && tableInfo.rowHtmls.length > 1) {
+          // Multi-row table: split row-by-row across pages if it exceeds remaining space
+          let remainingRows = tableInfo.rowHtmls;
+
+          while (remainingRows.length > 0) {
+            const currentMaxH = currentPageIndex === 0 ? 820 : 960;
+            const remainingHeight = currentMaxH - currentHeight;
+
+            // Check if all remaining rows fit completely in available space
+            const fullTableHtml = buildTableChunkHtml(tableInfo, remainingRows);
+            const fullTableHeight = measureBlock(fullTableHtml);
+
+            if (fullTableHeight <= remainingHeight) {
+              pages[currentPageIndex].push(fullTableHtml);
+              currentHeight += fullTableHeight;
+              remainingRows = [];
+              break;
+            }
+
+            // Table doesn't fit completely. Find how many rows fit using binary search
+            let low = 1;
+            let high = remainingRows.length;
+            let bestCount = 0;
+            let bestHeight = 0;
+
+            while (low <= high) {
+              const mid = Math.floor((low + high) / 2);
+              const testHtml = buildTableChunkHtml(tableInfo, remainingRows.slice(0, mid));
+              const h = measureBlock(testHtml);
+              if (h <= remainingHeight) {
+                bestCount = mid;
+                bestHeight = h;
+                low = mid + 1;
+              } else {
+                high = mid - 1;
+              }
+            }
+
+            // If not even 1 row fits and the current page already has content:
+            if (bestCount === 0 && pages[currentPageIndex].length > 0) {
+              // Check if previous element is a heading (keep heading together with table)
+              const lastEl = pages[currentPageIndex][pages[currentPageIndex].length - 1];
+              if (lastEl && /<h[1-6][\s>]/i.test(lastEl)) {
+                pages[currentPageIndex].pop();
+                currentPageIndex++;
+                pages[currentPageIndex] = [lastEl];
+                currentHeight = measureBlock(lastEl);
+              } else {
+                currentPageIndex++;
+                pages[currentPageIndex] = [];
+                currentHeight = 0;
+              }
+              continue;
+            }
+
+            // Fallback for an abnormally large single row on a fresh page
+            if (bestCount === 0) {
+              bestCount = 1;
+              const testHtml = buildTableChunkHtml(tableInfo, remainingRows.slice(0, 1));
+              bestHeight = measureBlock(testHtml);
+            }
+
+            const chunkRows = remainingRows.slice(0, bestCount);
+            const chunkHtml = buildTableChunkHtml(tableInfo, chunkRows);
+            pages[currentPageIndex].push(chunkHtml);
+            currentHeight += bestHeight;
+
+            remainingRows = remainingRows.slice(bestCount);
+
+            // If rows still remain, advance to next page
+            if (remainingRows.length > 0) {
+              currentPageIndex++;
+              pages[currentPageIndex] = [];
+              currentHeight = 0;
+            }
+          }
         } else {
-          pages[currentPageIndex].push(block);
-          currentHeight += blockHeight;
-        }
-      });
+          // Regular non-table block (or 1-row table)
+          const blockHeight = measureBlock(block);
+          const currentMaxH = currentPageIndex === 0 ? 820 : 960;
 
-      const totalPages = pages.length;
+          // Prevent orphaned headings at the very bottom of a page
+          const isHeading = /<h[1-6][\s>]/i.test(block);
+          const requiredSpace = isHeading ? blockHeight + 70 : blockHeight;
+
+          if (currentHeight + requiredSpace > currentMaxH && pages[currentPageIndex].length > 0) {
+            currentPageIndex++;
+            pages[currentPageIndex] = [block];
+            currentHeight = blockHeight;
+          } else {
+            pages[currentPageIndex].push(block);
+            currentHeight += blockHeight;
+          }
+        }
+      }
+
+      // Filter out any empty pages
+      const finalPages = pages.filter(p => p && p.length > 0);
+      const totalPages = finalPages.length > 0 ? finalPages.length : 1;
 
       // 3. Render distinct framed page containers (A4 ratio: 900px x 1273px)
       const pageElements: HTMLDivElement[] = [];
@@ -1578,7 +1778,7 @@ export default function AIModal({ isOpen, onClose, file }: AIModalProps) {
         pageContainer.style.boxSizing = 'border-box';
         pageContainer.style.lineHeight = '1.7';
 
-        const pageContentHtml = pages[pIdx].join('');
+        const pageContentHtml = (finalPages[pIdx] || []).join('');
 
         pageContainer.innerHTML = `
           <style>

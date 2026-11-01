@@ -2567,7 +2567,7 @@ export default function AdminDashboardClient({
                       {/* Textarea */}
                       <textarea
                         ref={textareaRef}
-                        placeholder={`[\n  {\n    "question": "What is 1 + 1?",\n    "options": ["1", "2", "3", "4"],\n    "correct": 1\n  }\n]`}
+                        placeholder={`[\n  {\n    "question": "What is 1 + 1?",\n    "options": ["1", "2", "3", "4"],\n    "answer": "2" //write the answer as a full string not a number\n  }\n]`}
                         value={quizJsonStr}
                         onChange={(e) => {
                           setQuizJsonStr(e.target.value)
