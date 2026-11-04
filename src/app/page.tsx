@@ -327,7 +327,7 @@ export default function HomePage() {
                       ))}
                     </div>
                     <div className="text-sm font-medium text-muted-foreground">
-                      Joined by <span className="text-foreground font-bold">+4k</span> students
+                      Joined by <span className="text-foreground font-bold">+5k</span> students
                     </div>
                   </div>
                 </div>
