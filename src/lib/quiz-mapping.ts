@@ -127,6 +127,16 @@ export const SHARED_QUIZ_CLUSTERS: Record<string, string[]> = {
     'data-visualization-tools',
     'data-visualization-ba',
     'infographics-data-visualization'
+  ],
+  'intro-social-networks': [
+    'intro-social-networks',
+    'introduction-to-social-networks',
+    'sna',
+    'intro-social-networks-cs',
+    'intro-social-networks-is',
+    'intro-social-networks-ba',
+    'intro-social-networks-ma',
+    'intro-social-networks-hi'
   ]
 }
 

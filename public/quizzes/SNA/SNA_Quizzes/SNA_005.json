@@ -1,0 +1,282 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choice",
+    "question": "Which of the following is NOT one of the four key network properties discussed in Lecture 5?",
+    "answer": "B) Color palette frequency",
+    "options": [
+      "A) Degree distribution: p(k)",
+      "B) Color palette frequency",
+      "C) Path length: h",
+      "D) Clustering coefficient: C"
+    ],
+    "image": null,
+    "explanation": "The four fundamental measurements are: Degree distribution p(k), Path length h, Clustering coefficient C, and Connected components s."
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choice",
+    "question": "What is the mathematical definition of degree distribution P(k) in a network of N nodes?",
+    "answer": "A) P(k) = N_k / N, the proportion of nodes with degree k",
+    "options": [
+      "A) P(k) = N_k / N, the proportion of nodes with degree k",
+      "B) P(k) = k * N, the product of degree and total nodes",
+      "C) P(k) = 2E / (N - 1), the normalized edge density",
+      "D) P(k) = sum of all path lengths divided by k"
+    ],
+    "image": null,
+    "explanation": "P(k) represents the normalized histogram: the fraction of nodes in the network that have degree k (P(k) = N_k / N)."
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choice",
+    "question": "Because P(k) represents a normalized probability distribution, what must the sum of all P(k) equal?",
+    "answer": "C) Exactly 1",
+    "options": [
+      "A) Total number of nodes N",
+      "B) Total number of edges E",
+      "C) Exactly 1",
+      "D) Average network degree k_bar"
+    ],
+    "image": null,
+    "explanation": "As a formal discrete probability distribution, the sum of P(k) over all possible degrees k must equal 1 (sum_k P(k) = 1)."
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choice",
+    "question": "What type of degree distribution is characteristic of most real-world social and technological networks?",
+    "answer": "B) Skewed (heavy-tailed / power-law) distribution",
+    "options": [
+      "A) Perfectly flat uniform distribution",
+      "B) Skewed (heavy-tailed / power-law) distribution",
+      "C) Symmetric Gaussian bell curve with zero variance",
+      "D) Periodic sinusoidal distribution"
+    ],
+    "image": null,
+    "explanation": "Real networks have skewed distributions: majority of nodes have few connections, while a tiny minority of 'hubs' possess massive degrees."
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choice",
+    "question": "In a 5-node cycle graph C_5, what is the degree distribution P(k)?",
+    "answer": "D) P(2) = 1.0, and P(k) = 0 for all other k",
+    "options": [
+      "A) P(1) = 0.2, P(2) = 0.8",
+      "B) P(5) = 1.0, and P(k) = 0 for all other k",
+      "C) P(0) = 0.5, P(2) = 0.5",
+      "D) P(2) = 1.0, and P(k) = 0 for all other k"
+    ],
+    "image": null,
+    "explanation": "In C_5, every single node has exactly 2 neighbors. Thus, 100% of nodes have degree 2: P(2) = 5/5 = 1.0."
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choice",
+    "question": "What concept replaces physical geographic distance in graph theory?",
+    "answer": "A) Path length (number of edge hops)",
+    "options": [
+      "A) Path length (number of edge hops)",
+      "B) The Euclidean vector norm of vertex coordinates",
+      "C) The absolute magnitude of the adjacency determinant",
+      "D) The clock cycle latency of the host processor"
+    ],
+    "image": null,
+    "explanation": "In networks, physical distance is replaced by path length: the number of edges traversing from one node to another."
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choice",
+    "question": "What is the shortest path distance from any node to itself (h_ii)?",
+    "answer": "C) 0",
+    "options": [
+      "A) 1",
+      "B) Infinity",
+      "C) 0",
+      "D) Undefined"
+    ],
+    "image": null,
+    "explanation": "By definition, the distance from any node to itself requires traversing 0 edges (h_ii = 0)."
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choice",
+    "question": "If two nodes belong to different disconnected components, what is their shortest path distance?",
+    "answer": "B) Infinity (infinite distance)",
+    "options": [
+      "A) Zero",
+      "B) Infinity (infinite distance)",
+      "C) Equal to the number of nodes N",
+      "D) -1"
+    ],
+    "image": null,
+    "explanation": "If no path exists between two nodes in a disconnected graph, the distance between them is formally defined as infinity (h = infinity)."
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choice",
+    "question": "What is the 'diameter' of a connected network?",
+    "answer": "D) The largest shortest path between any node pair",
+    "options": [
+      "A) The total number of edges in the network",
+      "B) The average degree multiplied by 2",
+      "C) The minimum cycle length in the graph",
+      "D) The largest shortest path between any node pair"
+    ],
+    "image": null,
+    "explanation": "Network diameter is defined as the maximum shortest path distance existing between any pair of nodes in the graph."
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choice",
+    "question": "What formula calculates the average shortest path length h_bar of a connected undirected network?",
+    "answer": "A) h_bar = (1 / E_max) * sum_{i < j} h_ij",
+    "options": [
+      "A) h_bar = (1 / E_max) * sum_{i < j} h_ij",
+      "B) h_bar = sum_{all i, j} h_ij / N",
+      "C) h_bar = E_max / (2 * sum h_ij)",
+      "D) h_bar = diameter / N"
+    ],
+    "image": null,
+    "explanation": "Average shortest path normalizes the sum of shortest paths across all distinct pairs by the total number of pairs E_max = N(N-1)/2."
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choice",
+    "question": "What does the local clustering coefficient C_i of node i measure?",
+    "answer": "C) The fraction of pairs of neighbors that are connected",
+    "options": [
+      "A) The total number of edges connected to node i",
+      "B) The shortest distance from node i to the center",
+      "C) The fraction of pairs of neighbors that are connected",
+      "D) The percentage of nodes that are reachable from i"
+    ],
+    "image": null,
+    "explanation": "Local clustering coefficient C_i = 2 e_i / [k_i (k_i - 1)] measures the proportion of node i's neighbors that are linked to each other."
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choice",
+    "question": "Examine node V in the provided image. With k_V = 4 neighbors and e_V = 2 links between them, what is C_V?",
+    "answer": "B) 1/3 (approx 0.33)",
+    "options": [
+      "A) 1/2 (0.50)",
+      "B) 1/3 (approx 0.33)",
+      "C) 2/3 (approx 0.67)",
+      "D) 1.0 (complete clustering)"
+    ],
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_clustering.png",
+    "explanation": "C_V = 2 * e_V / [k_V * (k_V - 1)] = (2 * 2) / (4 * 3) = 4 / 12 = 1/3 approx 0.33."
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choice",
+    "question": "What is the value of C_i if none of node i's neighbors are connected to each other?",
+    "answer": "A) 0",
+    "options": [
+      "A) 0",
+      "B) 0.5",
+      "C) 1.0",
+      "D) -1"
+    ],
+    "image": null,
+    "explanation": "If e_i = 0 (no links exist between neighbors), then C_i = 2(0) / [k_i(k_i - 1)] = 0."
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choice",
+    "question": "Which sociological mechanism explains why real social networks display high clustering coefficients?",
+    "answer": "D) Triadic closure (mutual friends tend to become friends)",
+    "options": [
+      "A) Preferential isolation of central nodes",
+      "B) Random edge rewiring across distant groups",
+      "C) Strict prohibition of bidirectional edges",
+      "D) Triadic closure (mutual friends tend to become friends)"
+    ],
+    "image": null,
+    "explanation": "Social triadic closure posits that if person A knows B and C, B and C are highly likely to meet and become friends, closing the triangle."
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choice",
+    "question": "How is the local clustering coefficient C_i handled for nodes with degree k_i = 1 or k_i = 0?",
+    "answer": "B) Defined as zero or ignored, since no pairs can connect",
+    "options": [
+      "A) Set to 1.0 by default mathematical convention",
+      "B) Defined as zero or ignored, since no pairs can connect",
+      "C) Causes the algorithm to abort with a division error",
+      "D) Set equal to the average degree of the graph"
+    ],
+    "image": null,
+    "explanation": "Slide 15 notes that for degree 1 or 0 nodes, having fewer than 2 neighbors means no triangles are possible; C_i is defined as 0 or ignored."
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choice",
+    "question": "In Breadth First Search (BFS), what does the ripple search pattern accomplish?",
+    "answer": "A) Visits all nodes at distance d before moving to d + 1",
+    "options": [
+      "A) Visits all nodes at distance d before moving to d + 1",
+      "B) Follows a single path deeply until hitting a dead end",
+      "C) Selects edges in descending order of numerical weight",
+      "D) Randomly jumps between disconnected components"
+    ],
+    "image": null,
+    "explanation": "BFS explores outward in concentric ripples (levels), visiting all neighbors at depth d before proceeding to depth d + 1."
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choice",
+    "question": "Refer to the BFS traversal image. What is the shortest path distance from root 0 to node E?",
+    "answer": "C) d = 3",
+    "options": [
+      "A) d = 1",
+      "B) d = 2",
+      "C) d = 3",
+      "D) d = 5"
+    ],
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_bfs.png",
+    "explanation": "Node E is labeled at Level 3 of the BFS tree, meaning the shortest path from root 0 has 3 edges: 0 -> B -> D -> E."
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choice",
+    "question": "How can BFS be used to verify whether a network is fully connected?",
+    "answer": "B) Check if the number of visited nodes from node i equals N",
+    "options": [
+      "A) Calculate the determinant of the BFS tree matrix",
+      "B) Check if the number of visited nodes from node i equals N",
+      "C) Confirm that all BFS tree edges have identical weights",
+      "D) Ensure that the search terminates in under one second"
+    ],
+    "image": null,
+    "explanation": "If a BFS starting at an arbitrary node visits all N nodes, the network is connected. If fewer than N nodes are labeled, it is disconnected."
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choice",
+    "question": "Which of the following is classified as a 'random graph model' in social network modeling?",
+    "answer": "D) Erdos-Renyi and Small-World models",
+    "options": [
+      "A) Barabasi-Albert model (BAM)",
+      "B) Bianconi-Barabasi model (BBM)",
+      "C) Power-law scale-free model",
+      "D) Erdos-Renyi and Small-World models"
+    ],
+    "image": null,
+    "explanation": "Slide 20 classifies Erdos-Renyi, Small-world (Watts-Strogatz), and Forest-fire as random graph models."
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choice",
+    "question": "What is the defining signature of a 'scale-free' network model (e.g., Barabasi-Albert model)?",
+    "answer": "A) Its degree distribution follows a power law",
+    "options": [
+      "A) Its degree distribution follows a power law",
+      "B) All nodes must have exactly the same degree",
+      "C) The clustering coefficient is strictly equal to zero",
+      "D) The network diameter grows linearly with N"
+    ],
+    "image": null,
+    "explanation": "A scale-free network is defined by having a degree distribution that asymptotically follows a power law P(k) ~ k^-gamma."
+  }
+]

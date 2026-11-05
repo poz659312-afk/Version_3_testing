@@ -1,0 +1,702 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choice",
+    "question": "Which of the following best explains why traditional statistical methods often fail on social network data?",
+    "answer": "B) Network data violates the independence assumption",
+    "options": [
+      "A) Network datasets never contain more than 100 observations",
+      "B) Network data violates the independence assumption",
+      "C) Graphs can only represent continuous numerical metrics",
+      "D) Social ties cannot be stored in digital computer memory"
+    ],
+    "image": null,
+    "explanation": "Standard statistics assume independent observations; network data is inherently relational and interdependent, requiring graph-based approaches."
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choice",
+    "question": "What is the primary role of 'Diffusion Detection' in social network applications?",
+    "answer": "A) Tracking information or pathogen cascades",
+    "options": [
+      "A) Tracking information or pathogen cascades",
+      "B) Compressing the size of the adjacency matrix",
+      "C) Calculating the shortest path between distant servers",
+      "D) Inverting directed edges in a planar multigraph"
+    ],
+    "image": null,
+    "explanation": "Diffusion detection models how items (information, memes, viral videos, infections) propagate through social links over time."
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choice",
+    "question": "In the context of the COVID-19 pandemic study referenced in Lecture 1, why was contact tracing effective?",
+    "answer": "D) It revealed infection pathways and isolated super-spreaders",
+    "options": [
+      "A) It converted the epidemic graph into a static complete clique",
+      "B) It proved that virus transmission occurs without human contact",
+      "C) It increased the average degree of all individuals uniformly",
+      "D) It revealed infection pathways and isolated super-spreaders"
+    ],
+    "image": null,
+    "explanation": "Tracing contacts on the contact network helps quarantine exposed individuals and identify highly connected super-spreaders before transmission expands."
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choice",
+    "question": "In social circle detection, an individual whose perspective forms the center of the local network is called:",
+    "answer": "C) Ego",
+    "options": [
+      "A) Hub",
+      "B) Alter",
+      "C) Ego",
+      "D) Bridge"
+    ],
+    "image": null,
+    "explanation": "In ego-network analysis, the focal individual under observation is termed the 'ego', while their direct social contacts are called 'alters'."
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choice",
+    "question": "What level of network analysis specifically reveals the bridges and connections between micro- and macro-levels?",
+    "answer": "B) Meso-level",
+    "options": [
+      "A) Node-level",
+      "B) Meso-level",
+      "C) Dyadic level",
+      "D) Global macro-level"
+    ],
+    "image": null,
+    "explanation": "Slide 35 explicitly notes that meso-level analyses are specifically designed to reveal connections between micro- and macro-levels."
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choice",
+    "question": "In online misinformation analysis, what structural graph feature distinguishes hoax articles from authentic articles?",
+    "answer": "A) Hoax articles link across disparate, unrelated topics",
+    "options": [
+      "A) Hoax articles link across disparate, unrelated topics",
+      "B) Authentic articles contain no outbound hyperlinks",
+      "C) Hoax articles always form complete bipartite graphs",
+      "D) Authentic articles have completely isolated vertices"
+    ],
+    "image": null,
+    "explanation": "Authentic articles link coherently to relevant context, while hoaxes link erratically across topics with little semantic cohesion."
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choice",
+    "question": "How does product virality (e.g., Gangnam Style or invitation cascades) propagate through a social network?",
+    "answer": "C) As a branching cascade where nodes activate neighbors",
+    "options": [
+      "A) By strictly following the shortest path to the network center",
+      "B) Through instantaneous transmission across all isolated nodes",
+      "C) As a branching cascade where nodes activate neighbors",
+      "D) Only between vertices that share identical degree values"
+    ],
+    "image": null,
+    "explanation": "Virality operates as an information cascade, where exposed individuals adopt the content and share it with their local neighbors."
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choice",
+    "question": "Which of the following is considered a technological network rather than a pure social network?",
+    "answer": "B) The physical Internet router topology",
+    "options": [
+      "A) High school friendship circles",
+      "B) The physical Internet router topology",
+      "C) Family kinship relationships",
+      "D) Scientific co-authorship networks"
+    ],
+    "image": null,
+    "explanation": "Internet routers and physical cables form a technological/infrastructure network, whereas friendships and kinship are social networks."
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choice",
+    "question": "What distinguishes the 'subset level' in the micro-level hierarchy of network analysis?",
+    "answer": "D) Analyzing cohesive communities within the network",
+    "options": [
+      "A) Measuring the global network diameter",
+      "B) Isolating a single actor without any links",
+      "C) Identifying the shortest path between nations",
+      "D) Analyzing cohesive communities within the network"
+    ],
+    "image": null,
+    "explanation": "The subset (subgroup) level analyzes cohesive subgroups, cliques, or community structures formed by multiple interconnected actors."
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choice",
+    "question": "In cybercrime investigations, how does SNA help combat organized online fraud and radicalization?",
+    "answer": "A) By mapping covert communication structures between actors",
+    "options": [
+      "A) By mapping covert communication structures between actors",
+      "B) By deleting all server log files automatically",
+      "C) By converting all directed graphs into tree graphs",
+      "D) By preventing users from having more than two friends"
+    ],
+    "image": null,
+    "explanation": "SNA exposes covert operational networks, identifying key coordinating brokers, command chains, and recruitment channels."
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choice",
+    "question": "In SNA taxonomy, what does 'Social Capital' refer to?",
+    "answer": "C) Advantages individuals derive from their social connections",
+    "options": [
+      "A) The monetary market valuation of social media firms",
+      "B) The total memory required to store an adjacency matrix",
+      "C) Advantages individuals derive from their social connections",
+      "D) The computing power needed to calculate degree centrality"
+    ],
+    "image": null,
+    "explanation": "Social capital is a key network theory concept asserting that social ties provide access to resources, influence, and opportunities."
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choice",
+    "question": "Which research question best exemplifies the 'network measurement' facet of SNA?",
+    "answer": "B) What is the average shortest path and density of this network?",
+    "options": [
+      "A) Why do individuals seek trust in close-knit communities?",
+      "B) What is the average shortest path and density of this network?",
+      "C) How does social position affect psychological well-being?",
+      "D) Does having weak ties help job seekers find employment?"
+    ],
+    "image": null,
+    "explanation": "Network measurement focuses on quantitative and mathematical metrics (e.g., density, path length, centrality) rather than sociological behavioral theories."
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choice",
+    "question": "Why is the boundary specification problem ('bounding the context') critical in network research?",
+    "answer": "D) Arbitrary boundaries can distort structural properties",
+    "options": [
+      "A) All graphs become invalid unless they contain exactly 100 nodes",
+      "B) Graph theory only allows simple planar graphs without cycles",
+      "C) Adjacency matrices cannot have more rows than columns",
+      "D) Arbitrary boundaries can distort structural properties"
+    ],
+    "image": null,
+    "explanation": "Improper bounding can exclude vital actors or include irrelevant noise, significantly biasing centrality, density, and connectivity metrics."
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choice",
+    "question": "Which of the following pairs represents a directed relationship where reciprocity is NOT inherently guaranteed?",
+    "answer": "A) A retweeting B on Twitter/X",
+    "options": [
+      "A) A retweeting B on Twitter/X",
+      "B) A and B being biological siblings",
+      "C) A and B co-authoring a research paper",
+      "D) A and B being classmates enrolled in the same course"
+    ],
+    "image": null,
+    "explanation": "Retweeting is asymmetric: user A can retweet user B without B ever interacting with A."
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choice",
+    "question": "In a communication network, if an edge weight represents the number of emails exchanged, what does the network model?",
+    "answer": "C) A weighted network",
+    "options": [
+      "A) A complete bipartite graph",
+      "B) An unweighted cycle graph",
+      "C) A weighted network",
+      "D) A planar tree graph"
+    ],
+    "image": null,
+    "explanation": "Numerical values measuring communication volume or frequency assign weights to edges, forming a weighted network."
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choice",
+    "question": "What is the structural distinction between a multigraph and a simple weighted graph?",
+    "answer": "B) Multigraphs maintain multiple distinct edges between nodes",
+    "options": [
+      "A) Multigraphs cannot have more than 3 vertices",
+      "B) Multigraphs maintain multiple distinct edges between nodes",
+      "C) Weighted graphs must always be directed and acyclic",
+      "D) Multigraphs only permit edges between different components"
+    ],
+    "image": null,
+    "explanation": "Multigraphs preserve multiple separate parallel edges (often representing different interaction types), whereas weighted graphs collapse them into a single aggregate value."
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choice",
+    "question": "Which of the following systems is best modeled as an unweighted, directed, and acyclic graph (DAG)?",
+    "answer": "D) Academic citation network",
+    "options": [
+      "A) Facebook friendship network",
+      "B) Power grid transmission lines",
+      "C) Protein physical binding network",
+      "D) Academic citation network"
+    ],
+    "image": null,
+    "explanation": "Papers cite earlier papers (directed) and cannot cite papers from the future, creating a naturally acyclic graph (DAG)."
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choice",
+    "question": "What is the difference between an asymmetric tie and an anti-symmetric tie?",
+    "answer": "A) Anti-symmetric ties strictly forbid reciprocity by definition",
+    "options": [
+      "A) Anti-symmetric ties strictly forbid reciprocity by definition",
+      "B) Asymmetric ties can only exist in undirected graphs",
+      "C) Anti-symmetric ties always have negative numerical weights",
+      "D) Asymmetric ties cannot have source or destination nodes"
+    ],
+    "image": null,
+    "explanation": "An asymmetric tie may or may not be reciprocated (e.g. advice), but an anti-symmetric tie fundamentally forbids reciprocity (e.g. supervisor-subordinate)."
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choice",
+    "question": "If two actors spend time together, why is the relationship inherently undirected?",
+    "answer": "C) Spending time together is mutual and reciprocal by construction",
+    "options": [
+      "A) Because it is impossible to record the duration of time",
+      "B) Because the tie must always point towards the older actor",
+      "C) Spending time together is mutual and reciprocal by construction",
+      "D) Because all social interactions are strictly unweighted"
+    ],
+    "image": null,
+    "explanation": "The relationship 'spending time together' requires mutual presence; it is non-sensical for A to spend time with B while B does not spend time with A."
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choice",
+    "question": "In a directed graph, if an edge exists from vertex u to vertex v, which statement is mathematically correct?",
+    "answer": "B) Vertex u is adjacent to v, and v is adjacent from u",
+    "options": [
+      "A) Vertex u is adjacent from v, and v is adjacent to u",
+      "B) Vertex u is adjacent to v, and v is adjacent from u",
+      "C) Both vertices are called initial vertices of the edge",
+      "D) Vertex v is the initial vertex and u is terminal"
+    ],
+    "image": null,
+    "explanation": "By definition (Slide 5 of Lecture 4): when (u, v) is a directed edge, u is adjacent to v, and v is adjacent from u."
+  },
+  {
+    "numb": 21,
+    "type": "Multiple Choice",
+    "question": "An undirected graph has 6 vertices with degrees 3, 3, 2, 2, 1, 1. How many edges does the graph have?",
+    "answer": "D) 6 edges",
+    "options": [
+      "A) 12 edges",
+      "B) 24 edges",
+      "C) 3 edges",
+      "D) 6 edges"
+    ],
+    "image": null,
+    "explanation": "By Handshaking Lemma, sum of degrees = 3 + 3 + 2 + 2 + 1 + 1 = 12 = 2E. Therefore, E = 12 / 2 = 6 edges."
+  },
+  {
+    "numb": 22,
+    "type": "Multiple Choice",
+    "question": "Can an undirected simple graph have vertices with degrees 3, 3, 3, 2, 1?",
+    "answer": "B) Yes, because the sum of degrees (12) is even",
+    "options": [
+      "A) Yes, because any degree sequence is valid",
+      "B) Yes, because the sum of degrees (12) is even",
+      "C) No, because odd degrees are completely forbidden",
+      "D) No, because the maximum degree exceeds 2"
+    ],
+    "image": null,
+    "explanation": "Sum = 3 + 3 + 3 + 2 + 1 = 12, which is even. By the Handshaking Lemma, the sum of degrees is always even, which is satisfied here."
+  },
+  {
+    "numb": 23,
+    "type": "Multiple Choice",
+    "question": "Examine the directed graph in the image. What is the in-degree of node C?",
+    "answer": "C) In-degree = 2 (edges from A and B)",
+    "options": [
+      "A) In-degree = 0",
+      "B) In-degree = 1 (edge from B)",
+      "C) In-degree = 2 (edges from A and B)",
+      "D) In-degree = 3 (edges from A, B, and D)"
+    ],
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_degrees.png",
+    "explanation": "Looking at node C, it receives directed edges incoming from node A and node B. Thus, k_C^+ = 2."
+  },
+  {
+    "numb": 24,
+    "type": "Multiple Choice",
+    "question": "In the same directed graph image, what is the out-degree of node C?",
+    "answer": "A) Out-degree = 1 (edge to A)",
+    "options": [
+      "A) Out-degree = 1 (edge to A)",
+      "B) Out-degree = 2 (edges to A and B)",
+      "C) Out-degree = 0",
+      "D) Out-degree = 3"
+    ],
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_degrees.png",
+    "explanation": "Node C has only one outgoing arrow, which points back to node A. Thus, its out-degree is 1."
+  },
+  {
+    "numb": 25,
+    "type": "Multiple Choice",
+    "question": "A complete graph K_6 has 6 vertices. What is its total edge count?",
+    "answer": "D) 15 edges",
+    "options": [
+      "A) 30 edges",
+      "B) 36 edges",
+      "C) 10 edges",
+      "D) 15 edges"
+    ],
+    "image": null,
+    "explanation": "E = N(N - 1) / 2 = 6 * 5 / 2 = 15 edges."
+  },
+  {
+    "numb": 26,
+    "type": "Multiple Choice",
+    "question": "In a bipartite graph with |U| = 4 and |V| = 5, what is the maximum number of edges in a complete bipartite graph K_4,5?",
+    "answer": "B) 20 edges",
+    "options": [
+      "A) 9 edges",
+      "B) 20 edges",
+      "C) 40 edges",
+      "D) 18 edges"
+    ],
+    "image": null,
+    "explanation": "In a complete bipartite graph K_{m,n}, every node in U links to every node in V, giving m * n = 4 * 5 = 20 edges."
+  },
+  {
+    "numb": 27,
+    "type": "Multiple Choice",
+    "question": "Examine the bipartite graph in the image. In the projected network on Set U, will an edge exist between U1 and U2?",
+    "answer": "A) Yes, because they both connect to V1",
+    "options": [
+      "A) Yes, because they both connect to V1",
+      "B) No, because nodes in U can never be connected",
+      "C) No, because U1 and U2 have different degrees",
+      "D) Only if the edge between U2 and V2 is removed"
+    ],
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_bipartite.png",
+    "explanation": "In bipartite projection on U, two nodes are connected if they share a common neighbor in V. Both U1 and U2 connect to V1, so edge (U1, U2) exists in the projection."
+  },
+  {
+    "numb": 28,
+    "type": "Multiple Choice",
+    "question": "In the same bipartite graph image, will an edge exist between U1 and U3 in the projected network on U?",
+    "answer": "C) No, because they share no common neighbors in V",
+    "options": [
+      "A) Yes, because all nodes in U form a complete graph",
+      "B) Yes, through the intermediary node U2",
+      "C) No, because they share no common neighbors in V",
+      "D) Only if a directed cycle is introduced"
+    ],
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_bipartite.png",
+    "explanation": "U1 links to V1 only; U3 links to V2 and V3. Since they share no common neighbor in V, there is no direct link between U1 and U3 in the projection."
+  },
+  {
+    "numb": 29,
+    "type": "Multiple Choice",
+    "question": "What is an 'articulation node' (cut vertex) in an undirected graph?",
+    "answer": "B) A vertex whose deletion disconnects the graph",
+    "options": [
+      "A) A vertex with the lowest degree in the network",
+      "B) A vertex whose deletion disconnects the graph",
+      "C) A node that is adjacent to all other vertices",
+      "D) A vertex that has a degree of exactly 2"
+    ],
+    "image": null,
+    "explanation": "An articulation node (or cut vertex) is a node whose removal increases the number of connected components."
+  },
+  {
+    "numb": 30,
+    "type": "Multiple Choice",
+    "question": "Examine the connectivity image. If we erase node 3, what happens to the remaining graph?",
+    "answer": "A) It splits into disconnected components, so node 3 is an articulation node",
+    "options": [
+      "A) It splits into disconnected components, so node 3 is an articulation node",
+      "B) The graph remains completely connected without any change",
+      "C) All remaining edges are automatically deleted",
+      "D) Node 7 becomes connected to node 4"
+    ],
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_connectivity.png",
+    "explanation": "Deleting node 3 removes edge (3, 4) and edges (1, 3), (2, 3), leaving {1, 2} disconnected from {4, 5, 6}. Thus, node 3 is an articulation point."
+  },
+  {
+    "numb": 31,
+    "type": "Multiple Choice",
+    "question": "Why is the adjacency matrix of an undirected graph always equal to its transpose (A = A^T)?",
+    "answer": "D) Because reciprocal ties mean A_ij = A_ji for all pairs",
+    "options": [
+      "A) Because all matrix entries are strictly positive integers",
+      "B) Because the network must always contain a single cycle",
+      "C) Because the trace of the matrix is equal to the edge count",
+      "D) Because reciprocal ties mean A_ij = A_ji for all pairs"
+    ],
+    "image": null,
+    "explanation": "In an undirected graph, an edge between i and j works both ways, ensuring A_ij = A_ji for all i, j, which defines a symmetric matrix (A = A^T)."
+  },
+  {
+    "numb": 32,
+    "type": "Multiple Choice",
+    "question": "Examine the 4-node directed graph image. What is the full row 1 of its adjacency matrix A?",
+    "answer": "B) [0, 1, 0, 1]",
+    "options": [
+      "A) [1, 1, 0, 0]",
+      "B) [0, 1, 0, 1]",
+      "C) [0, 0, 1, 1]",
+      "D) [1, 0, 0, 1]"
+    ],
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_adj_matrix.png",
+    "explanation": "Node 1 has outgoing arrows to node 2 and node 4, and no edge to itself or node 3. Thus, row 1 is [0, 1, 0, 1]."
+  },
+  {
+    "numb": 33,
+    "type": "Multiple Choice",
+    "question": "For the same 4-node graph image, what is column 3 of its adjacency matrix A (representing incoming edges to node 3)?",
+    "answer": "A) [0, 1, 0, 1]^T (incoming from 2 and 4)",
+    "options": [
+      "A) [0, 1, 0, 1]^T (incoming from 2 and 4)",
+      "B) [1, 0, 0, 0]^T",
+      "C) [0, 0, 0, 0]^T",
+      "D) [1, 1, 1, 1]^T"
+    ],
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_adj_matrix.png",
+    "explanation": "Node 3 receives incoming directed edges from node 2 and node 4. Therefore, column 3 has 1s in row 2 and row 4."
+  },
+  {
+    "numb": 34,
+    "type": "Multiple Choice",
+    "question": "If matrix A has size 3 x 4 and matrix B has size 4 x 2, what are the dimensions of product matrix C = A * B?",
+    "answer": "C) 3 x 2",
+    "options": [
+      "A) 4 x 4",
+      "B) 3 x 4",
+      "C) 3 x 2",
+      "D) Multiplication is undefined"
+    ],
+    "image": null,
+    "explanation": "Multiplying [n x m] by [m x p] produces an [n x p] matrix. Here [3 x 4] * [4 x 2] = [3 x 2]."
+  },
+  {
+    "numb": 35,
+    "type": "Multiple Choice",
+    "question": "What is the computational meaning of the diagonal entry (A^2)_ii in the squared adjacency matrix of an undirected simple graph?",
+    "answer": "B) It equals the degree of node i (k_i)",
+    "options": [
+      "A) It is always zero",
+      "B) It equals the degree of node i (k_i)",
+      "C) It equals the local clustering coefficient C_i",
+      "D) It equals the number of nodes in the graph N"
+    ],
+    "image": null,
+    "explanation": "A path of length 2 from node i back to itself must go to a neighbor and return. Since node i has k_i neighbors, there are exactly k_i such paths: (A^2)_ii = k_i."
+  },
+  {
+    "numb": 36,
+    "type": "Multiple Choice",
+    "question": "In a social network with 100,000 individuals where each person has an average of 100 friends, what fraction of entries in the adjacency matrix are non-zero?",
+    "answer": "A) 0.1% (highly sparse)",
+    "options": [
+      "A) 0.1% (highly sparse)",
+      "B) 50% (moderately dense)",
+      "C) 10% (sparse)",
+      "D) 99.9% (almost complete)"
+    ],
+    "image": null,
+    "explanation": "Each row has 100 ones out of 100,000 cells: 100 / 100,000 = 0.001 = 0.1%, illustrating extreme real-world network sparsity."
+  },
+  {
+    "numb": 37,
+    "type": "Multiple Choice",
+    "question": "What happens when you multiply an adjacency matrix A by the scalar constant 0?",
+    "answer": "D) Produces an all-zero matrix of the same dimension",
+    "options": [
+      "A) Reduces the matrix to a single number",
+      "B) Causes the matrix dimensions to collapse to 1 x 1",
+      "C) Inverts the graph's edge directions",
+      "D) Produces an all-zero matrix of the same dimension"
+    ],
+    "image": null,
+    "explanation": "Scalar multiplication by 0 multiplies every element by 0, resulting in a zero matrix of size N x N."
+  },
+  {
+    "numb": 38,
+    "type": "Multiple Choice",
+    "question": "How is a disconnected network containing two isolated components arranged in matrix form?",
+    "answer": "C) Block diagonal form with two square blocks along the diagonal",
+    "options": [
+      "A) Alternating rows of ones and zeros across the entire matrix",
+      "B) A strictly triangular matrix with all zeros on the diagonal",
+      "C) Block diagonal form with two square blocks along the diagonal",
+      "D) A single vector containing the degree sequence"
+    ],
+    "image": null,
+    "explanation": "Slide 18 shows that disconnected components form separate square dense blocks along the diagonal with zero entries elsewhere."
+  },
+  {
+    "numb": 39,
+    "type": "Multiple Choice",
+    "question": "Which graph storage format stores pairs of connected nodes as tuples like (u, v)?",
+    "answer": "B) Edge List",
+    "options": [
+      "A) Adjacency Matrix",
+      "B) Edge List",
+      "C) Incidence Matrix",
+      "D) Degree Histogram"
+    ],
+    "image": null,
+    "explanation": "An Edge List represents a network simply as a list of edge tuples (u, v)."
+  },
+  {
+    "numb": 40,
+    "type": "Multiple Choice",
+    "question": "What is the time complexity to check if an edge exists between node u and node v in an Adjacency Matrix?",
+    "answer": "A) O(1) constant time",
+    "options": [
+      "A) O(1) constant time",
+      "B) O(N) linear time",
+      "C) O(E) time",
+      "D) O(N^2) quadratic time"
+    ],
+    "image": null,
+    "explanation": "In an adjacency matrix, checking if an edge exists between u and v requires a direct array lookup A[u][v], which takes O(1) time."
+  },
+  {
+    "numb": 41,
+    "type": "Multiple Choice",
+    "question": "If a network has 4 nodes and its degrees are {1, 2, 2, 3}, what is the degree distribution value P(2)?",
+    "answer": "C) 0.50 (2 / 4)",
+    "options": [
+      "A) 0.25 (1 / 4)",
+      "B) 0.75 (3 / 4)",
+      "C) 0.50 (2 / 4)",
+      "D) 0.10"
+    ],
+    "image": null,
+    "explanation": "Two out of 4 nodes have degree 2: P(2) = N_2 / N = 2 / 4 = 0.50."
+  },
+  {
+    "numb": 42,
+    "type": "Multiple Choice",
+    "question": "Why is the network diameter infinite in a disconnected graph?",
+    "answer": "B) There are pairs of nodes with no connecting path (h = infinity)",
+    "options": [
+      "A) Because the graph has an infinite number of vertices",
+      "B) There are pairs of nodes with no connecting path (h = infinity)",
+      "C) Because the degree distribution cannot be normalized",
+      "D) Because all edge weights are set to infinity"
+    ],
+    "image": null,
+    "explanation": "Diameter is the maximum shortest path. Between disconnected components, shortest path is infinity, making the diameter infinite."
+  },
+  {
+    "numb": 43,
+    "type": "Multiple Choice",
+    "question": "Calculate the local clustering coefficient C_i of a node with degree k_i = 3 if 2 edges exist among its neighbors.",
+    "answer": "D) 2/3 (approx 0.67)",
+    "options": [
+      "A) 1/3 (approx 0.33)",
+      "B) 1/2 (0.50)",
+      "C) 1.0 (complete)",
+      "D) 2/3 (approx 0.67)"
+    ],
+    "image": null,
+    "explanation": "C_i = 2 e_i / [k_i (k_i - 1)] = (2 * 2) / (3 * 2) = 4 / 6 = 2/3 approx 0.67."
+  },
+  {
+    "numb": 44,
+    "type": "Multiple Choice",
+    "question": "What is the local clustering coefficient of every vertex in a complete graph K_N (for N >= 3)?",
+    "answer": "A) Exactly 1.0",
+    "options": [
+      "A) Exactly 1.0",
+      "B) 0.50",
+      "C) 0.0",
+      "D) 1 / (N - 1)"
+    ],
+    "image": null,
+    "explanation": "In a complete graph, all neighbors of every vertex are directly connected to each other, so e_i equals the maximum possible links, yielding C_i = 1.0."
+  },
+  {
+    "numb": 45,
+    "type": "Multiple Choice",
+    "question": "In a cycle graph C_n (where n >= 4), what is the clustering coefficient of any node?",
+    "answer": "C) 0.0",
+    "options": [
+      "A) 1.0",
+      "B) 0.5",
+      "C) 0.0",
+      "D) 2 / n"
+    ],
+    "image": null,
+    "explanation": "In C_n with n >= 4, each node has 2 neighbors, but those 2 neighbors are not directly connected (they are separated by path length 2 in the cycle), so e_i = 0 and C_i = 0."
+  },
+  {
+    "numb": 46,
+    "type": "Multiple Choice",
+    "question": "Examine the BFS exploration tree in the image. What is the shortest path distance from root 0 to node C?",
+    "answer": "B) d = 2",
+    "options": [
+      "A) d = 1",
+      "B) d = 2",
+      "C) d = 3",
+      "D) d = 4"
+    ],
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_bfs.png",
+    "explanation": "Node C is labeled at distance d = 2 in the BFS tree (reachable via 0 -> A -> C or 0 -> B -> C)."
+  },
+  {
+    "numb": 47,
+    "type": "Multiple Choice",
+    "question": "What is the 'giant component' of a network?",
+    "answer": "A) The largest connected component containing a majority of nodes",
+    "options": [
+      "A) The largest connected component containing a majority of nodes",
+      "B) The single node with the highest degree in the network",
+      "C) A cycle containing every edge in the graph",
+      "D) The product of all eigenvalues of the adjacency matrix"
+    ],
+    "image": null,
+    "explanation": "The giant component is the largest connected subgraph in the network, typically containing a significant fraction of all network vertices."
+  },
+  {
+    "numb": 48,
+    "type": "Multiple Choice",
+    "question": "Which generative model creates a scale-free network using a 'preferential attachment' (rich-get-richer) mechanism?",
+    "answer": "D) Barabasi-Albert model (BAM)",
+    "options": [
+      "A) Classical Erdos-Renyi model",
+      "B) Complete bipartite lattice model",
+      "C) Deterministic ring cycle model",
+      "D) Barabasi-Albert model (BAM)"
+    ],
+    "image": null,
+    "explanation": "The Barabasi-Albert model generates scale-free power-law networks via growth and preferential attachment (new nodes connect preferentially to high-degree hubs)."
+  },
+  {
+    "numb": 49,
+    "type": "Multiple Choice",
+    "question": "What power-law relationship characterizes the degree distribution P(k) in a scale-free network?",
+    "answer": "B) P(k) is proportional to k^(-gamma)",
+    "options": [
+      "A) P(k) is proportional to e^(-k)",
+      "B) P(k) is proportional to k^(-gamma)",
+      "C) P(k) is proportional to log(k)",
+      "D) P(k) is proportional to k^2"
+    ],
+    "image": null,
+    "explanation": "Scale-free networks are defined by a power-law degree distribution P(k) ~ k^-gamma, typically with exponent 2 < gamma < 3 in empirical networks."
+  },
+  {
+    "numb": 50,
+    "type": "Multiple Choice",
+    "question": "What is the primary motivation for constructing generative artificial graph models in network science?",
+    "answer": "A) To understand the underlying mechanisms that form real networks",
+    "options": [
+      "A) To understand the underlying mechanisms that form real networks",
+      "B) To permanently replace all empirical data collection",
+      "C) To force all real-world social ties into planar layouts",
+      "D) To eliminate the need for computer algorithms"
+    ],
+    "image": null,
+    "explanation": "Generative models help scientists uncover and test the fundamental physical and behavioral processes (mechanisms) that create real-world topologies."
+  }
+]

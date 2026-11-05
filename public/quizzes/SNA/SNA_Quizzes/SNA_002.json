@@ -1,0 +1,282 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choice",
+    "question": "In the 1950s, which mathematical branches did sociologists begin adopting to study social relationships?",
+    "answer": "B) Graph theory and matrix algebra",
+    "options": [
+      "A) Differential topology and tensor calculus",
+      "B) Graph theory and matrix algebra",
+      "C) Numerical integration and fluid dynamics",
+      "D) Euclidean geometry and trigonometry"
+    ],
+    "image": null,
+    "explanation": "Starting in earnest in the 1950s, sociologists adopted graph theory (pure math) and matrix algebra (applied math) to formalize social structures."
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choice",
+    "question": "What is the famous historical significance of Wayne Zachary's 1970s Karate Club network study?",
+    "answer": "C) Proving network ties can explain group fission",
+    "options": [
+      "A) Demonstrating the impossibility of mathematical modeling in sports",
+      "B) Constructing the earliest electronic packet-switching protocol",
+      "C) Proving network ties can explain group fission",
+      "D) Developing the first commercial search engine indexing tool"
+    ],
+    "image": null,
+    "explanation": "The Zachary Karate Club study showed how interpersonal ties could predict the exact split of an organization into two rival factions."
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choice",
+    "question": "In the taxonomy of SNA, what is the primary focus of 'Social Network Theory'?",
+    "answer": "A) Explaining how networks behave and impact people",
+    "options": [
+      "A) Explaining how networks behave and impact people",
+      "B) Designing faster algorithms for sparse matrix inversion",
+      "C) Implementing hardware routing switches for local area networks",
+      "D) Calculating exact eigenvalues of arbitrary adjacency matrices"
+    ],
+    "image": null,
+    "explanation": "Network theory makes substantive statements about how individuals behave within networks, where ties come from, and their consequences (e.g. social capital)."
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choice",
+    "question": "Which of the following concepts belongs to 'Social Network Theory' rather than 'Network Measurement'?",
+    "answer": "D) Social capital and structural holes",
+    "options": [
+      "A) Adjacency matrix diagonalization",
+      "B) Computing node degree distribution",
+      "C) Evaluating graph density metrics",
+      "D) Social capital and structural holes"
+    ],
+    "image": null,
+    "explanation": "Structural holes and social capital are substantive theories about social advantages, whereas degree centrality and density belong to network measurement."
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choice",
+    "question": "Why is mathematical formalization necessary when studying qualitative social concepts like 'popularity'?",
+    "answer": "B) It gives fuzzy concepts precise representations",
+    "options": [
+      "A) It guarantees that human behavior becomes 100% deterministic",
+      "B) It gives fuzzy concepts precise representations",
+      "C) It allows researchers to eliminate empirical observations completely",
+      "D) It converts all non-linear social ties into electrical signals"
+    ],
+    "image": null,
+    "explanation": "Math allows vague natural-language concepts like 'popularity' or 'social prestige' to be given clear, quantifiable definitions for testing and prediction."
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choice",
+    "question": "What does it mean that 'networks are not given to us; they have to be constructed'?",
+    "answer": "C) Researchers must define ties and bound study scope",
+    "options": [
+      "A) Graphs can only be generated using synthetic random models",
+      "B) Physical network cables must be laid before data collection",
+      "C) Researchers must define ties and bound study scope",
+      "D) Social ties do not exist until documented in legal contracts"
+    ],
+    "image": null,
+    "explanation": "Networks do not appear automatically in nature as clean graphs; the researcher must define what relationship constitutes an edge and set boundary criteria."
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choice",
+    "question": "What is the purpose of 'bounding the context' when constructing a network?",
+    "answer": "A) Setting clear inclusion rules to exclude irrelevant ties",
+    "options": [
+      "A) Setting clear inclusion rules to exclude irrelevant ties",
+      "B) Restricting node degrees to a predefined maximum constant",
+      "C) Ensuring the adjacency matrix has equal numbers of ones and zeros",
+      "D) Forcing the network to form a single planar geometric component"
+    ],
+    "image": null,
+    "explanation": "Bounding sets explicit rules about which actors and ties are included, avoiding unmanageable studies and meaningless relationships."
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choice",
+    "question": "In standard network science vocabulary, how are real-world systems distinguished from their mathematical models?",
+    "answer": "B) 'Network' is the real system; 'Graph' is the math model",
+    "options": [
+      "A) 'Graph' is the real system; 'Network' is the math model",
+      "B) 'Network' is the real system; 'Graph' is the math model",
+      "C) 'Network' applies only to computers; 'Graph' applies to biology",
+      "D) There is no distinction; both words describe hardware exclusively"
+    ],
+    "image": null,
+    "explanation": "Network typically refers to real-world systems (the web, metabolic systems), while graph refers to the formal mathematical object G = (V, E)."
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choice",
+    "question": "Which set of terms correctly pairs the real-world vocabulary with its mathematical graph equivalent?",
+    "answer": "D) (Network, Node, Link) corresponds to (Graph, Vertex, Edge)",
+    "options": [
+      "A) (Network, Vertex, Link) corresponds to (Graph, Node, Arc)",
+      "B) (System, Edge, Matrix) corresponds to (Graph, Row, Column)",
+      "C) (Graph, Node, Edge) corresponds to (Network, Matrix, Vector)",
+      "D) (Network, Node, Link) corresponds to (Graph, Vertex, Edge)"
+    ],
+    "image": null,
+    "explanation": "Slide 14 maps Network -> Graph, Node -> Vertex, and Link -> Edge."
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choice",
+    "question": "In formal graph notation G = (V, E), what do the sets V and E represent?",
+    "answer": "A) V is the set of vertices; E is the set of edges",
+    "options": [
+      "A) V is the set of vertices; E is the set of edges",
+      "B) V is the set of vectors; E is the error term",
+      "C) V is the variance of degrees; E is the entropy",
+      "D) V is the visual coordinates; E is the edge weights"
+    ],
+    "image": null,
+    "explanation": "In standard formal graph theory notation, G = (V, E) defines a graph composed of vertex set V and edge set E."
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choice",
+    "question": "Which of the following real-world social relationships is inherently symmetric and undirected?",
+    "answer": "C) Co-membership in the same university club",
+    "options": [
+      "A) Seeking professional advice from a senior manager",
+      "B) Sending a direct message on an online chat app",
+      "C) Co-membership in the same university club",
+      "D) Following a public celebrity account on Twitter/X"
+    ],
+    "image": null,
+    "explanation": "Shared membership (being in the same club, class, or family) is inherently mutual and reciprocal, creating an undirected tie."
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choice",
+    "question": "In a directed graph (digraph), how is an edge e = (u, v) formally interpreted?",
+    "answer": "B) An ordered pair where u is initial and v is terminal",
+    "options": [
+      "A) An unordered set where u and v have identical roles",
+      "B) An ordered pair where u is initial and v is terminal",
+      "C) A bidirectional channel that allows equal flow both ways",
+      "D) An edge that must always connect a node to itself"
+    ],
+    "image": null,
+    "explanation": "In directed graphs, edges are ordered pairs (u, v), where u is the source (initial vertex) and v is the target (terminal vertex)."
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choice",
+    "question": "How is a bidirectional relationship represented in a directed graph?",
+    "answer": "D) By two separate directed edges: (A, B) and (B, A)",
+    "options": [
+      "A) By assigning a negative weight to the single edge",
+      "B) By removing both vertices from the graph structure",
+      "C) By adding a self-loop to both vertices involved",
+      "D) By two separate directed edges: (A, B) and (B, A)"
+    ],
+    "image": null,
+    "explanation": "In directed networks, mutual interaction requires two opposite directed arcs: one from A to B and another from B to A."
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choice",
+    "question": "Which of the following networks is naturally represented as a directed graph?",
+    "answer": "A) World Wide Web hyperlink network",
+    "options": [
+      "A) World Wide Web hyperlink network",
+      "B) Facebook mutual friendship network",
+      "C) Power grid electric transmission lines",
+      "D) Scientific co-authorship collaboration"
+    ],
+    "image": null,
+    "explanation": "Hyperlinks have an explicit source webpage and target destination URL, making the WWW an inherently directed network."
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choice",
+    "question": "What is the defining characteristic of a weighted network?",
+    "answer": "C) Each edge carries a numerical value representing tie strength",
+    "options": [
+      "A) Every node has a higher degree than the network average",
+      "B) The graph contains no cycles or closed loops of length 3",
+      "C) Each edge carries a numerical value representing tie strength",
+      "D) Edges can only point in a single downward direction"
+    ],
+    "image": null,
+    "explanation": "In weighted networks, links are associated with numerical attributes (weights) denoting frequency, intensity, flow, or capacity."
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choice",
+    "question": "What is a self-loop (reflexive tie) in a graph?",
+    "answer": "B) An edge whose endpoints are the exact same node",
+    "options": [
+      "A) A path of length 3 returning to the starting vertex",
+      "B) An edge whose endpoints are the exact same node",
+      "C) A node that has an in-degree of 0 and out-degree of 0",
+      "D) An edge that bridges two disconnected components"
+    ],
+    "image": null,
+    "explanation": "A self-loop is an edge where the initial and terminal vertices are identical, e = {u, u} or (u, u)."
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choice",
+    "question": "When might a self-loop have meaningful sociological interpretation?",
+    "answer": "A) When a node represents a collective group with internal ties",
+    "options": [
+      "A) When a node represents a collective group with internal ties",
+      "B) When an individual unfriends someone on a social platform",
+      "C) When two completely separate communities merge into one",
+      "D) When calculating the shortest path between distant cities"
+    ],
+    "image": null,
+    "explanation": "Slide 10 notes that while an individual being friends with themselves is trivial, self-loops represent within-group interactions when nodes represent aggregate groups."
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choice",
+    "question": "What defines a multigraph?",
+    "answer": "D) Having multiple parallel edges between the same node pair",
+    "options": [
+      "A) Containing nodes from more than five distinct domains",
+      "B) Having an equal number of directed and undirected edges",
+      "C) Consisting of at least ten disjoint connected subgraphs",
+      "D) Having multiple parallel edges between the same node pair"
+    ],
+    "image": null,
+    "explanation": "A multigraph permits multiple (parallel) edges between the same pair of vertices, often capturing diverse interaction types (e.g., calls, emails, co-working)."
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choice",
+    "question": "How can email communications between coworkers be formally categorized?",
+    "answer": "C) Directed multigraph with potential self-edges",
+    "options": [
+      "A) Undirected unweighted simple tree graph",
+      "B) Complete bipartite cycle without any loops",
+      "C) Directed multigraph with potential self-edges",
+      "D) Acyclic unweighted planar lattice"
+    ],
+    "image": null,
+    "explanation": "Email involves directional sending (sender -> receiver), multiple messages between pairs (multigraph), and users can email themselves (self-edges)."
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choice",
+    "question": "Why is an advice-seeking network among employees modeled as directed?",
+    "answer": "B) Asking for advice is often asymmetric and hierarchical",
+    "options": [
+      "A) Advice always requires an equal monetary exchange",
+      "B) Asking for advice is often asymmetric and hierarchical",
+      "C) All employees must ask questions simultaneously",
+      "D) It is impossible for two colleagues to give advice"
+    ],
+    "image": null,
+    "explanation": "Advice-seeking is asymmetric: junior employee C may seek advice from senior expert E, but E does not necessarily seek advice from C."
+  }
+]

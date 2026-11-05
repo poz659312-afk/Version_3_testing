@@ -1,0 +1,282 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choice",
+    "question": "In social network analysis, what is a 'null dyad'?",
+    "answer": "C) A pair of actors with no tie, though one could exist",
+    "options": [
+      "A) An isolated vertex that has no potential contacts",
+      "B) A pair of actors connected by reciprocal ties",
+      "C) A pair of actors with no tie, though one could exist",
+      "D) A triad with exactly one missing directed arc"
+    ],
+    "image": null,
+    "explanation": "A null dyad is a pair of actors between whom no relationship currently exists, even though one could sociologically exist."
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choice",
+    "question": "In an undirected graph, how does a self-loop at vertex v affect the degree of v?",
+    "answer": "B) It contributes 2 to the degree of v",
+    "options": [
+      "A) It contributes 1 to the degree of v",
+      "B) It contributes 2 to the degree of v",
+      "C) It does not contribute to degree at all",
+      "D) It resets the degree of vertex v to 0"
+    ],
+    "image": null,
+    "explanation": "By mathematical definition, in an undirected graph, a loop touches the vertex twice and thus contributes exactly 2 to its degree."
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choice",
+    "question": "According to the Handshaking Lemma, what is the sum of degrees of all vertices in an undirected graph G with E edges?",
+    "answer": "A) 2E",
+    "options": [
+      "A) 2E",
+      "B) E / 2",
+      "C) E * (E - 1)",
+      "D) N * E"
+    ],
+    "image": null,
+    "explanation": "Each edge has two endpoints, contributing exactly 1 to the degree of each endpoint, so the sum of all vertex degrees equals 2E."
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choice",
+    "question": "An undirected graph has 10 nodes and 25 edges. What is its average degree?",
+    "answer": "D) 5.0",
+    "options": [
+      "A) 2.5",
+      "B) 10.0",
+      "C) 1.25",
+      "D) 5.0"
+    ],
+    "image": null,
+    "explanation": "Average degree k_bar = 2E / N = (2 * 25) / 10 = 50 / 10 = 5.0."
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choice",
+    "question": "In a directed graph, what does the in-degree of a vertex v represent?",
+    "answer": "B) Number of edges having v as their terminal vertex",
+    "options": [
+      "A) Number of edges having v as their initial vertex",
+      "B) Number of edges having v as their terminal vertex",
+      "C) The total count of neighbors in both directions",
+      "D) The length of the shortest path from the source"
+    ],
+    "image": null,
+    "explanation": "The in-degree k_v^+ counts incoming edges where vertex v is the destination (terminal vertex)."
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choice",
+    "question": "In any directed graph with E edges, what is the relationship between total in-degrees and total out-degrees?",
+    "answer": "C) Sum of in-degrees = Sum of out-degrees = E",
+    "options": [
+      "A) Sum of in-degrees = 2 * Sum of out-degrees",
+      "B) Sum of in-degrees is always strictly greater than E",
+      "C) Sum of in-degrees = Sum of out-degrees = E",
+      "D) Sum of in-degrees + Sum of out-degrees = E / 2"
+    ],
+    "image": null,
+    "explanation": "Every directed edge leaves exactly one initial vertex and enters exactly one terminal vertex, so both sums equal E."
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choice",
+    "question": "Examine the directed graph in the image. What are the in-degree and out-degree of node D?",
+    "answer": "A) In-degree = 3, Out-degree = 1",
+    "options": [
+      "A) In-degree = 3, Out-degree = 1",
+      "B) In-degree = 1, Out-degree = 3",
+      "C) In-degree = 2, Out-degree = 0",
+      "D) In-degree = 2, Out-degree = 2"
+    ],
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_degrees.png",
+    "explanation": "Node D receives incoming edges from B and E, plus 1 incoming from its self-loop (total in-degree = 3). Its out-degree is 1 from the self-loop."
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choice",
+    "question": "What is the maximum number of edges in a simple undirected graph with N vertices?",
+    "answer": "B) N(N - 1) / 2",
+    "options": [
+      "A) N * (N - 1)",
+      "B) N(N - 1) / 2",
+      "C) 2^N - 1",
+      "D) N^2"
+    ],
+    "image": null,
+    "explanation": "A complete graph K_N contains an edge between every distinct pair of vertices, totaling E_max = N(N - 1) / 2."
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choice",
+    "question": "What is the average degree of a complete graph K_N?",
+    "answer": "C) N - 1",
+    "options": [
+      "A) N / 2",
+      "B) N",
+      "C) N - 1",
+      "D) 2N - 2"
+    ],
+    "image": null,
+    "explanation": "Every node connects to every other node in the graph, so each node has degree N - 1, making the average degree N - 1."
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choice",
+    "question": "Why are real-world networks described as 'sparse'?",
+    "answer": "A) Actual edges E are much smaller than E_max",
+    "options": [
+      "A) Actual edges E are much smaller than E_max",
+      "B) Nodes are completely isolated from each other",
+      "C) The graph cannot be stored in computer memory",
+      "D) Average path length is always infinite"
+    ],
+    "image": null,
+    "explanation": "In real networks (e.g. WWW, social networks), the actual number of links is a tiny fraction (often < 10^-4) of the maximum possible edges E_max."
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choice",
+    "question": "What structural rule defines a bipartite graph?",
+    "answer": "D) Nodes divide into two sets with no intra-set edges",
+    "options": [
+      "A) All vertices must have a degree equal to 2",
+      "B) Edges can only form triangles and 3-cycles",
+      "C) The graph must contain an equal number of odd cycles",
+      "D) Nodes divide into two sets with no intra-set edges"
+    ],
+    "image": null,
+    "explanation": "A graph is bipartite if its vertices can be partitioned into two disjoint sets U and V such that every edge connects a node in U to a node in V."
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choice",
+    "question": "Which of the following is an example of a bipartite network?",
+    "answer": "B) Actors and the movies they appeared in",
+    "options": [
+      "A) Mutual Facebook friendships between individuals",
+      "B) Actors and the movies they appeared in",
+      "C) High-voltage power transmission grid",
+      "D) Protein-protein physical binding interactions"
+    ],
+    "image": null,
+    "explanation": "Actor-Movie is a two-mode (bipartite) network: edges only exist between an actor (set U) and a movie (set V)."
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choice",
+    "question": "How is a bipartite graph of Authors and Papers projected onto an Author Collaboration network?",
+    "answer": "A) Authors are linked if they co-authored at least one paper",
+    "options": [
+      "A) Authors are linked if they co-authored at least one paper",
+      "B) Papers are linked if they were cited by the same author",
+      "C) Authors and papers are combined into a single directed cycle",
+      "D) All edges in the original bipartite graph are inverted"
+    ],
+    "image": null,
+    "explanation": "In the projection onto U (authors), two author nodes are connected if they share at least one common neighbor in V (a shared paper)."
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choice",
+    "question": "In the Human Disease Network (diseaseome), what does a connection between two diseases in its projection signify?",
+    "answer": "C) Both diseases share common associated mutated genes",
+    "options": [
+      "A) Both diseases were discovered in the same calendar year",
+      "B) One disease directly causes infection with the other",
+      "C) Both diseases share common associated mutated genes",
+      "D) Both diseases are treated by the exact same surgical procedure"
+    ],
+    "image": null,
+    "explanation": "In the disease projection of the diseaseome, two diseases are connected if mutations in the same genes are associated with both disorders."
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choice",
+    "question": "What is an 'anti-symmetric' tie in network analysis?",
+    "answer": "B) A directed tie where reciprocity is strictly forbidden",
+    "options": [
+      "A) An undirected edge with negative numerical weight",
+      "B) A directed tie where reciprocity is strictly forbidden",
+      "C) An edge connecting nodes of identical degree",
+      "D) A tie that changes direction randomly over time"
+    ],
+    "image": null,
+    "explanation": "Anti-symmetric ties strictly flow in one direction and cannot be reciprocated by definition (e.g., boss-subordinate, parent-child)."
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choice",
+    "question": "Which social relationship is best modeled as an anti-symmetric network depicted as a tree graph?",
+    "answer": "D) Formal organizational military hierarchy",
+    "options": [
+      "A) Roommates sharing living expenses",
+      "B) Mutual peer advice between co-workers",
+      "C) Tennis partners practicing together",
+      "D) Formal organizational military hierarchy"
+    ],
+    "image": null,
+    "explanation": "Command structures ('gives orders to') flow strictly downwards without upward command reciprocity, forming a hierarchical tree graph."
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choice",
+    "question": "In an undirected graph, what is a 'bridge' edge?",
+    "answer": "A) An edge whose removal disconnects the graph",
+    "options": [
+      "A) An edge whose removal disconnects the graph",
+      "B) An edge with the maximum weight in the network",
+      "C) An edge that forms a self-loop on a single vertex",
+      "D) An edge connecting two nodes of degree 1"
+    ],
+    "image": null,
+    "explanation": "A bridge is an edge whose deletion increases the number of connected components (disconnecting previously connected parts)."
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choice",
+    "question": "Examine the network in the image. What happens if the dashed edge between node 3 and node 4 is removed?",
+    "answer": "C) The main graph splits into two connected components",
+    "options": [
+      "A) All nodes in the graph become completely isolated",
+      "B) Node 7 connects to node 4 automatically",
+      "C) The main graph splits into two connected components",
+      "D) The degree of node 1 is reduced to 0"
+    ],
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_connectivity.png",
+    "explanation": "Edge (3, 4) is a bridge connecting triangle {1,2,3} to triangle {4,5,6}. Removing it breaks the connected set into two separate components."
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choice",
+    "question": "When is a directed graph considered 'strongly connected'?",
+    "answer": "B) A directed path exists between every pair in both directions",
+    "options": [
+      "A) When all edge weights are strictly positive integers",
+      "B) A directed path exists between every pair in both directions",
+      "C) Only when the graph forms a single unbranched tree",
+      "D) When every node has an in-degree equal to its out-degree"
+    ],
+    "image": null,
+    "explanation": "A directed graph is strongly connected if for every pair of vertices u and v, there is a directed path from u to v AND from v to u."
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choice",
+    "question": "In a directed network with a Strongly Connected Component (SCC), what is the 'In-component'?",
+    "answer": "A) Nodes that can reach the SCC but cannot be reached from it",
+    "options": [
+      "A) Nodes that can reach the SCC but cannot be reached from it",
+      "B) Nodes that can be reached from the SCC but cannot reach it",
+      "C) Vertices completely isolated with zero links",
+      "D) The set of nodes forming the SCC itself"
+    ],
+    "image": null,
+    "explanation": "Slide 28 defines the In-component as nodes that can reach the SCC, whereas the Out-component contains nodes reachable from the SCC."
+  }
+]

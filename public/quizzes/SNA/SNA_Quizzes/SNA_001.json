@@ -1,0 +1,282 @@
+[
+  {
+    "numb": 1,
+    "type": "Multiple Choice",
+    "question": "What is the primary role of a network in modern data science and complex systems analysis?",
+    "answer": "C) A universal language to model interdependent entities",
+    "options": [
+      "A) A hardware protocol used exclusively for routing data packets",
+      "B) A relational database architecture for tabular data storage",
+      "C) A universal language to model interdependent entities",
+      "D) A statistical mechanism designed only for isolated variables"
+    ],
+    "image": null,
+    "explanation": "Networks provide a universal mathematical language for describing complex systems composed of interdependent entities across physical, social, and biological domains."
+  },
+  {
+    "numb": 2,
+    "type": "Multiple Choice",
+    "question": "How does network science distinguish a complex network from a simple graph (such as a star or line graph)?",
+    "answer": "B) Complex networks show non-trivial structural patterns",
+    "options": [
+      "A) Simple graphs always contain a much larger number of nodes",
+      "B) Complex networks show non-trivial structural patterns",
+      "C) Complex networks only contain directed and weighted edges",
+      "D) Simple graphs cannot be analyzed mathematically by computers"
+    ],
+    "image": null,
+    "explanation": "Simple graphs exhibit trivial, easily analyzed topologies, whereas complex networks exhibit non-trivial topological features (e.g. clustering, skewed degree distributions, communities)."
+  },
+  {
+    "numb": 3,
+    "type": "Multiple Choice",
+    "question": "What defines a dynamic network compared to a static network?",
+    "answer": "A) Nodes, edges, and mapping change over time",
+    "options": [
+      "A) Nodes, edges, and mapping change over time",
+      "B) Edge weights must remain strictly constant",
+      "C) It has no directed links whatsoever",
+      "D) All nodes must have identical degrees"
+    ],
+    "image": null,
+    "explanation": "In a dynamic network, the number of nodes and edges, the form of the mapping function, and structural properties evolve over time, making it time-varying."
+  },
+  {
+    "numb": 4,
+    "type": "Multiple Choice",
+    "question": "Which of the following is considered a typical dynamic network in real-world applications?",
+    "answer": "D) An enterprise email communication network",
+    "options": [
+      "A) The fixed road distance between static cities",
+      "B) A printed map of historical train tracks",
+      "C) A frozen snapshot of a completed tournament",
+      "D) An enterprise email communication network"
+    ],
+    "image": null,
+    "explanation": "Enterprise communication (SMS, calls, emails) dynamically changes constantly as messages are sent between employees over time."
+  },
+  {
+    "numb": 5,
+    "type": "Multiple Choice",
+    "question": "According to social computing literature, which is a required capability of an Online Social Network (OSN) site?",
+    "answer": "B) Articulating and traversing a list of connections",
+    "options": [
+      "A) Providing monetary compensation for every post made",
+      "B) Articulating and traversing a list of connections",
+      "C) Restricting profile viewing strictly to system admins",
+      "D) Generating artificial nodes without user consent"
+    ],
+    "image": null,
+    "explanation": "Boyd & Ellison define an OSN site as allowing users to construct a profile, articulate a explicit list of connections, and view/traverse those connections."
+  },
+  {
+    "numb": 6,
+    "type": "Multiple Choice",
+    "question": "In Social Network Analysis (SNA), which discipline provides foundational concepts for understanding human interactions?",
+    "answer": "C) Sociology and psychology",
+    "options": [
+      "A) Pure quantum chemistry",
+      "B) Civil architecture",
+      "C) Sociology and psychology",
+      "D) Classical thermodynamics"
+    ],
+    "image": null,
+    "explanation": "SNA relies heavily on sociological and psychological concepts to explain behavioral patterns, ties, and group formations."
+  },
+  {
+    "numb": 7,
+    "type": "Multiple Choice",
+    "question": "What is the primary objective of the 'Node Classification' task in SNA?",
+    "answer": "A) Predicting the category or label of a node",
+    "options": [
+      "A) Predicting the category or label of a node",
+      "B) Calculating the shortest path between all pairs",
+      "C) Determining the total number of edges in a graph",
+      "D) Inverting the adjacency matrix of the network"
+    ],
+    "image": null,
+    "explanation": "Node classification predicts categorical labels or properties of nodes, such as customer churn status or protein function."
+  },
+  {
+    "numb": 8,
+    "type": "Multiple Choice",
+    "question": "Which machine learning problem in SNA corresponds to recommending friends or products to users?",
+    "answer": "B) Link Prediction",
+    "options": [
+      "A) Graph Coloring",
+      "B) Link Prediction",
+      "C) Vertex Cover",
+      "D) Minimum Spanning Tree"
+    ],
+    "image": null,
+    "explanation": "Link prediction forecasts whether an edge exists or will form between two nodes, which directly powers recommendation engines."
+  },
+  {
+    "numb": 9,
+    "type": "Multiple Choice",
+    "question": "What does 'Community Detection' seek to identify within a large social network?",
+    "answer": "D) Densely connected clusters of actors",
+    "options": [
+      "A) Nodes that have zero incident edges",
+      "B) The absolute shortest cycle in the graph",
+      "C) Vertices that have strictly identical labels",
+      "D) Densely connected clusters of actors"
+    ],
+    "image": null,
+    "explanation": "Community detection algorithms uncover groups or modules of nodes that are densely connected internally compared to the rest of the network."
+  },
+  {
+    "numb": 10,
+    "type": "Multiple Choice",
+    "question": "How does SNA support public health during epidemic outbreaks?",
+    "answer": "A) Contact tracing and isolating super-spreaders",
+    "options": [
+      "A) Contact tracing and isolating super-spreaders",
+      "B) Manufacturing pharmaceutical vaccine compounds",
+      "C) Discarding all historical contact observations",
+      "D) Converting directed transmissions into planar graphs"
+    ],
+    "image": null,
+    "explanation": "SNA enables epidemiological modeling to trace contacts, identify super-spreading individuals, and plan targeted vaccination schedules."
+  },
+  {
+    "numb": 11,
+    "type": "Multiple Choice",
+    "question": "In the study of Wikipedia articles, how do genuine articles fundamentally differ from hoax articles in network structure?",
+    "answer": "C) Genuine articles link coherently to related topics",
+    "options": [
+      "A) Hoax articles contain far more outbound hyperlinks",
+      "B) Genuine articles never link to any other articles",
+      "C) Genuine articles link coherently to related topics",
+      "D) Hoax articles form perfect bipartite clique graphs"
+    ],
+    "image": null,
+    "explanation": "Real articles exhibit dense, coherent links to contextual topic neighbors, whereas hoax articles connect to unrelated or disparate pages."
+  },
+  {
+    "numb": 12,
+    "type": "Multiple Choice",
+    "question": "According to the course slides, what hoax detection accuracy was achieved using network structure compared to human evaluation?",
+    "answer": "B) 86% by network vs 66% by human",
+    "options": [
+      "A) 50% by network vs 95% by human",
+      "B) 86% by network vs 66% by human",
+      "C) 33% by network vs 50% by human",
+      "D) 99% by network vs 20% by human"
+    ],
+    "image": null,
+    "explanation": "Slide 30 indicates hoax detection achieved 50% randomly, 66% with human evaluation, and 86% using network-based features."
+  },
+  {
+    "numb": 13,
+    "type": "Multiple Choice",
+    "question": "What structural phenomenon is observed in Twitter retweet networks during political discussions?",
+    "answer": "A) High political polarization and echo chambers",
+    "options": [
+      "A) High political polarization and echo chambers",
+      "B) Completely uniform and random interactions",
+      "C) Absence of any community boundaries",
+      "D) A single connected cycle containing all users"
+    ],
+    "image": null,
+    "explanation": "Retweet networks often separate into distinct, polarized ideological clusters (echo chambers) with dense internal retweeting and sparse cross-ideology links."
+  },
+  {
+    "numb": 14,
+    "type": "Multiple Choice",
+    "question": "Which level of network analysis focuses on medium systems like organizations, communities, and political parties?",
+    "answer": "C) Meso-level",
+    "options": [
+      "A) Micro-level",
+      "B) Macro-level",
+      "C) Meso-level",
+      "D) Global-level"
+    ],
+    "image": null,
+    "explanation": "The meso-level examines intermediate social systems (organizations, departments, political groups) bridging micro and macro levels."
+  },
+  {
+    "numb": 15,
+    "type": "Multiple Choice",
+    "question": "What is the primary focus of network analysis at the Macro-level?",
+    "answer": "B) Large-scale systems like national economic transfers",
+    "options": [
+      "A) Face-to-face interactions within a single family",
+      "B) Large-scale systems like national economic transfers",
+      "C) Pairwise tie strengths between two close friends",
+      "D) Biological interactions inside a single cell organelle"
+    ],
+    "image": null,
+    "explanation": "Macro-level analysis traces outcomes across large populations, legal systems, economies, and international trade networks."
+  },
+  {
+    "numb": 16,
+    "type": "Multiple Choice",
+    "question": "What is the smallest unit of analysis within the micro-level of a social network?",
+    "answer": "D) An individual actor (node/ego)",
+    "options": [
+      "A) A complete triad",
+      "B) An organizational subgroup",
+      "C) The global network diameter",
+      "D) An individual actor (node/ego)"
+    ],
+    "image": null,
+    "explanation": "At the micro-level, the individual actor (also referred to as 'node' or 'ego') is the foundational unit of analysis."
+  },
+  {
+    "numb": 17,
+    "type": "Multiple Choice",
+    "question": "In the micro-level structural hierarchy, what is formed by adding one individual to a dyad?",
+    "answer": "A) A triad",
+    "options": [
+      "A) A triad",
+      "B) A clique",
+      "C) A giant component",
+      "D) A bipartite projection"
+    ],
+    "image": null,
+    "explanation": "Adding one actor and their relationships to an existing dyadic pair creates a triad (3 actors)."
+  },
+  {
+    "numb": 18,
+    "type": "Multiple Choice",
+    "question": "How does Search Engine Optimization (SEO) leverage network science in PageRank?",
+    "answer": "C) Pages are ranked based on incoming hyperlink structure",
+    "options": [
+      "A) Webpages are ordered purely by domain registration date",
+      "B) Only pages with zero outgoing links receive top rank",
+      "C) Pages are ranked based on incoming hyperlink structure",
+      "D) Search ranking eliminates all graph-theoretic models"
+    ],
+    "image": null,
+    "explanation": "PageRank uses the web's hyperlink graph to rank the prestige and authority of web pages based on incoming links from other influential pages."
+  },
+  {
+    "numb": 19,
+    "type": "Multiple Choice",
+    "question": "What is an invitation cascade in online platforms such as LinkedIn?",
+    "answer": "B) New users joining through invitations from existing users",
+    "options": [
+      "A) A sudden server outage caused by traffic congestion",
+      "B) New users joining through invitations from existing users",
+      "C) Banning multiple accounts simultaneously due to spam",
+      "D) Deleting dormant nodes from the graph database"
+    ],
+    "image": null,
+    "explanation": "Slide 29 highlights product adoption cascades where 60-90% of LinkedIn users registered as a result of an invitation cascade propagating through social ties."
+  },
+  {
+    "numb": 20,
+    "type": "Multiple Choice",
+    "question": "Which of the following tasks predicts protein functions from a cellular interactome?",
+    "answer": "A) Node classification using neighbor interaction context",
+    "options": [
+      "A) Node classification using neighbor interaction context",
+      "B) Finding the shortest path from DNA to RNA",
+      "C) Calculating edge weights from amino acid masses",
+      "D) Creating disconnected components in biological tissues"
+    ],
+    "image": null,
+    "explanation": "By examining known functions of neighboring proteins in a protein-protein interaction network, node classification predicts unknown protein functions."
+  }
+]
