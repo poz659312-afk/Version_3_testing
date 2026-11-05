@@ -318,7 +318,7 @@
       "C) In-degree = 2 (edges from A and B)",
       "D) In-degree = 3 (edges from A, B, and D)"
     ],
-    "image": "/quizzes/SNA/SNA_Images/sna_graph_degrees.png",
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_degrees_v2.png",
     "explanation": "Looking at node C, it receives directed edges incoming from node A and node B. Thus, k_C^+ = 2."
   },
   {
@@ -332,7 +332,7 @@
       "C) Out-degree = 0",
       "D) Out-degree = 3"
     ],
-    "image": "/quizzes/SNA/SNA_Images/sna_graph_degrees.png",
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_degrees_v2.png",
     "explanation": "Node C has only one outgoing arrow, which points back to node A. Thus, its out-degree is 1."
   },
   {
@@ -444,7 +444,7 @@
       "C) [0, 0, 1, 1]",
       "D) [1, 0, 0, 1]"
     ],
-    "image": "/quizzes/SNA/SNA_Images/sna_graph_adj_matrix.png",
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_adj_matrix_v2.png",
     "explanation": "Node 1 has outgoing arrows to node 2 and node 4, and no edge to itself or node 3. Thus, row 1 is [0, 1, 0, 1]."
   },
   {
@@ -458,7 +458,7 @@
       "C) [0, 0, 0, 0]^T",
       "D) [1, 1, 1, 1]^T"
     ],
-    "image": "/quizzes/SNA/SNA_Images/sna_graph_adj_matrix.png",
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_adj_matrix_v2.png",
     "explanation": "Node 3 receives incoming directed edges from node 2 and node 4. Therefore, column 3 has 1s in row 2 and row 4."
   },
   {

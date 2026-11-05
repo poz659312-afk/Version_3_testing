@@ -94,7 +94,7 @@
       "C) In-degree = 2, Out-degree = 0",
       "D) In-degree = 2, Out-degree = 2"
     ],
-    "image": "/quizzes/SNA/SNA_Images/sna_graph_degrees.png",
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_degrees_v2.png",
     "explanation": "Node D receives incoming edges from B and E, plus 1 incoming from its self-loop (total in-degree = 3). Its out-degree is 1 from the self-loop."
   },
   {

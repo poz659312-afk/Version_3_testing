@@ -136,7 +136,7 @@
       "C) 3 (edges to 2, 3, and 4)",
       "D) 0 (no outgoing edges)"
     ],
-    "image": "/quizzes/SNA/SNA_Images/sna_graph_adj_matrix.png",
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_adj_matrix_v2.png",
     "explanation": "Node 1 has outgoing arrows to node 2 and node 4, so its out-degree is 2."
   },
   {
@@ -150,7 +150,7 @@
       "C) 2, because it is a multigraph edge",
       "D) -1, because the arrow points upwards"
     ],
-    "image": "/quizzes/SNA/SNA_Images/sna_graph_adj_matrix.png",
+    "image": "/quizzes/SNA/SNA_Images/sna_graph_adj_matrix_v2.png",
     "explanation": "Edge (3, 1) goes from node 3 to node 1. Hence, row 3, column 1 has entry 1."
   },
   {
