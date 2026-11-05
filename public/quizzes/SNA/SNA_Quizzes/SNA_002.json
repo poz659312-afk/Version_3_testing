@@ -109,7 +109,7 @@
       "D) There is no distinction; both words describe hardware exclusively"
     ],
     "image": null,
-    "explanation": "Network typically refers to real-world systems (the web, metabolic systems), while graph refers to the formal mathematical object G = (V, E)."
+    "explanation": "Network typically refers to real-world systems (the web, metabolic systems), while graph refers to the formal mathematical object $G = (V, E)$."
   },
   {
     "numb": 9,
@@ -123,21 +123,21 @@
       "D) (Network, Node, Link) corresponds to (Graph, Vertex, Edge)"
     ],
     "image": null,
-    "explanation": "Slide 14 maps Network -> Graph, Node -> Vertex, and Link -> Edge."
+    "explanation": "Slide 14 maps Network $\\to$ Graph, Node $\\to$ Vertex, and Link $\\to$ Edge."
   },
   {
     "numb": 10,
     "type": "Multiple Choice",
-    "question": "In formal graph notation G = (V, E), what do the sets V and E represent?",
-    "answer": "A) V is the set of vertices; E is the set of edges",
+    "question": "In formal graph notation $G = (V, E)$, what do the sets $V$ and $E$ represent?",
+    "answer": "A) $V$ is the set of vertices; $E$ is the set of edges",
     "options": [
-      "A) V is the set of vertices; E is the set of edges",
-      "B) V is the set of vectors; E is the error term",
-      "C) V is the variance of degrees; E is the entropy",
-      "D) V is the visual coordinates; E is the edge weights"
+      "A) $V$ is the set of vertices; $E$ is the set of edges",
+      "B) $V$ is the set of vectors; $E$ is the error term",
+      "C) $V$ is the variance of degrees; $E$ is the entropy",
+      "D) $V$ is the visual coordinates; $E$ is the edge weights"
     ],
     "image": null,
-    "explanation": "In standard formal graph theory notation, G = (V, E) defines a graph composed of vertex set V and edge set E."
+    "explanation": "In standard formal graph theory notation, $G = (V, E)$ defines a graph composed of vertex set $V$ and edge set $E$."
   },
   {
     "numb": 11,
@@ -156,30 +156,30 @@
   {
     "numb": 12,
     "type": "Multiple Choice",
-    "question": "In a directed graph (digraph), how is an edge e = (u, v) formally interpreted?",
-    "answer": "B) An ordered pair where u is initial and v is terminal",
+    "question": "In a directed graph (digraph), how is an edge $e = (u, v)$ formally interpreted?",
+    "answer": "B) An ordered pair where $u$ is initial and $v$ is terminal",
     "options": [
-      "A) An unordered set where u and v have identical roles",
-      "B) An ordered pair where u is initial and v is terminal",
+      "A) An unordered set where $u$ and $v$ have identical roles",
+      "B) An ordered pair where $u$ is initial and $v$ is terminal",
       "C) A bidirectional channel that allows equal flow both ways",
       "D) An edge that must always connect a node to itself"
     ],
     "image": null,
-    "explanation": "In directed graphs, edges are ordered pairs (u, v), where u is the source (initial vertex) and v is the target (terminal vertex)."
+    "explanation": "In directed graphs, edges are ordered pairs $(u, v)$, where $u$ is the source (initial vertex) and $v$ is the target (terminal vertex)."
   },
   {
     "numb": 13,
     "type": "Multiple Choice",
     "question": "How is a bidirectional relationship represented in a directed graph?",
-    "answer": "D) By two separate directed edges: (A, B) and (B, A)",
+    "answer": "D) By two separate directed edges: $(A, B)$ and $(B, A)$",
     "options": [
       "A) By assigning a negative weight to the single edge",
       "B) By removing both vertices from the graph structure",
       "C) By adding a self-loop to both vertices involved",
-      "D) By two separate directed edges: (A, B) and (B, A)"
+      "D) By two separate directed edges: $(A, B)$ and $(B, A)$"
     ],
     "image": null,
-    "explanation": "In directed networks, mutual interaction requires two opposite directed arcs: one from A to B and another from B to A."
+    "explanation": "In directed networks, mutual interaction requires two opposite directed arcs: one from $A$ to $B$ and another from $B$ to $A$."
   },
   {
     "numb": 14,
@@ -215,13 +215,13 @@
     "question": "What is a self-loop (reflexive tie) in a graph?",
     "answer": "B) An edge whose endpoints are the exact same node",
     "options": [
-      "A) A path of length 3 returning to the starting vertex",
+      "A) A path of length $3$ returning to the starting vertex",
       "B) An edge whose endpoints are the exact same node",
-      "C) A node that has an in-degree of 0 and out-degree of 0",
+      "C) A node that has an in-degree of $0$ and out-degree of $0$",
       "D) An edge that bridges two disconnected components"
     ],
     "image": null,
-    "explanation": "A self-loop is an edge where the initial and terminal vertices are identical, e = {u, u} or (u, u)."
+    "explanation": "A self-loop is an edge where the initial and terminal vertices are identical, $e = \\{u, u\\}$ or $(u, u)$."
   },
   {
     "numb": 17,
@@ -263,7 +263,7 @@
       "D) Acyclic unweighted planar lattice"
     ],
     "image": null,
-    "explanation": "Email involves directional sending (sender -> receiver), multiple messages between pairs (multigraph), and users can email themselves (self-edges)."
+    "explanation": "Email involves directional sending (sender $\\to$ receiver), multiple messages between pairs (multigraph), and users can email themselves (self-edges)."
   },
   {
     "numb": 20,
@@ -277,6 +277,6 @@
       "D) It is impossible for two colleagues to give advice"
     ],
     "image": null,
-    "explanation": "Advice-seeking is asymmetric: junior employee C may seek advice from senior expert E, but E does not necessarily seek advice from C."
+    "explanation": "Advice-seeking is asymmetric: junior employee $C$ may seek advice from senior expert $E$, but $E$ does not necessarily seek advice from $C$."
   }
 ]

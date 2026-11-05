@@ -5,41 +5,41 @@
     "question": "Which of the following is NOT one of the four key network properties discussed in Lecture 5?",
     "answer": "B) Color palette frequency",
     "options": [
-      "A) Degree distribution: p(k)",
+      "A) Degree distribution: $P(k)$",
       "B) Color palette frequency",
-      "C) Path length: h",
-      "D) Clustering coefficient: C"
+      "C) Path length: $h$",
+      "D) Clustering coefficient: $C$"
     ],
     "image": null,
-    "explanation": "The four fundamental measurements are: Degree distribution p(k), Path length h, Clustering coefficient C, and Connected components s."
+    "explanation": "The four fundamental measurements are: Degree distribution $P(k)$, Path length $h$, Clustering coefficient $C$, and Connected components $s$."
   },
   {
     "numb": 2,
     "type": "Multiple Choice",
-    "question": "What is the mathematical definition of degree distribution P(k) in a network of N nodes?",
-    "answer": "A) P(k) = N_k / N, the proportion of nodes with degree k",
+    "question": "What is the mathematical definition of degree distribution $P(k)$ in a network of $N$ nodes?",
+    "answer": "A) $P(k) = \\frac{N_k}{N}$, the proportion of nodes with degree $k$",
     "options": [
-      "A) P(k) = N_k / N, the proportion of nodes with degree k",
-      "B) P(k) = k * N, the product of degree and total nodes",
-      "C) P(k) = 2E / (N - 1), the normalized edge density",
-      "D) P(k) = sum of all path lengths divided by k"
+      "A) $P(k) = \\frac{N_k}{N}$, the proportion of nodes with degree $k$",
+      "B) $P(k) = k \\times N$, the product of degree and total nodes",
+      "C) $P(k) = \\frac{2E}{N - 1}$, the normalized edge density",
+      "D) $P(k) = \\frac{\\sum h}{k}$, sum of paths divided by degree"
     ],
     "image": null,
-    "explanation": "P(k) represents the normalized histogram: the fraction of nodes in the network that have degree k (P(k) = N_k / N)."
+    "explanation": "Degree distribution $P(k) = \\frac{N_k}{N}$ represents the probability that a randomly chosen node has degree $k$."
   },
   {
     "numb": 3,
     "type": "Multiple Choice",
-    "question": "Because P(k) represents a normalized probability distribution, what must the sum of all P(k) equal?",
-    "answer": "C) Exactly 1",
+    "question": "Because $P(k)$ represents a normalized probability distribution, what must the sum $\\sum_{k} P(k)$ equal?",
+    "answer": "C) Exactly $1$",
     "options": [
-      "A) Total number of nodes N",
-      "B) Total number of edges E",
-      "C) Exactly 1",
-      "D) Average network degree k_bar"
+      "A) Total number of nodes $N$",
+      "B) Total number of edges $E$",
+      "C) Exactly $1$",
+      "D) Average network degree $\\bar{k}$"
     ],
     "image": null,
-    "explanation": "As a formal discrete probability distribution, the sum of P(k) over all possible degrees k must equal 1 (sum_k P(k) = 1)."
+    "explanation": "As a formal discrete probability distribution, the sum of $P(k)$ over all possible degrees $k$ must equal $1$ ($\\sum_k P(k) = 1$)."
   },
   {
     "numb": 4,
@@ -58,16 +58,16 @@
   {
     "numb": 5,
     "type": "Multiple Choice",
-    "question": "In a 5-node cycle graph C_5, what is the degree distribution P(k)?",
-    "answer": "D) P(2) = 1.0, and P(k) = 0 for all other k",
+    "question": "In a 5-node cycle graph $C_5$, what is the degree distribution $P(k)$?",
+    "answer": "D) $P(2) = 1.0$, and $P(k) = 0$ for all $k \\neq 2$",
     "options": [
-      "A) P(1) = 0.2, P(2) = 0.8",
-      "B) P(5) = 1.0, and P(k) = 0 for all other k",
-      "C) P(0) = 0.5, P(2) = 0.5",
-      "D) P(2) = 1.0, and P(k) = 0 for all other k"
+      "A) $P(1) = 0.2, P(2) = 0.8$",
+      "B) $P(5) = 1.0$, and $P(k) = 0$ for all $k \\neq 5$",
+      "C) $P(0) = 0.5, P(2) = 0.5$",
+      "D) $P(2) = 1.0$, and $P(k) = 0$ for all $k \\neq 2$"
     ],
     "image": null,
-    "explanation": "In C_5, every single node has exactly 2 neighbors. Thus, 100% of nodes have degree 2: P(2) = 5/5 = 1.0."
+    "explanation": "In $C_5$, every single node has exactly $2$ neighbors. Thus, $100\\%$ of nodes have degree $2$: $P(2) = \\frac{5}{5} = 1.0$."
   },
   {
     "numb": 6,
@@ -86,30 +86,30 @@
   {
     "numb": 7,
     "type": "Multiple Choice",
-    "question": "What is the shortest path distance from any node to itself (h_ii)?",
-    "answer": "C) 0",
+    "question": "What is the shortest path distance from any node to itself ($h_{ii}$)?",
+    "answer": "C) $0$",
     "options": [
-      "A) 1",
-      "B) Infinity",
-      "C) 0",
+      "A) $1$",
+      "B) $\\infty$",
+      "C) $0$",
       "D) Undefined"
     ],
     "image": null,
-    "explanation": "By definition, the distance from any node to itself requires traversing 0 edges (h_ii = 0)."
+    "explanation": "By definition, the distance from any node to itself requires traversing $0$ edges ($h_{ii} = 0$)."
   },
   {
     "numb": 8,
     "type": "Multiple Choice",
-    "question": "If two nodes belong to different disconnected components, what is their shortest path distance?",
-    "answer": "B) Infinity (infinite distance)",
+    "question": "If two nodes belong to different disconnected components, what is their shortest path distance $h$?",
+    "answer": "B) $\\infty$ (infinite distance)",
     "options": [
-      "A) Zero",
-      "B) Infinity (infinite distance)",
-      "C) Equal to the number of nodes N",
-      "D) -1"
+      "A) $0$",
+      "B) $\\infty$ (infinite distance)",
+      "C) Equal to the number of nodes $N$",
+      "D) $-1$"
     ],
     "image": null,
-    "explanation": "If no path exists between two nodes in a disconnected graph, the distance between them is formally defined as infinity (h = infinity)."
+    "explanation": "If no path exists between two nodes in a disconnected graph, the distance between them is formally defined as infinity ($h = \\infty$)."
   },
   {
     "numb": 9,
@@ -128,21 +128,21 @@
   {
     "numb": 10,
     "type": "Multiple Choice",
-    "question": "What formula calculates the average shortest path length h_bar of a connected undirected network?",
-    "answer": "A) h_bar = (1 / E_max) * sum_{i < j} h_ij",
+    "question": "What formula calculates the average shortest path length $\\bar{h}$ of a connected undirected network?",
+    "answer": "A) $\\bar{h} = \\frac{1}{E_{\\max}} \\sum_{i < j} h_{ij}$",
     "options": [
-      "A) h_bar = (1 / E_max) * sum_{i < j} h_ij",
-      "B) h_bar = sum_{all i, j} h_ij / N",
-      "C) h_bar = E_max / (2 * sum h_ij)",
-      "D) h_bar = diameter / N"
+      "A) $\\bar{h} = \\frac{1}{E_{\\max}} \\sum_{i < j} h_{ij}$",
+      "B) $\\bar{h} = \\frac{\\sum h_{ij}}{N}$",
+      "C) $\\bar{h} = \\frac{E_{\\max}}{2 \\sum h_{ij}}$",
+      "D) $\\bar{h} = \\frac{\\text{diameter}}{N}$"
     ],
     "image": null,
-    "explanation": "Average shortest path normalizes the sum of shortest paths across all distinct pairs by the total number of pairs E_max = N(N-1)/2."
+    "explanation": "Average shortest path normalizes the sum of shortest paths across all distinct pairs by the total number of pairs $E_{\\max} = \\frac{N(N-1)}{2}$."
   },
   {
     "numb": 11,
     "type": "Multiple Choice",
-    "question": "What does the local clustering coefficient C_i of node i measure?",
+    "question": "What does the local clustering coefficient $C_i$ of node $i$ measure?",
     "answer": "C) The fraction of pairs of neighbors that are connected",
     "options": [
       "A) The total number of edges connected to node i",
@@ -151,35 +151,35 @@
       "D) The percentage of nodes that are reachable from i"
     ],
     "image": null,
-    "explanation": "Local clustering coefficient C_i = 2 e_i / [k_i (k_i - 1)] measures the proportion of node i's neighbors that are linked to each other."
+    "explanation": "Local clustering coefficient $C_i = \\frac{2 e_i}{k_i (k_i - 1)}$ measures the proportion of node $i$'s neighbors that are linked to each other."
   },
   {
     "numb": 12,
     "type": "Multiple Choice",
-    "question": "Examine node V in the provided image. With k_V = 4 neighbors and e_V = 2 links between them, what is C_V?",
-    "answer": "B) 1/3 (approx 0.33)",
+    "question": "Examine node $V$ in the provided image. With $k_V = 4$ neighbors and $e_V = 2$ links between them, what is $C_V$?",
+    "answer": "B) $\\frac{1}{3}$ (approx $0.33$)",
     "options": [
-      "A) 1/2 (0.50)",
-      "B) 1/3 (approx 0.33)",
-      "C) 2/3 (approx 0.67)",
-      "D) 1.0 (complete clustering)"
+      "A) $\\frac{1}{2}$ ($0.50$)",
+      "B) $\\frac{1}{3}$ (approx $0.33$)",
+      "C) $\\frac{2}{3}$ (approx $0.67$)",
+      "D) $1.0$ (complete clustering)"
     ],
     "image": "/quizzes/SNA/SNA_Images/sna_graph_clustering.png",
-    "explanation": "C_V = 2 * e_V / [k_V * (k_V - 1)] = (2 * 2) / (4 * 3) = 4 / 12 = 1/3 approx 0.33."
+    "explanation": "$C_V = \\frac{2 e_V}{k_V (k_V - 1)} = \\frac{2 \\times 2}{4 \\times 3} = \\frac{4}{12} = \\frac{1}{3} \\approx 0.33$."
   },
   {
     "numb": 13,
     "type": "Multiple Choice",
-    "question": "What is the value of C_i if none of node i's neighbors are connected to each other?",
-    "answer": "A) 0",
+    "question": "What is the value of $C_i$ if none of node $i$'s neighbors are connected to each other?",
+    "answer": "A) $C_i = 0$",
     "options": [
-      "A) 0",
-      "B) 0.5",
-      "C) 1.0",
-      "D) -1"
+      "A) $C_i = 0$",
+      "B) $C_i = 0.5$",
+      "C) $C_i = 1.0$",
+      "D) $C_i = -1$"
     ],
     "image": null,
-    "explanation": "If e_i = 0 (no links exist between neighbors), then C_i = 2(0) / [k_i(k_i - 1)] = 0."
+    "explanation": "If $e_i = 0$ (no links exist between neighbors), then $C_i = \\frac{2(0)}{k_i(k_i - 1)} = 0$."
   },
   {
     "numb": 14,
@@ -198,58 +198,58 @@
   {
     "numb": 15,
     "type": "Multiple Choice",
-    "question": "How is the local clustering coefficient C_i handled for nodes with degree k_i = 1 or k_i = 0?",
-    "answer": "B) Defined as zero or ignored, since no pairs can connect",
+    "question": "How is the local clustering coefficient $C_i$ handled for nodes with degree $k_i = 1$ or $k_i = 0$?",
+    "answer": "B) Defined as zero ($C_i = 0$), since no pairs can connect",
     "options": [
-      "A) Set to 1.0 by default mathematical convention",
-      "B) Defined as zero or ignored, since no pairs can connect",
+      "A) Set to $1.0$ by default mathematical convention",
+      "B) Defined as zero ($C_i = 0$), since no pairs can connect",
       "C) Causes the algorithm to abort with a division error",
-      "D) Set equal to the average degree of the graph"
+      "D) Set equal to the average degree of the graph $\\bar{k}$"
     ],
     "image": null,
-    "explanation": "Slide 15 notes that for degree 1 or 0 nodes, having fewer than 2 neighbors means no triangles are possible; C_i is defined as 0 or ignored."
+    "explanation": "Slide 15 notes that for degree $1$ or $0$ nodes, having fewer than $2$ neighbors means no triangles are possible; $C_i$ is defined as $0$."
   },
   {
     "numb": 16,
     "type": "Multiple Choice",
     "question": "In Breadth First Search (BFS), what does the ripple search pattern accomplish?",
-    "answer": "A) Visits all nodes at distance d before moving to d + 1",
+    "answer": "A) Visits all nodes at distance $d$ before moving to $d + 1$",
     "options": [
-      "A) Visits all nodes at distance d before moving to d + 1",
+      "A) Visits all nodes at distance $d$ before moving to $d + 1$",
       "B) Follows a single path deeply until hitting a dead end",
       "C) Selects edges in descending order of numerical weight",
       "D) Randomly jumps between disconnected components"
     ],
     "image": null,
-    "explanation": "BFS explores outward in concentric ripples (levels), visiting all neighbors at depth d before proceeding to depth d + 1."
+    "explanation": "BFS explores outward in concentric ripples (levels), visiting all neighbors at depth $d$ before proceeding to depth $d + 1$."
   },
   {
     "numb": 17,
     "type": "Multiple Choice",
-    "question": "Refer to the BFS traversal image. What is the shortest path distance from root 0 to node E?",
-    "answer": "C) d = 3",
+    "question": "Refer to the BFS traversal image. What is the shortest path distance from root $0$ to node $E$?",
+    "answer": "C) $d = 3$",
     "options": [
-      "A) d = 1",
-      "B) d = 2",
-      "C) d = 3",
-      "D) d = 5"
+      "A) $d = 1$",
+      "B) $d = 2$",
+      "C) $d = 3$",
+      "D) $d = 5$"
     ],
     "image": "/quizzes/SNA/SNA_Images/sna_graph_bfs.png",
-    "explanation": "Node E is labeled at Level 3 of the BFS tree, meaning the shortest path from root 0 has 3 edges: 0 -> B -> D -> E."
+    "explanation": "Node $E$ is labeled at Level 3 of the BFS tree, meaning the shortest path from root $0$ has $3$ edges: $0 \\to B \\to D \\to E$."
   },
   {
     "numb": 18,
     "type": "Multiple Choice",
     "question": "How can BFS be used to verify whether a network is fully connected?",
-    "answer": "B) Check if the number of visited nodes from node i equals N",
+    "answer": "B) Check if the number of visited nodes from node $i$ equals $N$",
     "options": [
       "A) Calculate the determinant of the BFS tree matrix",
-      "B) Check if the number of visited nodes from node i equals N",
+      "B) Check if the number of visited nodes from node $i$ equals $N$",
       "C) Confirm that all BFS tree edges have identical weights",
       "D) Ensure that the search terminates in under one second"
     ],
     "image": null,
-    "explanation": "If a BFS starting at an arbitrary node visits all N nodes, the network is connected. If fewer than N nodes are labeled, it is disconnected."
+    "explanation": "If a BFS starting at an arbitrary node visits all $N$ nodes, the network is connected. If fewer than $N$ nodes are visited, it is disconnected."
   },
   {
     "numb": 19,
@@ -269,14 +269,14 @@
     "numb": 20,
     "type": "Multiple Choice",
     "question": "What is the defining signature of a 'scale-free' network model (e.g., Barabasi-Albert model)?",
-    "answer": "A) Its degree distribution follows a power law",
+    "answer": "A) Its degree distribution follows a power law: $P(k) \\sim k^{-\\gamma}$",
     "options": [
-      "A) Its degree distribution follows a power law",
+      "A) Its degree distribution follows a power law: $P(k) \\sim k^{-\\gamma}$",
       "B) All nodes must have exactly the same degree",
       "C) The clustering coefficient is strictly equal to zero",
-      "D) The network diameter grows linearly with N"
+      "D) The network diameter grows linearly with $N$"
     ],
     "image": null,
-    "explanation": "A scale-free network is defined by having a degree distribution that asymptotically follows a power law P(k) ~ k^-gamma."
+    "explanation": "A scale-free network is defined by having a degree distribution that asymptotically follows a power law $P(k) \\sim k^{-\\gamma}$."
   }
 ]

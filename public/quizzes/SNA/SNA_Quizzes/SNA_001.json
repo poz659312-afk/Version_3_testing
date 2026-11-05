@@ -109,7 +109,7 @@
       "D) Minimum Spanning Tree"
     ],
     "image": null,
-    "explanation": "Link prediction forecasts whether an edge exists or will form between two nodes, which directly powers recommendation engines."
+    "explanation": "Link prediction forecasts whether an edge $(u, v)$ exists or will form between two nodes $u$ and $v$, which directly powers recommendation engines."
   },
   {
     "numb": 9,
@@ -157,15 +157,15 @@
     "numb": 12,
     "type": "Multiple Choice",
     "question": "According to the course slides, what hoax detection accuracy was achieved using network structure compared to human evaluation?",
-    "answer": "B) 86% by network vs 66% by human",
+    "answer": "B) $86\\%$ by network vs $66\\%$ by human",
     "options": [
-      "A) 50% by network vs 95% by human",
-      "B) 86% by network vs 66% by human",
-      "C) 33% by network vs 50% by human",
-      "D) 99% by network vs 20% by human"
+      "A) $50\\%$ by network vs $95\\%$ by human",
+      "B) $86\\%$ by network vs $66\\%$ by human",
+      "C) $33\\%$ by network vs $50\\%$ by human",
+      "D) $99\\%$ by network vs $20\\%$ by human"
     ],
     "image": null,
-    "explanation": "Slide 30 indicates hoax detection achieved 50% randomly, 66% with human evaluation, and 86% using network-based features."
+    "explanation": "Slide 30 indicates hoax detection achieved $50\\%$ randomly, $66\\%$ with human evaluation, and $86\\%$ using network-based features."
   },
   {
     "numb": 13,
@@ -226,16 +226,16 @@
   {
     "numb": 17,
     "type": "Multiple Choice",
-    "question": "In the micro-level structural hierarchy, what is formed by adding one individual to a dyad?",
-    "answer": "A) A triad",
+    "question": "In the micro-level structural hierarchy, what is formed by adding one individual to a dyad ($2$ actors)?",
+    "answer": "A) A triad ($3$ actors)",
     "options": [
-      "A) A triad",
+      "A) A triad ($3$ actors)",
       "B) A clique",
       "C) A giant component",
       "D) A bipartite projection"
     ],
     "image": null,
-    "explanation": "Adding one actor and their relationships to an existing dyadic pair creates a triad (3 actors)."
+    "explanation": "Adding one actor and their relationships to an existing dyadic pair ($2$ actors) creates a triad ($3$ actors)."
   },
   {
     "numb": 18,
@@ -263,7 +263,7 @@
       "D) Deleting dormant nodes from the graph database"
     ],
     "image": null,
-    "explanation": "Slide 29 highlights product adoption cascades where 60-90% of LinkedIn users registered as a result of an invitation cascade propagating through social ties."
+    "explanation": "Slide 29 highlights product adoption cascades where $60\\% - 90\\%$ of LinkedIn users registered as a result of an invitation cascade propagating through social ties."
   },
   {
     "numb": 20,

@@ -30,153 +30,153 @@
   {
     "numb": 3,
     "type": "Multiple Choice",
-    "question": "For a simple graph G with N vertices, what are the dimensions of its adjacency matrix A?",
-    "answer": "A) N x N",
+    "question": "For a simple graph $G$ with $N$ vertices, what are the dimensions of its adjacency matrix $A$?",
+    "answer": "A) $N \\times N$",
     "options": [
-      "A) N x N",
-      "B) N x E",
-      "C) E x E",
-      "D) 2N x 2E"
+      "A) $N \\times N$",
+      "B) $N \\times E$",
+      "C) $E \\times E$",
+      "D) $2N \\times 2E$"
     ],
     "image": null,
-    "explanation": "The adjacency matrix of a graph with N vertices is always a square matrix of size N x N."
+    "explanation": "The adjacency matrix of a graph with $N$ vertices is always a square matrix of size $N \\times N$."
   },
   {
     "numb": 4,
     "type": "Multiple Choice",
-    "question": "In the adjacency matrix A = [a_ij] of an unweighted simple graph, what do values 1 and 0 indicate?",
-    "answer": "D) 1 indicates an edge exists; 0 indicates no edge",
+    "question": "In the adjacency matrix $A = [A_{ij}]$ of an unweighted simple graph, what do values $1$ and $0$ indicate?",
+    "answer": "D) $1$ indicates an edge exists; $0$ indicates no edge",
     "options": [
-      "A) 1 indicates an isolated node; 0 indicates a clique",
-      "B) 1 indicates positive flow; 0 indicates negative flow",
-      "C) 1 indicates a self-loop; 0 indicates a bridge",
-      "D) 1 indicates an edge exists; 0 indicates no edge"
+      "A) $1$ indicates an isolated node; $0$ indicates a clique",
+      "B) $1$ indicates positive flow; $0$ indicates negative flow",
+      "C) $1$ indicates a self-loop; $0$ indicates a bridge",
+      "D) $1$ indicates an edge exists; $0$ indicates no edge"
     ],
     "image": null,
-    "explanation": "By definition, a_ij = 1 if an edge exists between vertex i and vertex j, and a_ij = 0 otherwise."
+    "explanation": "By definition, $A_{ij} = 1$ if an edge exists between vertex $i$ and vertex $j$, and $A_{ij} = 0$ otherwise."
   },
   {
     "numb": 5,
     "type": "Multiple Choice",
     "question": "What mathematical symmetry property characterizes the adjacency matrix of an undirected graph?",
-    "answer": "B) Symmetric: A_ij = A_ji",
+    "answer": "B) Symmetric: $A_{ij} = A_{ji}$ ($A = A^T$)",
     "options": [
-      "A) Anti-symmetric: A_ij = -A_ji",
-      "B) Symmetric: A_ij = A_ji",
-      "C) Strictly upper triangular: A_ij = 0 for i >= j",
-      "D) Orthogonal: A * A^T = I"
+      "A) Anti-symmetric: $A_{ij} = -A_{ji}$",
+      "B) Symmetric: $A_{ij} = A_{ji}$ ($A = A^T$)",
+      "C) Strictly upper triangular: $A_{ij} = 0$ for $i \\ge j$",
+      "D) Orthogonal: $A \\cdot A^T = I$"
     ],
     "image": null,
-    "explanation": "In an undirected network, edge {i, j} is identical to {j, i}, making the adjacency matrix symmetric across the main diagonal (A = A^T)."
+    "explanation": "In an undirected network, edge $\\{i, j\\}$ is identical to $\\{j, i\\}$, making the adjacency matrix symmetric across the main diagonal ($A = A^T$)."
   },
   {
     "numb": 6,
     "type": "Multiple Choice",
-    "question": "What are the values on the main diagonal (A_ii) of the adjacency matrix for a simple graph without self-loops?",
-    "answer": "A) All zeros",
+    "question": "What are the values on the main diagonal ($A_{ii}$) of the adjacency matrix for a simple graph without self-loops?",
+    "answer": "A) All zeros ($A_{ii} = 0$)",
     "options": [
-      "A) All zeros",
-      "B) All ones",
-      "C) Equal to the degree of node i",
-      "D) Equal to the total number of edges"
+      "A) All zeros ($A_{ii} = 0$)",
+      "B) All ones ($A_{ii} = 1$)",
+      "C) Equal to the degree of node $i$ ($k_i$)",
+      "D) Equal to the total number of edges ($E$)"
     ],
     "image": null,
-    "explanation": "In a simple graph without self-loops (reflexive ties), a node is not connected to itself, so A_ii = 0 for all i."
+    "explanation": "In a simple graph without self-loops (reflexive ties), a node is not connected to itself, so $A_{ii} = 0$ for all $i$."
   },
   {
     "numb": 7,
     "type": "Multiple Choice",
-    "question": "How is the degree of node i calculated from the adjacency matrix of an undirected graph?",
-    "answer": "C) Summing all entries in row i",
+    "question": "How is the degree of node $i$ calculated from the adjacency matrix of an undirected graph?",
+    "answer": "C) Summing all entries in row $i$: $k_i = \\sum_{j=1}^N A_{ij}$",
     "options": [
-      "A) Multiplying all entries in row i",
-      "B) Finding the maximum entry in column i",
-      "C) Summing all entries in row i",
-      "D) Inverting the i-th diagonal element"
+      "A) Multiplying all entries in row $i$",
+      "B) Finding the maximum entry in column $i$",
+      "C) Summing all entries in row $i$: $k_i = \\sum_{j=1}^N A_{ij}$",
+      "D) Inverting the $i$-th diagonal element"
     ],
     "image": null,
-    "explanation": "In an undirected graph, degree k_i = sum_j A_ij (which equals the sum of entries in column i, sum_j A_ji)."
+    "explanation": "In an undirected graph, degree $k_i = \\sum_{j=1}^N A_{ij}$ (which equals the column sum $\\sum_{j=1}^N A_{ji}$)."
   },
   {
     "numb": 8,
     "type": "Multiple Choice",
-    "question": "In a directed graph, how is the out-degree of node i determined from its adjacency matrix A?",
-    "answer": "B) Summing all elements in row i",
+    "question": "In a directed graph, how is the out-degree of node $i$ determined from its adjacency matrix $A$?",
+    "answer": "B) Summing all elements in row $i$: $k_i^{\\text{out}} = \\sum_{j=1}^N A_{ij}$",
     "options": [
-      "A) Summing all elements in column i",
-      "B) Summing all elements in row i",
-      "C) Taking the determinant of matrix A",
-      "D) Summing the entire main diagonal"
+      "A) Summing all elements in column $i$",
+      "B) Summing all elements in row $i$: $k_i^{\\text{out}} = \\sum_{j=1}^N A_{ij}$",
+      "C) Taking the determinant $\\det(A)$",
+      "D) Summing the entire main diagonal $\\operatorname{Tr}(A)$"
     ],
     "image": null,
-    "explanation": "Row i contains 1s for all target nodes j that node i points to; thus, the row sum equals the out-degree k_i^out."
+    "explanation": "Row $i$ contains $1$s for all target nodes $j$ that node $i$ points to; thus, the row sum equals the out-degree $k_i^{\\text{out}} = \\sum_{j=1}^N A_{ij}$."
   },
   {
     "numb": 9,
     "type": "Multiple Choice",
-    "question": "In a directed graph, how is the in-degree of node j determined from its adjacency matrix A?",
-    "answer": "D) Summing all elements in column j",
+    "question": "In a directed graph, how is the in-degree of node $j$ determined from its adjacency matrix $A$?",
+    "answer": "D) Summing all elements in column $j$: $k_j^{\\text{in}} = \\sum_{i=1}^N A_{ij}$",
     "options": [
-      "A) Summing all elements in row j",
-      "B) Subtracting row j from column j",
-      "C) Finding the trace of matrix A",
-      "D) Summing all elements in column j"
+      "A) Summing all elements in row $j$",
+      "B) Subtracting row $j$ from column $j$",
+      "C) Finding the trace $\\operatorname{Tr}(A)$",
+      "D) Summing all elements in column $j$: $k_j^{\\text{in}} = \\sum_{i=1}^N A_{ij}$"
     ],
     "image": null,
-    "explanation": "Column j contains 1s for all source nodes i pointing into node j; thus, the column sum equals the in-degree k_j^in."
+    "explanation": "Column $j$ contains $1$s for all source nodes $i$ pointing into node $j$; thus, the column sum equals the in-degree $k_j^{\\text{in}} = \\sum_{i=1}^N A_{ij}$."
   },
   {
     "numb": 10,
     "type": "Multiple Choice",
-    "question": "Examine the directed graph in the image. What is the out-degree of node 1?",
-    "answer": "A) 2 (edges to 2 and 4)",
+    "question": "Examine the directed graph in the image. What is the out-degree $k_{\\text{out}}(1)$ of node $1$?",
+    "answer": "A) $k_{\\text{out}}(1) = 2$ (edges to $2$ and $4$)",
     "options": [
-      "A) 2 (edges to 2 and 4)",
-      "B) 1 (edge to 2 only)",
-      "C) 3 (edges to 2, 3, and 4)",
-      "D) 0 (no outgoing edges)"
+      "A) $k_{\\text{out}}(1) = 2$ (edges to $2$ and $4$)",
+      "B) $k_{\\text{out}}(1) = 1$ (edge to $2$ only)",
+      "C) $k_{\\text{out}}(1) = 3$ (edges to $2, 3,$ and $4$)",
+      "D) $k_{\\text{out}}(1) = 0$ (no outgoing edges)"
     ],
     "image": "/quizzes/SNA/SNA_Images/sna_graph_adj_matrix_v2.png",
-    "explanation": "Node 1 has outgoing arrows to node 2 and node 4, so its out-degree is 2."
+    "explanation": "Node $1$ has outgoing arrows to node $2$ and node $4$, so its out-degree is $k_{\\text{out}}(1) = 2$."
   },
   {
     "numb": 11,
     "type": "Multiple Choice",
-    "question": "For the 4-node graph in the image, what is entry A_31 in the adjacency matrix (where row=source, col=destination)?",
-    "answer": "B) 1, because directed edge (3, 1) exists",
+    "question": "For the 4-node graph in the image, what is entry $A_{31}$ in the adjacency matrix (where $\\text{row}=\\text{source}, \\text{col}=\\text{destination}$)?",
+    "answer": "B) $A_{31} = 1$, because directed edge $(3, 1)$ exists",
     "options": [
-      "A) 0, because node 3 only receives links",
-      "B) 1, because directed edge (3, 1) exists",
-      "C) 2, because it is a multigraph edge",
-      "D) -1, because the arrow points upwards"
+      "A) $A_{31} = 0$, because node $3$ only receives links",
+      "B) $A_{31} = 1$, because directed edge $(3, 1)$ exists",
+      "C) $A_{31} = 2$, because it is a multigraph edge",
+      "D) $A_{31} = -1$, because the arrow points upwards"
     ],
     "image": "/quizzes/SNA/SNA_Images/sna_graph_adj_matrix_v2.png",
-    "explanation": "Edge (3, 1) goes from node 3 to node 1. Hence, row 3, column 1 has entry 1."
+    "explanation": "Edge $(3, 1)$ goes from node $3$ to node $1$. Hence, row $3$, column $1$ has entry $A_{31} = 1$."
   },
   {
     "numb": 12,
     "type": "Multiple Choice",
     "question": "How do entries differ in the adjacency matrix of a weighted graph compared to an unweighted graph?",
-    "answer": "C) Entries contain numerical weights instead of binary 0/1",
+    "answer": "C) Entries contain numerical weights $W_{ij}$ instead of binary $0/1$",
     "options": [
       "A) All diagonal elements must be negative values",
-      "B) The matrix size becomes N x 2N",
-      "C) Entries contain numerical weights instead of binary 0/1",
+      "B) The matrix size becomes $N \\times 2N$",
+      "C) Entries contain numerical weights $W_{ij}$ instead of binary $0/1$",
       "D) The matrix can no longer be multiplied"
     ],
     "image": null,
-    "explanation": "In weighted graphs, cell A_ij contains the weight w_ij representing connection intensity, duration, or flow parameter."
+    "explanation": "In weighted graphs, cell $A_{ij}$ contains the weight $W_{ij}$ representing connection intensity, duration, or flow parameter."
   },
   {
     "numb": 13,
     "type": "Multiple Choice",
-    "question": "In the adjacency matrix of a multigraph, what does an entry of A_ij = 3 signify?",
-    "answer": "A) There are 3 parallel edges between nodes i and j",
+    "question": "In the adjacency matrix of a multigraph, what does an entry of $A_{ij} = 3$ signify?",
+    "answer": "A) There are $3$ parallel edges between nodes $i$ and $j$",
     "options": [
-      "A) There are 3 parallel edges between nodes i and j",
-      "B) The shortest path between i and j has length 3",
-      "C) Node i is connected to 3 distinct neighbors",
-      "D) The degree of node j is strictly equal to 3"
+      "A) There are $3$ parallel edges between nodes $i$ and $j$",
+      "B) The shortest path between $i$ and $j$ has length $3$",
+      "C) Node $i$ is connected to $3$ distinct neighbors",
+      "D) The degree of node $j$ is strictly equal to $3$"
     ],
     "image": null,
     "explanation": "In a multigraph adjacency matrix, entries record integer counts of multiple edges connecting the node pair."
@@ -184,16 +184,16 @@
   {
     "numb": 14,
     "type": "Multiple Choice",
-    "question": "What is the structure of the adjacency matrix for a complete graph K_N?",
-    "answer": "D) 0 on the main diagonal, 1 in all other cells",
+    "question": "What is the structure of the adjacency matrix for a complete graph $K_N$?",
+    "answer": "D) $0$ on the main diagonal, $1$ in all other cells",
     "options": [
-      "A) 1 on the main diagonal, 0 in all other cells",
-      "B) All entries are strictly equal to 1",
-      "C) Strictly alternating 0s and 1s across rows",
-      "D) 0 on the main diagonal, 1 in all other cells"
+      "A) $1$ on the main diagonal, $0$ in all other cells",
+      "B) All entries are strictly equal to $1$",
+      "C) Strictly alternating $0$s and $1$s across rows",
+      "D) $0$ on the main diagonal, $1$ in all other cells"
     ],
     "image": null,
-    "explanation": "A complete graph has every possible edge between distinct vertices (A_ij = 1 for i != j) and no self-loops (A_ii = 0)."
+    "explanation": "A complete graph has every possible edge between distinct vertices ($A_{ij} = 1$ for $i \\neq j$) and no self-loops ($A_{ii} = 0$)."
   },
   {
     "numb": 15,
@@ -203,7 +203,7 @@
     "options": [
       "A) As an inverted single-column vector",
       "B) In block diagonal form with zero blocks elsewhere",
-      "C) As a non-square matrix of size N x (N - 1)",
+      "C) As a non-square matrix of size $N \\times (N - 1)$",
       "D) It cannot be represented as a matrix at all"
     ],
     "image": null,
@@ -217,7 +217,7 @@
     "options": [
       "A) It saves memory and retrieves neighbors faster in sparse graphs",
       "B) It eliminates the need to identify vertex labels",
-      "C) It allows matrix multiplication to run in O(1) time",
+      "C) It allows matrix multiplication to run in $O(1)$ time",
       "D) It can only be used when networks are completely dense"
     ],
     "image": null,
@@ -226,41 +226,41 @@
   {
     "numb": 17,
     "type": "Multiple Choice",
-    "question": "What condition must be satisfied to add or subtract two matrices A and B?",
+    "question": "What condition must be satisfied to add or subtract two matrices $A$ and $B$?",
     "answer": "C) They must have identical dimensions (same rows and columns)",
     "options": [
       "A) Both matrices must be symmetric and positive definite",
-      "B) The number of rows in A must equal columns in B",
+      "B) The number of rows in $A$ must equal columns in $B$",
       "C) They must have identical dimensions (same rows and columns)",
       "D) Both matrices must have zero entries on the diagonal"
     ],
     "image": null,
-    "explanation": "Matrix addition and subtraction are element-wise operations and are defined only when both matrices have the exact same dimensions n x m."
+    "explanation": "Matrix addition and subtraction are element-wise operations and are defined only when both matrices have the exact same dimensions $n \\times m$."
   },
   {
     "numb": 18,
     "type": "Multiple Choice",
-    "question": "What does scalar multiplication of an adjacency matrix by constant c achieve?",
-    "answer": "B) Every cell entry in the matrix is multiplied by c",
+    "question": "What does scalar multiplication of an adjacency matrix by constant $c$ achieve?",
+    "answer": "B) Every cell entry in the matrix is multiplied by $c$",
     "options": [
-      "A) The matrix dimensions increase by c rows and columns",
-      "B) Every cell entry in the matrix is multiplied by c",
-      "C) Only the main diagonal entries are scaled by c",
+      "A) The matrix dimensions increase by $c$ rows and columns",
+      "B) Every cell entry in the matrix is multiplied by $c$",
+      "C) Only the main diagonal entries are scaled by $c$",
       "D) It transposes the matrix along its secondary axis"
     ],
     "image": null,
-    "explanation": "Scalar multiplication scales every individual element of the matrix uniformly by the scalar value c."
+    "explanation": "Scalar multiplication scales every individual element of the matrix uniformly: $(c \\cdot A)_{ij} = c \\cdot A_{ij}$."
   },
   {
     "numb": 19,
     "type": "Multiple Choice",
-    "question": "Why is matrix multiplication generally non-commutative (A * B != B * A)?",
-    "answer": "D) Multiplying rows of A by columns of B depends on factor order",
+    "question": "Why is matrix multiplication generally non-commutative ($A \\cdot B \\neq B \\cdot A$)?",
+    "answer": "D) Multiplying rows of $A$ by columns of $B$ depends on factor order",
     "options": [
-      "A) Because matrices only contain binary entries 0 and 1",
+      "A) Because matrices only contain binary entries $0$ and $1$",
       "B) Because graph theory rules forbid transposing matrices",
       "C) Because scalar operations always override matrix products",
-      "D) Multiplying rows of A by columns of B depends on factor order"
+      "D) Multiplying rows of $A$ by columns of $B$ depends on factor order"
     ],
     "image": null,
     "explanation": "Matrix multiplication fundamentally pairs rows of the first matrix with columns of the second; changing order yields different combinations or undefined sizes."
@@ -268,15 +268,15 @@
   {
     "numb": 20,
     "type": "Multiple Choice",
-    "question": "In network analysis, what does entry (A^2)_ij of the squared adjacency matrix represent?",
-    "answer": "A) The number of paths of length 2 from node i to node j",
+    "question": "In network analysis, what does entry $(A^2)_{ij}$ of the squared adjacency matrix represent?",
+    "answer": "A) The number of paths of length $2$ from node $i$ to node $j$",
     "options": [
-      "A) The number of paths of length 2 from node i to node j",
-      "B) The Euclidean distance between node i and node j",
-      "C) The square root of the edge weight between i and j",
-      "D) The total number of common neighbors plus 2"
+      "A) The number of paths of length $2$ from node $i$ to node $j$",
+      "B) The Euclidean distance between node $i$ and node $j$",
+      "C) The square root of the edge weight between $i$ and $j$",
+      "D) The total number of common neighbors plus $2$"
     ],
     "image": null,
-    "explanation": "A fundamental theorem of graph theory states that the (i, j) entry of A^k gives the exact number of walks/paths of length k connecting node i and node j."
+    "explanation": "A fundamental theorem of graph theory states that the $(i, j)$ entry of $A^k$ gives the exact number of walks/paths of length $k$ connecting node $i$ and node $j$."
   }
 ]

@@ -16,133 +16,133 @@
   {
     "numb": 2,
     "type": "Multiple Choice",
-    "question": "In an undirected graph, how does a self-loop at vertex v affect the degree of v?",
-    "answer": "B) It contributes 2 to the degree of v",
+    "question": "In an undirected graph, how does a self-loop at vertex $v$ affect the degree of $v$?",
+    "answer": "B) It contributes $2$ to the degree of $v$",
     "options": [
-      "A) It contributes 1 to the degree of v",
-      "B) It contributes 2 to the degree of v",
+      "A) It contributes $1$ to the degree of $v$",
+      "B) It contributes $2$ to the degree of $v$",
       "C) It does not contribute to degree at all",
-      "D) It resets the degree of vertex v to 0"
+      "D) It resets the degree of vertex $v$ to $0$"
     ],
     "image": null,
-    "explanation": "By mathematical definition, in an undirected graph, a loop touches the vertex twice and thus contributes exactly 2 to its degree."
+    "explanation": "By mathematical definition, in an undirected graph, a loop touches the vertex twice and thus contributes exactly $2$ to its degree."
   },
   {
     "numb": 3,
     "type": "Multiple Choice",
-    "question": "According to the Handshaking Lemma, what is the sum of degrees of all vertices in an undirected graph G with E edges?",
-    "answer": "A) 2E",
+    "question": "According to the Handshaking Lemma, what is the sum of degrees of all vertices in an undirected graph $G$ with $E$ edges?",
+    "answer": "A) $2E$",
     "options": [
-      "A) 2E",
-      "B) E / 2",
-      "C) E * (E - 1)",
-      "D) N * E"
+      "A) $2E$",
+      "B) $\\frac{E}{2}$",
+      "C) $E(E - 1)$",
+      "D) $N \\times E$"
     ],
     "image": null,
-    "explanation": "Each edge has two endpoints, contributing exactly 1 to the degree of each endpoint, so the sum of all vertex degrees equals 2E."
+    "explanation": "Each edge has two endpoints, contributing exactly $1$ to the degree of each endpoint, so the sum of all vertex degrees equals $2E$ (i.e. $\\sum_{v \\in V} k_v = 2E$)."
   },
   {
     "numb": 4,
     "type": "Multiple Choice",
-    "question": "An undirected graph has 10 nodes and 25 edges. What is its average degree?",
-    "answer": "D) 5.0",
+    "question": "An undirected graph has $N = 10$ nodes and $E = 25$ edges. What is its average degree $\\bar{k}$?",
+    "answer": "D) $\\bar{k} = 5.0$",
     "options": [
-      "A) 2.5",
-      "B) 10.0",
-      "C) 1.25",
-      "D) 5.0"
+      "A) $\\bar{k} = 2.5$",
+      "B) $\\bar{k} = 10.0$",
+      "C) $\\bar{k} = 1.25$",
+      "D) $\\bar{k} = 5.0$"
     ],
     "image": null,
-    "explanation": "Average degree k_bar = 2E / N = (2 * 25) / 10 = 50 / 10 = 5.0."
+    "explanation": "Average degree $\\bar{k} = \\frac{2E}{N} = \\frac{2 \\times 25}{10} = \\frac{50}{10} = 5.0$."
   },
   {
     "numb": 5,
     "type": "Multiple Choice",
-    "question": "In a directed graph, what does the in-degree of a vertex v represent?",
-    "answer": "B) Number of edges having v as their terminal vertex",
+    "question": "In a directed graph, what does the in-degree $k_{\\text{in}}(v)$ of a vertex $v$ represent?",
+    "answer": "B) Number of edges having $v$ as their terminal vertex",
     "options": [
-      "A) Number of edges having v as their initial vertex",
-      "B) Number of edges having v as their terminal vertex",
+      "A) Number of edges having $v$ as their initial vertex",
+      "B) Number of edges having $v$ as their terminal vertex",
       "C) The total count of neighbors in both directions",
       "D) The length of the shortest path from the source"
     ],
     "image": null,
-    "explanation": "The in-degree k_v^+ counts incoming edges where vertex v is the destination (terminal vertex)."
+    "explanation": "The in-degree $k_v^+ = k_{\\text{in}}(v)$ counts incoming edges where vertex $v$ is the destination (terminal vertex)."
   },
   {
     "numb": 6,
     "type": "Multiple Choice",
-    "question": "In any directed graph with E edges, what is the relationship between total in-degrees and total out-degrees?",
-    "answer": "C) Sum of in-degrees = Sum of out-degrees = E",
+    "question": "In any directed graph with $E$ edges, what is the relationship between total in-degrees and total out-degrees?",
+    "answer": "C) $\\sum k_{\\text{in}} = \\sum k_{\\text{out}} = E$",
     "options": [
-      "A) Sum of in-degrees = 2 * Sum of out-degrees",
-      "B) Sum of in-degrees is always strictly greater than E",
-      "C) Sum of in-degrees = Sum of out-degrees = E",
-      "D) Sum of in-degrees + Sum of out-degrees = E / 2"
+      "A) $\\sum k_{\\text{in}} = 2 \\times \\sum k_{\\text{out}}$",
+      "B) $\\sum k_{\\text{in}} > E$ strictly",
+      "C) $\\sum k_{\\text{in}} = \\sum k_{\\text{out}} = E$",
+      "D) $\\sum k_{\\text{in}} + \\sum k_{\\text{out}} = \\frac{E}{2}$"
     ],
     "image": null,
-    "explanation": "Every directed edge leaves exactly one initial vertex and enters exactly one terminal vertex, so both sums equal E."
+    "explanation": "Every directed edge leaves exactly one initial vertex and enters exactly one terminal vertex, so $\\sum_{v} k_{\\text{in}}(v) = \\sum_{v} k_{\\text{out}}(v) = E$."
   },
   {
     "numb": 7,
     "type": "Multiple Choice",
-    "question": "Examine the directed graph in the image. What are the in-degree and out-degree of node D?",
-    "answer": "A) In-degree = 3, Out-degree = 1",
+    "question": "Examine the directed graph in the image. What are the in-degree $k_{\\text{in}}$ and out-degree $k_{\\text{out}}$ of node $D$?",
+    "answer": "A) $k_{\\text{in}} = 3, k_{\\text{out}} = 1$",
     "options": [
-      "A) In-degree = 3, Out-degree = 1",
-      "B) In-degree = 1, Out-degree = 3",
-      "C) In-degree = 2, Out-degree = 0",
-      "D) In-degree = 2, Out-degree = 2"
+      "A) $k_{\\text{in}} = 3, k_{\\text{out}} = 1$",
+      "B) $k_{\\text{in}} = 1, k_{\\text{out}} = 3$",
+      "C) $k_{\\text{in}} = 2, k_{\\text{out}} = 0$",
+      "D) $k_{\\text{in}} = 2, k_{\\text{out}} = 2$"
     ],
     "image": "/quizzes/SNA/SNA_Images/sna_graph_degrees_v2.png",
-    "explanation": "Node D receives incoming edges from B and E, plus 1 incoming from its self-loop (total in-degree = 3). Its out-degree is 1 from the self-loop."
+    "explanation": "Node $D$ receives incoming edges from $B$ and $E$, plus $1$ incoming from its self-loop ($k_{\\text{in}} = 3$). Its out-degree is $1$ from the self-loop ($k_{\\text{out}} = 1$)."
   },
   {
     "numb": 8,
     "type": "Multiple Choice",
-    "question": "What is the maximum number of edges in a simple undirected graph with N vertices?",
-    "answer": "B) N(N - 1) / 2",
+    "question": "What is the maximum number of edges $E_{\\max}$ in a simple undirected graph with $N$ vertices?",
+    "answer": "B) $E_{\\max} = \\frac{N(N - 1)}{2}$",
     "options": [
-      "A) N * (N - 1)",
-      "B) N(N - 1) / 2",
-      "C) 2^N - 1",
-      "D) N^2"
+      "A) $E_{\\max} = N(N - 1)$",
+      "B) $E_{\\max} = \\frac{N(N - 1)}{2}$",
+      "C) $E_{\\max} = 2^N - 1$",
+      "D) $E_{\\max} = N^2$"
     ],
     "image": null,
-    "explanation": "A complete graph K_N contains an edge between every distinct pair of vertices, totaling E_max = N(N - 1) / 2."
+    "explanation": "A complete graph $K_N$ contains an edge between every distinct pair of vertices, totaling $E_{\\max} = \\frac{N(N - 1)}{2} = \\binom{N}{2}$."
   },
   {
     "numb": 9,
     "type": "Multiple Choice",
-    "question": "What is the average degree of a complete graph K_N?",
-    "answer": "C) N - 1",
+    "question": "What is the average degree $\\bar{k}$ of a complete graph $K_N$?",
+    "answer": "C) $\\bar{k} = N - 1$",
     "options": [
-      "A) N / 2",
-      "B) N",
-      "C) N - 1",
-      "D) 2N - 2"
+      "A) $\\bar{k} = \\frac{N}{2}$",
+      "B) $\\bar{k} = N$",
+      "C) $\\bar{k} = N - 1$",
+      "D) $\\bar{k} = 2N - 2$"
     ],
     "image": null,
-    "explanation": "Every node connects to every other node in the graph, so each node has degree N - 1, making the average degree N - 1."
+    "explanation": "Every node connects to all other $N - 1$ nodes in the graph, so each node has degree $k_i = N - 1$, making the average degree $\\bar{k} = N - 1$."
   },
   {
     "numb": 10,
     "type": "Multiple Choice",
     "question": "Why are real-world networks described as 'sparse'?",
-    "answer": "A) Actual edges E are much smaller than E_max",
+    "answer": "A) Actual edges satisfy $E \\ll E_{\\max}$",
     "options": [
-      "A) Actual edges E are much smaller than E_max",
+      "A) Actual edges satisfy $E \\ll E_{\\max}$",
       "B) Nodes are completely isolated from each other",
       "C) The graph cannot be stored in computer memory",
       "D) Average path length is always infinite"
     ],
     "image": null,
-    "explanation": "In real networks (e.g. WWW, social networks), the actual number of links is a tiny fraction (often < 10^-4) of the maximum possible edges E_max."
+    "explanation": "In real networks (e.g. WWW, social networks), the actual number of links is a tiny fraction (often $< 10^{-4}$) of the maximum possible edges $E_{\\max}$."
   },
   {
     "numb": 11,
     "type": "Multiple Choice",
-    "question": "What structural rule defines a bipartite graph?",
+    "question": "What structural rule defines a bipartite graph $G = (U \\cup V, E)$?",
     "answer": "D) Nodes divide into two sets with no intra-set edges",
     "options": [
       "A) All vertices must have a degree equal to 2",
@@ -151,7 +151,7 @@
       "D) Nodes divide into two sets with no intra-set edges"
     ],
     "image": null,
-    "explanation": "A graph is bipartite if its vertices can be partitioned into two disjoint sets U and V such that every edge connects a node in U to a node in V."
+    "explanation": "A graph is bipartite if its vertices can be partitioned into two disjoint sets $U$ and $V$ such that every edge connects a node in $U$ to a node in $V$."
   },
   {
     "numb": 12,
@@ -165,7 +165,7 @@
       "D) Protein-protein physical binding interactions"
     ],
     "image": null,
-    "explanation": "Actor-Movie is a two-mode (bipartite) network: edges only exist between an actor (set U) and a movie (set V)."
+    "explanation": "Actor-Movie is a two-mode (bipartite) network: edges only exist between an actor (set $U$) and a movie (set $V$)."
   },
   {
     "numb": 13,
@@ -179,7 +179,7 @@
       "D) All edges in the original bipartite graph are inverted"
     ],
     "image": null,
-    "explanation": "In the projection onto U (authors), two author nodes are connected if they share at least one common neighbor in V (a shared paper)."
+    "explanation": "In the projection onto $U$ (authors), two author nodes are connected if they share at least one common neighbor in $V$ (a shared paper)."
   },
   {
     "numb": 14,
@@ -240,16 +240,16 @@
   {
     "numb": 18,
     "type": "Multiple Choice",
-    "question": "Examine the network in the image. What happens if the dashed edge between node 3 and node 4 is removed?",
+    "question": "Examine the network in the image. What happens if the dashed edge between node $3$ and node $4$ is removed?",
     "answer": "C) The main graph splits into two connected components",
     "options": [
       "A) All nodes in the graph become completely isolated",
-      "B) Node 7 connects to node 4 automatically",
+      "B) Node $7$ connects to node $4$ automatically",
       "C) The main graph splits into two connected components",
-      "D) The degree of node 1 is reduced to 0"
+      "D) The degree of node $1$ is reduced to $0$"
     ],
     "image": "/quizzes/SNA/SNA_Images/sna_graph_connectivity.png",
-    "explanation": "Edge (3, 4) is a bridge connecting triangle {1,2,3} to triangle {4,5,6}. Removing it breaks the connected set into two separate components."
+    "explanation": "Edge $(3, 4)$ is a bridge connecting triangle $\\{1, 2, 3\\}$ to triangle $\\{4, 5, 6\\}$. Removing it breaks the connected set into two separate components."
   },
   {
     "numb": 19,
@@ -263,7 +263,7 @@
       "D) When every node has an in-degree equal to its out-degree"
     ],
     "image": null,
-    "explanation": "A directed graph is strongly connected if for every pair of vertices u and v, there is a directed path from u to v AND from v to u."
+    "explanation": "A directed graph is strongly connected if for every pair of vertices $u$ and $v$, there is a directed path from $u$ to $v$ AND from $v$ to $u$."
   },
   {
     "numb": 20,
