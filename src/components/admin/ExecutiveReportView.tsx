@@ -196,7 +196,19 @@ export default function ExecutiveReportView() {
         useCORS: true,
         logging: false,
         backgroundColor: '#0a0a0c',
-        windowWidth: 1200
+        windowWidth: 1200,
+        scrollX: 0,
+        scrollY: 0,
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.getElementById('executive-report-document')
+          if (clonedElement) {
+            clonedElement.style.width = '1140px'
+            clonedElement.style.maxWidth = '1140px'
+            clonedElement.style.boxSizing = 'border-box'
+            clonedElement.style.paddingRight = '32px'
+            clonedElement.style.paddingLeft = '32px'
+          }
+        }
       })
 
       const imgData = canvas.toDataURL('image/jpeg', 0.95)
@@ -206,20 +218,29 @@ export default function ExecutiveReportView() {
         format: 'a4'
       })
 
-      const imgWidth = 210
+      const pageWidth = 210
       const pageHeight = 297
-      const imgHeight = (canvas.height * imgWidth) / canvas.width
-      let heightLeft = imgHeight
-      let position = 0
+      const marginMm = 6
+      const contentWidth = pageWidth - marginMm * 2 // 198mm safe printable width
+      const contentHeight = (canvas.height * contentWidth) / canvas.width
+      const printablePageHeight = pageHeight - marginMm * 2 // 285mm
 
-      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
-      heightLeft -= pageHeight
+      let heightLeft = contentHeight
+      let position = marginMm
+
+      // Fill background for seamless borders
+      pdf.setFillColor(10, 10, 12)
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F')
+      pdf.addImage(imgData, 'JPEG', marginMm, position, contentWidth, contentHeight)
+      heightLeft -= printablePageHeight
 
       while (heightLeft > 0) {
-        position = heightLeft - imgHeight
+        position = marginMm - (contentHeight - heightLeft)
         pdf.addPage()
-        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight)
-        heightLeft -= pageHeight
+        pdf.setFillColor(10, 10, 12)
+        pdf.rect(0, 0, pageWidth, pageHeight, 'F')
+        pdf.addImage(imgData, 'JPEG', marginMm, position, contentWidth, contentHeight)
+        heightLeft -= printablePageHeight
       }
 
       const fileName = `Chameleon_Executive_Report_${fromDate}_to_${toDate}.pdf`
@@ -686,7 +707,7 @@ export default function ExecutiveReportView() {
                       </div>
                     ) : (
                       <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={reportData.quizzes.performance.dailyActivity} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <AreaChart data={reportData.quizzes.performance.dailyActivity} margin={{ top: 12, right: 32, left: -10, bottom: 4 }}>
                           <defs>
                             <linearGradient id="attemptsGrad" x1="0" y1="0" x2="0" y2="1">
                               <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
@@ -703,6 +724,8 @@ export default function ExecutiveReportView() {
                             tickFormatter={(v) => v.slice(5)}
                             stroke="#737373"
                             fontSize={11}
+                            padding={{ left: 12, right: 20 }}
+                            minTickGap={24}
                           />
                           <YAxis stroke="#737373" fontSize={11} />
                           <Tooltip
@@ -742,9 +765,16 @@ export default function ExecutiveReportView() {
                       </div>
                     ) : (
                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={reportData.quizzes.performance.dailyActivity} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <LineChart data={reportData.quizzes.performance.dailyActivity} margin={{ top: 12, right: 32, left: -10, bottom: 4 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#262626" opacity={0.4} />
-                          <XAxis dataKey="date" tickFormatter={(v) => v.slice(5)} stroke="#737373" fontSize={11} />
+                          <XAxis
+                            dataKey="date"
+                            tickFormatter={(v) => v.slice(5)}
+                            stroke="#737373"
+                            fontSize={11}
+                            padding={{ left: 12, right: 20 }}
+                            minTickGap={24}
+                          />
                           <YAxis domain={[0, 100]} stroke="#737373" fontSize={11} />
                           <Tooltip
                             formatter={(v: any) => [`${v}%`, 'Average Score']}
@@ -780,7 +810,7 @@ export default function ExecutiveReportView() {
                       </div>
                     ) : (
                       <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={reportData.users.dailyRegistrations} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <AreaChart data={reportData.users.dailyRegistrations} margin={{ top: 12, right: 32, left: -10, bottom: 4 }}>
                           <defs>
                             <linearGradient id="regGrad" x1="0" y1="0" x2="0" y2="1">
                               <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4} />
@@ -788,7 +818,14 @@ export default function ExecutiveReportView() {
                             </linearGradient>
                           </defs>
                           <CartesianGrid strokeDasharray="3 3" stroke="#262626" opacity={0.4} />
-                          <XAxis dataKey="date" tickFormatter={(v) => v.slice(5)} stroke="#737373" fontSize={11} />
+                          <XAxis
+                            dataKey="date"
+                            tickFormatter={(v) => v.slice(5)}
+                            stroke="#737373"
+                            fontSize={11}
+                            padding={{ left: 12, right: 20 }}
+                            minTickGap={24}
+                          />
                           <YAxis stroke="#737373" fontSize={11} />
                           <Tooltip
                             contentStyle={{
@@ -821,9 +858,15 @@ export default function ExecutiveReportView() {
 
                   <div className="h-[280px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={reportData.quizzes.performance.peakStudyHours} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <BarChart data={reportData.quizzes.performance.peakStudyHours} margin={{ top: 12, right: 32, left: -10, bottom: 4 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#262626" opacity={0.4} />
-                        <XAxis dataKey="label" stroke="#737373" fontSize={10} interval={1} />
+                        <XAxis
+                          dataKey="label"
+                          stroke="#737373"
+                          fontSize={10}
+                          interval={1}
+                          padding={{ left: 8, right: 14 }}
+                        />
                         <YAxis stroke="#737373" fontSize={11} />
                         <Tooltip
                           formatter={(v: any) => [`${v} attempts`, 'Volume']}
