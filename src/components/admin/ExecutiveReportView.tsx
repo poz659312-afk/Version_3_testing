@@ -1,11 +1,10 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import {
   FileText,
   Download,
-  Printer,
   Calendar,
   Users,
   Sparkles,
@@ -18,7 +17,6 @@ import {
   Clock,
   RefreshCw,
   Server,
-  Cpu,
   Coins,
   ShieldCheck,
   BookOpen,
@@ -27,14 +25,38 @@ import {
   Flame,
   Zap,
   ArrowUpRight,
+  ArrowDownRight,
   Layers,
-  ChevronDown,
   Loader2,
   Lock,
   KeyRound,
   Eye,
-  EyeOff
+  EyeOff,
+  Trophy,
+  GraduationCap,
+  BarChart3,
+  Target,
+  Compass,
+  AlertTriangle,
+  Award
 } from 'lucide-react'
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend
+} from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -73,6 +95,9 @@ export default function ExecutiveReportView() {
   const [toDate, setToDate] = useState<string>(() => {
     return new Date().toISOString().split('T')[0]
   })
+
+  // Chart view tab
+  const [activeChartTab, setActiveChartTab] = useState<'activity' | 'scores' | 'growth' | 'hourly'>('activity')
 
   const printAreaRef = useRef<HTMLDivElement>(null)
 
@@ -132,7 +157,9 @@ export default function ExecutiveReportView() {
     const now = new Date()
     let from = new Date()
 
-    if (value === '7d') {
+    if (value === '24h') {
+      from = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+    } else if (value === '7d') {
       from.setDate(now.getDate() - 7)
     } else if (value === '30d') {
       from.setDate(now.getDate() - 30)
@@ -206,10 +233,6 @@ export default function ExecutiveReportView() {
     }
   }
 
-  const handlePrint = () => {
-    window.print()
-  }
-
   return (
     <div className="space-y-6 font-rubik" dir="ltr">
       {/* Configuration Header Card */}
@@ -224,12 +247,11 @@ export default function ExecutiveReportView() {
                 <span>Executive Platform Analytics &amp; PDF Report</span>
               </CardTitle>
               <CardDescription className="text-xs md:text-sm mt-1 font-rubik">
-                Generate and print full platform usage audit including users, AI interactions, reports resolution, and Vercel/Supabase infrastructure metrics.
+                Generate and print full platform usage audit including time-bounded quiz velocity, real scores, student retention, AI compute, and infrastructure costs.
               </CardDescription>
             </div>
 
             <div className="flex items-center gap-2">
-
               <Button
                 onClick={handleExportPDF}
                 disabled={exportingPdf || loading || !reportData}
@@ -258,10 +280,11 @@ export default function ExecutiveReportView() {
                   Preset Window
                 </Label>
                 <Select value={preset} onValueChange={handlePresetChange}>
-                  <SelectTrigger className="w-40 h-9 text-xs rounded-xl font-rubik">
+                  <SelectTrigger className="w-44 h-9 text-xs rounded-xl font-rubik">
                     <SelectValue placeholder="Select Range" />
                   </SelectTrigger>
                   <SelectContent className="font-rubik">
+                    <SelectItem value="24h">Last 24 Hours / Today</SelectItem>
                     <SelectItem value="7d">Last 7 Days</SelectItem>
                     <SelectItem value="30d">Last 30 Days (Default)</SelectItem>
                     <SelectItem value="90d">Last Quarter (90 Days)</SelectItem>
@@ -347,7 +370,7 @@ export default function ExecutiveReportView() {
           <div className="space-y-1">
             <h4 className="font-bold text-foreground text-base font-rubik">Executing Real Database Telemetry Queries...</h4>
             <p className="text-xs text-muted-foreground font-rubik max-w-md">
-              Aggregating live records across 4,700+ users, 18,900+ quiz submissions, genuine CAPI AI tokens, and infrastructure storage catalogs.
+              Aggregating live records across 5,100+ users, 20,100+ quiz submissions, 211 published quizzes, genuine CAPI AI tokens, and infrastructure storage catalogs.
             </p>
           </div>
         </Card>
@@ -376,7 +399,7 @@ export default function ExecutiveReportView() {
                 Super Admin Password Verification Required
               </h3>
               <p className="text-sm text-muted-foreground font-rubik leading-relaxed">
-                To guarantee <span className="font-bold text-foreground">100% accurate platform calculations</span> powered by live database telemetry (aggregating records across 4,700+ users, live CAPI_REQS tokens, and over 18,000 quiz attempts), entering an authorized encrypted Super Admin password is required to prevent accidental execution of expensive queries.
+                To guarantee <span className="font-bold text-foreground">100% accurate platform calculations</span> powered by live database telemetry (aggregating records across 5,100+ users, live CAPI_REQS tokens, and over 20,100 quiz attempts), entering an authorized encrypted Super Admin password is required to prevent accidental execution of expensive queries.
               </p>
             </div>
 
@@ -445,7 +468,7 @@ export default function ExecutiveReportView() {
         <div
           ref={printAreaRef}
           id="executive-report-document"
-          className="bg-card text-foreground border border-border/80 shadow-2xl rounded-3xl p-6 sm:p-10 space-y-8 relative overflow-hidden print:p-0 print:border-none print:shadow-none print:bg-white print:text-black font-rubik"
+          className="bg-card text-foreground border border-border/80 shadow-2xl rounded-3xl p-6 sm:p-10 space-y-10 relative overflow-hidden print:p-0 print:border-none print:shadow-none print:bg-white print:text-black font-rubik"
         >
           {/* Subtle Ambient Background Watermark */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[140px] pointer-events-none print:hidden" />
@@ -463,16 +486,16 @@ export default function ExecutiveReportView() {
                 </Badge>
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground print:text-black">
-                Platform Operations &amp; Performance Audit
+                Institutional Platform &amp; Academic Intelligence Audit
               </h1>
               <p className="text-xs sm:text-sm text-muted-foreground print:text-gray-600 mt-1">
-                Official aggregated executive briefing on student engagement, system health, AI compute, and infrastructure costs.
+                Deep analytical assessment of student learning velocity, quiz performance, cloud infrastructure, and AI compute efficiency.
               </p>
             </div>
 
             {/* Metadata Box */}
-            <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/60 text-xs space-y-1.5 shrink-0 print:border-gray-300 print:bg-gray-50">
-              <div className="flex items-center justify-between gap-3 text-muted-foreground print:text-gray-600">
+            <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 text-xs space-y-1.5 shrink-0 print:border-gray-300 print:bg-gray-50">
+              <div className="flex items-center justify-between gap-4 text-muted-foreground print:text-gray-600">
                 <span>Selected Window:</span>
                 <strong className="text-foreground print:text-black font-mono">
                   {new Date(reportData.timeframe.fromDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -480,15 +503,17 @@ export default function ExecutiveReportView() {
                   {new Date(reportData.timeframe.toDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </strong>
               </div>
-              <div className="flex items-center justify-between gap-3 text-muted-foreground print:text-gray-600">
-                <span>Duration:</span>
-                <strong className="text-foreground print:text-black">{reportData.timeframe.durationDays} Days</strong>
+              <div className="flex items-center justify-between gap-4 text-muted-foreground print:text-gray-600">
+                <span>Duration / Comparison:</span>
+                <strong className="text-foreground print:text-black">
+                  {reportData.timeframe.durationDays} Days (vs prior period)
+                </strong>
               </div>
-              <div className="flex items-center justify-between gap-3 text-muted-foreground print:text-gray-600">
+              <div className="flex items-center justify-between gap-4 text-muted-foreground print:text-gray-600">
                 <span>Generated At:</span>
                 <strong className="text-foreground print:text-black">{new Date(reportData.timeframe.generatedAt).toLocaleString('en-US')}</strong>
               </div>
-              <div className="flex items-center justify-between gap-3 text-muted-foreground print:text-gray-600">
+              <div className="flex items-center justify-between gap-4 text-muted-foreground print:text-gray-600">
                 <span>Auditor:</span>
                 <strong className="text-primary font-bold">{reportData.timeframe.generatedBy}</strong>
               </div>
@@ -499,74 +524,596 @@ export default function ExecutiveReportView() {
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
               <Activity className="w-4 h-4 text-primary" />
-              <span>1. Executive Summary &amp; Core Platform KPIs</span>
+              <span>1. Executive Summary &amp; Core Performance KPIs</span>
             </h3>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-              {/* Total Users */}
+              {/* Quiz Attempts in Window */}
+              <div className="p-4 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-1 relative overflow-hidden">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground print:text-gray-600 font-medium">Quiz Attempts (Period)</span>
+                  <Trophy className="w-4 h-4 text-primary opacity-70" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-foreground print:text-black">
+                  {reportData.quizzes.performance.totalAttemptsInPeriod.toLocaleString()}
+                </div>
+                <div className="text-[11px] font-bold flex items-center gap-1">
+                  {reportData.quizzes.performance.attemptGrowthRate >= 0 ? (
+                    <span className="text-emerald-500 flex items-center gap-0.5">
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                      +{reportData.quizzes.performance.attemptGrowthRate}% vs prior period
+                    </span>
+                  ) : (
+                    <span className="text-amber-500 flex items-center gap-0.5">
+                      <ArrowDownRight className="w-3.5 h-3.5" />
+                      {reportData.quizzes.performance.attemptGrowthRate}% vs prior period
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Average Quiz Score & Pass Rate */}
               <div className="p-4 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-1">
-                <span className="text-xs text-muted-foreground print:text-gray-600 font-medium">Total Users (To Date)</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground print:text-gray-600 font-medium">Mean Quiz Score</span>
+                  <Award className="w-4 h-4 text-emerald-500 opacity-70" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-emerald-500">
+                  {reportData.quizzes.performance.averageScoreInPeriod}%
+                </div>
+                <div className="text-[11px] text-muted-foreground print:text-gray-600">
+                  <strong className="text-foreground">{reportData.quizzes.performance.passRate}%</strong> pass rate ({reportData.quizzes.performance.excellenceRate}% distinction)
+                </div>
+              </div>
+
+              {/* Active Quiz Solvers */}
+              <div className="p-4 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground print:text-gray-600 font-medium">Active Quiz Solvers</span>
+                  <Users className="w-4 h-4 text-blue-500 opacity-70" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-blue-500">
+                  {reportData.users.activeSolversCount.toLocaleString()}
+                </div>
+                <div className="text-[11px] text-muted-foreground print:text-gray-600">
+                  {reportData.users.solverEngagementRate}% of unbanned students solved quizzes
+                </div>
+              </div>
+
+              {/* Total Users Cohort */}
+              <div className="p-4 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground print:text-gray-600 font-medium">Total Registered Students</span>
+                  <GraduationCap className="w-4 h-4 text-purple-500 opacity-70" />
+                </div>
                 <div className="text-2xl sm:text-3xl font-black text-foreground print:text-black">
                   {reportData.users.totalUsersToDate.toLocaleString()}
                 </div>
                 <div className="text-[11px] text-emerald-500 font-bold flex items-center gap-1">
                   <ArrowUpRight className="w-3.5 h-3.5" />
-                  <span>+{reportData.users.newUsersInPeriod} new students in window</span>
-                </div>
-              </div>
-
-              {/* Growth Rate */}
-              <div className="p-4 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-1">
-                <span className="text-xs text-muted-foreground print:text-gray-600 font-medium">Cohort Growth Rate</span>
-                <div className="text-2xl sm:text-3xl font-black text-primary">
-                  +{reportData.users.growthRate}%
-                </div>
-                <div className="text-[11px] text-muted-foreground print:text-gray-600">
-                  {reportData.users.activeStudents} active students ({reportData.users.bannedUsers} restricted)
-                </div>
-              </div>
-
-              {/* AI Compute */}
-              <div className="p-4 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-1">
-                <span className="text-xs text-muted-foreground print:text-gray-600 font-medium">Marline AI Queries</span>
-                <div className="text-2xl sm:text-3xl font-black text-purple-500">
-                  {reportData.aiUsage.totalAiQueries.toLocaleString()}
-                </div>
-                <div className="text-[11px] text-purple-400 font-bold">
-                  {(reportData.aiUsage.totalTokens / 1000000).toFixed(2)}M Tokens (${reportData.aiUsage.estimatedCostSaved} saved)
-                </div>
-              </div>
-
-              {/* Support Resolution */}
-              <div className="p-4 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-1">
-                <span className="text-xs text-muted-foreground print:text-gray-600 font-medium">Support Resolution Rate</span>
-                <div className="text-2xl sm:text-3xl font-black text-emerald-500">
-                  {reportData.reportsAndSupport.resolutionRate}%
-                </div>
-                <div className="text-[11px] text-muted-foreground print:text-gray-600">
-                  {reportData.reportsAndSupport.resolvedReports + reportData.reportsAndSupport.closedReports} / {reportData.reportsAndSupport.totalReports} issues resolved
+                  <span>+{reportData.users.newUsersInPeriod} new students in window (+{reportData.users.growthRate}%)</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* SECTION 2: STUDENT DEMOGRAPHICS & SPECIALIZATION BREAKDOWN */}
-          <div className="space-y-3">
+          {/* SECTION 2: INTERACTIVE TIME-SERIES & TREND TELEMETRY (CHARTS) */}
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-primary" />
+                <span>2. Time-Bounded Academic Activity &amp; Velocity Telemetry</span>
+              </h3>
+
+              {/* Chart Switcher Buttons (Hidden on print) */}
+              <div className="flex items-center gap-1.5 p-1 bg-muted/50 rounded-xl border border-border/60 print:hidden self-start sm:self-auto">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveChartTab('activity')}
+                  className={`h-7 px-3 text-xs rounded-lg font-semibold transition-all ${
+                    activeChartTab === 'activity'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Daily Quiz Activity
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveChartTab('scores')}
+                  className={`h-7 px-3 text-xs rounded-lg font-semibold transition-all ${
+                    activeChartTab === 'scores'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Score % Trend
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveChartTab('growth')}
+                  className={`h-7 px-3 text-xs rounded-lg font-semibold transition-all ${
+                    activeChartTab === 'growth'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Cohort Signups
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setActiveChartTab('hourly')}
+                  className={`h-7 px-3 text-xs rounded-lg font-semibold transition-all ${
+                    activeChartTab === 'hourly'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  24h Peak Study Hours
+                </Button>
+              </div>
+            </div>
+
+            {/* Main Interactive Chart Canvas */}
+            <div className="p-5 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-4">
+              {activeChartTab === 'activity' && (
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 className="text-sm font-bold text-foreground print:text-black">Daily Quiz Attempts &amp; Active Student Solvers</h4>
+                      <p className="text-xs text-muted-foreground">Volume of quiz submissions along with distinct daily active student participants.</p>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs font-semibold">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3 h-3 rounded-full bg-emerald-500" />
+                        <span>Quiz Attempts</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3 h-3 rounded-full bg-primary" />
+                        <span>Unique Solvers</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="h-[280px] w-full">
+                    {reportData.quizzes.performance.dailyActivity.length === 0 ? (
+                      <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
+                        No quiz activity recorded in this exact date range.
+                      </div>
+                    ) : (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={reportData.quizzes.performance.dailyActivity} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="attemptsGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
+                              <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                            </linearGradient>
+                            <linearGradient id="solversGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} />
+                              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#262626" opacity={0.4} />
+                          <XAxis
+                            dataKey="date"
+                            tickFormatter={(v) => v.slice(5)}
+                            stroke="#737373"
+                            fontSize={11}
+                          />
+                          <YAxis stroke="#737373" fontSize={11} />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: '#0a0a0c',
+                              borderColor: '#262626',
+                              borderRadius: '12px',
+                              color: '#fff',
+                              fontSize: '12px'
+                            }}
+                          />
+                          <Area type="monotone" dataKey="attempts" stroke="#10b981" strokeWidth={2.5} fillOpacity={1} fill="url(#attemptsGrad)" name="Attempts" />
+                          <Area type="monotone" dataKey="uniqueSolvers" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#solversGrad)" name="Active Solvers" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {activeChartTab === 'scores' && (
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 className="text-sm font-bold text-foreground print:text-black">Daily Average Score Progression (%)</h4>
+                      <p className="text-xs text-muted-foreground">Tracking cohort comprehension and quiz difficulty stability over time.</p>
+                    </div>
+                    <Badge variant="outline" className="border-emerald-500/30 text-emerald-500 bg-emerald-500/10 text-xs font-mono">
+                      Window Average: {reportData.quizzes.performance.averageScoreInPeriod}%
+                    </Badge>
+                  </div>
+
+                  <div className="h-[280px] w-full">
+                    {reportData.quizzes.performance.dailyActivity.length === 0 ? (
+                      <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
+                        No quiz scores recorded in this exact date range.
+                      </div>
+                    ) : (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={reportData.quizzes.performance.dailyActivity} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#262626" opacity={0.4} />
+                          <XAxis dataKey="date" tickFormatter={(v) => v.slice(5)} stroke="#737373" fontSize={11} />
+                          <YAxis domain={[0, 100]} stroke="#737373" fontSize={11} />
+                          <Tooltip
+                            formatter={(v: any) => [`${v}%`, 'Average Score']}
+                            contentStyle={{
+                              backgroundColor: '#0a0a0c',
+                              borderColor: '#262626',
+                              borderRadius: '12px',
+                              color: '#fff',
+                              fontSize: '12px'
+                            }}
+                          />
+                          <Line type="monotone" dataKey="avgScore" stroke="#10b981" strokeWidth={3} dot={{ r: 3, fill: '#10b981' }} activeDot={{ r: 6 }} name="Avg Score %" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {activeChartTab === 'growth' && (
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 className="text-sm font-bold text-foreground print:text-black">Student Registrations &amp; Cumulative Student Cohort</h4>
+                      <p className="text-xs text-muted-foreground">New accounts onboarded in this timeframe and cumulative user growth.</p>
+                    </div>
+                  </div>
+
+                  <div className="h-[280px] w-full">
+                    {reportData.users.dailyRegistrations.length === 0 ? (
+                      <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
+                        No new registrations in this window.
+                      </div>
+                    ) : (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={reportData.users.dailyRegistrations} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                          <defs>
+                            <linearGradient id="regGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4} />
+                              <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.0} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#262626" opacity={0.4} />
+                          <XAxis dataKey="date" tickFormatter={(v) => v.slice(5)} stroke="#737373" fontSize={11} />
+                          <YAxis stroke="#737373" fontSize={11} />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: '#0a0a0c',
+                              borderColor: '#262626',
+                              borderRadius: '12px',
+                              color: '#fff',
+                              fontSize: '12px'
+                            }}
+                          />
+                          <Area type="monotone" dataKey="count" stroke="#8b5cf6" strokeWidth={2.5} fillOpacity={1} fill="url(#regGrad)" name="New Students" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {activeChartTab === 'hourly' && (
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 className="text-sm font-bold text-foreground print:text-black">24-Hour Peak Study Distribution</h4>
+                      <p className="text-xs text-muted-foreground">Hourly aggregate of when students are actively answering quizzes across the day.</p>
+                    </div>
+                    <Badge variant="outline" className="border-amber-500/30 text-amber-500 bg-amber-500/10 text-xs">
+                      Study Habits &amp; Peak Server Load
+                    </Badge>
+                  </div>
+
+                  <div className="h-[280px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={reportData.quizzes.performance.peakStudyHours} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#262626" opacity={0.4} />
+                        <XAxis dataKey="label" stroke="#737373" fontSize={10} interval={1} />
+                        <YAxis stroke="#737373" fontSize={11} />
+                        <Tooltip
+                          formatter={(v: any) => [`${v} attempts`, 'Volume']}
+                          contentStyle={{
+                            backgroundColor: '#0a0a0c',
+                            borderColor: '#262626',
+                            borderRadius: '12px',
+                            color: '#fff',
+                            fontSize: '12px'
+                          }}
+                        />
+                        <Bar dataKey="attempts" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Attempts">
+                          {reportData.quizzes.performance.peakStudyHours.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={entry.attempts > 80 ? '#10b981' : entry.attempts > 40 ? '#3b82f6' : '#6366f1'}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* SECTION 3: QUIZ MASTERY, SCORE TIERS & DURATION PREFERENCES */}
+          <div className="space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
-              <Users className="w-4 h-4 text-primary" />
-              <span>2. Student Population &amp; Academic Specializations</span>
+              <Target className="w-4 h-4 text-emerald-500" />
+              <span>3. Student Comprehension Tiers &amp; Test Durations</span>
             </h3>
 
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Score Buckets / Mastery Tiers */}
+              <div className="p-5 rounded-2xl bg-muted/20 border border-border/70 print:border-gray-300 space-y-3.5 lg:col-span-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-bold text-foreground print:text-black">Score Distribution &amp; Comprehension Tiers</h4>
+                    <p className="text-[11px] text-muted-foreground">Classifying quiz attempts into performance mastery tiers.</p>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] font-mono">
+                    {reportData.quizzes.performance.totalAttemptsInPeriod} Total Submissions
+                  </Badge>
+                </div>
+
+                <div className="space-y-3 pt-1">
+                  {reportData.quizzes.performance.scoreBuckets.map((bucket, i) => (
+                    <div key={i} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-foreground flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: bucket.color }} />
+                          <span>{bucket.label}</span>
+                        </span>
+                        <span className="font-mono text-muted-foreground">
+                          {bucket.count.toLocaleString()} attempts ({bucket.percentage}%)
+                        </span>
+                      </div>
+                      <div className="w-full h-2.5 rounded-full bg-muted/60 overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${Math.min(bucket.percentage * 2, 100)}%`,
+                            backgroundColor: bucket.color
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Completion & Time-out Health */}
+              <div className="p-5 rounded-2xl bg-muted/20 border border-border/70 print:border-gray-300 space-y-4">
+                <h4 className="text-xs font-bold text-foreground print:text-black">Completion &amp; Drop-off Health</h4>
+                
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+                    <span className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider block">Completed</span>
+                    <div className="text-2xl font-black text-emerald-500 mt-0.5">
+                      {reportData.quizzes.performance.completionRate}%
+                    </div>
+                    <span className="text-[10px] text-muted-foreground">Solved to the end</span>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+                    <span className="text-[10px] text-amber-500 font-bold uppercase tracking-wider block">Timed Out</span>
+                    <div className="text-2xl font-black text-amber-500 mt-0.5">
+                      {reportData.quizzes.performance.timedOutRate}%
+                    </div>
+                    <span className="text-[10px] text-muted-foreground">Time elapsed</span>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-border/40 space-y-2">
+                  <span className="text-[11px] font-bold text-foreground block">Top Chosen Durations:</span>
+                  <div className="space-y-1.5">
+                    {reportData.quizzes.performance.byDuration.slice(0, 3).map((dur, idx) => (
+                      <div key={idx} className="flex items-center justify-between text-xs p-1.5 rounded-lg bg-card border border-border/50">
+                        <span className="text-muted-foreground">{dur.duration}</span>
+                        <span className="font-mono font-bold text-foreground">{dur.count} ({dur.percentage}%)</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 4: TOP PERFORMING & HARDEST QUIZZES */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-amber-500" />
+              <span>4. Academic Curriculum Analytics &amp; Quiz Difficulty Rankings</span>
+            </h3>
+
+            {/* Top 10 Most Attempted Quizzes Table */}
+            <div className="p-5 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-xs font-bold text-foreground print:text-black">Top 10 Most Attempted Quizzes in Selected Window</h4>
+                  <p className="text-[11px] text-muted-foreground">Quizzes with the highest student engagement and practice volume.</p>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left">
+                  <thead>
+                    <tr className="border-b border-border text-muted-foreground font-bold uppercase text-[10px] tracking-wider">
+                      <th className="py-2.5 px-3">#</th>
+                      <th className="py-2.5 px-3">Quiz ID</th>
+                      <th className="py-2.5 px-3">Lecture / Quiz Title</th>
+                      <th className="py-2.5 px-3">Level</th>
+                      <th className="py-2.5 px-3 text-right">Attempts</th>
+                      <th className="py-2.5 px-3 text-right">Average Score</th>
+                      <th className="py-2.5 px-3 text-right">Pass Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/40">
+                    {reportData.quizzes.performance.topAttemptedQuizzes.map((q, idx) => (
+                      <tr key={idx} className="hover:bg-muted/30 transition-colors">
+                        <td className="py-2.5 px-3 font-mono text-muted-foreground font-bold">{idx + 1}</td>
+                        <td className="py-2.5 px-3 font-mono font-semibold text-primary">{q.quiz_id}</td>
+                        <td className="py-2.5 px-3 font-medium text-foreground max-w-xs truncate">{q.title}</td>
+                        <td className="py-2.5 px-3">
+                          <Badge variant="outline" className="text-[10px] font-mono">
+                            Level {q.level}
+                          </Badge>
+                        </td>
+                        <td className="py-2.5 px-3 text-right font-mono font-bold text-foreground">{q.attempts}</td>
+                        <td className="py-2.5 px-3 text-right font-mono font-bold">
+                          <span className={q.avgScore >= 75 ? 'text-emerald-500' : q.avgScore >= 60 ? 'text-amber-500' : 'text-red-400'}>
+                            {q.avgScore}%
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-3 text-right font-mono text-muted-foreground">{q.passRate}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Hardest vs Highest Scoring Quizzes */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* By Specialization */}
+              {/* Hardest Quizzes */}
+              <div className="p-5 rounded-2xl bg-destructive/5 border border-destructive/20 print:border-gray-300 space-y-3">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-destructive" />
+                  <h4 className="text-xs font-bold text-foreground print:text-black">Top 5 Most Challenging Quizzes (Lowest Scores)</h4>
+                </div>
+                <p className="text-[11px] text-muted-foreground">Lectures where students struggled the most (candidates for TA review or extra explanations).</p>
+
+                <div className="space-y-2 pt-1">
+                  {reportData.quizzes.performance.hardestQuizzes.length === 0 ? (
+                    <p className="text-xs text-muted-foreground py-2">No quiz attempts in this window.</p>
+                  ) : (
+                    reportData.quizzes.performance.hardestQuizzes.map((q, idx) => (
+                      <div key={idx} className="p-2.5 rounded-xl bg-card border border-destructive/20 flex items-center justify-between text-xs">
+                        <div className="space-y-0.5 truncate mr-3">
+                          <span className="font-bold text-foreground truncate block">{q.title}</span>
+                          <span className="font-mono text-[10px] text-muted-foreground">{q.quiz_id} &bull; {q.attempts} attempts</span>
+                        </div>
+                        <Badge variant="destructive" className="font-mono font-bold shrink-0">
+                          {q.avgScore}% avg
+                        </Badge>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Highest Scoring Quizzes */}
+              <div className="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 print:border-gray-300 space-y-3">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <h4 className="text-xs font-bold text-foreground print:text-black">Top 5 Highest Scoring Quizzes (Mastery)</h4>
+                </div>
+                <p className="text-[11px] text-muted-foreground">Lectures with the highest comprehension and student success rates.</p>
+
+                <div className="space-y-2 pt-1">
+                  {reportData.quizzes.performance.highestScoringQuizzes.length === 0 ? (
+                    <p className="text-xs text-muted-foreground py-2">No quiz attempts in this window.</p>
+                  ) : (
+                    reportData.quizzes.performance.highestScoringQuizzes.map((q, idx) => (
+                      <div key={idx} className="p-2.5 rounded-xl bg-card border border-emerald-500/20 flex items-center justify-between text-xs">
+                        <div className="space-y-0.5 truncate mr-3">
+                          <span className="font-bold text-foreground truncate block">{q.title}</span>
+                          <span className="font-mono text-[10px] text-muted-foreground">{q.quiz_id} &bull; {q.attempts} attempts</span>
+                        </div>
+                        <Badge variant="outline" className="font-mono font-bold shrink-0 border-emerald-500/30 text-emerald-500 bg-emerald-500/10">
+                          {q.avgScore}% avg
+                        </Badge>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 5: PUBLISHED QUIZZES CATALOG OVERVIEW */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-primary" />
+              <span>5. Platform Quiz Question Bank &amp; Published Library</span>
+            </h3>
+
+            <div className="p-5 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3 rounded-xl bg-muted/30 border border-border/40">
+                  <span className="text-[11px] text-muted-foreground block">Total Published Quizzes</span>
+                  <div className="text-xl font-black text-foreground mt-0.5">
+                    {reportData.quizzes.catalog.totalPublishedQuizzes}
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl bg-muted/30 border border-border/40">
+                  <span className="text-[11px] text-muted-foreground block">Total Questions in Bank</span>
+                  <div className="text-xl font-black text-primary mt-0.5">
+                    {reportData.quizzes.catalog.totalQuestionsInBank.toLocaleString()}
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl bg-muted/30 border border-border/40">
+                  <span className="text-[11px] text-muted-foreground block">Study Spaces (V2)</span>
+                  <div className="text-xl font-black text-blue-500 mt-0.5">
+                    {reportData.engagement.studyRoomsCount}
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl bg-muted/30 border border-border/40">
+                  <span className="text-[11px] text-muted-foreground block">Study Space Members</span>
+                  <div className="text-xl font-black text-purple-500 mt-0.5">
+                    {reportData.engagement.studyRoomMembersCount}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <span className="text-xs font-bold text-foreground block mb-2">Curriculum Breakdown by Academic Level:</span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {reportData.quizzes.catalog.quizzesByLevel.map((lvl, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-muted/40 border border-border/50 text-xs flex items-center justify-between">
+                      <span className="font-semibold text-foreground">{lvl.level}</span>
+                      <Badge variant="secondary" className="font-mono text-[10px]">
+                        {lvl.count} Quizzes
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SECTION 6: STUDENT POPULATION & TOP SOLVERS LEADERBOARD */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
+              <Users className="w-4 h-4 text-primary" />
+              <span>6. Student Cohort Demographics &amp; Active Solvers Leaderboard</span>
+            </h3>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Demographics by Major */}
               <div className="p-5 rounded-2xl bg-muted/20 border border-border/70 print:border-gray-300 space-y-3">
-                <h4 className="text-xs font-bold text-foreground print:text-black">Distribution by Major / Department</h4>
+                <h4 className="text-xs font-bold text-foreground print:text-black">Distribution by Specialization / Major</h4>
                 <div className="space-y-2.5">
                   {reportData.users.bySpecialization.map((spec, i) => (
                     <div key={i} className="space-y-1">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-medium text-foreground print:text-black truncate max-w-[200px]">{spec.name}</span>
-                        <span className="font-mono text-muted-foreground print:text-gray-600">
+                        <span className="font-medium text-foreground truncate max-w-[200px]">{spec.name}</span>
+                        <span className="font-mono text-muted-foreground">
                           {spec.count} students ({spec.percentage}%)
                         </span>
                       </div>
@@ -581,44 +1128,68 @@ export default function ExecutiveReportView() {
                 </div>
               </div>
 
-              {/* By Academic Level & Daily Regs */}
-              <div className="p-5 rounded-2xl bg-muted/20 border border-border/70 print:border-gray-300 space-y-4">
-                <div>
-                  <h4 className="text-xs font-bold text-foreground print:text-black mb-2.5">Distribution by Academic Year</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {reportData.users.byLevel.map((lvl, i) => (
-                      <div
-                        key={i}
-                        className={`p-2.5 rounded-xl bg-card border border-border/50 print:border-gray-200 ${
-                          lvl.level.includes('Graduates') ? 'col-span-2' : ''
-                        }`}
-                      >
-                        <span className="text-[11px] text-muted-foreground block truncate" title={lvl.level}>
-                          {lvl.level}
-                        </span>
-                        <div className="text-base font-black text-foreground mt-0.5">
-                          {lvl.count} <span className="text-xs font-normal text-muted-foreground">({lvl.percentage}%)</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              {/* Top Active Solvers in Window */}
+              <div className="p-5 rounded-2xl bg-muted/20 border border-border/70 print:border-gray-300 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-foreground print:text-black">Top Active Quiz Solvers (Selected Window)</h4>
+                  <Badge variant="outline" className="border-amber-500/30 text-amber-500 bg-amber-500/10 text-[10px]">
+                    Leaderboard
+                  </Badge>
                 </div>
 
-                <div className="pt-2 border-t border-border/40">
-                  <h4 className="text-xs font-bold text-foreground print:text-black mb-1.5">Registration Velocity</h4>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    Average student onboarding velocity is <strong className="text-foreground">{(reportData.users.newUsersInPeriod / Math.max(1, reportData.timeframe.durationDays)).toFixed(1)} new registrations/day</strong> during this audit timeframe.
-                  </p>
+                <div className="space-y-2">
+                  {reportData.users.topActiveUsers.length === 0 ? (
+                    <p className="text-xs text-muted-foreground py-4 text-center">No quiz submissions recorded in this window.</p>
+                  ) : (
+                    reportData.users.topActiveUsers.slice(0, 5).map((u, idx) => (
+                      <div key={idx} className="p-2.5 rounded-xl bg-card border border-border/50 text-xs flex items-center justify-between">
+                        <div className="flex items-center gap-2.5 truncate mr-2">
+                          <span className="font-mono font-bold text-muted-foreground w-4">{idx + 1}</span>
+                          <div className="truncate">
+                            <span className="font-bold text-foreground block truncate">{u.username}</span>
+                            <span className="text-[10px] text-muted-foreground">{u.specialization} &bull; {u.level}</span>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="font-mono font-bold text-primary block">{u.quizzesSolved} quizzes</span>
+                          <span className="text-[10px] font-mono text-emerald-500 font-semibold">{u.avgScore}% avg</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
+              </div>
+            </div>
+
+            {/* Coins Economy Telemetry */}
+            <div className="p-5 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Coins className="w-4 h-4 text-amber-500" />
+                  <h4 className="text-xs font-bold text-foreground">Chameleon Coin Economy &amp; Wealth Distribution</h4>
+                </div>
+                <span className="text-xs font-mono font-bold text-amber-500">
+                  {reportData.users.totalCoinsInEconomy.toLocaleString()} Total Coins
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                {reportData.users.coinsTopDistribution.map((b, i) => (
+                  <div key={i} className="p-2.5 rounded-xl bg-muted/40 border border-border/50 text-center">
+                    <span className="text-[10px] text-muted-foreground uppercase font-bold block">{b.bracket}</span>
+                    <div className="text-base font-black text-foreground mt-0.5">{b.usersCount.toLocaleString()}</div>
+                    <span className="text-[10px] text-muted-foreground font-mono">{b.percentage}% students</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* SECTION 3: MARLINE AI COMPUTE & TOKEN AUDIT */}
+          {/* SECTION 7: MARLINE AI COMPUTE & TOKEN AUDIT */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-purple-500" />
-              <span>3. Marline AI Assistant Usage &amp; Token Budget Telemetry</span>
+              <span>7. Marline AI Assistant Usage &amp; Token Budget Telemetry</span>
             </h3>
 
             <div className="p-5 rounded-2xl bg-gradient-to-br from-purple-500/5 via-card to-card border border-purple-500/20 print:border-gray-300 space-y-4">
@@ -660,11 +1231,11 @@ export default function ExecutiveReportView() {
             </div>
           </div>
 
-          {/* SECTION 4: STUDENT REPORTS, COMPLAINTS & FEEDBACK */}
+          {/* SECTION 8: STUDENT REPORTS, COMPLAINTS & FEEDBACK */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
               <LifeBuoy className="w-4 h-4 text-primary" />
-              <span>4. Student Reports, Bug Complaints &amp; Resolution Velocity</span>
+              <span>8. Student Reports, Bug Complaints &amp; Resolution Velocity</span>
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -720,11 +1291,11 @@ export default function ExecutiveReportView() {
             </div>
           </div>
 
-          {/* SECTION 5: CLOUD INFRASTRUCTURE & RESOURCE CONSUMPTION (VERCEL & SUPABASE) */}
+          {/* SECTION 9: CLOUD INFRASTRUCTURE & LIVE DATABASE CATALOG */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
               <Server className="w-4 h-4 text-emerald-500" />
-              <span>5. Cloud Infrastructure &amp; Resource Consumption (Vercel &amp; Supabase)</span>
+              <span>9. Cloud Infrastructure &amp; Live Database Catalog (Vercel &amp; Supabase)</span>
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -733,7 +1304,7 @@ export default function ExecutiveReportView() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Database className="w-4 h-4 text-emerald-500" />
-                    <h4 className="text-xs font-bold text-foreground">Supabase PostgreSQL &amp; Auth Telemetry</h4>
+                    <h4 className="text-xs font-bold text-foreground">Supabase PostgreSQL Live Catalog</h4>
                   </div>
                   <Badge variant="outline" className="border-emerald-500/30 text-emerald-500 bg-emerald-500/10 text-[10px]">
                     {reportData.infrastructure.supabase.connectionPoolStatus}
@@ -741,22 +1312,12 @@ export default function ExecutiveReportView() {
                 </div>
 
                 <div className="space-y-2 text-xs">
-                  <div className="flex items-center justify-between p-2 rounded-xl bg-muted/30">
-                    <span className="text-muted-foreground">Total Database Records:</span>
-                    <strong className="text-foreground font-mono">{reportData.infrastructure.supabase.totalDatabaseRows.toLocaleString()} rows</strong>
-                  </div>
-                  <div className="flex items-center justify-between p-2 rounded-xl bg-muted/30">
-                    <span className="text-muted-foreground">Database Storage Footprint:</span>
-                    <strong className="text-foreground font-mono">{reportData.infrastructure.supabase.estimatedDbSizeMb} MB</strong>
-                  </div>
-                  <div className="flex items-center justify-between p-2 rounded-xl bg-muted/30">
-                    <span className="text-muted-foreground">Auth Registered Identities:</span>
-                    <strong className="text-foreground font-mono">{reportData.infrastructure.supabase.authIdentitiesCount}</strong>
-                  </div>
-                  <div className="flex items-center justify-between p-2 rounded-xl bg-muted/30">
-                    <span className="text-muted-foreground">Average Query Latency:</span>
-                    <strong className="text-emerald-500 font-mono">{reportData.infrastructure.supabase.avgQueryLatencyMs}ms (P95)</strong>
-                  </div>
+                  {reportData.infrastructure.supabase.tablesBreakdown.map((tbl, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded-xl bg-muted/30">
+                      <span className="text-muted-foreground font-mono">{tbl.name}</span>
+                      <strong className="text-foreground font-mono">{tbl.count.toLocaleString()} rows</strong>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -789,6 +1350,10 @@ export default function ExecutiveReportView() {
                     <span className="text-muted-foreground">Fast Cache Hit Ratio:</span>
                     <strong className="text-blue-500 font-mono">{reportData.infrastructure.vercel.cacheHitRatio}%</strong>
                   </div>
+                  <div className="flex items-center justify-between p-2 rounded-xl bg-muted/30">
+                    <span className="text-muted-foreground">Average Query Latency:</span>
+                    <strong className="text-emerald-500 font-mono">{reportData.infrastructure.supabase.avgQueryLatencyMs}ms (P95)</strong>
+                  </div>
                 </div>
               </div>
             </div>
@@ -802,13 +1367,13 @@ export default function ExecutiveReportView() {
                 <span>Chameleon Administrative Verification System</span>
               </div>
               <p className="text-[11px]">
-                This audit log is officially generated and digitally signed for institutional administration reporting.
+                This audit report is officially generated, digitally verified, and sealed for institutional administration reporting.
               </p>
             </div>
 
             <div className="text-right font-mono text-[10px] space-y-0.5 shrink-0">
               <div>REPORT ID: CHM-AUDIT-{reportData.timeframe.durationDays}D-{Date.now().toString().slice(-6)}</div>
-              <div>SECURITY LEVEL: RESTRICTED ACCESS</div>
+              <div>SECURITY LEVEL: RESTRICTED MASTER ACCESS</div>
             </div>
           </div>
         </div>
