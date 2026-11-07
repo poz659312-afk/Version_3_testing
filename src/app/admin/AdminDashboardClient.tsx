@@ -3132,7 +3132,7 @@ export default function AdminDashboardClient({
         </TabsContent>
 
         {/* Tab 8: Executive Platform Analytics & PDF Report */}
-        <TabsContent value="executive_report" className="mt-0 focus-visible:outline-none font-rubik">
+        <TabsContent value="executive_report" className="mt-0 focus-visible:outline-none font-rubik min-w-0 w-full max-w-full overflow-hidden">
           <ExecutiveReportView />
         </TabsContent>
       </Tabs>

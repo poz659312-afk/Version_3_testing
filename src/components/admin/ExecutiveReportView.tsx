@@ -255,28 +255,28 @@ export default function ExecutiveReportView() {
   }
 
   return (
-    <div className="space-y-6 font-rubik" dir="ltr">
+    <div className="space-y-6 font-rubik w-full max-w-full min-w-0 overflow-hidden" dir="ltr">
       {/* Configuration Header Card */}
-      <Card className="bg-card border-border shadow-md print:hidden">
-        <CardHeader className="pb-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <CardTitle className="text-xl md:text-2xl font-bold font-rubik text-foreground flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                  <FileText className="w-5 h-5" />
+      <Card className="bg-card border-border shadow-md print:hidden w-full max-w-full min-w-0 overflow-hidden">
+        <CardHeader className="p-4 sm:p-6 pb-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
+            <div className="min-w-0">
+              <CardTitle className="text-base sm:text-xl md:text-2xl font-bold font-rubik text-foreground flex items-center gap-2 sm:gap-2.5 flex-wrap">
+                <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
+                  <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <span>Executive Platform Analytics &amp; PDF Report</span>
+                <span className="break-words">Executive Platform Analytics &amp; PDF Report</span>
               </CardTitle>
-              <CardDescription className="text-xs md:text-sm mt-1 font-rubik">
+              <CardDescription className="text-xs md:text-sm mt-1 font-rubik break-words">
                 Generate and print full platform usage audit including time-bounded quiz velocity, real scores, student retention, AI compute, and infrastructure costs.
               </CardDescription>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
               <Button
                 onClick={handleExportPDF}
                 disabled={exportingPdf || loading || !reportData}
-                className="rounded-full text-xs font-bold gap-1.5 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-md hover:brightness-105 active:scale-95 transition-all"
+                className="w-full sm:w-auto rounded-full text-xs font-bold gap-1.5 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-md hover:brightness-105 active:scale-95 transition-all"
               >
                 {exportingPdf ? (
                   <>
@@ -294,14 +294,14 @@ export default function ExecutiveReportView() {
           </div>
 
           {/* Timeframe selector bar */}
-          <div className="mt-5 p-4 rounded-2xl bg-muted/30 border border-border/70 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="space-y-1">
-                <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+          <div className="mt-5 p-3.5 sm:p-4 rounded-2xl bg-muted/30 border border-border/70 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 w-full min-w-0">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 w-full lg:w-auto">
+              <div className="space-y-1 w-full">
+                <Label className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                   Preset Window
                 </Label>
                 <Select value={preset} onValueChange={handlePresetChange}>
-                  <SelectTrigger className="w-44 h-9 text-xs rounded-xl font-rubik">
+                  <SelectTrigger className="w-full sm:w-44 h-9 text-xs rounded-xl font-rubik">
                     <SelectValue placeholder="Select Range" />
                   </SelectTrigger>
                   <SelectContent className="font-rubik">
@@ -317,8 +317,8 @@ export default function ExecutiveReportView() {
                 </Select>
               </div>
 
-              <div className="space-y-1">
-                <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+              <div className="space-y-1 w-full">
+                <Label className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                   From Date
                 </Label>
                 <Input
@@ -328,12 +328,12 @@ export default function ExecutiveReportView() {
                     setFromDate(e.target.value)
                     setPreset('custom')
                   }}
-                  className="h-9 text-xs rounded-xl font-mono w-36"
+                  className="h-9 text-xs rounded-xl font-mono w-full sm:w-36"
                 />
               </div>
 
-              <div className="space-y-1">
-                <Label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+              <div className="space-y-1 w-full">
+                <Label className="text-[10px] sm:text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                   To Date
                 </Label>
                 <Input
@@ -343,16 +343,17 @@ export default function ExecutiveReportView() {
                     setToDate(e.target.value)
                     setPreset('custom')
                   }}
-                  className="h-9 text-xs rounded-xl font-mono w-36"
+                  className="h-9 text-xs rounded-xl font-mono w-full sm:w-36"
                 />
               </div>
             </div>
 
             {isUnlocked ? (
-              <div className="flex items-center gap-3">
-                <Badge variant="outline" className="h-9 px-3 text-xs font-semibold gap-1.5 border-emerald-500/30 text-emerald-500 bg-emerald-500/10">
+              <div className="flex flex-wrap items-center gap-2 pt-2 lg:pt-0 border-t lg:border-t-0 border-border/40 w-full lg:w-auto">
+                <Badge variant="outline" className="h-9 px-2.5 text-xs font-semibold gap-1.5 border-emerald-500/30 text-emerald-500 bg-emerald-500/10 shrink-0">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Admin Session Verified</span>
+                  <span className="hidden sm:inline">Admin Session Verified</span>
+                  <span className="sm:hidden">Verified</span>
                 </Badge>
                 <Button
                   variant="outline"
@@ -363,7 +364,7 @@ export default function ExecutiveReportView() {
                     setReportData(null)
                     toast.info('Admin report locked successfully.')
                   }}
-                  className="rounded-xl h-9 text-xs font-semibold gap-1.5 border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 transition-all"
+                  className="rounded-xl h-9 px-3 text-xs font-semibold gap-1.5 border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30 shrink-0"
                 >
                   <Lock className="w-3.5 h-3.5" />
                   <span>Lock</span>
@@ -371,7 +372,7 @@ export default function ExecutiveReportView() {
                 <Button
                   onClick={() => fetchReport()}
                   disabled={loading}
-                  className="rounded-xl h-9 px-5 text-xs font-bold gap-2 self-end lg:self-auto shrink-0 bg-primary text-primary-foreground"
+                  className="rounded-xl h-9 px-4 text-xs font-bold gap-2 self-stretch sm:self-auto bg-primary text-primary-foreground flex-1 sm:flex-initial"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
                   <span>Recompute Real Metrics</span>
@@ -396,30 +397,30 @@ export default function ExecutiveReportView() {
           </div>
         </Card>
       ) : !isUnlocked || !reportData ? (
-        <Card className="border-border/80 bg-card/70 backdrop-blur-md shadow-xl overflow-hidden relative">
+        <Card className="border-border/80 bg-card/70 backdrop-blur-md shadow-xl overflow-hidden relative w-full max-w-full min-w-0">
           <div className="absolute top-0 right-0 w-72 h-72 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-72 h-72 bg-amber-500/10 rounded-full blur-[100px] pointer-events-none" />
 
-          <CardContent className="py-16 px-6 sm:px-12 flex flex-col items-center text-center max-w-2xl mx-auto space-y-6">
+          <CardContent className="py-10 px-4 sm:py-16 sm:px-12 flex flex-col items-center text-center max-w-2xl mx-auto space-y-6 min-w-0">
             <div className="relative">
-              <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-primary/20 via-primary/10 to-transparent border border-primary/30 flex items-center justify-center text-primary shadow-inner">
-                <Lock className="w-9 h-9" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-primary/20 via-primary/10 to-transparent border border-primary/30 flex items-center justify-center text-primary shadow-inner">
+                <Lock className="w-8 h-8 sm:w-9 sm:h-9" />
               </div>
               <div className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-amber-500 text-black shadow-md">
                 <KeyRound className="w-3.5 h-3.5" />
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0">
               <div className="flex items-center justify-center gap-2">
                 <Badge variant="outline" className="border-amber-500/30 text-amber-500 bg-amber-500/10 font-bold text-xs uppercase tracking-wider">
                   Protected System Action
                 </Badge>
               </div>
-              <h3 className="text-2xl font-black text-foreground tracking-tight font-rubik">
+              <h3 className="text-xl sm:text-2xl font-black text-foreground tracking-tight font-rubik break-words">
                 Super Admin Password Verification Required
               </h3>
-              <p className="text-sm text-muted-foreground font-rubik leading-relaxed">
+              <p className="text-xs sm:text-sm text-muted-foreground font-rubik leading-relaxed break-words">
                 To guarantee <span className="font-bold text-foreground">100% accurate platform calculations</span> powered by live database telemetry (aggregating records across 5,100+ users, live CAPI_REQS tokens, and over 20,100 quiz attempts), entering an authorized encrypted Super Admin password is required to prevent accidental execution of expensive queries.
               </p>
             </div>
@@ -446,7 +447,7 @@ export default function ExecutiveReportView() {
                       if (authError) setAuthError(null)
                     }}
                     autoFocus
-                    className="h-12 text-sm rounded-2xl pr-12 font-mono bg-background/80 border-border focus:border-primary shadow-sm"
+                    className="h-12 text-sm rounded-2xl pr-12 font-mono bg-background/80 border-border focus:border-primary shadow-sm w-full"
                   />
                   <button
                     type="button"
@@ -489,33 +490,33 @@ export default function ExecutiveReportView() {
         <div
           ref={printAreaRef}
           id="executive-report-document"
-          className="bg-card text-foreground border border-border/80 shadow-2xl rounded-3xl p-6 sm:p-10 space-y-10 relative overflow-hidden print:p-0 print:border-none print:shadow-none print:bg-white print:text-black font-rubik"
+          className="bg-card text-foreground border border-border/80 shadow-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 space-y-8 sm:space-y-10 relative overflow-hidden w-full max-w-full min-w-0 print:p-0 print:border-none print:shadow-none print:bg-white print:text-black font-rubik"
         >
           {/* Subtle Ambient Background Watermark */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[140px] pointer-events-none print:hidden" />
           <div className="absolute top-1/2 left-0 w-80 h-80 bg-secondary/10 rounded-full blur-[140px] pointer-events-none print:hidden" />
 
           {/* REPORT HEADER */}
-          <div className="border-b border-border/60 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
+          <div className="border-b border-border/60 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <span className="text-2xl font-black italic tracking-tighter rock-salt text-foreground print:text-black">
                   Chameleon<span className="text-primary text-xl">.</span>
                 </span>
-                <Badge variant="outline" className="text-[11px] font-bold border-primary/30 text-primary bg-primary/10 ml-2">
+                <Badge variant="outline" className="text-[11px] font-bold border-primary/30 text-primary bg-primary/10">
                   CONFIDENTIAL EXECUTIVE REPORT
                 </Badge>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground print:text-black">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-foreground print:text-black break-words">
                 Institutional Platform &amp; Academic Intelligence Audit
               </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground print:text-gray-600 mt-1">
+              <p className="text-xs sm:text-sm text-muted-foreground print:text-gray-600 mt-1 break-words">
                 Deep analytical assessment of student learning velocity, quiz performance, cloud infrastructure, and AI compute efficiency.
               </p>
             </div>
 
             {/* Metadata Box */}
-            <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 text-xs space-y-1.5 shrink-0 print:border-gray-300 print:bg-gray-50">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-muted/40 border border-border/60 text-xs space-y-1.5 shrink-0 w-full md:w-auto print:border-gray-300 print:bg-gray-50 min-w-0">
               <div className="flex items-center justify-between gap-4 text-muted-foreground print:text-gray-600">
                 <span>Selected Window:</span>
                 <strong className="text-foreground print:text-black font-mono">
@@ -542,13 +543,13 @@ export default function ExecutiveReportView() {
           </div>
 
           {/* SECTION 1: KEY EXECUTIVE HIGHLIGHTS (KPIs) */}
-          <div className="space-y-3">
+          <div className="space-y-3 min-w-0 w-full">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
               <Activity className="w-4 h-4 text-primary" />
               <span>1. Executive Summary &amp; Core Performance KPIs</span>
             </h3>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
               {/* Quiz Attempts in Window */}
               <div className="p-4 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-1 relative overflow-hidden">
                 <div className="flex items-center justify-between">
@@ -619,20 +620,20 @@ export default function ExecutiveReportView() {
           </div>
 
           {/* SECTION 2: INTERACTIVE TIME-SERIES & TREND TELEMETRY (CHARTS) */}
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="space-y-4 min-w-0 w-full overflow-hidden">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
               <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-primary" />
                 <span>2. Time-Bounded Academic Activity &amp; Velocity Telemetry</span>
               </h3>
 
-              {/* Chart Switcher Buttons (Hidden on print) */}
-              <div className="flex items-center gap-1.5 p-1 bg-muted/50 rounded-xl border border-border/60 print:hidden self-start sm:self-auto">
+              {/* Chart Switcher Buttons (Horizontally scrollable on mobile) */}
+              <div className="flex items-center gap-1.5 p-1 bg-muted/50 rounded-xl border border-border/60 print:hidden overflow-x-auto max-w-full w-full sm:w-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setActiveChartTab('activity')}
-                  className={`h-7 px-3 text-xs rounded-lg font-semibold transition-all ${
+                  className={`h-7 px-3 text-xs rounded-lg font-semibold shrink-0 whitespace-nowrap transition-all ${
                     activeChartTab === 'activity'
                       ? 'bg-primary text-primary-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -644,7 +645,7 @@ export default function ExecutiveReportView() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setActiveChartTab('scores')}
-                  className={`h-7 px-3 text-xs rounded-lg font-semibold transition-all ${
+                  className={`h-7 px-3 text-xs rounded-lg font-semibold shrink-0 whitespace-nowrap transition-all ${
                     activeChartTab === 'scores'
                       ? 'bg-primary text-primary-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -656,7 +657,7 @@ export default function ExecutiveReportView() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setActiveChartTab('growth')}
-                  className={`h-7 px-3 text-xs rounded-lg font-semibold transition-all ${
+                  className={`h-7 px-3 text-xs rounded-lg font-semibold shrink-0 whitespace-nowrap transition-all ${
                     activeChartTab === 'growth'
                       ? 'bg-primary text-primary-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -668,7 +669,7 @@ export default function ExecutiveReportView() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setActiveChartTab('hourly')}
-                  className={`h-7 px-3 text-xs rounded-lg font-semibold transition-all ${
+                  className={`h-7 px-3 text-xs rounded-lg font-semibold shrink-0 whitespace-nowrap transition-all ${
                     activeChartTab === 'hourly'
                       ? 'bg-primary text-primary-foreground shadow-sm'
                       : 'text-muted-foreground hover:text-foreground'
@@ -680,15 +681,15 @@ export default function ExecutiveReportView() {
             </div>
 
             {/* Main Interactive Chart Canvas */}
-            <div className="p-5 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-4">
+            <div className="p-4 sm:p-5 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-4 min-w-0 w-full overflow-hidden">
               {activeChartTab === 'activity' && (
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4 min-w-0">
+                    <div className="min-w-0">
                       <h4 className="text-sm font-bold text-foreground print:text-black">Daily Quiz Attempts &amp; Active Student Solvers</h4>
                       <p className="text-xs text-muted-foreground">Volume of quiz submissions along with distinct daily active student participants.</p>
                     </div>
-                    <div className="flex items-center gap-4 text-xs font-semibold">
+                    <div className="flex flex-wrap items-center gap-3 text-xs font-semibold shrink-0">
                       <div className="flex items-center gap-1.5">
                         <span className="w-3 h-3 rounded-full bg-emerald-500" />
                         <span>Quiz Attempts</span>
@@ -985,7 +986,7 @@ export default function ExecutiveReportView() {
             </h3>
 
             {/* Top 10 Most Attempted Quizzes Table */}
-            <div className="p-5 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-3">
+            <div className="p-4 sm:p-5 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-3 min-w-0 w-full overflow-hidden">
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-xs font-bold text-foreground print:text-black">Top 10 Most Attempted Quizzes in Selected Window</h4>
@@ -993,8 +994,8 @@ export default function ExecutiveReportView() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs text-left">
+              <div className="overflow-x-auto max-w-full -mx-4 px-4 sm:mx-0 sm:px-0">
+                <table className="w-full text-xs text-left min-w-[560px]">
                   <thead>
                     <tr className="border-b border-border text-muted-foreground font-bold uppercase text-[10px] tracking-wider">
                       <th className="py-2.5 px-3">#</th>
@@ -1090,14 +1091,14 @@ export default function ExecutiveReportView() {
           </div>
 
           {/* SECTION 5: PUBLISHED QUIZZES CATALOG OVERVIEW */}
-          <div className="space-y-3">
+          <div className="space-y-3 min-w-0 w-full">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-primary" />
               <span>5. Platform Quiz Question Bank &amp; Published Library</span>
             </h3>
 
-            <div className="p-5 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-4">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-4 sm:p-5 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-4 min-w-0 w-full overflow-hidden">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div className="p-3 rounded-xl bg-muted/30 border border-border/40">
                   <span className="text-[11px] text-muted-foreground block">Total Published Quizzes</span>
                   <div className="text-xl font-black text-foreground mt-0.5">
@@ -1126,7 +1127,7 @@ export default function ExecutiveReportView() {
 
               <div>
                 <span className="text-xs font-bold text-foreground block mb-2">Curriculum Breakdown by Academic Level:</span>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                   {reportData.quizzes.catalog.quizzesByLevel.map((lvl, idx) => (
                     <div key={idx} className="p-2.5 rounded-xl bg-muted/40 border border-border/50 text-xs flex items-center justify-between">
                       <span className="font-semibold text-foreground">{lvl.level}</span>
@@ -1141,7 +1142,7 @@ export default function ExecutiveReportView() {
           </div>
 
           {/* SECTION 6: STUDENT POPULATION & TOP SOLVERS LEADERBOARD */}
-          <div className="space-y-4">
+          <div className="space-y-4 min-w-0 w-full">
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground print:text-gray-500 flex items-center gap-2">
               <Users className="w-4 h-4 text-primary" />
               <span>6. Student Cohort Demographics &amp; Active Solvers Leaderboard</span>
@@ -1149,15 +1150,15 @@ export default function ExecutiveReportView() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Demographics by Major */}
-              <div className="p-5 rounded-2xl bg-muted/20 border border-border/70 print:border-gray-300 space-y-3">
+              <div className="p-4 sm:p-5 rounded-2xl bg-muted/20 border border-border/70 print:border-gray-300 space-y-3 min-w-0">
                 <h4 className="text-xs font-bold text-foreground print:text-black">Distribution by Specialization / Major</h4>
                 <div className="space-y-2.5">
                   {reportData.users.bySpecialization.map((spec, i) => (
                     <div key={i} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-medium text-foreground truncate max-w-[200px]">{spec.name}</span>
-                        <span className="font-mono text-muted-foreground">
-                          {spec.count} students ({spec.percentage}%)
+                      <div className="flex items-center justify-between text-xs gap-2">
+                        <span className="font-medium text-foreground truncate max-w-[140px] sm:max-w-[200px]">{spec.name}</span>
+                        <span className="font-mono text-muted-foreground shrink-0">
+                          {spec.count} ({spec.percentage}%)
                         </span>
                       </div>
                       <div className="w-full h-2 rounded-full bg-muted/60 overflow-hidden">
@@ -1172,7 +1173,7 @@ export default function ExecutiveReportView() {
               </div>
 
               {/* Top Active Solvers in Window */}
-              <div className="p-5 rounded-2xl bg-muted/20 border border-border/70 print:border-gray-300 space-y-3">
+              <div className="p-4 sm:p-5 rounded-2xl bg-muted/20 border border-border/70 print:border-gray-300 space-y-3 min-w-0">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold text-foreground print:text-black">Top Active Quiz Solvers (Selected Window)</h4>
                   <Badge variant="outline" className="border-amber-500/30 text-amber-500 bg-amber-500/10 text-[10px]">
@@ -1185,12 +1186,12 @@ export default function ExecutiveReportView() {
                     <p className="text-xs text-muted-foreground py-4 text-center">No quiz submissions recorded in this window.</p>
                   ) : (
                     reportData.users.topActiveUsers.slice(0, 5).map((u, idx) => (
-                      <div key={idx} className="p-2.5 rounded-xl bg-card border border-border/50 text-xs flex items-center justify-between">
-                        <div className="flex items-center gap-2.5 truncate mr-2">
-                          <span className="font-mono font-bold text-muted-foreground w-4">{idx + 1}</span>
-                          <div className="truncate">
+                      <div key={idx} className="p-2.5 rounded-xl bg-card border border-border/50 text-xs flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 truncate min-w-0">
+                          <span className="font-mono font-bold text-muted-foreground w-4 shrink-0">{idx + 1}</span>
+                          <div className="truncate min-w-0">
                             <span className="font-bold text-foreground block truncate">{u.username}</span>
-                            <span className="text-[10px] text-muted-foreground">{u.specialization} &bull; {u.level}</span>
+                            <span className="text-[10px] text-muted-foreground block truncate">{u.specialization} &bull; {u.level}</span>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
@@ -1205,8 +1206,8 @@ export default function ExecutiveReportView() {
             </div>
 
             {/* Coins Economy Telemetry */}
-            <div className="p-5 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="p-4 sm:p-5 rounded-2xl bg-card border border-border/70 print:border-gray-300 space-y-3 min-w-0">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Coins className="w-4 h-4 text-amber-500" />
                   <h4 className="text-xs font-bold text-foreground">Chameleon Coin Economy &amp; Wealth Distribution</h4>
@@ -1216,7 +1217,7 @@ export default function ExecutiveReportView() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1">
                 {reportData.users.coinsTopDistribution.map((b, i) => (
                   <div key={i} className="p-2.5 rounded-xl bg-muted/40 border border-border/50 text-center">
                     <span className="text-[10px] text-muted-foreground uppercase font-bold block">{b.bracket}</span>
